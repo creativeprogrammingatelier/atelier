@@ -5,10 +5,12 @@
  */
 
 
-
+var withAuth = require('../middleware')
 var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
+const User = require('../models/user')
+const secret = 'SECRET';
 
 /* Authentication */
 router.post('/api/authenticate', (request, result) => {
@@ -31,6 +33,7 @@ router.post('/api/authenticate', (request, result) => {
       } else {
         user.isCorrectPassword(password, (error, same) => {
           if (error) {
+            console.log(error)
             result.status(500).json({
               error: 'Internal error please try again'
             });
@@ -59,7 +62,7 @@ router.post('/api/authenticate', (request, result) => {
 });
 
 /* Check if token is valid  */
-app.get('/checkToken', withAuth, function (req, res) {
+router.get('/checkToken', withAuth, function (req, res) {
   res.sendStatus(200);
 });
 

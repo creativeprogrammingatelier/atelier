@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 /**
  * CHANGE THIS BEFORE DEPLOYEMENT ! 
  */
-const secret = 'secret';
+const secret = 'SECRET';
 
 const withAuth = function (request, result, next) {
     console.log("With auth")

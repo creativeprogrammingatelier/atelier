@@ -9,9 +9,7 @@
  */
 var express = require('express');
 var router = express.Router();
-const withAuth = require('../middleware');
-const User = require('../models/user');
-
+var withAuth = require('../middleware')
 /* GET home page. */
 router.get('/', function (request, result, next) {
   result.render('index', {

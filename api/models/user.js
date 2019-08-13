@@ -49,15 +49,15 @@ UserSchema.pre('save', function (next) {
 })
 
 /* Autheticating the user*/
-UserSchema.methods.isCorrectPassword = (password, callback) => {
-    bcrypt.compare(password, this.password, (error, same) => {
-        if (error) {
-            callback(error);
+UserSchema.methods.isCorrectPassword = function (password, callback) {
+    bcrypt.compare(password, this.password, function (err, same) {
+        if (err) {
+            callback(err);
         } else {
-            callback(error, same);
+            callback(err, same);
         }
     });
-};
+}
 
 
 module.exports = mongoose.model('User', UserSchema);
