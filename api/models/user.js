@@ -1,0 +1,63 @@
+/**
+ * Modeling the user object
+ * Author: Andrew Heath
+ * Date created: 13/08/19
+ */
+
+/**
+ * Dependecies 
+ */
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
+/* TODO THIS MUST BE CHANGED BEFORE DEPLOYEMENT */
+const secret = 'SECRET';
+
+const saltRounds = 10; //Determines the efficiency vs speed
+
+const UserSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        required: true
+    }
+});
+/* Hashing password before storing*/
+UserSchema.pre('save', function (next) {
+    if (this.isNew || this.isModified('password')) {
+        const document = this;
+        bcrypt.hash(document.password, saltRounds,
+            (error, hashedPassword) => {
+                if (error) {
+                    next(error);
+                } else {
+                    document.password = hashedPassword;
+                    next();
+                }
+            })
+    } else {
+        next();
+    }
+})
+
+/* Autheticating the user*/
+UserSchema.methods.isCorrectPassword = (password, callback) => {
+    bcrypt.compare(password, this.password, (error, same) => {
+        if (error) {
+            callback(error);
+        } else {
+            callback(error, same);
+        }
+    });
+};
+
+
+module.exports = mongoose.model('User', UserSchema);
