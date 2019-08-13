@@ -58,6 +58,10 @@ router.post('/api/authenticate', (request, result) => {
 
 });
 
+/* Check if token is valid  */
+app.get('/checkToken', withAuth, function (req, res) {
+  res.sendStatus(200);
+});
 
 /* Register a user */
 router.post('/api/register', (request, result) => {

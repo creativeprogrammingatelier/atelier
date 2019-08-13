@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import FileUploader from 'react-firebase-file-uploader'
 import firebase from './firebase.js'
-import PDEReader from './Components/PDEReader'
+import PDEReader from './lib/PDEReader'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEye } from '@fortawesome/free-solid-svg-icons'
@@ -120,7 +120,7 @@ class StudentView extends Component {
 
                 </div>
 
-                <PDEReader file={this.state.viewedFileURL}/>
+                <PDEReader file={this.state.viewedFileURL} />
 
             </div>
         )

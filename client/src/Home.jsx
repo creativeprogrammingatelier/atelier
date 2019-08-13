@@ -1,14 +1,13 @@
 import React, { Component } from "react";
- 
+import Login from "./Login"
 class Home extends Component {
   render() {
     return (
-      <div>
-        <h2>MAIN</h2>
-        Select either TA or Student view
-      </div>
-    );
+      <Login>
+
+      </Login>
+    )
   }
 }
- 
+
 export default Home;
