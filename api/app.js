@@ -19,6 +19,7 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 const secret = 'SECRET';
+app.set('view engine', 'jade');
 
 app.use('/', indexRouter);
 app.use('/', usersRouter);
@@ -35,8 +36,8 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  // res.sendStatus(err.status || 500);
+  // res.render('error');
 });
 const mongo_uri = 'mongodb://localhost/react-auth';
 mongoose.connect(mongo_uri, function (err) {

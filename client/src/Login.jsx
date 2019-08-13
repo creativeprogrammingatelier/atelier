@@ -6,7 +6,8 @@ class Login extends Component {
         super(props)
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            user: {}
         };
     }
 
@@ -20,7 +21,7 @@ class Login extends Component {
 
     onSubmit = (event) => {
         event.preventDefault();
-        fetch('/api/authenticate', {
+        fetch('/authenticate', {
             method: 'POST',
             body: JSON.stringify(this.state),
             headers: {
@@ -28,6 +29,13 @@ class Login extends Component {
             }
         }).then(res => {
             if (res.status === 200) {
+                res.json().then((json) => {
+                    localStorage.setItem("email", json.email);
+                    localStorage.setItem("role", json.role);
+                }
+                )
+
+
                 this.props.history.push('/');
             } else {
                 const error = new Error(res.error);
@@ -42,26 +50,28 @@ class Login extends Component {
 
     render() {
         return (
-            <form onSubmit={this.onSubmit}>
-                <h1>Login</h1>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter email"
-                    value={this.state.email}
-                    onChange={this.handleInputChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Enter password"
-                    value={this.state.password}
-                    onChange={this.handleInputChange}
-                    required
-                />
-                <input type="submit" value="Submit" />
-            </form>
+            <div>
+                <form onSubmit={this.onSubmit}>
+                    <h1>Login</h1>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter email"
+                        value={this.state.email}
+                        onChange={this.handleInputChange}
+                        required
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter password"
+                        value={this.state.password}
+                        onChange={this.handleInputChange}
+                        required
+                    />
+                    <input type="submit" value="Submit" />
+                </form>
+            </div>
         );
     }
 

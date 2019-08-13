@@ -9,18 +9,17 @@
  */
 var express = require('express');
 var router = express.Router();
-var withAuth = require('../middleware')
-/* GET home page. */
+var middleware = require('../middleware')
 router.get('/', function (request, result, next) {
   result.render('index', {
     title: 'Express'
   });
 });
 
-router.get('/api/home', function (request, result) {
+router.get('/home', function (request, result) {
   result.send('Welcome!');
 });
-router.get('/api/secret', withAuth, function (request, result) {
+router.get('/secret', middleware.taAuth, function (request, result) {
   result.send('The password is potato');
 });
 
