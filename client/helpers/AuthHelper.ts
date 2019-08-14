@@ -2,6 +2,16 @@ import decode from "jwt-decode";
 
 export default class AuthHelper {
 
+
+    static async checkRole(role: string) {
+        await this.fetch(`/checkRole`, {
+            method: "POST",
+            body: JSON.stringify({
+                role,
+            })
+        })
+    }
+
     private domain: any;
     // Initializing important variables
     constructor(domain: any) {

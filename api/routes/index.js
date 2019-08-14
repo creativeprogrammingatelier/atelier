@@ -19,9 +19,7 @@ router.get('/', function (request, result, next) {
 router.get('/home', function (request, result) {
   result.send('Welcome!');
 });
-router.get('/secret', middleware.taAuth, function (request, result) {
-  result.send('The password is potato');
-});
+
 
 
 

@@ -97,4 +97,47 @@ router.post('/register', (request, result) => {
     }
   });
 });
+
+router.post('/checkRole', middleware.withAuth, function (request, result) {
+  const {
+    role
+  } = request.body;
+  const token =
+    request.body.token ||
+    request.query.token ||
+    request.headers['x-access-token'] ||
+    request.cookies.token;
+  if (!token) {
+    result.status(401).send('Unauthorized: No token provided');
+  } else {
+    jwt.verify(token, secret, function (err, decoded) {
+      if (err) {
+        result.status(401).send('Unauthorized: Invalid token');
+      } else {
+        let email = decoded.email;
+        User.findOne(({
+          email
+        }, (error, user) => {
+          if (error) {
+            result.status(500).json({
+              error: 'Internal Error please try again'
+            });
+          } else if (!user) {
+            result.status(401).json({
+              error: 'Incorrect email or password'
+            })
+          } else {
+            if (user.role.toLowerCase() == role.toLowerCase()) {
+              result.status(201).send()
+            } else {
+              result.status(401).send('Unauthorized: Incorrect role');
+            }
+          }
+        }))
+      }
+    })
+  }
+})
+
+
 module.exports = router;
