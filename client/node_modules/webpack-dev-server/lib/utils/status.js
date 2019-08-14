@@ -1,8 +1,9 @@
 'use strict';
 
-const open = require('opn');
 const colors = require('./colors');
+const runOpen = require('./runOpen');
 
+// TODO: don't emit logs when webpack-dev-server is used via Node.js API
 function status(uri, options, log, useColor) {
   const contentBase = Array.isArray(options.contentBase)
     ? options.contentBase.join(', ')
@@ -43,19 +44,7 @@ function status(uri, options, log, useColor) {
   }
 
   if (options.open) {
-    let openOptions = {};
-    let openMessage = 'Unable to open browser';
-
-    if (typeof options.open === 'string') {
-      openOptions = { app: options.open };
-      openMessage += `: ${options.open}`;
-    }
-
-    open(uri + (options.openPage || ''), openOptions).catch(() => {
-      log.warn(
-        `${openMessage}. If you are running in a headless environment, please do not use the --open flag`
-      );
-    });
+    runOpen(uri, options, log);
   }
 }
 

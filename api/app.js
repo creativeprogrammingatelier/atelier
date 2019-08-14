@@ -17,17 +17,14 @@ app.use(express.urlencoded({
   extended: false
 }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 const secret = 'SECRET';
-app.set('view engine', 'jade');
+
+app.use(express.static(path.join(__dirname, '../client/')));
+
 
 app.use('/', indexRouter);
 app.use('/', usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -35,10 +32,11 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  // res.sendStatus(err.status || 500);
-  // res.render('error');
+  res.sendStatus(err.status || 500);
+  res.render('error');
 });
+
+//Databse connection 
 const mongo_uri = 'mongodb://localhost/react-auth';
 mongoose.connect(mongo_uri, function (err) {
   if (err) {
@@ -47,8 +45,6 @@ mongoose.connect(mongo_uri, function (err) {
     console.log(`Successfully connected to ${mongo_uri}`);
   }
 });
-
-//Databse connection 
 
 
 module.exports = app;

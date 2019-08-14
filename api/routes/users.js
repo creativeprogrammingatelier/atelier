@@ -23,7 +23,7 @@ router.get('/logout', function (req, res) {
 });
 
 /* Authentication */
-router.post('/authenticate', (request, result) => {
+router.post('/login', (request, result) => {
   const {
     email,
     password
@@ -63,8 +63,7 @@ router.post('/authenticate', (request, result) => {
             httpOnly: true
           })
           result.status(200).send({
-            role: user.role,
-            email: user.email
+            token: token
           });
         }
       })
