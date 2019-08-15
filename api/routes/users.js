@@ -128,7 +128,7 @@ router.post('/checkRole', middleware.withAuth, function (request, result) {
             })
           } else {
             if (user.role.toLowerCase() == role.toLowerCase()) {
-              result.status(201).send()
+              result.status(204).send()
             } else {
               result.status(401).send('Unauthorized: Incorrect role');
             }

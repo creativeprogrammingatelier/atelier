@@ -13,16 +13,10 @@ class App extends React.Component {
             < div >
                 < Switch >
                     <PrivateRoute exact path='/' component={Home} />
-                    <PrivateRoute exact path='/ta' component={TAView} role={"TA"} />
-                    <PrivateRoute exact path='/student' component={StudentView} role={"Student"} />
+                    <PrivateRoute exact path='/ta' component={TAView} role="ta" />
+                    <PrivateRoute exact path='/student' component={StudentView} role="student" />
                     <Route path='/login' component={Login} />
                 </Switch >
-
-                <ul>
-                    <li><Link to="/login">Login</Link></li>
-                    <li><Link to="/student">Student</Link></li>
-                    <li><Link to="/ta">Teaching Assisant</Link></li>
-                </ul>
             </div>
         )
     }

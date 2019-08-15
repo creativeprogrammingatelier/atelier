@@ -95,14 +95,6 @@
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -115,13 +107,11 @@ class AuthHelper {
         this.domain = domain || "http://localhost:3000"; // API server domain
     }
     static checkRole(role) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.fetch(`/checkRole`, {
-                method: "POST",
-                body: JSON.stringify({
-                    role,
-                })
-            });
+        return this.fetch(`/checkRole`, {
+            method: "POST",
+            body: JSON.stringify({
+                role,
+            })
         });
     }
     static login(email, password) {
@@ -4604,16 +4594,9 @@ class App extends React.Component {
         return (React.createElement("div", null,
             React.createElement(react_router_dom_1.Switch, null,
                 React.createElement(PrivateRoute_1.default, { exact: true, path: '/', component: Home_1.default }),
-                React.createElement(PrivateRoute_1.default, { exact: true, path: '/ta', component: TAView_1.default, role: "TA" }),
-                React.createElement(PrivateRoute_1.default, { exact: true, path: '/student', component: StudentView_1.default, role: "Student" }),
-                React.createElement(react_router_dom_1.Route, { path: '/login', component: Login_1.default })),
-            React.createElement("ul", null,
-                React.createElement("li", null,
-                    React.createElement(react_router_dom_1.Link, { to: "/login" }, "Login")),
-                React.createElement("li", null,
-                    React.createElement(react_router_dom_1.Link, { to: "/student" }, "Student")),
-                React.createElement("li", null,
-                    React.createElement(react_router_dom_1.Link, { to: "/ta" }, "Teaching Assisant")))));
+                React.createElement(PrivateRoute_1.default, { exact: true, path: '/ta', component: TAView_1.default, role: "ta" }),
+                React.createElement(PrivateRoute_1.default, { exact: true, path: '/student', component: StudentView_1.default, role: "student" }),
+                React.createElement(react_router_dom_1.Route, { path: '/login', component: Login_1.default }))));
     }
 }
 exports.default = App;
@@ -4639,10 +4622,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 class Home extends React.Component {
     render() {
         return (React.createElement("div", null,
-            React.createElement("h1", null, "Welcome Home (Login required to arrive here)")));
+            React.createElement("h1", null, "Welcome Home (Login required to arrive here)"),
+            React.createElement("ul", null,
+                React.createElement("li", null,
+                    React.createElement(react_router_dom_1.Link, { to: "/login" }, "Login")),
+                React.createElement("li", null,
+                    React.createElement(react_router_dom_1.Link, { to: "/student" }, "Student")),
+                React.createElement("li", null,
+                    React.createElement(react_router_dom_1.Link, { to: "/ta" }, "Teaching Assisant")))));
     }
 }
 exports.default = Home;
@@ -4741,6 +4732,40 @@ const React = __importStar(__webpack_require__(/*! react */ "react"));
 const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthHelper */ "./helpers/AuthHelper.ts"));
 class PrivateRoute extends react_router_dom_1.Route {
+    constructor(props) {
+        super(props);
+        this.state = {
+            roleAuthorised: false
+        };
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.role !== prevProps.role) {
+            this.checkRole();
+        }
+    }
+    checkRole() {
+        if (this.props.role == undefined) {
+            return;
+        }
+        else {
+            AuthHelper_1.default.checkRole(this.props.role).then((response) => {
+                if (response.status == 204) {
+                    this.setState({
+                        roleAuthorised: true
+                    });
+                }
+                else {
+                    this.setState({
+                        roleAuthorised: false
+                    });
+                }
+            }).catch((res) => {
+                this.setState({
+                    roleAuthorised: false
+                });
+            });
+        }
+    }
     render() {
         if (this.props.role == undefined) {
             return (React.createElement(react_router_dom_1.Route, { render: props => {
@@ -4751,14 +4776,17 @@ class PrivateRoute extends react_router_dom_1.Route {
                         : React.createElement(react_router_dom_1.Redirect, { to: { pathname: '/login', state: { from: this.props.location } } }));
                 } }));
         }
-        else {
+        if (this.state.roleAuthorised) {
             return (React.createElement(react_router_dom_1.Route, { render: props => {
-                    return (AuthHelper_1.default.getToken() && !AuthHelper_1.default.isTokenExpired(AuthHelper_1.default.getToken()) && AuthHelper_1.default.checkRole(this.props.role)
+                    return (AuthHelper_1.default.getToken() && !AuthHelper_1.default.isTokenExpired(AuthHelper_1.default.getToken())
                         ? React.createElement("span", null,
                             React.createElement(this.props.component),
                             " ")
                         : React.createElement(react_router_dom_1.Redirect, { to: { pathname: '/login', state: { from: this.props.location } } }));
                 } }));
+        }
+        else {
+            return (React.createElement("h1", null, "You have incorrect permission to view this page"));
         }
     }
 }

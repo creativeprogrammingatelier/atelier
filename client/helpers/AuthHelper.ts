@@ -3,13 +3,13 @@ import decode from "jwt-decode";
 export default class AuthHelper {
 
 
-    static async checkRole(role: string) {
-        await this.fetch(`/checkRole`, {
+    static checkRole(role: string) {
+        return this.fetch(`/checkRole`, {
             method: "POST",
             body: JSON.stringify({
                 role,
             })
-        })
+        });
     }
 
     private domain: any;
