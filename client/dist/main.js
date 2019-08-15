@@ -4620,20 +4620,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
-const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
+const Nav_1 = __importDefault(__webpack_require__(/*! ./Nav */ "./src/components/Nav.tsx"));
 class Home extends React.Component {
     render() {
         return (React.createElement("div", null,
             React.createElement("h1", null, "Welcome Home (Login required to arrive here)"),
-            React.createElement("ul", null,
-                React.createElement("li", null,
-                    React.createElement(react_router_dom_1.Link, { to: "/login" }, "Login")),
-                React.createElement("li", null,
-                    React.createElement(react_router_dom_1.Link, { to: "/student" }, "Student")),
-                React.createElement("li", null,
-                    React.createElement(react_router_dom_1.Link, { to: "/ta" }, "Teaching Assisant")))));
+            React.createElement(Nav_1.default, null)));
     }
 }
 exports.default = Home;
@@ -4704,6 +4701,42 @@ class Login extends react_1.Component {
     }
 }
 exports.default = Login;
+
+
+/***/ }),
+
+/***/ "./src/components/Nav.tsx":
+/*!********************************!*\
+  !*** ./src/components/Nav.tsx ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __importStar(__webpack_require__(/*! react */ "react"));
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
+class Nav extends React.Component {
+    render() {
+        return (React.createElement("div", null,
+            React.createElement("ul", { className: "nav" },
+                React.createElement("li", { className: "nav-item" },
+                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/login" }, "Login")),
+                React.createElement("li", { className: "nav-item" },
+                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/student" }, "Student")),
+                React.createElement("li", { className: "nav-item" },
+                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/ta" }, "Teaching Assisant")))));
+    }
+}
+exports.default = Nav;
 
 
 /***/ }),
