@@ -9,16 +9,13 @@
  */
 var express = require('express');
 var router = express.Router();
-var middleware = require('../middleware')
+
 router.get('/', function (request, result, next) {
   result.render('index', {
     title: 'Express'
   });
 });
 
-router.get('/home', function (request, result) {
-  result.send('Welcome!');
-});
 
 
 

@@ -25,6 +25,7 @@
   "dependencies": {
     "@types/jwt-decode": "^2.2.1",
     "@types/react-router-dom": "^4.3.4",
+    "axios": "^0.19.0",
     "babel": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "events": "^3.0.0",

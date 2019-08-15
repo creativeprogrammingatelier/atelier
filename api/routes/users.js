@@ -5,7 +5,7 @@
  */
 
 
-var middleware = require('../middleware')
+var auth = require('../middleware/auth')
 var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -72,7 +72,7 @@ router.post('/login', (request, result) => {
 });
 
 /* Check if token is valid  */
-router.get('/checkToken', middleware.withAuth, function (req, res) {
+router.get('/checkToken', auth.withAuth, function (req, res) {
   res.sendStatus(200);
 });
 
@@ -98,7 +98,7 @@ router.post('/register', (request, result) => {
   });
 });
 
-router.post('/checkRole', middleware.withAuth, function (request, result) {
+router.post('/checkRole', auth.withAuth, function (request, result) {
   const {
     role
   } = request.body;
