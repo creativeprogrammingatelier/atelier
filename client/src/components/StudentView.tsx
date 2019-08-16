@@ -20,6 +20,7 @@ class StudentView extends React.Component {
         };
         axios.post('/uploadfile', formData, config
         ).then((response) => {
+            //TODO handle this 
             console.log(response)
         }).catch(function (error) {
             //TODO Handle errors in a nice way
@@ -35,7 +36,7 @@ class StudentView extends React.Component {
 
     handleFileSelection = (event: any) => {
         this.setState({
-            file: event.target.files[0]
+            uploadedFile: event.target.files[0]
         })
     }
 

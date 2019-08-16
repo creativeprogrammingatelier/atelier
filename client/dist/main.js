@@ -6586,6 +6586,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
 const axios_1 = __importDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+const PDEReader_1 = __importDefault(__webpack_require__(/*! ./PDEReader */ "./src/components/PDEReader.tsx"));
 class FileViewer extends React.Component {
     constructor(props) {
         super(props);
@@ -6606,8 +6607,9 @@ class FileViewer extends React.Component {
                 rows.push(React.createElement("tr", null,
                     React.createElement("td", null, file.name),
                     React.createElement("td", null,
-                        React.createElement("a", { href: `/downloadfile?fileId=${file._id}` }, " Download")),
-                    React.createElement("td", null, "View")));
+                        React.createElement("a", { key: `download-${file._id}`, href: `/downloadfile?fileId=${file._id}` }, " Download")),
+                    React.createElement("td", null,
+                        React.createElement("button", { key: `view-${file._id}`, value: file._id, onClick: this.getFile }, "View"))));
             }
             return (React.createElement("table", { className: "table" },
                 React.createElement("thead", null,
@@ -6617,14 +6619,37 @@ class FileViewer extends React.Component {
                         React.createElement("th", { scope: "col" }, "View"))),
                 React.createElement("tbody", null, rows)));
         };
+        this.getFile = (e) => {
+            axios_1.default.get('/getfile', {
+                params: {
+                    fileId: e.target.value
+                },
+            }).then((response) => {
+                this.setState({
+                    viewedFile: response.data
+                });
+            }).catch(function (error) {
+                // TODO handle erorrs
+                console.log(error);
+            });
+        };
+        this.populateCodeView = () => {
+            if (this.state.viewedFile != null) {
+                return React.createElement(PDEReader_1.default, Object.assign({}, { file: this.state.viewedFile }));
+            }
+            return;
+        };
         this.state = {
-            files: this.props
+            files: this.props,
+            viewedFile: null
         };
     }
     render() {
         return (React.createElement("div", null,
-            React.createElement("h1", null, "File Viewer"),
-            this.populateTable()));
+            React.createElement("div", null,
+                React.createElement("h1", null, "File Viewer"),
+                this.populateTable()),
+            React.createElement("div", null, this.populateCodeView())));
     }
 }
 exports.default = FileViewer;
@@ -6769,6 +6794,37 @@ exports.default = Nav;
 
 /***/ }),
 
+/***/ "./src/components/PDEReader.tsx":
+/*!**************************************!*\
+  !*** ./src/components/PDEReader.tsx ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+class PDEReader extends react_1.default.Component {
+    constructor(props) {
+        super(props);
+        this.componentDidUpdate = () => {
+        };
+    }
+    render() {
+        return (react_1.default.createElement("div", null,
+            react_1.default.createElement("pre", { className: "line-numbers" },
+                react_1.default.createElement("code", { className: "language-processing" }, this.props.file.body))));
+    }
+}
+exports.default = PDEReader;
+
+
+/***/ }),
+
 /***/ "./src/components/PrivateRoute.tsx":
 /*!*****************************************!*\
   !*** ./src/components/PrivateRoute.tsx ***!
@@ -6892,6 +6948,7 @@ class StudentView extends React.Component {
                 }
             };
             axios_1.default.post('/uploadfile', formData, config).then((response) => {
+                //TODO handle this 
                 console.log(response);
             }).catch(function (error) {
                 //TODO Handle errors in a nice way
@@ -6906,7 +6963,7 @@ class StudentView extends React.Component {
         };
         this.handleFileSelection = (event) => {
             this.setState({
-                file: event.target.files[0]
+                uploadedFile: event.target.files[0]
             });
         };
         this.state = {

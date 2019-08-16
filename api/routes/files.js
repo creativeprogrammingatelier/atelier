@@ -7,6 +7,7 @@ const File = require('../models/file')
 const Auth = require('../middleware/auth')
 const Filesmid = require('../middleware/filesmid')
 var router = express.Router();
+const path = require('path');
 
 
 router.post('/uploadfile', Auth.withAuth, upload.single('file'),
@@ -44,11 +45,28 @@ router.get('/getfiles', Auth.withAuth, upload.single('file'), (request, result) 
         Filesmid.getFiles(user.id, 1).then(files => result.status(200).send(files)).catch(error => result.status(500).send(error));
 
     })
+});
+
+router.get('/getfile', Auth.withAuth, (request, result) => {
+    //TODO check if user has permission to view file
+    const fileId = request.query.fileId;
+    Filesmid.getFile(fileId).then(file => {
+        let pathToFile = path.join(`${__dirname}../../${file[0].path}`);
+        Filesmid.readFile(pathToFile, (fileData) => {
+            let returnFile = {
+                name: file[0].name,
+                body: fileData
+            };
+            result.status(200).json(returnFile);
+        });
+
+    })
+    //TODO handle
 
 });
 
 
-router.get('/downloadfile', function (request, result) {
+router.get('/downloadfile', (request, result) => {
     //TODO check if user has permission to view file
     const fileId = request.query.fileId;
     Filesmid.getFilePath(fileId).then(file => {
