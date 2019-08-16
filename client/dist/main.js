@@ -6815,7 +6815,14 @@ class StudentView extends React.Component {
         super(props);
         this.onSubmit = (event) => {
             event.preventDefault();
-            axios_1.default.post('/uploadfile', this.state.file).then((response) => {
+            const formData = new FormData();
+            formData.append('file', this.state.file);
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+            axios_1.default.post('/uploadfile', formData, config).then((response) => {
                 console.log(response);
             }).catch(function (error) {
                 //TODO Handle errors in a nice way
@@ -6841,7 +6848,7 @@ class StudentView extends React.Component {
         return (React.createElement("div", null,
             React.createElement("h1", null, "Hello Student"),
             React.createElement("form", { onSubmit: this.onSubmit },
-                React.createElement("input", { type: "file", name: "file", required: true, onChange: this.handleFileSelection }),
+                React.createElement("input", { type: "file", name: "file-pmd", required: true, onChange: this.handleFileSelection }),
                 React.createElement("input", { type: "submit", value: "Submit" }))));
     }
 }

@@ -14,9 +14,14 @@ class StudentView extends React.Component {
     }
     onSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
-
-        axios.post('/uploadfile', this.state.file
-
+        const formData = new FormData();
+        formData.append('file', this.state.file);
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        };
+        axios.post('/uploadfile', formData, config
         ).then((response) => {
             console.log(response)
         }).catch(function (error) {
@@ -42,7 +47,7 @@ class StudentView extends React.Component {
             < div >
                 <h1>Hello Student</h1>
                 <form onSubmit={this.onSubmit}>
-                    <input type="file" name="file" required onChange={this.handleFileSelection} />
+                    <input type="file" name="file-pmd" required onChange={this.handleFileSelection} />
                     <input type="submit" value="Submit" />
                 </form>
             </div>

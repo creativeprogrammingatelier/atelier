@@ -6,7 +6,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-
+const User = require('../models/user')
 /**
  * CHANGE THIS BEFORE DEPLOYEMENT ! 
  */
@@ -31,34 +31,36 @@ module.exports = {
             });
         }
     },
-    getUser: function (request, next, request) {
+    getUser: function (request, next) {
+        try {
+            const token =
+                request.body.token ||
+                request.query.token ||
+                request.headers['x-access-token'] ||
+                request.cookies.token;
 
-        const token =
-            request.body.token ||
-            request.query.token ||
-            request.headers['x-access-token'] ||
-            request.cookies.token;
-        jwt.verify(token, secret, function (err, decoded) {
-            if (err) {
-                console.log(error);
-                return error;
-            } else {
-                console.log("non error")
-                let email = decoded.email;
-                User.findOne({
-                    email
-                }, (error, user) => {
-                    if (user) {
-                        next(user, request)
-                    } else {
-                        console.log(error);
+
+            jwt.verify(token, secret, function (error, decoded) {
+                if (error) {
+                    return error;
+                } else {
+                    let email = decoded.email;
+                    User.findOne({
+                        email
+                    }, (error, user) => {
+                        if (user) {
+                            next(user, request)
+                        } else {
+                            throw new Error(error);
+                        }
+                    }).catch((error) => {
                         throw new Error(error);
-                    }
-                }).catch((error) => {
-                    console.log(error);
-                    throw new Error(error);
-                });
-            }
-        });
+                    });
+                }
+            });
+        } catch (e) {
+            //for testing can be removed
+            console.log(e)
+        }
     }
 }

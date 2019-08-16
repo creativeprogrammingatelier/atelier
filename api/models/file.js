@@ -20,7 +20,6 @@ const FileSchema = new mongoose.Schema({
     path: {
         type: String,
         required: true,
-        unique: true
     },
     owner: {
         type: Schema.Types.ObjectId,
