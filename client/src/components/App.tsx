@@ -10,7 +10,8 @@ class App extends React.Component {
 
     render() {
         return (
-            < div >
+
+            <div className="container">
                 < Switch >
                     <PrivateRoute exact path='/' component={Home} />
                     <PrivateRoute exact path='/ta' component={TAView} role="ta" />

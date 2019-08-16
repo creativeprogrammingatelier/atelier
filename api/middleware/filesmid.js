@@ -9,11 +9,11 @@ module.exports = {
         })
 
     },
-    getFile: function (fileId) {
+    getFile: function (fileId, next) {
         return Files.find({
             _id: fileId
         }, "-_id", (error, result) => {
-            return result;
+            return next(result);
         })
 
     },

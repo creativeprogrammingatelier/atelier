@@ -2,22 +2,24 @@ import * as React from "react";
 import axios from "axios";
 import { ReactElement } from "react";
 import { ReactNodeArray } from "prop-types";
-import PDEReader from "./PDEReader";
+import CodeViewer from "./CodeViewer";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFileDownload, faEye } from '@fortawesome/free-solid-svg-icons'
+
 class FileViewer extends React.Component {
-    state: { files: any, viewedFile: any }
+    state: { files: any, viewedFile: any, uploadedFile: any }
 
     constructor(props: { files: any[] }) {
         super(props);
         this.state = {
             files: this.props,
-            viewedFile: null
+            viewedFile: null,
+            uploadedFile: null
+
         }
+        this.getAllFiles()
     }
-
-
-
-
-    componentDidMount = () => {
+    getAllFiles = () => {
         axios.get('/getfiles',
         ).then((response) => {
             this.setState({
@@ -26,40 +28,74 @@ class FileViewer extends React.Component {
         }).catch(function (error) {
         })
     }
+
+    handleFileSelection = (event: any) => {
+        this.setState({
+            uploadedFile: event.target.files[0]
+        })
+    }
+    onSubmit = (event: { preventDefault: () => void; }) => {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('file', this.state.uploadedFile);
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        };
+        axios.post('/uploadfile', formData, config
+        ).then((response) => {
+            this.getAllFiles();
+
+        }).catch(function (error) {
+            //TODO Handle errors in a nice way
+            console.log(error);
+        })
+    }
     populateTable = () => {
-        if (this.state.files[0] == undefined) {
-            return;
-        }
+        //Refactor big time
         let rows = [];
-        for (let file of this.state.files) {
-            rows.push(<tr>
-                <td>{file.name}</td>
-                <td><a key={`download-${file._id}`} href={`/downloadfile?fileId=${file._id}`}> Download</a></td>
-                <td><button key={`view-${file._id}`} value={file._id} onClick={this.getFile}>View</button></td>
-            </tr>);
+
+        if (this.state.files[0] != undefined) {
+
+            for (let file of this.state.files) {
+                rows.push(<tr>
+                    <td>{file.name}</td>
+                    <td><a key={`download-${file._id}`} href={`/downloadfile?fileId=${file._id}`}><FontAwesomeIcon icon={faFileDownload} /></a></td>
+                    <td><button key={`view-${file._id}`} onClick={() => this.getFile(file._id)}><FontAwesomeIcon icon={faEye} />
+                    </button></td>
+                </tr>);
+            }
         }
         return (
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th scope="col">File Name</th>
-                        <th scope="col">Download</th>
-                        <th scope="col" >View</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
+            <div>
+                <form onSubmit={this.onSubmit}>
+                    <input type="file" name="file-pmd" required onChange={this.handleFileSelection} />
+                    <input type="submit" value="Submit" />
+                </form>
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">File Name</th>
+                            <th scope="col">Download</th>
+                            <th scope="col" >View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {(rows) ? rows : null}
 
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+
         )
     }
 
-    getFile = (e: any) => {
+    getFile = (fileId: string) => {
         axios.get('/getfile', {
             params: {
-                fileId: e.target.value
+                fileId: fileId
             },
         }
         ).then((response: any) => {
@@ -70,13 +106,14 @@ class FileViewer extends React.Component {
             // TODO handle erorrs
             console.log(error)
         })
+
     }
 
 
 
     populateCodeView = () => {
         if (this.state.viewedFile != null) {
-            return <PDEReader {...{ file: this.state.viewedFile }} />
+            return <CodeViewer {...{ file: this.state.viewedFile }} />
         }
         return;
     }

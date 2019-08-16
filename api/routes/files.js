@@ -50,21 +50,26 @@ router.get('/getfiles', Auth.withAuth, upload.single('file'), (request, result) 
 router.get('/getfile', Auth.withAuth, (request, result) => {
     //TODO check if user has permission to view file
     const fileId = request.query.fileId;
-    Filesmid.getFile(fileId).then(file => {
-        let pathToFile = path.join(`${__dirname}../../${file[0].path}`);
-        Filesmid.readFile(pathToFile, (fileData) => {
-            let returnFile = {
-                name: file[0].name,
-                body: fileData
-            };
-            result.status(200).json(returnFile);
-        });
+    Filesmid.getFile(fileId, (file) => {
+            let pathToFile = path.join(`${__dirname}../../${file[0].path}`);
+            try {
+                Filesmid.readFile(pathToFile, (fileData) => {
+                    let returnFile = {
+                        name: file[0].name,
+                        body: fileData
+                    };
+                    result.status(200).json(returnFile);
+                });
+            } catch (error) {
+                result.status(500).send("error");
 
-    })
-    //TODO handle
+            }
+        }
+        //TODO handle
+
+    );
 
 });
-
 
 router.get('/downloadfile', (request, result) => {
     //TODO check if user has permission to view file
