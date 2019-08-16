@@ -6564,6 +6564,74 @@ exports.default = App;
 
 /***/ }),
 
+/***/ "./src/components/FileViewer.tsx":
+/*!***************************************!*\
+  !*** ./src/components/FileViewer.tsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __importStar(__webpack_require__(/*! react */ "react"));
+const axios_1 = __importDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+class FileViewer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.componentDidMount = () => {
+            axios_1.default.get('/getfiles').then((response) => {
+                this.setState({
+                    files: response.data
+                });
+            }).catch(function (error) {
+            });
+        };
+        this.populateTable = () => {
+            if (this.state.files[0] == undefined) {
+                return;
+            }
+            let rows = [];
+            for (let file of this.state.files) {
+                rows.push(React.createElement("tr", null,
+                    React.createElement("td", null, file.name),
+                    React.createElement("td", null,
+                        React.createElement("a", { href: `/downloadfile?fileId=${file._id}` }, " Download")),
+                    React.createElement("td", null, "View")));
+            }
+            return (React.createElement("table", { className: "table" },
+                React.createElement("thead", null,
+                    React.createElement("tr", null,
+                        React.createElement("th", { scope: "col" }, "File Name"),
+                        React.createElement("th", { scope: "col" }, "Download"),
+                        React.createElement("th", { scope: "col" }, "View"))),
+                React.createElement("tbody", null, rows)));
+        };
+        this.state = {
+            files: this.props
+        };
+    }
+    render() {
+        return (React.createElement("div", null,
+            React.createElement("h1", null, "File Viewer"),
+            this.populateTable()));
+    }
+}
+exports.default = FileViewer;
+
+
+/***/ }),
+
 /***/ "./src/components/Home.tsx":
 /*!*********************************!*\
   !*** ./src/components/Home.tsx ***!
@@ -6810,13 +6878,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
 const axios_1 = __importDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+const FileViewer_1 = __importDefault(__webpack_require__(/*! ./FileViewer */ "./src/components/FileViewer.tsx"));
 class StudentView extends React.Component {
     constructor(props) {
         super(props);
         this.onSubmit = (event) => {
             event.preventDefault();
             const formData = new FormData();
-            formData.append('file', this.state.file);
+            formData.append('file', this.state.uploadedFile);
             const config = {
                 headers: {
                     'content-type': 'multipart/form-data'
@@ -6841,7 +6910,7 @@ class StudentView extends React.Component {
             });
         };
         this.state = {
-            file: null
+            uploadedFile: null
         };
     }
     render() {
@@ -6849,7 +6918,8 @@ class StudentView extends React.Component {
             React.createElement("h1", null, "Hello Student"),
             React.createElement("form", { onSubmit: this.onSubmit },
                 React.createElement("input", { type: "file", name: "file-pmd", required: true, onChange: this.handleFileSelection }),
-                React.createElement("input", { type: "submit", value: "Submit" }))));
+                React.createElement("input", { type: "submit", value: "Submit" })),
+            React.createElement(FileViewer_1.default, null)));
     }
 }
 exports.default = StudentView;

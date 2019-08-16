@@ -1,21 +1,18 @@
 import * as React from "react";
-import { Route, Switch } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import Home from "./Home";
-import Login from "./Login";
 import axios from 'axios';
+import FileViewer from './FileViewer'
 class StudentView extends React.Component {
-    state: { file: any }
+    state: { uploadedFile: any }
     constructor(props: any) {
         super(props);
         this.state = {
-            file: null
+            uploadedFile: null
         }
     }
     onSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         const formData = new FormData();
-        formData.append('file', this.state.file);
+        formData.append('file', this.state.uploadedFile);
         const config = {
             headers: {
                 'content-type': 'multipart/form-data'
@@ -50,6 +47,7 @@ class StudentView extends React.Component {
                     <input type="file" name="file-pmd" required onChange={this.handleFileSelection} />
                     <input type="submit" value="Submit" />
                 </form>
+                <FileViewer />
             </div>
         )
     }

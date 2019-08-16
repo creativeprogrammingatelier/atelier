@@ -4,16 +4,16 @@ var upload = multer({
     dest: 'uploads/'
 })
 const File = require('../models/file')
-const auth = require('../middleware/auth')
-
+const Auth = require('../middleware/auth')
+const Filesmid = require('../middleware/filesmid')
 var router = express.Router();
 
 
-router.post('/uploadfile', upload.single('file'),
+router.post('/uploadfile', Auth.withAuth, upload.single('file'),
     function (request, result, next) {
         try {
             let file = request.file;
-            auth.getUser(request, (user) => {
+            Auth.getUser(request, (user) => {
                 const {
                     originalname,
                     path,
@@ -37,5 +37,25 @@ router.post('/uploadfile', upload.single('file'),
         }
     })
 
-// router.post('/uploadfile', upload.single("file"), function (request, result, next) {}
+router.get('/getfiles', Auth.withAuth, upload.single('file'), (request, result) => {
+    Auth.getUser(request, (user) => {
+        console.log(user)
+        //TODO change to be a parameter from the request
+        Filesmid.getFiles(user.id, 1).then(files => result.status(200).send(files)).catch(error => result.status(500).send(error));
+
+    })
+
+});
+
+
+router.get('/downloadfile', function (request, result) {
+    //TODO check if user has permission to view file
+    const fileId = request.query.fileId;
+    Filesmid.getFilePath(fileId).then(file => {
+        const filepath = `${__dirname}../../${file[0].path}`;
+        result.download(filepath, file[0].name);
+    }).catch(error => result.status(500).send(error))
+
+
+});
 module.exports = router;
