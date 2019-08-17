@@ -59,9 +59,6 @@ router.post('/login', (request, result) => {
           const token = jwt.sign(payload, secret, {
             expiresIn: '1h'
           });
-          result.cookie('token', token, {
-            httpOnly: true
-          })
           result.status(200).send({
             token: token
           });

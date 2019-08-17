@@ -10845,9 +10845,9 @@ class AuthHelper {
             })
         });
     }
-    static login(email, password) {
+    static login(email, password, next) {
         // Get a token from api server using the fetch api
-        return this.fetch(`/login`, {
+        this.fetch(`/login`, {
             method: "POST",
             body: JSON.stringify({
                 email,
@@ -10856,7 +10856,7 @@ class AuthHelper {
         }).then((res) => {
             res.json().then((json) => {
                 this.setToken(json.token); // Setting the token in localStorage
-                return Promise.resolve(res);
+                next();
             });
         });
     }
@@ -19197,12 +19197,11 @@ class Login extends react_1.Component {
         };
         this.onSubmit = (event) => {
             event.preventDefault();
-            AuthHelper_1.default.login(this.state.email, this.state.password);
-            if (AuthHelper_1.default.loggedIn()) {
+            AuthHelper_1.default.login(this.state.email, this.state.password, () => {
                 this.setState({
                     redirectToReferrer: true
                 });
-            }
+            });
         };
         this.state = {
             email: '',
