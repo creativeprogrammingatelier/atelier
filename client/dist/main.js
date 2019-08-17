@@ -19246,9 +19246,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
 const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
+const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthHelper */ "./helpers/AuthHelper.ts"));
 class Logout extends React.Component {
     constructor(props) {
         super(props);
@@ -19257,9 +19261,10 @@ class Logout extends React.Component {
         };
     }
     componentDidMount() {
-        // AuthHelper.logout((this.setState({
-        //     loggedOut: true
-        // })));
+        AuthHelper_1.default.logout();
+        this.setState({
+            loggedOut: true
+        });
     }
     render() {
         if (this.state.loggedOut == true) {

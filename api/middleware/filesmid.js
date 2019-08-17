@@ -2,6 +2,7 @@ const Files = require('../models/file');
 const fs = require('fs');
 module.exports = {
     getFiles: function (userid, numberOfFiles) {
+        console.log("heres")
         return Files.find({
             owner: userid
         }, "_id name", (error, result) => {

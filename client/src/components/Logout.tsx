@@ -15,9 +15,10 @@ class Logout extends React.Component {
 
     }
     componentDidMount() {
-        // AuthHelper.logout((this.setState({
-        //     loggedOut: true
-        // })));
+        AuthHelper.logout()
+        this.setState({
+            loggedOut: true
+        });
     }
 
     render() {
