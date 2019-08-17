@@ -4,12 +4,21 @@ import PrivateRoute from "./PrivateRoute";
 import Home from "./Home";
 import Login from "./Login";
 import AuthHelper from "../../helpers/AuthHelper";
+import StudentView from "./StudentView";
+import TAView from "./TAView";
 
 class RoleView extends React.Component {
 
+    constructor(props: any) {
+        super(props)
+    }
+
+
     render() {
         return (
-            <p>Role View</p>
+            <StudentView />
         )
+
+
     }
 } export default RoleView;

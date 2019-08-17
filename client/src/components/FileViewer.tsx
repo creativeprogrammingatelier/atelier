@@ -6,57 +6,38 @@ import CodeViewer from "./CodeViewer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileDownload, faEye } from '@fortawesome/free-solid-svg-icons'
 import AuthHelper from "../../helpers/AuthHelper";
+import FileUploader from "./FileUploader";
 
 class FileViewer extends React.Component {
-    state: { files: any, viewedFile: any, uploadedFile: any }
+    state: { files: any, viewedFile: any }
 
     constructor(props: { files: any[] }) {
         super(props);
         this.state = {
             files: this.props,
             viewedFile: null,
-            uploadedFile: null
 
         }
-        this.getAllFiles()
+        this.getAllFiles();
     }
+
+
     getAllFiles = () => {
         AuthHelper.fetch(`/getfiles`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
-                this.setState({
-                    files: json
-                })
+                if (this.state.files != json) {
+                    this.setState({
+                        files: json
+                    })
+                }
             });
         }).catch(function (error) {
             console.log(error)
         })
     }
 
-    handleFileSelection = (event: any) => {
-        this.setState({
-            uploadedFile: event.target.files[0]
-        })
-    }
-    onSubmit = (event: { preventDefault: () => void; }) => {
-        event.preventDefault();
-        const formData = new FormData();
-        formData.append('file', this.state.uploadedFile);
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data'
-            }
-        };
-        axios.post('/uploadfile', formData, config
-        ).then((response) => {
-            this.getAllFiles();
-
-        }).catch(function (error) {
-            //TODO Handle errors in a nice way
-            console.log(error);
-        })
-    }
     populateTable = () => {
         //Refactor big time
         let rows = [];
@@ -74,10 +55,6 @@ class FileViewer extends React.Component {
         }
         return (
             <div>
-                <form onSubmit={this.onSubmit}>
-                    <input type="file" name="file-pmd" required onChange={this.handleFileSelection} />
-                    <input type="submit" value="Submit" />
-                </form>
                 <table className="table">
                     <thead>
                         <tr>
@@ -113,14 +90,6 @@ class FileViewer extends React.Component {
     }
 
 
-
-    populateCodeView = () => {
-        if (this.state.viewedFile != null) {
-            return <CodeViewer {...{ file: this.state.viewedFile }} />
-        }
-        return;
-    }
-
     render() {
         return (
             <div>
@@ -129,7 +98,7 @@ class FileViewer extends React.Component {
                     {this.populateTable()}
                 </div>
                 <div>
-                    {this.populateCodeView()}
+                    {(this.state.viewedFile != null) ? <CodeViewer {...{ file: this.state.viewedFile }} /> : null}
                 </div>
             </div>
 
