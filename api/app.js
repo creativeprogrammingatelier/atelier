@@ -11,7 +11,6 @@ var filesRouter = require('./routes/files');
 
 var app = express();
 app.listen(5000, () => console.log('Listening on port 5000!'))
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({
@@ -34,7 +33,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500).json({
     error: err
   });
-
 });
 
 //Databse connection 

@@ -9,7 +9,6 @@ class Home extends React.Component {
         return (
             < div >
                 <h1>Welcome Home (Login required to arrive here)</h1>
-                <Nav />
             </div>
         )
     }

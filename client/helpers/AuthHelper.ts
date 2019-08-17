@@ -86,7 +86,7 @@ export default class AuthHelper {
         // Setting Authorization header
         // Authorization: Bearer xxxxxxx.xxxxxxxx.xxxxxx
         if (AuthHelper.loggedIn()) {
-            headers["Authorization"] = "Bearer " + AuthHelper.getToken();
+            headers["Authorization"] = AuthHelper.getToken();
         }
 
         return fetch(url, {

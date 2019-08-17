@@ -5,6 +5,8 @@ import Home from "./Home";
 import Login from "./Login";
 import TAView from "./TAView";
 import StudentView from "./StudentView";
+import Nav from "./Nav";
+import Logout from "./Logout";
 
 class App extends React.Component {
 
@@ -12,11 +14,13 @@ class App extends React.Component {
         return (
 
             <div className="container">
+                <Nav />
                 < Switch >
                     <PrivateRoute exact path='/' component={Home} />
                     <PrivateRoute exact path='/ta' component={TAView} role="ta" />
                     <PrivateRoute exact path='/student' component={StudentView} role="student" />
                     <Route path='/login' component={Login} />
+                    <PrivateRoute path='/logout' component={Logout} />
                 </Switch >
             </div>
         )

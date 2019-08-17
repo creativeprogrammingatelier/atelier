@@ -103,10 +103,7 @@ router.post('/checkRole', auth.withAuth, function (request, result) {
     role
   } = request.body;
   const token =
-    request.body.token ||
-    request.query.token ||
-    request.headers['x-access-token'] ||
-    request.cookies.token;
+    request.headers.authorization;
   if (!token) {
     result.status(401).send('Unauthorized: No token provided');
   } else {

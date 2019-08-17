@@ -14,15 +14,13 @@ const secret = 'SECRET';
 module.exports = {
     withAuth: function (request, result, next) {
         const token =
-            request.body.token ||
-            request.query.token ||
-            request.headers['x-access-token'] ||
-            request.cookies.token;
+            request.headers.authorization;
         if (!token) {
             result.status(401).send('Unauthorized: No token provided');
         } else {
             jwt.verify(token, secret, function (err, decoded) {
                 if (err) {
+                    console.log(err)
                     result.status(401).send('Unauthorized: Invalid token');
                 } else {
                     result.email = decoded.email;
@@ -34,12 +32,7 @@ module.exports = {
     getUser: function (request, next) {
         try {
             const token =
-                request.body.token ||
-                request.query.token ||
-                request.headers['x-access-token'] ||
-                request.cookies.token;
-
-
+                request.headers.authorization;
             jwt.verify(token, secret, function (error, decoded) {
                 if (error) {
                     return error;

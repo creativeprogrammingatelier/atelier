@@ -10912,7 +10912,7 @@ AuthHelper.fetch = (url, options) => {
     // Setting Authorization header
     // Authorization: Bearer xxxxxxx.xxxxxxxx.xxxxxx
     if (AuthHelper.loggedIn()) {
-        headers["Authorization"] = "Bearer " + AuthHelper.getToken();
+        headers["Authorization"] = AuthHelper.getToken();
     }
     return fetch(url, Object.assign({ headers }, options))
         .then(AuthHelper._checkStatus).catch(reponse => reponse)
@@ -18944,14 +18944,18 @@ const Home_1 = __importDefault(__webpack_require__(/*! ./Home */ "./src/componen
 const Login_1 = __importDefault(__webpack_require__(/*! ./Login */ "./src/components/Login.tsx"));
 const TAView_1 = __importDefault(__webpack_require__(/*! ./TAView */ "./src/components/TAView.tsx"));
 const StudentView_1 = __importDefault(__webpack_require__(/*! ./StudentView */ "./src/components/StudentView.tsx"));
+const Nav_1 = __importDefault(__webpack_require__(/*! ./Nav */ "./src/components/Nav.tsx"));
+const Logout_1 = __importDefault(__webpack_require__(/*! ./Logout */ "./src/components/Logout.tsx"));
 class App extends React.Component {
     render() {
         return (React.createElement("div", { className: "container" },
+            React.createElement(Nav_1.default, null),
             React.createElement(react_router_dom_1.Switch, null,
                 React.createElement(PrivateRoute_1.default, { exact: true, path: '/', component: Home_1.default }),
                 React.createElement(PrivateRoute_1.default, { exact: true, path: '/ta', component: TAView_1.default, role: "ta" }),
                 React.createElement(PrivateRoute_1.default, { exact: true, path: '/student', component: StudentView_1.default, role: "student" }),
-                React.createElement(react_router_dom_1.Route, { path: '/login', component: Login_1.default }))));
+                React.createElement(react_router_dom_1.Route, { path: '/login', component: Login_1.default }),
+                React.createElement(PrivateRoute_1.default, { path: '/logout', component: Logout_1.default }))));
     }
 }
 exports.default = App;
@@ -19026,15 +19030,21 @@ const axios_1 = __importDefault(__webpack_require__(/*! axios */ "./node_modules
 const CodeViewer_1 = __importDefault(__webpack_require__(/*! ./CodeViewer */ "./src/components/CodeViewer.tsx"));
 const react_fontawesome_1 = __webpack_require__(/*! @fortawesome/react-fontawesome */ "../node_modules/@fortawesome/react-fontawesome/index.es.js");
 const free_solid_svg_icons_1 = __webpack_require__(/*! @fortawesome/free-solid-svg-icons */ "../node_modules/@fortawesome/free-solid-svg-icons/index.es.js");
+const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthHelper */ "./helpers/AuthHelper.ts"));
 class FileViewer extends React.Component {
     constructor(props) {
         super(props);
         this.getAllFiles = () => {
-            axios_1.default.get('/getfiles').then((response) => {
-                this.setState({
-                    files: response.data
+            AuthHelper_1.default.fetch(`/getfiles`, {
+                method: "GET",
+            }).then((response) => {
+                response.json().then((json) => {
+                    this.setState({
+                        files: json
+                    });
                 });
             }).catch(function (error) {
+                console.log(error);
             });
         };
         this.handleFileSelection = (event) => {
@@ -19086,16 +19096,15 @@ class FileViewer extends React.Component {
                     React.createElement("tbody", null, (rows) ? rows : null))));
         };
         this.getFile = (fileId) => {
-            axios_1.default.get('/getfile', {
-                params: {
-                    fileId: fileId
-                },
+            AuthHelper_1.default.fetch(`/getfile?fileId=${fileId}`, {
+                method: "GET",
             }).then((response) => {
-                this.setState({
-                    viewedFile: response.data
+                response.json().then((json) => {
+                    this.setState({
+                        viewedFile: json
+                    });
                 });
             }).catch(function (error) {
-                // TODO handle erorrs
                 console.log(error);
             });
         };
@@ -19141,17 +19150,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
-const Nav_1 = __importDefault(__webpack_require__(/*! ./Nav */ "./src/components/Nav.tsx"));
 class Home extends React.Component {
     render() {
         return (React.createElement("div", null,
-            React.createElement("h1", null, "Welcome Home (Login required to arrive here)"),
-            React.createElement(Nav_1.default, null)));
+            React.createElement("h1", null, "Welcome Home (Login required to arrive here)")));
     }
 }
 exports.default = Home;
@@ -19226,6 +19230,51 @@ exports.default = Login;
 
 /***/ }),
 
+/***/ "./src/components/Logout.tsx":
+/*!***********************************!*\
+  !*** ./src/components/Logout.tsx ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __importStar(__webpack_require__(/*! react */ "react"));
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
+class Logout extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loggedOut: false
+        };
+    }
+    componentDidMount() {
+        // AuthHelper.logout((this.setState({
+        //     loggedOut: true
+        // })));
+    }
+    render() {
+        if (this.state.loggedOut == true) {
+            return (React.createElement("div", null,
+                React.createElement(react_router_dom_1.Redirect, { to: { pathname: '/login' } })));
+        }
+        return (React.createElement("div", { className: "spinner-border", role: "status" },
+            React.createElement("span", { className: "sr-only" }, "Loading...")));
+    }
+}
+exports.default = Logout;
+
+
+/***/ }),
+
 /***/ "./src/components/Nav.tsx":
 /*!********************************!*\
   !*** ./src/components/Nav.tsx ***!
@@ -19250,11 +19299,15 @@ class Nav extends React.Component {
         return (React.createElement("div", null,
             React.createElement("ul", { className: "nav" },
                 React.createElement("li", { className: "nav-item" },
-                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/login" }, "Login")),
+                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/" }, "Home")),
                 React.createElement("li", { className: "nav-item" },
                     React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/student" }, "Student")),
                 React.createElement("li", { className: "nav-item" },
-                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/ta" }, "Teaching Assisant")))));
+                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/ta" }, "Teaching Assisant")),
+                React.createElement("li", { className: "nav-item" },
+                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/login" }, "Login")),
+                React.createElement("li", { className: "nav-item" },
+                    React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/logout" }, "Logout")))));
     }
 }
 exports.default = Nav;
@@ -19293,54 +19346,46 @@ class PrivateRoute extends react_router_dom_1.Route {
         };
     }
     componentDidUpdate(prevProps) {
-        if (this.props.role !== prevProps.role) {
+        if (this.props.role !== prevProps.role && this.props.role != undefined) {
             this.checkRole();
         }
     }
     checkRole() {
-        if (this.props.role == undefined) {
-            return;
-        }
-        else {
-            AuthHelper_1.default.checkRole(this.props.role).then((response) => {
-                if (response.status == 204) {
-                    this.setState({
-                        roleAuthorised: true
-                    });
-                }
-                else {
-                    this.setState({
-                        roleAuthorised: false
-                    });
-                }
-            }).catch((res) => {
+        AuthHelper_1.default.checkRole(this.props.role).then((response) => {
+            if (response.status == 204) {
+                this.setState({
+                    roleAuthorised: true
+                });
+            }
+            else {
                 this.setState({
                     roleAuthorised: false
                 });
+            }
+        }).catch((res) => {
+            this.setState({
+                roleAuthorised: false
             });
-        }
+        });
     }
     render() {
-        if (this.props.role == undefined) {
-            return (React.createElement(react_router_dom_1.Route, { render: props => {
-                    return (AuthHelper_1.default.getToken() && !AuthHelper_1.default.isTokenExpired(AuthHelper_1.default.getToken())
-                        ? React.createElement("span", null,
-                            React.createElement(this.props.component),
-                            " ")
-                        : React.createElement(react_router_dom_1.Redirect, { to: { pathname: '/login', state: { from: this.props.location } } }));
-                } }));
+        if (this.props.role == undefined && AuthHelper_1.default.loggedIn()) {
+            return (React.createElement(react_router_dom_1.Route, { render: () => React.createElement("span", null,
+                    React.createElement(this.props.component),
+                    " ") }));
         }
-        if (this.state.roleAuthorised) {
-            return (React.createElement(react_router_dom_1.Route, { render: props => {
-                    return (AuthHelper_1.default.getToken() && !AuthHelper_1.default.isTokenExpired(AuthHelper_1.default.getToken())
-                        ? React.createElement("span", null,
-                            React.createElement(this.props.component),
-                            " ")
-                        : React.createElement(react_router_dom_1.Redirect, { to: { pathname: '/login', state: { from: this.props.location } } }));
-                } }));
+        if (this.state.roleAuthorised && AuthHelper_1.default.loggedIn()) {
+            return (React.createElement(react_router_dom_1.Route, { render: () => React.createElement("span", null,
+                    React.createElement(this.props.component),
+                    " ") }));
         }
         else {
-            return (React.createElement("h1", null, "You have incorrect permission to view this page"));
+            if (AuthHelper_1.default.loggedIn()) {
+                return (React.createElement("h1", null, "You have incorrect permission to view this page"));
+            }
+            else {
+                return React.createElement(react_router_dom_1.Redirect, { to: { pathname: '/login', state: { from: this.props.location } } });
+            }
         }
     }
 }

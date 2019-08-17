@@ -28,3 +28,8 @@ node_modules
 node_modules/
 
 uploads
+/client/dist
+
+client/dist
+
+/dist

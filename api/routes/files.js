@@ -38,9 +38,8 @@ router.post('/uploadfile', Auth.withAuth, upload.single('file'),
         }
     })
 
-router.get('/getfiles', Auth.withAuth, upload.single('file'), (request, result) => {
+router.get('/getfiles', Auth.withAuth, (request, result) => {
     Auth.getUser(request, (user) => {
-        console.log(user)
         //TODO change to be a parameter from the request
         Filesmid.getFiles(user.id, 1).then(files => result.status(200).send(files)).catch(error => result.status(500).send(error));
 

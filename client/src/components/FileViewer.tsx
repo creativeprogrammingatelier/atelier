@@ -5,6 +5,7 @@ import { ReactNodeArray } from "prop-types";
 import CodeViewer from "./CodeViewer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileDownload, faEye } from '@fortawesome/free-solid-svg-icons'
+import AuthHelper from "../../helpers/AuthHelper";
 
 class FileViewer extends React.Component {
     state: { files: any, viewedFile: any, uploadedFile: any }
@@ -20,12 +21,16 @@ class FileViewer extends React.Component {
         this.getAllFiles()
     }
     getAllFiles = () => {
-        axios.get('/getfiles',
-        ).then((response) => {
-            this.setState({
-                files: response.data
-            })
+        AuthHelper.fetch(`/getfiles`, {
+            method: "GET",
+        }).then((response) => {
+            response.json().then((json: any) => {
+                this.setState({
+                    files: json
+                })
+            });
         }).catch(function (error) {
+            console.log(error)
         })
     }
 
@@ -93,17 +98,15 @@ class FileViewer extends React.Component {
     }
 
     getFile = (fileId: string) => {
-        axios.get('/getfile', {
-            params: {
-                fileId: fileId
-            },
-        }
-        ).then((response: any) => {
-            this.setState({
-                viewedFile: response.data
-            })
+        AuthHelper.fetch(`/getfile?fileId=${fileId}`, {
+            method: "GET",
+        }).then((response) => {
+            response.json().then((json: any) => {
+                this.setState({
+                    viewedFile: json
+                })
+            });
         }).catch(function (error) {
-            // TODO handle erorrs
             console.log(error)
         })
 

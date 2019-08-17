@@ -16,63 +16,60 @@ class PrivateRoute extends Route<PrivateRouteProps> {
     }
 
     componentDidUpdate(prevProps: PrivateRouteProps) {
-        if (this.props.role !== prevProps.role) {
+        if (this.props.role !== prevProps.role && this.props.role != undefined) {
             this.checkRole()
         }
     }
 
     checkRole() {
-        if (this.props.role == undefined) {
-            return;
-        } else {
-            AuthHelper.checkRole(this.props.role).then((response: any) => {
-                if (response.status == 204) {
-                    this.setState({
-                        roleAuthorised: true
-                    });
-                } else {
-                    this.setState({
-                        roleAuthorised: false
-                    });
-                }
-            }).catch((res: any) => {
+        AuthHelper.checkRole(this.props.role).then((response: any) => {
+            if (response.status == 204) {
+                this.setState({
+                    roleAuthorised: true
+                });
+            } else {
                 this.setState({
                     roleAuthorised: false
                 });
+            }
+        }).catch((res: any) => {
+            this.setState({
+                roleAuthorised: false
             });
-        }
+        });
+
     }
 
     render() {
-        if (this.props.role == undefined) {
+        if (this.props.role == undefined && AuthHelper.loggedIn()) {
             return (
                 <Route
-                    render={
-                        props => {
-                            return (AuthHelper.getToken() && !AuthHelper.isTokenExpired(AuthHelper.getToken())
-                                ? <span>{React.createElement(this.props.component)} </span>
-                                : <Redirect to={{ pathname: '/login', state: { from: this.props.location } }} />);
-                        }
+                    render={() =>
+
+                        <span>{React.createElement(this.props.component)} </span>
+
                     }
                 />
             )
-        } if (this.state.roleAuthorised) {
+        } if (this.state.roleAuthorised && AuthHelper.loggedIn()) {
             return (
                 <Route
-                    render={
-                        props => {
-                            return (AuthHelper.getToken() && !AuthHelper.isTokenExpired(AuthHelper.getToken())
-                                ? <span>{React.createElement(this.props.component)} </span>
-                                : <Redirect to={{ pathname: '/login', state: { from: this.props.location } }} />);
-                        }
+                    render={() =>
+                        <span>{React.createElement(this.props.component)} </span>
+
                     }
                 />
             )
         }
         else {
-            return (
-                <h1>You have incorrect permission to view this page</h1>
-            )
+            if (AuthHelper.loggedIn()) {
+                return (
+                    <h1>You have incorrect permission to view this page</h1>
+                )
+            } else {
+                return <Redirect to={{ pathname: '/login', state: { from: this.props.location } }} />;
+            }
+
         }
 
     }
