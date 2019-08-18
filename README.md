@@ -35,5 +35,9 @@ Atelier a
 ## Auth -- Update
 We are using JWT tokens not session
 
-## Kill running process
+
+
+### Helpful commands
+
+Kill running process
 fuser -k [port]/tcp 
