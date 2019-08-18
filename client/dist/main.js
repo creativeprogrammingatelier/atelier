@@ -10935,6 +10935,83 @@ exports.default = AuthHelper;
 
 /***/ }),
 
+/***/ "./helpers/FileHelper.ts":
+/*!*******************************!*\
+  !*** ./helpers/FileHelper.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const AuthHelper_1 = __importDefault(__webpack_require__(/*! ./AuthHelper */ "./helpers/AuthHelper.ts"));
+const axios_1 = __importDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+class FileHelper {
+}
+FileHelper.getAllFiles = (next) => {
+    AuthHelper_1.default.fetch(`/getfiles`, {
+        method: "GET",
+    }).then((response) => {
+        response.json().then((json) => {
+            next(json);
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+};
+FileHelper.getFile = (fileId, next) => {
+    AuthHelper_1.default.fetch(`/getfile?fileId=${fileId}`, {
+        method: "GET",
+    }).then((response) => {
+        response.json().then((json) => {
+            next(json);
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+};
+FileHelper.deleteFile = (fileId, next) => {
+    const config = {
+        headers: {
+            'content-type': 'multipart/form-data',
+            "Authorization": AuthHelper_1.default.getToken()
+        },
+        params: {
+            "fileId": fileId,
+        }
+    };
+    axios_1.default.delete('/deletefile', config).then((response) => {
+        next();
+    }).catch(function (error) {
+        //TODO Handle errors in a nice way
+        console.log(error);
+    });
+};
+FileHelper.uploadFile = (file, next) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const config = {
+        headers: {
+            'content-type': 'multipart/form-data',
+            "Authorization": AuthHelper_1.default.getToken()
+        }
+    };
+    axios_1.default.post('/uploadfile', formData, config).then((response) => {
+        next();
+    }).catch(function (error) {
+        //TODO Handle errors in a nice way
+        console.log(error);
+    });
+};
+exports.default = FileHelper;
+
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/esm/extends.js":
 /*!************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/extends.js ***!
@@ -19026,27 +19103,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
-const axios_1 = __importDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
-const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthHelper */ "./helpers/AuthHelper.ts"));
+const FileHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/FileHelper */ "./helpers/FileHelper.ts"));
 class FileUploader extends React.Component {
     constructor(props) {
         super(props);
         this.onSubmit = (event) => {
             event.preventDefault();
-            const formData = new FormData();
-            formData.append('file', this.state.uploadedFile);
-            const config = {
-                headers: {
-                    'content-type': 'multipart/form-data',
-                    "Authorization": AuthHelper_1.default.getToken()
-                }
-            };
-            axios_1.default.post('/uploadfile', formData, config).then((response) => {
-                this.state.update();
-            }).catch(function (error) {
-                //TODO Handle errors in a nice way
-                console.log(error);
-            });
+            FileHelper_1.default.uploadFile(this.state.uploadedFile, this.props.update);
         };
         this.handleFileSelection = (event) => {
             this.setState({
@@ -19093,12 +19156,11 @@ const React = __importStar(__webpack_require__(/*! react */ "react"));
 const CodeViewer_1 = __importDefault(__webpack_require__(/*! ./CodeViewer */ "./src/components/CodeViewer.tsx"));
 const react_fontawesome_1 = __webpack_require__(/*! @fortawesome/react-fontawesome */ "../node_modules/@fortawesome/react-fontawesome/index.es.js");
 const free_solid_svg_icons_1 = __webpack_require__(/*! @fortawesome/free-solid-svg-icons */ "../node_modules/@fortawesome/free-solid-svg-icons/index.es.js");
-const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthHelper */ "./helpers/AuthHelper.ts"));
+const FileHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/FileHelper */ "./helpers/FileHelper.ts"));
 class FileViewer extends React.Component {
     constructor(props) {
         super(props);
         this.populateTable = () => {
-            //Refactor big time
             let rows = [];
             if (this.props.files && this.props.files[0] != undefined) {
                 for (let file of this.props.files) {
@@ -19108,8 +19170,11 @@ class FileViewer extends React.Component {
                             React.createElement("a", { key: `download-${file._id}`, href: `/downloadfile?fileId=${file._id}` },
                                 React.createElement(react_fontawesome_1.FontAwesomeIcon, { icon: free_solid_svg_icons_1.faFileDownload }))),
                         React.createElement("td", null,
-                            React.createElement("button", { key: `view-${file._id}`, onClick: () => this.getFile(file._id) },
-                                React.createElement(react_fontawesome_1.FontAwesomeIcon, { icon: free_solid_svg_icons_1.faEye })))));
+                            React.createElement("button", { key: `view-${file._id}`, onClick: () => FileHelper_1.default.getFile(file._id, (file) => this.setState({ viewedFile: file })) },
+                                React.createElement(react_fontawesome_1.FontAwesomeIcon, { icon: free_solid_svg_icons_1.faEye }))),
+                        React.createElement("td", null,
+                            React.createElement("button", { key: `view-${file._id}`, onClick: () => FileHelper_1.default.deleteFile(file._id, () => this.props.update()) },
+                                React.createElement(react_fontawesome_1.FontAwesomeIcon, { icon: free_solid_svg_icons_1.faTrash })))));
                 }
             }
             return (React.createElement("div", null,
@@ -19120,19 +19185,6 @@ class FileViewer extends React.Component {
                             React.createElement("th", { scope: "col" }, "Download"),
                             React.createElement("th", { scope: "col" }, "View"))),
                     React.createElement("tbody", null, (rows) ? rows : null))));
-        };
-        this.getFile = (fileId) => {
-            AuthHelper_1.default.fetch(`/getfile?fileId=${fileId}`, {
-                method: "GET",
-            }).then((response) => {
-                response.json().then((json) => {
-                    this.setState({
-                        viewedFile: json
-                    });
-                });
-            }).catch(function (error) {
-                console.log(error);
-            });
         };
         this.state = {
             viewedFile: null,
@@ -19438,33 +19490,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
 const FileViewer_1 = __importDefault(__webpack_require__(/*! ./FileViewer */ "./src/components/FileViewer.tsx"));
 const FileUploader_1 = __importDefault(__webpack_require__(/*! ./FileUploader */ "./src/components/FileUploader.tsx"));
-const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthHelper */ "./helpers/AuthHelper.ts"));
+const FileHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/FileHelper */ "./helpers/FileHelper.ts"));
 class StudentView extends React.Component {
     constructor(props) {
         super(props);
-        this.getAllFiles = () => {
-            AuthHelper_1.default.fetch(`/getfiles`, {
-                method: "GET",
-            }).then((response) => {
-                response.json().then((json) => {
-                    if (this.state.files != json) {
-                        this.setState({
-                            files: json
-                        });
-                    }
-                });
-            }).catch(function (error) {
-                console.log(error);
-            });
-        };
         this.handleInputChange = (event) => {
             const { value, name } = event.target;
             this.setState({
                 [name]: value
             });
         };
-        this.newFileAdded = () => {
-            this.getAllFiles();
+        this.getAllFiles = () => {
+            FileHelper_1.default.getAllFiles((result) => this.setState({
+                files: result
+            }));
         };
         this.state = {
             files: null
@@ -19474,8 +19513,8 @@ class StudentView extends React.Component {
     render() {
         return (React.createElement("div", null,
             React.createElement("h1", null, "Hello Student"),
-            React.createElement(FileUploader_1.default, Object.assign({}, { update: this.newFileAdded })),
-            React.createElement(FileViewer_1.default, Object.assign({}, { files: this.state.files }))));
+            React.createElement(FileUploader_1.default, Object.assign({}, { update: this.getAllFiles })),
+            React.createElement(FileViewer_1.default, Object.assign({}, { files: this.state.files, update: this.getAllFiles }))));
     }
 }
 exports.default = StudentView;

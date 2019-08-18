@@ -46,33 +46,34 @@ router.get('/getfiles', Auth.withAuth, (request, result) => {
     })
 });
 
+router.delete('/deletefile', Auth.withAuth, (request, result) => {
+    Filesmid.deleteFile(request.query.fileId).then(() => result.status(200).send()).catch(error => result.status(500).send(error));
+})
+
+
 router.get('/getfile', Auth.withAuth, (request, result) => {
     const fileId = request.query.fileId;
     Filesmid.getFile(fileId, (file) => {
-            Auth.getUser(request, (user, request) => {
-                file = file[0];
-                if (user.id == file.owner) {
-                    let pathToFile = path.join(`${__dirname}../../${file.path}`);
-                    try {
-                        Filesmid.readFile(pathToFile, (fileData) => {
-                            let returnFile = {
-                                name: file.name,
-                                body: fileData
-                            };
-                            result.status(200).json(returnFile);
-                        });
-                    } catch (error) {
-                        result.status(500).send("error");
-                    }
-                } else {
-                    result.status(401).send("You are not the file owner");
+        Auth.getUser(request, (user, request) => {
+            file = file[0];
+            if (user.id == file.owner) {
+                let pathToFile = path.join(`${__dirname}../../${file.path}`);
+                try {
+                    Filesmid.readFile(pathToFile, (fileData) => {
+                        let returnFile = {
+                            name: file.name,
+                            body: fileData
+                        };
+                        result.status(200).json(returnFile);
+                    });
+                } catch (error) {
+                    result.status(500).send("error");
                 }
-            })
-
-        }
-        //TODO handle
-
-    ).catch((error) => {
+            } else {
+                result.status(401).send("You are not the file owner");
+            }
+        })
+    }).catch((error) => {
         result.status(500).send("Error");
     });
 

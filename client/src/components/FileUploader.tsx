@@ -3,8 +3,9 @@ import { Route, Switch, Link } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import axios from "axios";
 import AuthHelper from "../../helpers/AuthHelper";
+import FileHelper from "../../helpers/FileHelper";
 
-class FileUploader extends React.Component {
+class FileUploader extends React.Component<{ update: Function }> {
     state: { uploadedFile: any, update: Function }
     constructor(props: { update: Function }) {
         super(props)
@@ -15,23 +16,7 @@ class FileUploader extends React.Component {
     }
     onSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
-        const formData = new FormData();
-        formData.append('file', this.state.uploadedFile);
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data',
-                "Authorization": AuthHelper.getToken()
-
-            }
-        };
-        axios.post('/uploadfile', formData, config
-        ).then((response) => {
-            this.state.update();
-
-        }).catch(function (error) {
-            //TODO Handle errors in a nice way
-            console.log(error);
-        })
+        FileHelper.uploadFile(this.state.uploadedFile, this.props.update);
     }
 
     handleFileSelection = (event: any) => {

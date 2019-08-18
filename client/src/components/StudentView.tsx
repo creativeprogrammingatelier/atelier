@@ -3,6 +3,7 @@ import axios from 'axios';
 import FileViewer from './FileViewer'
 import FileUploader from "./FileUploader";
 import AuthHelper from "../../helpers/AuthHelper";
+import FileHelper from "../../helpers/FileHelper";
 class StudentView extends React.Component {
     state: { files: any[] }
     constructor(props: any) {
@@ -10,23 +11,9 @@ class StudentView extends React.Component {
         this.state = {
             files: null
         }
-        this.getAllFiles();
-    }
+        this.getAllFiles()
 
-    getAllFiles = () => {
-        AuthHelper.fetch(`/getfiles`, {
-            method: "GET",
-        }).then((response) => {
-            response.json().then((json: any) => {
-                if (this.state.files != json) {
-                    this.setState({
-                        files: json
-                    })
-                }
-            });
-        }).catch(function (error) {
-            console.log(error)
-        })
+
     }
 
     handleInputChange = (event: { target: { value: any; name: any } }) => {
@@ -36,8 +23,11 @@ class StudentView extends React.Component {
         })
     };
 
-    newFileAdded = () => {
-        this.getAllFiles();
+
+    getAllFiles = () => {
+        FileHelper.getAllFiles((result: any) => this.setState({
+            files: result
+        }));
     }
 
 
@@ -45,8 +35,8 @@ class StudentView extends React.Component {
         return (
             < div >
                 <h1>Hello Student</h1>
-                <FileUploader  {...{ update: this.newFileAdded }} />
-                <FileViewer {...{ files: this.state.files }} />
+                <FileUploader  {...{ update: this.getAllFiles }} />
+                <FileViewer {...{ files: this.state.files, update: this.getAllFiles }} />
             </div>
         )
     }

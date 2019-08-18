@@ -4,24 +4,23 @@ import { ReactElement } from "react";
 import { ReactNodeArray } from "prop-types";
 import CodeViewer from "./CodeViewer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFileDownload, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faFileDownload, faEye, faTrash } from '@fortawesome/free-solid-svg-icons'
 import AuthHelper from "../../helpers/AuthHelper";
 import FileUploader from "./FileUploader";
+import FileHelper from "../../helpers/FileHelper";
 
-class FileViewer extends React.Component<{ files: any[] }> {
+class FileViewer extends React.Component<{ files: any[], update: Function }> {
     state: { viewedFile: any }
 
-    constructor(props: { files: any[] }) {
+    constructor(props: { files: any[], update: Function }) {
         super(props);
         this.state = {
             viewedFile: null,
         }
+
     }
 
-
-
     populateTable = () => {
-        //Refactor big time
         let rows = [];
 
         if (this.props.files && this.props.files[0] != undefined) {
@@ -30,8 +29,8 @@ class FileViewer extends React.Component<{ files: any[] }> {
                 rows.push(<tr>
                     <td>{file.name}</td>
                     <td><a key={`download-${file._id}`} href={`/downloadfile?fileId=${file._id}`}><FontAwesomeIcon icon={faFileDownload} /></a></td>
-                    <td><button key={`view-${file._id}`} onClick={() => this.getFile(file._id)}><FontAwesomeIcon icon={faEye} />
-                    </button></td>
+                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.getFile(file._id, (file: any) => this.setState({ viewedFile: file }))}><FontAwesomeIcon icon={faEye} /></button></td>
+                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.deleteFile(file._id, () => this.props.update())}><FontAwesomeIcon icon={faTrash} /></button></td>
                 </tr>);
             }
         }
@@ -47,28 +46,11 @@ class FileViewer extends React.Component<{ files: any[] }> {
                     </thead>
                     <tbody>
                         {(rows) ? rows : null}
-
-
                     </tbody>
                 </table>
             </div>
 
         )
-    }
-
-    getFile = (fileId: string) => {
-        AuthHelper.fetch(`/getfile?fileId=${fileId}`, {
-            method: "GET",
-        }).then((response) => {
-            response.json().then((json: any) => {
-                this.setState({
-                    viewedFile: json
-                })
-            });
-        }).catch(function (error) {
-            console.log(error)
-        })
-
     }
 
 

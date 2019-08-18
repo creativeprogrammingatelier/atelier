@@ -7,7 +7,6 @@ module.exports = {
         }, "_id name", (error, result) => {
             return result;
         })
-
     },
     getFile: function (fileId, next) {
         return Files.find({
@@ -15,7 +14,6 @@ module.exports = {
         }, "-_id", (error, result) => {
             return next(result);
         })
-
     },
 
     getFilePath: function (fileid) {
@@ -34,8 +32,18 @@ module.exports = {
             }
             return next(data);
         });
-
-
+    },
+    deleteFile: function (fileid) {
+        return Files.deleteOne({
+            _id: fileid
+        }, (error, data) => {
+            if (error) {
+                throw error;
+            }
+            console.log(data)
+            return data;
+        })
     }
+
 
 }
