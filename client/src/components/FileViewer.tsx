@@ -17,7 +17,6 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
         this.state = {
             viewedFile: null,
         }
-
     }
 
     populateTable = () => {
@@ -49,10 +48,8 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
                     </tbody>
                 </table>
             </div>
-
         )
     }
-
 
     render() {
         return (

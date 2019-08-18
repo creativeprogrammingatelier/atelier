@@ -30,7 +30,11 @@ const UserSchema = new mongoose.Schema({
         required: true
     }
 });
-/* Hashing password before storing*/
+
+/**
+ * Done before a user object is created
+ * Hashing the password and then calling callback
+ */
 UserSchema.pre('save', function (next) {
     if (this.isNew || this.isModified('password')) {
         const document = this;
@@ -58,8 +62,6 @@ UserSchema.methods.isCorrectPassword = function (password, callback) {
         }
     });
 }
-
-
 
 
 module.exports = mongoose.model('User', UserSchema);

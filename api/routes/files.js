@@ -1,3 +1,11 @@
+/**
+ * Routes for request relating to Files
+ * 
+ * @Author Andrew Heath
+ */
+
+
+
 var multer = require('multer');
 var express = require('express');
 var upload = multer({
@@ -9,9 +17,12 @@ const Filesmid = require('../middleware/filesmid')
 var router = express.Router();
 const path = require('path');
 
-
+/**
+ * Upload file end point, uses multer to read file
+ * @TODO refactor
+ */
 router.post('/uploadfile', Auth.withAuth, upload.single('file'),
-    function (request, result, next) {
+    (request, result, next) => {
         try {
             let file = request.file;
             Auth.getUser(request, (user) => {
@@ -37,20 +48,27 @@ router.post('/uploadfile', Auth.withAuth, upload.single('file'),
             console.log(`File Uploading error has occured: ${error}`), result.status(500).send('Error Uploading File');
         }
     })
-
+/**
+ * End point to fetch all files belonging to a user
+ * @TODO implement a selected number of files to fetch possible pagination 
+ */
 router.get('/getfiles', Auth.withAuth, (request, result) => {
     Auth.getUser(request, (user) => {
-        //TODO change to be a parameter from the request
         Filesmid.getFiles(user.id, 1).then(files => result.status(200).send(files)).catch(error => result.status(500).send(error));
 
     })
 });
-
+/**
+ * End point pint to delete a file with a given ID
+ */
 router.delete('/deletefile', Auth.withAuth, (request, result) => {
     Filesmid.deleteFile(request.query.fileId).then(() => result.status(200).send()).catch(error => result.status(500).send(error));
 })
 
-
+/**
+ * End point to read file from disk with given ID 
+ * @TODO Refactor, far too nested 
+ */
 router.get('/getfile', Auth.withAuth, (request, result) => {
     const fileId = request.query.fileId;
     Filesmid.getFile(fileId, (file) => {
@@ -78,7 +96,9 @@ router.get('/getfile', Auth.withAuth, (request, result) => {
     });
 
 });
-
+/**
+ * Download file given a ID
+ */
 router.get('/downloadfile', (request, result) => {
     //TODO check if user has permission to view file
     const fileId = request.query.fileId;

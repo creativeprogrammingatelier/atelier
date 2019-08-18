@@ -1,5 +1,7 @@
 import decode from "jwt-decode";
-
+/**
+ * Helper with function to do with Authentication and users
+ */
 export default class AuthHelper {
 
 
@@ -76,7 +78,9 @@ export default class AuthHelper {
         console.log("Recieved answer!");
         return answer;
     };
-
+    /**
+     * Helper method to do API calls, should / could be repalced with AXIOS
+     */
     static fetch = (url: RequestInfo, options: RequestInit) => {
         // performs api calls sending the required authentication headers
         const headers: any = {

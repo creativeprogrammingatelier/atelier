@@ -7,7 +7,7 @@
 
 This repo contains the front-end and back-end of the atelier app. 
 It does not contain the automated code checking please see atelier-PMD.
-
+The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 ## Prerequisites
 * Node.js ( & NPM)
 * MongoDB
@@ -33,12 +33,13 @@ Any development folders or settings that are not source code should not be in gi
 7. Navigate to the /client folder. and run:
 `npm run watch`
 8. Open [localhost:5000](localhost:5000)
+9. Make a call  (using postman) to /register passing email, password and role in the body
 
 ### Developing
-
 #### Optional Tools
 * **[React Chrome plugin](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en)**- Tool to help react debuggin
 * **[NoSQLBooster](https://nosqlbooster.com/)** - GUI tool for NoSQL Databases
+* **[Postman](https://www.getpostman.com/)** - A API testing tool
 
 
 ## Built with 
