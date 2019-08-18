@@ -1,5 +1,22 @@
-# atelier-core
-New repo for the the app, starting from it's migration to express.js
+
+<div >
+  <img src="./logo.png" width="150" >
+</div>
+
+# Aterlier Core
+
+## About
+
+
+
+## Set up
+
+
+
+
+
+
+
 
 
 ## Auth -- Update
