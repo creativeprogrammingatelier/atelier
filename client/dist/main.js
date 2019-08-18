@@ -19097,26 +19097,11 @@ const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthH
 class FileViewer extends React.Component {
     constructor(props) {
         super(props);
-        this.getAllFiles = () => {
-            AuthHelper_1.default.fetch(`/getfiles`, {
-                method: "GET",
-            }).then((response) => {
-                response.json().then((json) => {
-                    if (this.state.files != json) {
-                        this.setState({
-                            files: json
-                        });
-                    }
-                });
-            }).catch(function (error) {
-                console.log(error);
-            });
-        };
         this.populateTable = () => {
             //Refactor big time
             let rows = [];
-            if (this.state.files[0] != undefined) {
-                for (let file of this.state.files) {
+            if (this.props.files && this.props.files[0] != undefined) {
+                for (let file of this.props.files) {
                     rows.push(React.createElement("tr", null,
                         React.createElement("td", null, file.name),
                         React.createElement("td", null,
@@ -19150,10 +19135,8 @@ class FileViewer extends React.Component {
             });
         };
         this.state = {
-            files: this.props,
             viewedFile: null,
         };
-        this.getAllFiles();
     }
     render() {
         return (React.createElement("div", null,
@@ -19455,9 +19438,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
 const FileViewer_1 = __importDefault(__webpack_require__(/*! ./FileViewer */ "./src/components/FileViewer.tsx"));
 const FileUploader_1 = __importDefault(__webpack_require__(/*! ./FileUploader */ "./src/components/FileUploader.tsx"));
+const AuthHelper_1 = __importDefault(__webpack_require__(/*! ../../helpers/AuthHelper */ "./helpers/AuthHelper.ts"));
 class StudentView extends React.Component {
     constructor(props) {
         super(props);
+        this.getAllFiles = () => {
+            AuthHelper_1.default.fetch(`/getfiles`, {
+                method: "GET",
+            }).then((response) => {
+                response.json().then((json) => {
+                    if (this.state.files != json) {
+                        this.setState({
+                            files: json
+                        });
+                    }
+                });
+            }).catch(function (error) {
+                console.log(error);
+            });
+        };
         this.handleInputChange = (event) => {
             const { value, name } = event.target;
             this.setState({
@@ -19465,14 +19464,18 @@ class StudentView extends React.Component {
             });
         };
         this.newFileAdded = () => {
-            this.forceUpdate();
+            this.getAllFiles();
         };
+        this.state = {
+            files: null
+        };
+        this.getAllFiles();
     }
     render() {
         return (React.createElement("div", null,
             React.createElement("h1", null, "Hello Student"),
             React.createElement(FileUploader_1.default, Object.assign({}, { update: this.newFileAdded })),
-            React.createElement(FileViewer_1.default, null)));
+            React.createElement(FileViewer_1.default, Object.assign({}, { files: this.state.files }))));
     }
 }
 exports.default = StudentView;

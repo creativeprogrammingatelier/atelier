@@ -8,43 +8,25 @@ import { faFileDownload, faEye } from '@fortawesome/free-solid-svg-icons'
 import AuthHelper from "../../helpers/AuthHelper";
 import FileUploader from "./FileUploader";
 
-class FileViewer extends React.Component {
-    state: { files: any, viewedFile: any }
+class FileViewer extends React.Component<{ files: any[] }> {
+    state: { viewedFile: any }
 
     constructor(props: { files: any[] }) {
         super(props);
         this.state = {
-            files: this.props,
             viewedFile: null,
-
         }
-        this.getAllFiles();
     }
 
 
-    getAllFiles = () => {
-        AuthHelper.fetch(`/getfiles`, {
-            method: "GET",
-        }).then((response) => {
-            response.json().then((json: any) => {
-                if (this.state.files != json) {
-                    this.setState({
-                        files: json
-                    })
-                }
-            });
-        }).catch(function (error) {
-            console.log(error)
-        })
-    }
 
     populateTable = () => {
         //Refactor big time
         let rows = [];
 
-        if (this.state.files[0] != undefined) {
+        if (this.props.files && this.props.files[0] != undefined) {
 
-            for (let file of this.state.files) {
+            for (let file of this.props.files) {
                 rows.push(<tr>
                     <td>{file.name}</td>
                     <td><a key={`download-${file._id}`} href={`/downloadfile?fileId=${file._id}`}><FontAwesomeIcon icon={faFileDownload} /></a></td>
