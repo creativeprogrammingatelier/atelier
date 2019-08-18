@@ -26,7 +26,6 @@ node_modules
 
 # Users Environment Variables
 node_modules/
-
 uploads
 /client/dist/
 
