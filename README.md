@@ -2,8 +2,8 @@
 New repo for the the app, starting from it's migration to express.js
 
 
-##Auth -- Update
+## Auth -- Update
 We are using JWT tokens not session
 
-##Kill running process
+## Kill running process
 fuser -k [port]/tcp 
