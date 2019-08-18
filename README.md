@@ -26,6 +26,8 @@ The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 * /bin
 * /client/package-lock.json
 * /package-lock.json
+* /.vscode
+Any development folders or settings that are not source code should not be in git
 6. Navigate to the /api folder. and run:
 `npm run start`
 7. Navigate to the /client folder. and run:
