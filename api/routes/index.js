@@ -9,16 +9,13 @@
  */
 var express = require('express');
 var router = express.Router();
-
+const path = require('path');
 router.get('/', function (request, result, next) {
-  result.render('index', {
-    title: 'Express'
-  });
+  result.render('index');
 });
-
-
-
-
+router.get('*', function (request, result, next) {
+  result.sendFile(path.resolve(__dirname + '/../../client/index.html'));
+});
 
 
 module.exports = router;

@@ -13,31 +13,33 @@ class PrivateRoute extends Route<PrivateRouteProps> {
         this.state = {
             roleAuthorised: false
         }
+        this.checkRole()
     }
 
     componentDidUpdate(prevProps: PrivateRouteProps) {
-        if (this.props.role !== prevProps.role && this.props.role != undefined) {
-            this.checkRole()
+        if (this.props.role !== prevProps.role) {
+            this.checkRole();
         }
     }
 
-    checkRole() {
-        AuthHelper.checkRole(this.props.role).then((response: any) => {
-            if (response.status == 204) {
-                this.setState({
-                    roleAuthorised: true
-                });
-            } else {
+    checkRole = () => {
+        if (this.props.role != undefined) {
+            AuthHelper.checkRole(this.props.role).then((response: any) => {
+                if (response.status == 204) {
+                    this.setState({
+                        roleAuthorised: true
+                    });
+                } else {
+                    this.setState({
+                        roleAuthorised: false
+                    });
+                }
+            }).catch((res: any) => {
                 this.setState({
                     roleAuthorised: false
                 });
-            }
-        }).catch((res: any) => {
-            this.setState({
-                roleAuthorised: false
             });
-        });
-
+        }
     }
 
     render() {

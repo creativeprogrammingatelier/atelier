@@ -3,8 +3,6 @@
  * Author: Andrew Heath 
  * Date created: 13/08/19
  */
-
-
 var auth = require('../middleware/auth')
 var express = require('express');
 var router = express.Router();
