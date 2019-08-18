@@ -19,11 +19,25 @@ It does not contain the automated code checking please see atelier-PMD.
 2. Clone the Repo on your computer.
 3. Open the project in your editor of choice ( I recommend Visual studio code) 
 4. Run: `npm i`
-4. Navigate to the /api folder. and run:
+5. Create a [.gitignore](https://git-scm.com/docs/gitignore): containing: 
+* /uploads
+* /node_modules
+* /dist 
+* /bin
+* /client/package-lock.json
+* /package-lock.json
+6. Navigate to the /api folder. and run:
 `npm run start`
-5. Navigate to the /client folder. and run:
+7. Navigate to the /client folder. and run:
 `npm run watch`
-6. Open [localhost:5000](localhost:5000)
+8. Open [localhost:5000](localhost:5000)
+
+### Developing
+
+#### Optional Tools
+* **[React Chrome plugin](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en)**- Tool to help react debuggin
+* **[NoSQLBooster](https://nosqlbooster.com/)** - GUI tool for NoSQL Databases
+
 
 ## Built with 
 
