@@ -3,17 +3,30 @@
   <img src="./logo.png" width="150" >
 </div>
 
-# Aterlier Core
+# Atelier Core
 
-## About
-
-
-
-## Set up
+Atelier a 
 
 
 
+## Prerequisites
+* Node.js ( & NPM)
+* MongoDB
+* Visual Studio Code (Recommended editor)
 
+## Installing
+
+
+
+
+
+## Authors
+
+* Andrew Heath
+
+* Margot Rutgers
+
+* Carmen Burghardt
 
 
 
