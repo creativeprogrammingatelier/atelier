@@ -11,16 +11,18 @@ const User = require('../models/user')
 const secret = 'SECRET';
 
 /**
- * Logout 
+ * Logout endpoint, JWT can't be destoryed, there are not dession to be closed  
+ * @deprecated
  */
-router.get('/logout', function (req, res) {
-  req.logOut();
-  req.session.destroy(function (err) {
-    res.redirect('/'); //Inside a callback… bulletproof!
-  });
-});
+// router.get('/logout', function (req, res) {
+//   req.logOut();
+// });
 
 /* Authentication */
+/**
+ * Login end point 
+ * @TODO refactor method should be pulled out into helper metheods
+ */
 router.post('/login', (request, result) => {
   const {
     email,
@@ -66,12 +68,16 @@ router.post('/login', (request, result) => {
   });
 });
 
-/* Check if token is valid  */
+/**
+ * Checks if request JWT token passed is valid using withAuth middleware method 
+ * */
 router.get('/checkToken', auth.withAuth, function (req, res) {
   res.sendStatus(200);
 });
 
-/* Register a user */
+/**
+ * User registration tool 
+ */
 router.post('/register', (request, result) => {
   const {
     email,
@@ -93,6 +99,11 @@ router.post('/register', (request, result) => {
   });
 });
 
+
+/**
+ * Checks if role of user, (using token) is valid compared to that passed in the body
+ * @TODO refactor move functions into middleware
+ */
 router.post('/checkRole', auth.withAuth, function (request, result) {
   const {
     role

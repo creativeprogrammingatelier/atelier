@@ -3,7 +3,6 @@
  * Author: Andrew Heath
  * Date created: 15/08/19
  */
-
 /**
  * Dependecies 
  */
@@ -27,9 +26,6 @@ const FileSchema = new mongoose.Schema({
     }
 
 });
-
-
-
 
 
 module.exports = mongoose.model('File', FileSchema);

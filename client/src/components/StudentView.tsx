@@ -23,9 +23,16 @@ class StudentView extends React.Component {
 
 
     getAllFiles = () => {
-        FileHelper.getAllFiles((result: any) => this.setState({
-            files: result
-        }));
+        FileHelper.getAllFiles((result: any) => {
+            if (result != null) {
+                this.setState({
+                    files: result
+                })
+            }
+
+        }
+
+        );
     }
 
 
