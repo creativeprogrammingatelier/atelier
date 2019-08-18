@@ -12,8 +12,6 @@ class StudentView extends React.Component {
             files: null
         }
         this.getAllFiles()
-
-
     }
 
     handleInputChange = (event: { target: { value: any; name: any } }) => {
@@ -34,9 +32,18 @@ class StudentView extends React.Component {
     render() {
         return (
             < div >
-                <h1>Hello Student</h1>
-                <FileUploader  {...{ update: this.getAllFiles }} />
-                <FileViewer {...{ files: this.state.files, update: this.getAllFiles }} />
+                <div className="row " >
+                    <div className="col-sm-6">
+                        <br />
+                        <FileUploader  {...{ update: this.getAllFiles }} />
+                    </div>
+                    <div className="col-sm-12 ">
+                        <br />
+                    </div>
+                    <div className="col-sm-12">
+                        <FileViewer {...{ files: this.state.files, update: this.getAllFiles }} />
+                    </div>
+                </div>
             </div>
         )
     }

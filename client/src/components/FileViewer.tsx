@@ -58,7 +58,6 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
         return (
             <div>
                 <div>
-                    <h1>File Viewer</h1>
                     {this.populateTable()}
                 </div>
                 <div>
