@@ -69,4 +69,4 @@ Tokens are stored in local storage.
 ### Helpful commands
 
 Kill running process
-fuser -k [port]/tcp 
+`fuser -k [port]/tcp` 
