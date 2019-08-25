@@ -18,20 +18,22 @@ The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 1. Install all the Prerequisites.
 2. Clone the Repo on your computer.
 3. Open the project in your editor of choice ( I recommend Visual studio code) 
-4. Run: `npm i`
-5. Create a [.gitignore](https://git-scm.com/docs/gitignore): containing: 
-* /uploads
-* /node_modules
-* /dist 
-* /bin
-* /client/package-lock.json
-* /package-lock.json
+4. Run: `npm i` in both the 'api' and 'client' folders
+5. Create a [.gitignore](https://git-scm.com/docs/gitignore): containing non-source code folders created by the previous step 
+* client/node_modules
+* client/dist
+* client/package-lock.json
+* api/node_modules
+* api/bin
+* api/uploads
+* api/package-lock.json
 * /.vscode
 Any development folders or settings that are not source code should not be in git
 6. Navigate to the /api folder. and run:
 `npm run start`
 7. Navigate to the /client folder. and run:
 `npm run watch`
+- If during any of these steps it starts complaining 'module X is missing', `npm install X`
 8. Open [localhost:5000](localhost:5000)
 9. Make a call  (using postman) to /register passing email, password and role in the body
 - Install [Postman](https://www.getpostman.com/)
