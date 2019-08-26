@@ -3,7 +3,7 @@ import { Route, Switch, Link } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPalette } from "@fortawesome/free-solid-svg-icons";
-import "../styles/nav.css"
+import "../styles/nav.scss"
 class Nav extends React.Component {
 
     render() {

@@ -7,7 +7,7 @@ import TAView from "./TAView";
 import StudentView from "./StudentView";
 import Nav from "./Nav";
 import Logout from "./Logout";
-import "../styles/app.css"
+import "../styles/app.scss"
 class App extends React.Component {
 
     render() {
