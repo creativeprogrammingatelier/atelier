@@ -32,7 +32,7 @@ router.post('/login', (request, result) => {
     email
   }, (error, user) => {
     if (error) {
-      console.log(error);
+      // console.log(error);
       result.status(500).json({
         error: 'Internal Error please try again'
       });
@@ -43,7 +43,7 @@ router.post('/login', (request, result) => {
     } else {
       user.isCorrectPassword(password, (error, same) => {
         if (error) {
-          console.log(error)
+          // console.log(error)
           result.status(500).json({
             error: 'Internal error please try again'
           });
@@ -91,10 +91,19 @@ router.post('/register', (request, result) => {
   });
   user.save((error) => {
     if (error) {
-      console.log(`User registration error has occured: ${error}`)
       result.status(500).send('Error registering User');
     } else {
       result.status(200).send("User reigstered");
+      const payload = {
+        email
+      };
+      const token = jwt.sign(payload, secret, {
+        expiresIn: '1h'
+      });
+      result.status(200).send({
+        token: token
+      });
+
     }
   });
 });
