@@ -79,6 +79,7 @@ router.get('/checkToken', auth.withAuth, function (req, res) {
  * User registration tool 
  */
 router.post('/register', (request, result) => {
+  console.log('Registering')
   const {
     email,
     password,
@@ -95,6 +96,17 @@ router.post('/register', (request, result) => {
       result.status(500).send('Error registering User');
     } else {
       result.status(200).send("User reigstered");
+
+      const payload = {
+        email
+      };
+      const token = jwt.sign(payload, secret, {
+        expiresIn: '1h'
+      });
+      result.status(200).send({
+        token: token
+      });
+
     }
   });
 });
