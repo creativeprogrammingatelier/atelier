@@ -20,6 +20,23 @@ export default class AuthHelper {
         //THIS LINE IS ONLY USED WHEN YOU'RE IN PRODUCTION MODE!
         this.domain = domain || "http://localhost:3000"; // API server domain
     }
+
+    static register(email: string, password: string, role: string, next: Function) {
+        this.fetch('/register', {
+            method: "POST",
+            body: JSON.stringify({
+                email,
+                password,
+                role,
+            })
+        }).then((res: any) => {
+            res.json().then((json: any) => {
+                this.setToken(json.token); // Setting the token in localStorage
+                next();
+            });
+        })
+    };
+
     static login(email: string, password: string, next: Function) {
         // Get a token from api server using the fetch api
         this.fetch(`/login`, {
