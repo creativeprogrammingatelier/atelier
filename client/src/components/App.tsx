@@ -8,7 +8,9 @@ import StudentView from "./StudentView";
 import Nav from "./Nav";
 import Logout from "./Logout";
 import Register from "./Register"
-import "../styles/app.css"
+import "../styles/app.scss"
+
+
 class App extends React.Component {
 
     render() {

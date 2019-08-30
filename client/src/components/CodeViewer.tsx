@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import '../styles/prism.css';
+import '../styles/prism.scss';
 class CodeViewer extends React.Component {
     //TODO make a object defintion for file
     state: { file: any }
