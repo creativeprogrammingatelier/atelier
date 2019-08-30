@@ -48,6 +48,11 @@ class Register extends Component {
 
 
     render() {
+        if (this.state.redirectToReferrer) {
+            return (
+                <Redirect to="/" />
+            )
+        }
         return (
             <form onSubmit={this.onSubmit}>
                 <h3>Sign up</h3>

@@ -93,7 +93,6 @@ router.post('/register', (request, result) => {
     if (error) {
       result.status(500).send('Error registering User');
     } else {
-      result.status(200).send("User reigstered");
       const payload = {
         email
       };
