@@ -68,7 +68,7 @@ class Register extends Component {
                     required
                 />
                 <input
-                    type="passwordConfirmation"
+                    type="password"
                     name="passwordConfirmation"
                     placeholder="Confirm password"
                     value={this.state.passwordConfirmation}
