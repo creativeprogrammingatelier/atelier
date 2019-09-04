@@ -38,6 +38,7 @@ module.exports = {
     },
     isTa: function (request, result, next) {
         console.log("IS TA IN NOT IMPLEMENTED DANGER")
+        return;
     },
     /**
      * Get the user object corresponding to the request
@@ -65,5 +66,44 @@ module.exports = {
                 });
             }
         });
+    },
+
+    getAllStudents: (successCallback, failureCallback) => {
+        User.find({
+            role: "student"
+        }, (error, result) => {
+            if (!error) {
+                successCallback(result);
+            } else {
+                failureCallback(error);
+            }
+        })
+    },
+    checkRole: (successCallback, failureCallback) => {
+        jwt.verify(token, secret, function (err, decoded) {
+            if (err) {
+                failureCallback('Unauthorized: Invalid token')
+                result.status(401).send();
+            } else {
+                let email = decoded.email;
+                User.findOne(({
+                    email
+                }, (error, user) => {
+                    if (error) {
+                        failureCallback('Internal Error please try again');
+
+                    } else if (!user) {
+                        failureCallback('Incorrect email or password');
+
+                    } else {
+                        if (user.role.toLowerCase() == role.toLowerCase()) {
+                            successCallback();
+                        } else {
+                            failureCallback('Unauthorized: Incorrect role');
+                        }
+                    }
+                }))
+            }
+        })
     }
 }
