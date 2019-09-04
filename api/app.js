@@ -15,7 +15,9 @@ const mongoose = require('mongoose');
 
 var usersRouter = require('./routes/users');
 var filesRouter = require('./routes/files');
+var commentRouter = require('./routes/comments');
 var indexRouter = require('./routes/index');
+
 
 var app = express();
 app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -36,6 +38,7 @@ app.use(express.static(path.join(__dirname, '../client/')));
  */
 app.use('/', usersRouter);
 app.use('/', filesRouter);
+app.use('/', commentRouter);
 app.use('/', indexRouter);
 
 

@@ -36,6 +36,9 @@ module.exports = {
             });
         }
     },
+    isTa: function (request, result, next) {
+        console.log("IS TA IN NOT IMPLEMENTED DANGER")
+    },
     /**
      * Get the user object corresponding to the request
      * @param {*} request 
