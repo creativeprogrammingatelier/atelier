@@ -26,7 +26,7 @@ module.exports = {
     getFile: function (fileId, next) {
         return Files.find({
             _id: fileId
-        }, "-_id", (error, result) => {
+        }, "_id name body owner path", (error, result) => {
             return next(result);
         })
     },

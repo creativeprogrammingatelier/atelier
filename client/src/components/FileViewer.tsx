@@ -8,6 +8,7 @@ import { faFileDownload, faEye, faTrash } from '@fortawesome/free-solid-svg-icon
 import AuthHelper from "../../helpers/AuthHelper";
 import FileUploader from "./FileUploader";
 import FileHelper from "../../helpers/FileHelper";
+import CommentsViewer from "./CommentViewer";
 
 class FileViewer extends React.Component<{ files: any[], update: Function }> {
     state: { viewedFile: any }
@@ -41,6 +42,7 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
                             <th scope="col">File Name</th>
                             <th scope="col">Download</th>
                             <th scope="col" >View</th>
+                            <th scope="col" >Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,7 +60,15 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
                     {this.populateTable()}
                 </div>
                 <div>
-                    {(this.state.viewedFile != null) ? <CodeViewer {...{ file: this.state.viewedFile }} /> : null}
+                    <div className="row">
+                        <div className="col-sm-8">
+                            {(this.state.viewedFile != null) ? <CodeViewer {...{ file: this.state.viewedFile }} /> : null}
+                        </div>
+                        <div className="col-sm-4">
+                            {(this.state.viewedFile != null) ? <CommentsViewer {...{ file: this.state.viewedFile }} /> : null}
+                        </div>
+
+                    </div>
                 </div>
             </div>
 

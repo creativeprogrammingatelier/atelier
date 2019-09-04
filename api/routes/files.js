@@ -71,6 +71,7 @@ router.delete('/deletefile', Auth.withAuth, (request, result) => {
  */
 router.get('/getfile', Auth.withAuth, (request, result) => {
     const fileId = request.query.fileId;
+
     Filesmid.getFile(fileId, (file) => {
         Auth.getUser(request, (user, request) => {
             file = file[0];
@@ -80,7 +81,8 @@ router.get('/getfile', Auth.withAuth, (request, result) => {
                     Filesmid.readFile(pathToFile, (fileData) => {
                         let returnFile = {
                             name: file.name,
-                            body: fileData
+                            body: fileData,
+                            id: file._id
                         };
                         result.status(200).json(returnFile);
                     });
