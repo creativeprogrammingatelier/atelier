@@ -13,7 +13,7 @@ const path = require('path');
 var Auth = require('../middleware/auth');
 var Commentmid = require('../middleware/commentmid');
 // TODO check user has permission make comment
-router.put('/makeComment', (request, result) => {
+router.put('/makeComment', Auth.withAuth, Auth.isTa, (request, result) => {
     const {
         fileId,
         userId,

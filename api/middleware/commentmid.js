@@ -24,11 +24,12 @@ module.exports = {
 
     getComments: function (fileId, successCallback, failureCallback) {
         Comment.find({
-            about: fileId
-        }, "-_id", (error, result) => {
+                about: fileId
+            }, "-_id")
+            .populate('author', "-_id").
+        exec((error, result) => {
             if (!error) {
                 successCallback(result);
-                result
             } else {
                 failureCallback(error);
             }

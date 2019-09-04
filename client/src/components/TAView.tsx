@@ -9,7 +9,9 @@ class TAView extends React.Component {
     render() {
         return (
             < div >
-                <h3>Hello Teaching Assistant</h3>
+
+
+
             </div>
         )
     }

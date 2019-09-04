@@ -7,7 +7,7 @@ import AuthHelper from "../../helpers/AuthHelper";
 import StudentView from "./StudentView";
 import TAView from "./TAView";
 import { throws } from "assert";
-type CommentType = { about: String, author: String, body: String };
+type CommentType = { about: String, author: { email: String, role: String }, body: String };
 class CommentView extends React.Component<CommentType> {
 
     constructor(props: CommentType) {
@@ -17,7 +17,7 @@ class CommentView extends React.Component<CommentType> {
         return (
             <div>
                 <p >{this.props.body}</p>
-                <p>Written by: {this.props.author}</p>
+                <p>Written by: {this.props.author.email}</p>
             </div >
 
         )
