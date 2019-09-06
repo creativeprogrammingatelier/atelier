@@ -1,10 +1,21 @@
-import decode from "jwt-decode";
 import AuthHelper from "./AuthHelper";
 import axios from "axios";
 /**
  * Helpers for request for files
  */
 export default class FileHelper {
+
+    static getStudentsFiles = (id:String, success: Function, failure: Function) =>{
+        AuthHelper.fetch(`/getStudentFiles?studentId=${id}`, {
+            method: "GET",
+        }).then((response) => {
+            response.json().then((json: any) => {
+                success(json);
+            });
+        }).catch(function (error) {
+            failure(error)
+        })
+    }
 
     static getAllFiles = (next: Function) => {
         AuthHelper.fetch(`/getfiles`, {

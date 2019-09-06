@@ -43,7 +43,7 @@ router.post('/uploadfile', Auth.withAuth, upload.single('file'),
                         result.status(200).send("File Uploaded");
                     }
                 });
-            })
+            },(error) => result.status(500).send(error))
         } catch (error) {
             console.log(`File Uploading error has occured: ${error}`), result.status(500).send('Error Uploading File');
         }
@@ -53,11 +53,17 @@ router.post('/uploadfile', Auth.withAuth, upload.single('file'),
  * @TODO implement a selected number of files to fetch possible pagination 
  */
 router.get('/getfiles', Auth.withAuth, (request, result) => {
-    Auth.getUser(request, (user) => {
-        Filesmid.getFiles(user.id, 1).then(files => result.status(200).send(files)).catch(error => result.status(500).send(error));
-
-    })
+        Auth.getUser(request, (user) => {
+            Filesmid.getFiles(user.id, (files) => result.status(200).send(files), error => result.status(500).send(error));
+        }, error => result.status(500).send(error))
 });
+
+router.get('/getStudentFiles', Auth.withAuth, Auth.isTa, (request, result)=>{
+    const studentId = request.query.studentId;
+    Filesmid.getFiles(studentId, (files) => result.status(200).send(files), error => result.status(500).send(error));
+});
+
+
 /**
  * End point pint to delete a file with a given ID
  */
@@ -75,7 +81,7 @@ router.get('/getfile', Auth.withAuth, (request, result) => {
     Filesmid.getFile(fileId, (file) => {
         Auth.getUser(request, (user, request) => {
             file = file[0];
-            if (user.id == file.owner) {
+            if (user.id == file.owner || user.role == "ta") {
                 let pathToFile = path.join(`${__dirname}../../${file.path}`);
                 try {
                     Filesmid.readFile(pathToFile, (fileData) => {
@@ -92,7 +98,7 @@ router.get('/getfile', Auth.withAuth, (request, result) => {
             } else {
                 result.status(401).send("You are not the file owner");
             }
-        })
+        },error => result.status(500).send(error))
     }).catch((error) => {
         result.status(500).send("Error");
     });
@@ -108,7 +114,5 @@ router.get('/downloadfile', (request, result) => {
         const filepath = `${__dirname}../../${file[0].path}`;
         result.download(filepath, file[0].name);
     }).catch(error => result.status(500).send(error))
-
-
 });
 module.exports = router;

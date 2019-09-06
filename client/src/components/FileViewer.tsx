@@ -10,7 +10,7 @@ import FileUploader from "./FileUploader";
 import FileHelper from "../../helpers/FileHelper";
 import CommentsViewer from "./CommentViewer";
 
-class FileViewer extends React.Component<{ files: any[], update: Function }> {
+class FileViewer extends React.Component<{ files: any[], update?: Function }> {
     state: { viewedFile: any }
 
     constructor(props: { files: any[], update: Function }) {

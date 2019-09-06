@@ -38,31 +38,31 @@ module.exports = {
     },
     isTa: function (request, result, next) {
         console.log("IS TA IN NOT IMPLEMENTED DANGER")
-        return;
+        next();
     },
     /**
      * Get the user object corresponding to the request
      * @param {*} request 
      * @param {*} next callback
      */
-    getUser: function (request, next) {
+    getUser: function (request, success, failure) {
         const token =
             request.headers.authorization;
         jwt.verify(token, secret, function (error, decoded) {
             if (error) {
-                return error;
+                failure(error);
             } else {
                 let email = decoded.email;
                 User.findOne({
                     email
                 }, (error, user) => {
                     if (user) {
-                        next(user, request)
+                        success(user, request)
                     } else {
-                        throw new Error(error);
+                        failure(error);
                     }
                 }).catch((error) => {
-                    throw new Error(error);
+                    failure(error);
                 });
             }
         });
