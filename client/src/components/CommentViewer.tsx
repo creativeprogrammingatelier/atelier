@@ -3,6 +3,8 @@ import Axios from "axios";
 import AuthHelper from "../../helpers/AuthHelper";
 import CommentHelper from "../../helpers/CommentHelper";
 import CommentView from "./CommentView";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
     state: { file: any, comments?: any[] }
@@ -42,9 +44,13 @@ class CommentsViewer extends React.Component<{ file: any }>  {
 
     render() {
         return (
-            <ul className="list-group">
-                {this.populate()}
-            </ul>
+            <div className="CommentViewer">
+                <FontAwesomeIcon icon={faPlus}/>
+                <ul className="list-group">
+                    {this.populate()}
+                </ul>
+            </div>
+
         );
     }
 }

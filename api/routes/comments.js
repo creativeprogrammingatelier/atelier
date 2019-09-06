@@ -13,6 +13,7 @@ const path = require('path');
 var Auth = require('../middleware/auth');
 var Commentmid = require('../middleware/commentmid');
 // TODO check user has permission make comment
+// TODO get comment author id from the token not from the parameter
 router.put('/makeComment', Auth.withAuth, Auth.isTa, (request, result) => {
     const {
         fileId,
