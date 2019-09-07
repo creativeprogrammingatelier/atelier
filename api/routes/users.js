@@ -14,7 +14,8 @@ var UsersMid = require('../middleware/usersmid');
 var Auth = require('../middleware/auth');
 
 router.get('/students', Auth.withAuth, Auth.isTa, (request, result) => {
-        UsersMid.getAllStudents((data) => result.status(200).send(data), (error) =>result.status(500).send(error));
+                UsersMid.getAllStudents((data) => result.status(200).send(data), (error) =>result.status(500).send(error));
+        
 });
 
 module.exports = router;

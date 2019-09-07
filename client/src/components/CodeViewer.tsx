@@ -23,8 +23,8 @@ class CodeViewer extends React.Component {
     }
     render() {
         return (
-            <div>
-                <pre><code className="language-css" dangerouslySetInnerHTML={{ __html: this.beautifyCode() }}></code></pre>
+            <div className="line-numbers">
+                <pre className="line-numbers"><code className="language-css" dangerouslySetInnerHTML={{ __html: this.beautifyCode() }}></code></pre>
             </div>
         );
     }

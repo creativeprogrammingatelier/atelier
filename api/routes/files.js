@@ -13,7 +13,8 @@ var upload = multer({
 })
 const File = require('../models/file')
 const Auth = require('../middleware/auth')
-const Filesmid = require('../middleware/filesmid')
+const Filesmid = require('../middleware/filesmid');
+const UsersMid = require('../middleware/usersmid');
 var router = express.Router();
 const path = require('path');
 
@@ -25,7 +26,7 @@ router.post('/uploadfile', Auth.withAuth, upload.single('file'),
     (request, result, next) => {
         try {
             let file = request.file;
-            Auth.getUser(request, (user) => {
+            UsersMid.getUser(request, (user) => {
                 const {
                     originalname,
                     path,
@@ -53,7 +54,7 @@ router.post('/uploadfile', Auth.withAuth, upload.single('file'),
  * @TODO implement a selected number of files to fetch possible pagination 
  */
 router.get('/getfiles', Auth.withAuth, (request, result) => {
-        Auth.getUser(request, (user) => {
+    UsersMid.getUser(request, (user) => {
             Filesmid.getFiles(user.id, (files) => result.status(200).send(files), error => result.status(500).send(error));
         }, error => result.status(500).send(error))
 });
@@ -66,6 +67,7 @@ router.get('/getStudentFiles', Auth.withAuth, Auth.isTa, (request, result)=>{
 
 /**
  * End point pint to delete a file with a given ID
+ * @TODO check user has permissions required to delete files
  */
 router.delete('/deletefile', Auth.withAuth, (request, result) => {
     Filesmid.deleteFile(request.query.fileId).then(() => result.status(200).send()).catch(error => result.status(500).send(error));
@@ -79,7 +81,7 @@ router.get('/getfile', Auth.withAuth, (request, result) => {
     const fileId = request.query.fileId;
 
     Filesmid.getFile(fileId, (file) => {
-        Auth.getUser(request, (user, request) => {
+        UsersMid.getUser(request, (user, request) => {
             file = file[0];
             if (user.id == file.owner || user.role == "ta") {
                 let pathToFile = path.join(`${__dirname}../../${file.path}`);
@@ -106,9 +108,9 @@ router.get('/getfile', Auth.withAuth, (request, result) => {
 });
 /**
  * Download file given a ID
+ * @TODO check if user has permission to view file
  */
 router.get('/downloadfile', (request, result) => {
-    //TODO check if user has permission to view file
     const fileId = request.query.fileId;
     Filesmid.getFilePath(fileId).then(file => {
         const filepath = `${__dirname}../../${file[0].path}`;

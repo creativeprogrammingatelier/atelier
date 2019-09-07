@@ -8,7 +8,7 @@ import { faFileDownload, faEye, faTrash } from '@fortawesome/free-solid-svg-icon
 import AuthHelper from "../../helpers/AuthHelper";
 import FileUploader from "./FileUploader";
 import FileHelper from "../../helpers/FileHelper";
-import CommentsViewer from "./CommentViewer";
+import CommentsViewer from "./CommentsViewer";
 
 class FileViewer extends React.Component<{ files: any[], update?: Function }> {
     state: { viewedFile: any }

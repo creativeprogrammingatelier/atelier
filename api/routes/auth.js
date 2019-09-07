@@ -114,13 +114,7 @@ router.post('/checkRole', auth.withAuth, function (request, result) {
   const {
     role
   } = request.body;
-  const token =
-    request.headers.authorization;
-  if (!token) {
-    result.status(401).send('Unauthorized: No token provided');
-  } else {
-    auth.checkRole(result.status(204).send(), (error) => result.status(401).send(error))
-  }
+  auth.checkRole(request, role, () => result.status(204).send(), (error) => result.status(401).send(error))
 });
 
 module.exports = router;

@@ -17,13 +17,18 @@ const CommentSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'file'
     },
+    line:{
+        type: Number
+    },
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    created: { 
+        type: Date, 
+        default: Date.now 
+    },
     body: String
-
-
 });
 
 

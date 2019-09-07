@@ -6,11 +6,12 @@ const fs = require('fs');
  */
 module.exports = {
 
-    makeComment: function (fileId, userId, body, successCallback, errorCallback) {
+    makeComment: function (fileId, userId, line, body, successCallback, errorCallback) {
         const newComment = new Comment({
             about: fileId,
             author: userId,
-            body: body
+            body: body,
+            line: line
         })
         newComment.save((error => {
             if (!error) {
@@ -25,8 +26,8 @@ module.exports = {
     getComments: function (fileId, successCallback, failureCallback) {
         Comment.find({
                 about: fileId
-            }, "-_id")
-            .populate('author', "-_id").
+            })
+            .populate('author', "-_id -password").
         exec((error, result) => {
             if (!error) {
                 successCallback(result);
@@ -35,8 +36,16 @@ module.exports = {
             }
         })
     },
-    canViewComment: (request, result, next) => {
-        console.log("canViewComment NO YET IMPLEMENTED ")
+    deleteComment: function (commentId, successCallback, failureCallback){
+        Comment.deleteOne({
+            _id: commentId
+        },(error, result) => {
+            if (!error) {
+                successCallback(result);
+            } else {
+                failureCallback(error);
+            }
+        }
+        )
     }
-
 }

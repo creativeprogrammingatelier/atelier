@@ -5,15 +5,15 @@ import axios from "axios";
  */
 export default class FileHelper {
 
-    static getStudentsFiles = (id:String, success: Function, failure: Function) =>{
+    static getStudentsFiles = (id:String, onSuccess: Function, onFailure: Function) =>{
         AuthHelper.fetch(`/getStudentFiles?studentId=${id}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
-                success(json);
+                onSuccess(json);
             });
         }).catch(function (error) {
-            failure(error)
+            onFailure(error)
         })
     }
 

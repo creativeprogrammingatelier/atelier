@@ -6,7 +6,8 @@
  */
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/user')
+const User = require('../models/user');
+const Usermid = require('../middleware/usersmid');
 /**
  * CHANGE THIS BEFORE DEPLOYEMENT ! 
  */
@@ -37,73 +38,36 @@ module.exports = {
         }
     },
     isTa: function (request, result, next) {
-        console.log("IS TA IN NOT IMPLEMENTED DANGER")
-        next();
-    },
-    /**
-     * Get the user object corresponding to the request
-     * @param {*} request 
-     * @param {*} next callback
-     */
-    getUser: function (request, success, failure) {
-        const token =
-            request.headers.authorization;
-        jwt.verify(token, secret, function (error, decoded) {
-            if (error) {
-                failure(error);
+        Usermid.getUser(request, (user) => {
+            if (user.role.toLowerCase() == "ta") {
+               next();
             } else {
-                let email = decoded.email;
-                User.findOne({
-                    email
-                }, (error, user) => {
-                    if (user) {
-                        success(user, request)
-                    } else {
-                        failure(error);
-                    }
-                }).catch((error) => {
-                    failure(error);
-                });
+                result.status(401).send();
             }
-        });
+        },() => result.status(401).send())
     },
 
-    getAllStudents: (successCallback, failureCallback) => {
+
+    getAllStudents: (onSuccess, onFailure) => {
         User.find({
             role: "student"
         }, (error, result) => {
             if (!error) {
-                successCallback(result);
+                onSuccess(result);
             } else {
-                failureCallback(error);
+                onFailure(error);
             }
         })
     },
-    checkRole: (successCallback, failureCallback) => {
-        jwt.verify(token, secret, function (err, decoded) {
-            if (err) {
-                failureCallback('Unauthorized: Invalid token')
-                result.status(401).send();
+    checkRole: (request, role, onSuccess, onFailure) => {
+        Usermid.getUser(request, (user) => {
+            if (user.role.toLowerCase() == role.toLowerCase()) {
+                onSuccess();
             } else {
-                let email = decoded.email;
-                User.findOne(({
-                    email
-                }, (error, user) => {
-                    if (error) {
-                        failureCallback('Internal Error please try again');
-
-                    } else if (!user) {
-                        failureCallback('Incorrect email or password');
-
-                    } else {
-                        if (user.role.toLowerCase() == role.toLowerCase()) {
-                            successCallback();
-                        } else {
-                            failureCallback('Unauthorized: Incorrect role');
-                        }
-                    }
-                }))
+                onFailure('Unauthorized: Incorrect role');
             }
-        })
+        }, onFailure )
     }
+       
+        
 }

@@ -11,15 +11,15 @@ module.exports = {
      * @param {*} numberOfFiles # of files to be returned 
      * @TODO implement numberOfFiles
      */
-    getFiles: function (userid, success, failure){
+    getFiles: function (userid, onSuccess, onFailure){
             Files.find({
                 owner: userid
             }, "_id name", (error, result) => {
                 if(!error){
-                    success(result);
+                    onSuccess(result);
                 }
                 else{
-                    failure(error)
+                    onFailure(error)
                 }
             })
     },

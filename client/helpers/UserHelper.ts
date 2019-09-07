@@ -6,15 +6,15 @@ import axios from "axios";
  */
 export default class UserHelper {
 
-    static getStudents = (success: Function, failure: Function) => {
+    static getStudents = (onSuccess: Function, onFailure: Function) => {
         AuthHelper.fetch(`/students`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
-                success(json)
+                onSuccess(json)
             });
         }).catch(function (error) {
-            failure(error)
+            onFailure(error)
         })
     }
 }

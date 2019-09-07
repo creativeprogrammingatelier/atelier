@@ -6,15 +6,37 @@ import axios from "axios";
  */
 export default class CommentHelper {
 
-    static getComments = (fileId: number, success: Function, failure: Function) => {
+    static getComments = (fileId: number, onSuccess: Function, onFailure: Function) => {
         AuthHelper.fetch(`/getComments?fileId=${fileId}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
-                success(json)
+                onSuccess(json)
             });
         }).catch(function (error) {
-            failure(error)
+            onFailure(error)
         })
     }
+
+    static putComment = (body: any, onSuccess: Function, onFailure: Function) => {
+        AuthHelper.fetch(`/makeComment`, {
+            method: "PUT",
+            body
+        }).then(() => {
+            onSuccess()
+        }).catch(function (error) {
+            onFailure(error)
+        })
+    }
+
+    static deleteComment = (commentId: String, onSuccess: Function, onFailure: Function) => {
+        AuthHelper.fetch(`/comment/${commentId}`, {
+            method: "delete"
+        }).then(() => {
+            onSuccess()
+        }).catch(function (error) {
+            onFailure(error)
+        })
+
+    };
 }
