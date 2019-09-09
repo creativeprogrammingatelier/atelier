@@ -66,3 +66,5 @@ Tokens are stored in local storage.
 
 Kill running process
 `fuser -k [port]/tcp` 
+Start mongo
+`sudo service start mongodb`
