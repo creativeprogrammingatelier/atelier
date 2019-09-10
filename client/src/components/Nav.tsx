@@ -13,6 +13,15 @@ class Nav extends React.Component {
 
     render() {
 
+        let correctView;
+        if (this.props.role == 'student') {
+            correctView = (<li className="nav-item"><Link className="nav-link" to="/student">Student</Link></li>);
+        } else if (this.props.role == 'ta') {
+            correctView = (<li className="nav-item"><Link className="nav-link" to="/ta">Teaching Assisant</Link></li>)
+        } else {
+            correctView = '';
+        }
+
         return (
             < div >
                 <div className="mx-auto" style={{ width: "200px" }}>
@@ -23,8 +32,7 @@ class Nav extends React.Component {
                     {this.props.loggedIn ?
                         <React.Fragment>
                             <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-                            <li className="nav-item"><Link className="nav-link" to="/student">Student</Link></li>
-                            <li className="nav-item"><Link className="nav-link" to="/ta">Teaching Assisant</Link></li>
+                            {correctView}
                             <li className="nav-item"><Link className="nav-link" to="/logout" onClick={this.props.onLogout}>Logout</Link></li>
                         </React.Fragment> :
                         <React.Fragment>
@@ -32,7 +40,6 @@ class Nav extends React.Component {
                             <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
                         </React.Fragment>
                     }
-
                 </ul>
             </div>
         )
