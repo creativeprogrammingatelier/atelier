@@ -46,15 +46,14 @@ class App extends React.Component {
         return (
             <div className="wrapper">
                 <div className="container">
-                    <div>{this.state.loggedIn}</div>
-                    <Nav />
+                    <Nav loggedIn={this.state.loggedIn} role={this.state.role} onLogout={this.handleLogout}/>
                     < Switch >
+                        <Route path='/register' component={Register} />
+                        <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
                         <PrivateRoute exact path='/' component={Home} />
                         <PrivateRoute exact path='/ta' component={TAView} role="ta" />
                         <PrivateRoute exact path='/student' component={StudentView} role="student" />
-                        <Route path='/register' component={Register} />
-                        <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
-                        <PrivateRoute path='/logout' render={(props) => <Logout {...props} onLogout={this.handleLogout} />} />
+                        <PrivateRoute path='/logout' component={Logout} />
                     </Switch >
                 </div>
             </div>
