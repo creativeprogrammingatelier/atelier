@@ -27,6 +27,7 @@ class Login extends Component {
     onSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         AuthHelper.login(this.state.email, this.state.password, () => {
+            this.props.onLogin('TA', this.state.email);
             this.setState({
                 redirectToReferrer: true
             });

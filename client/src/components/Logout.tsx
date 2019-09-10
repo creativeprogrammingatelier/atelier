@@ -7,6 +7,7 @@ import AuthHelper from "../../helpers/AuthHelper";
 
 class Logout extends React.Component {
     state: { loggedOut: boolean }
+    props: any;
     constructor(props: any) {
         super(props);
         this.state = {
@@ -19,6 +20,7 @@ class Logout extends React.Component {
         this.setState({
             loggedOut: true
         });
+        this.props.onLogout();
     }
 
     render() {
