@@ -43,29 +43,28 @@ class TAView extends React.Component {
                     </div>
                 </div>
                   );
-          
             }
         }
         return rows;
     
     }
-     viewStudentFiles(element:any, studentId: String){
-         FileHelper.getStudentsFiles(studentId, (result:any ) => {
-             let students: any = this.state.students;
-             let currentStudent;
-             for (const student of students) {
-                 if(student._id == studentId){
-                        currentStudent = student;
-                        student.files = result;
-                        break;
-                 }
-             }
-             this.setState({
-                 students: students,
-                 currentStudent: currentStudent
-             })
-         }, (error: any) => console.log("Failure not implemented"))
-     }
+    viewStudentFiles(element:any, studentId: String){
+        FileHelper.getStudentsFiles(studentId, (result:any ) => {
+            let students: any = this.state.students;
+            let currentStudent;
+            for (const student of students) {
+                if(student._id == studentId){
+                    currentStudent = student;
+                    student.files = result;
+                    break;
+                }
+            }
+            this.setState({
+                students: students,
+                currentStudent: currentStudent
+            })
+        }, (error: any) => console.log("Failure not implemented"))
+    }
     render() {  
         return (
             <div className="accordion" id="accordionStudentFiles">

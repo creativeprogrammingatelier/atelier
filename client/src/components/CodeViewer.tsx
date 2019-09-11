@@ -1,31 +1,33 @@
 import React, { Component } from "react";
-import Prism from "prismjs";
+import "../styles/prism.scss"
+
 class CodeViewer extends React.Component {
     //TODO make a object defintion for file
-    state: { file: any }
-    prismjsElement: React.RefObject<HTMLElement>;
+    state: { file: any, formattedCode: any };
     constructor(props: { file: any }) {
         super(props);
         this.state = {
-            file: props.file
+            file: props.file,
+            formattedCode: this.beutifyCode(props.file)
         }
-        this.prismjsElement = React.createRef();
     }
     componentWillReceiveProps(props: any) {
         this.setState({
-            file: props.file
-        }
-        )
+            file: props.file,
+            formattedCode: this.beutifyCode(props.file)
+        }); 
     }
 
-    beautifyCode = () => {
-        Prism.highlightElement(this.prismjsElement.current)
+    beutifyCode = (file:any):any => {
+        const Prism = require('../lib/prism.js');
+        return Prism.highlight(file.body, Prism.languages.processing, 'processing');
+
     }
     render() {
         return (
             <div>
                 <pre className="line-numbers">
-                    <code ref={this.prismjsElement} className="language-processing" dangerouslySetInnerHTML={{ __html: this.state.file.body }}/>
+                    <code className="language-processing line-numbers" dangerouslySetInnerHTML={{ __html:(this.state.formattedCode? this.state.formattedCode: null) }}/>
                 </pre>
             </div>
         );

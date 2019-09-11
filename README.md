@@ -68,3 +68,5 @@ Kill running process
 `fuser -k [port]/tcp` 
 Start mongo
 `sudo service start mongodb`
+
+ssh s2054256@linux571.ewi.utwente.nl
