@@ -6,7 +6,21 @@ import { faPalette } from "@fortawesome/free-solid-svg-icons";
 import "../styles/nav.scss"
 class Nav extends React.Component {
 
+    props: any;
+    constructor(props: any) {
+        super(props);
+    }
+
     render() {
+
+        let correctView;
+        if (this.props.role == 'student') {
+            correctView = (<li className="nav-item"><Link className="nav-link" to="/student">Student</Link></li>);
+        } else if (this.props.role == 'ta') {
+            correctView = (<li className="nav-item"><Link className="nav-link" to="/ta">Teaching Assisant</Link></li>)
+        } else {
+            correctView = '';
+        }
 
         return (
             < div >
@@ -15,12 +29,17 @@ class Nav extends React.Component {
                     <h2 className="title">Atelier</h2>
                 </div>
                 <ul className="nav">
-                    <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-                    <li className="nav-item"><Link className="nav-link" to="/student">Student</Link></li>
-                    <li className="nav-item"><Link className="nav-link" to="/ta">Teaching Assisant</Link></li>
-                    <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li>
-                    <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
-                    <li className="nav-item"><Link className="nav-link" to="/logout">Logout</Link></li>
+                    {this.props.loggedIn ?
+                        <React.Fragment>
+                            <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
+                            {correctView}
+                            <li className="nav-item"><Link className="nav-link" to="/logout" onClick={this.props.onLogout}>Logout</Link></li>
+                        </React.Fragment> :
+                        <React.Fragment>
+                            <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li>
+                            <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
+                        </React.Fragment>
+                    }
                 </ul>
             </div>
         )
