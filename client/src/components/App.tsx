@@ -26,8 +26,6 @@ class App extends React.Component {
         }
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
-        this.checkAndSetRole = this.checkAndSetRole.bind(this);
-        this.checkTAorStudent = this.checkTAorStudent.bind(this);
     }
 
     componentDidMount() {
