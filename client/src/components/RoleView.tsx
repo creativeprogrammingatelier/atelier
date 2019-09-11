@@ -11,13 +11,28 @@ import TAView from "./TAView";
  */
 class RoleView extends React.Component {
 
+    props: any;
     constructor(props: any) {
         super(props)
     }
+
     render() {
+
+        let correctView;
+        if (this.props.role == 'student') {
+            correctView = <StudentView />
+        } else if (this.props.role == 'ta') {
+            correctView = <TAView />
+        } else {
+            correctView = '';
+        }
+
         return (
-            <StudentView />
+            <div>
+                {correctView}
+            </div>
         )
+
 
 
     }

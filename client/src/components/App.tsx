@@ -5,6 +5,7 @@ import Home from "./Home";
 import Login from "./Login";
 import TAView from "./TAView";
 import StudentView from "./StudentView";
+import RoleView from "./RoleView";
 import Nav from "./Nav";
 import Logout from "./Logout";
 import Register from "./Register"
@@ -70,6 +71,7 @@ class App extends React.Component {
                         <PrivateRoute exact path='/' component={Home} />
                         <PrivateRoute exact path='/ta' component={TAView} role="ta" />
                         <PrivateRoute exact path='/student' component={StudentView} role="student" />
+                        <Route exact path='/roleview' render={(props) => <RoleView {...props} role={this.state.role} />} />
                         <PrivateRoute path='/logout' component={Logout} />
                     </Switch >
                 </div>

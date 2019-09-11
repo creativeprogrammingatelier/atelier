@@ -39,7 +39,7 @@ class Login extends Component {
     render() {
         if (this.state.redirectToReferrer) {
             return (
-                <Redirect to="/" />
+                <Redirect to="/roleview" />
             )
         }
         return (
