@@ -11,7 +11,7 @@ module.exports = {
     getAllStudents: (onSuccess, onFailure) => {
         User.find({
             role: "student"
-        }, (error, result) => {
+        }, -"password",(error, result) => {
             if (!error) {
                 onSuccess(result);
             } else {
