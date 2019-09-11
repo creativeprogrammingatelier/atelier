@@ -27,6 +27,11 @@ class App extends React.Component {
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.checkAndSetRole = this.checkAndSetRole.bind(this);
+        this.checkTAorStudent = this.checkTAorStudent.bind(this);
+    }
+
+    componentDidMount() {
+        this.checkTAorStudent();
     }
 
     handleLogin(role: string, email: string) {
@@ -35,9 +40,7 @@ class App extends React.Component {
             email: email,
         })
 
-        // Horrible stuff that should be refactored
-        this.checkAndSetRole('ta');
-        this.checkAndSetRole('student');
+        this.checkTAorStudent();
     }
 
     handleLogout() {
@@ -48,11 +51,18 @@ class App extends React.Component {
         })
     }
 
+    // Horrible stuff that should be refactored
+    checkTAorStudent() {
+        this.checkAndSetRole('ta');
+        this.checkAndSetRole('student');
+    }
+
     checkAndSetRole(role: string) {
         AuthHelper.checkRole(role).then((response: any) => {
             if (response.status == 204) {
                 this.setState({
-                    role: role
+                    role: role,
+                    loggedIn: true
                 });
             }
         });
@@ -62,8 +72,6 @@ class App extends React.Component {
         return (
             <div className="wrapper">
                 <div className="container">
-                    
-                    <div> Just for debugging, remove! : {this.state.role}</div>
                     <Nav loggedIn={this.state.loggedIn} role={this.state.role} onLogout={this.handleLogout} />
                     < Switch >
                         <Route path='/register' component={Register} />
