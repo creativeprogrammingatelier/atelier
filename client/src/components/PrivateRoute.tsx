@@ -38,7 +38,6 @@ class PrivateRoute extends Route<PrivateRouteProps> {
                 });
 
             });
-            console.log(this.state.roleAuthorised)
         }
 
     }
