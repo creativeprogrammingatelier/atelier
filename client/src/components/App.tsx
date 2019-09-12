@@ -20,8 +20,8 @@ class App extends React.Component {
                     <Nav />
                     < Switch >
                         <PrivateRoute exact path='/' component={Home} />
-                        <PrivateRoute exact path='/ta' component={TAView} role="ta" />
-                        <PrivateRoute exact path='/student' component={StudentView} role="student" />
+                        <PrivateRoute exact path='/ta' component={TAView} roles={["ta"]} />
+                        <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
                         <Route path='/register' component={Register} />
                         <Route path='/login' component={Login} />
                         <PrivateRoute path='/logout' component={Logout} />
