@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "npx webpack --watch"
+    "watch": "npx webpack --watch",
+    "build": "npx webpack "
+
   },
   "babel": {
     "plugins": [
@@ -55,6 +57,7 @@
     "babel-preset-react": "^6.24.1",
     "events": "^3.0.0",
     "jwt-decode": "^2.2.0",
+    "npx": "^10.2.0",
     "primjs": "^0.6.5",
     "prismjs": "^1.17.1",
     "react": "^16.9.0",
