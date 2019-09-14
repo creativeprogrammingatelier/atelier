@@ -2,3 +2,9 @@ node_modules
 npm-debug.log
 dist
 package-lock.json
+.gitignore
+.vscode
+api/node_modules
+api/package-lock.json
+client/node_modules
+client/dist
