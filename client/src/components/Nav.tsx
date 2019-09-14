@@ -31,7 +31,7 @@ class Nav extends React.Component {
                         }
                     </ul>
                     <div className="menu-right" id="user">
-                        Logged in as {this.props.role}: {this.props.email}
+                        {this.props.loggedIn && <div> Logged in as {this.props.role}: {this.props.email} </div> }
                     </div>
                 </div>
             </div>
