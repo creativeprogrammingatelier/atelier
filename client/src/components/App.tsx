@@ -32,7 +32,7 @@ class App extends React.Component {
         this.checkTAorStudent();
     }
 
-    handleLogin(role: string, email: string) {
+    handleLogin(email: string) {
         this.setState({
             loggedIn: true,
             email: email,
