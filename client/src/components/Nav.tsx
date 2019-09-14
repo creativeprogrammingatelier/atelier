@@ -21,7 +21,6 @@ class Nav extends React.Component {
                 <ul className="nav">
                     {this.props.loggedIn ?
                         <React.Fragment>
-                            <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
                             <li className="nav-item"><Link className="nav-link" to="/roleview">Submissions</Link></li>
                             <li className="nav-item"><Link className="nav-link" to="/logout" onClick={this.props.onLogout}>Logout</Link></li>
                         </React.Fragment> :

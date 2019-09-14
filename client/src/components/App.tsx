@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Route, Switch, Link } from "react-router-dom";
+import { Route, Switch, Link, Redirect } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import Home from "./Home";
 import Login from "./Login";
 import TAView from "./TAView";
 import StudentView from "./StudentView";
@@ -72,12 +71,12 @@ class App extends React.Component {
                 <div className="container">
                     <Nav loggedIn={this.state.loggedIn} role={this.state.role} onLogout={this.handleLogout} />
                     < Switch >
+                        <Redirect exact from="/" to="/roleview" />
                         <Route path='/register' component={Register} />
                         <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
-                        <PrivateRoute exact path='/' component={Home} />
                         <PrivateRoute exact path='/ta' component={TAView} roles={["ta"]} />
                         <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
-                        <Route exact path='/roleview' render={(props) => <RoleView {...props} role={this.state.role} />} />
+                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["ta", "student"]} />
                         <PrivateRoute path='/logout' component={Logout} />
                     </Switch >
                 </div>
