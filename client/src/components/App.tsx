@@ -20,7 +20,7 @@ class App extends React.Component {
         super(props);
         this.state = {
             loggedIn: false,
-            email: '',
+            email: localStorage.getItem('email') || '',
             role: 'none'
         }
         this.handleLogin = this.handleLogin.bind(this);
@@ -36,7 +36,7 @@ class App extends React.Component {
             loggedIn: true,
             email: email,
         })
-
+        localStorage.setItem('email', email)
         this.checkTAorStudent();
     }
 
@@ -69,7 +69,7 @@ class App extends React.Component {
         return (
             <div className="wrapper">
                 <div className="container">
-                    <Nav loggedIn={this.state.loggedIn} role={this.state.role} onLogout={this.handleLogout} />
+                    <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} />
                     < Switch >
                         <Redirect exact from="/" to="/roleview" />
                         <Route path='/register' component={Register} />
