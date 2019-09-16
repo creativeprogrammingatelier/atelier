@@ -46,7 +46,9 @@ Any development folders or settings that are not source code should not be in gi
 * **[NoSQLBooster](https://nosqlbooster.com/)** - GUI tool for NoSQL Databases
 * **[Postman](https://www.getpostman.com/)** - A API testing tool
 
-
+### Deployment (being expanded)
+## Using
+pm2
 ## Built with 
 
 * [React](https://reactjs.org/) - Front end framework (written in Typescript)
