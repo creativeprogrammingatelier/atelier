@@ -3,7 +3,7 @@ import { Route, Switch, Redirect, RouteProps } from "react-router-dom";
 import { Component } from "react";
 import AuthHelper from "../../helpers/AuthHelper";
 type PrivateRouteProps = RouteProps & {
-    role?: string
+    roles?: any
 }
 class PrivateRoute extends Route<PrivateRouteProps> {
 
@@ -17,33 +17,32 @@ class PrivateRoute extends Route<PrivateRouteProps> {
     }
 
     componentDidUpdate(prevProps: PrivateRouteProps) {
-        if (this.props.role !== prevProps.role) {
+        if (this.props.roles !== prevProps.roles) {
             this.checkRole();
         }
     }
 
     checkRole = () => {
-        if (this.props.role != undefined) {
-            AuthHelper.checkRole(this.props.role).then((response: any) => {
-                if (response.status == 204) {
-                    this.setState({
-                        roleAuthorised: true
-                    });
-                } else {
-                    this.setState({
-                        roleAuthorised: false
-                    });
-                }
-            }).catch((res: any) => {
-                this.setState({
-                    roleAuthorised: false
+        if (this.props.roles != undefined) {
+            this.setState({
+                roleAuthorised: false
+            });
+            this.props.roles.forEach((role: string) => {
+                AuthHelper.checkRole(role).then((response: any) => {
+                    if (response.status == 204) {
+                        this.setState({
+                            roleAuthorised: true
+                        });
+
+                    }
                 });
+
             });
         }
     }
 
     render() {
-        if (this.props.role == undefined && AuthHelper.loggedIn()) {
+        if (this.props.roles == undefined && AuthHelper.loggedIn()) {
             return (
                 <Route
                     render={() =>

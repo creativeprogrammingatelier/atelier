@@ -37,7 +37,9 @@ The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 * **[NoSQLBooster](https://nosqlbooster.com/)** - GUI tool for NoSQL Databases
 * **[Postman](https://www.getpostman.com/)** - A API testing tool
 
-
+### Deployment (being expanded)
+## Using
+pm2
 ## Built with 
 
 * [React](https://reactjs.org/) - Front end framework (written in Typescript)
