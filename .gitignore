@@ -15,3 +15,4 @@ api/package-lock.json
 client/node_modules
 client/dist
 publicCode/
+.env

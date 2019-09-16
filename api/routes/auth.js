@@ -3,12 +3,12 @@
  * Author: Andrew Heath 
  * Date created: 13/08/19
  */
-var auth = require('../middleware/auth')
+var auth = require('../middleware/auth');
 var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
-const User = require('../models/user')
-const secret = 'SECRET';
+const User = require('../models/user');
+const Constants = require('../lib/constants');
 
 /**
  * Logout endpoint, JWT can't be destoryed, there are not dession to be closed  
@@ -55,7 +55,7 @@ router.post('/login', (request, result) => {
           const payload = {
             email
           };
-          const token = jwt.sign(payload, secret, {
+          const token = jwt.sign(payload, Constants.AUTHSECRETKEY, {
             expiresIn: '1h'
           });
           result.status(200).send({
@@ -95,7 +95,7 @@ router.post('/register', (request, result) => {
       const payload = {
         email
       };
-      const token = jwt.sign(payload, secret, {
+      const token = jwt.sign(payload, Constants.AUTHSECRETKEY, {
         expiresIn: '1h'
       });
       result.status(200).send({

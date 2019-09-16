@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const secret = 'SECRET';
+const Constants = require('../lib/constants')
 
 /**
  * Files middleware provides helper methods for interacting with comments in the DB
@@ -28,7 +28,7 @@ module.exports = {
     getUser: function (request, onSuccess, onFailure) {
         const token =
             request.headers.authorization;
-        jwt.verify(token, secret,  (error, decoded) => {
+        jwt.verify(token, Constants.AUTHSECRETKEY,  (error, decoded) => {
             if (error) {
                 onFailure(error);
             } else {

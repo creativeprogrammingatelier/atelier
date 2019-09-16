@@ -11,7 +11,7 @@ const Usermid = require('../middleware/usersmid');
 /**
  * CHANGE THIS BEFORE DEPLOYEMENT ! 
  */
-const secret = 'SECRET';
+const Constants = require('../lib/constants');
 module.exports = {
 
     /**
@@ -26,7 +26,7 @@ module.exports = {
         if (!token) {
             result.status(401).send('Unauthorized: No token provided');
         } else {
-            jwt.verify(token, secret, function (err, decoded) {
+            jwt.verify(token, Constants.AUTHSECRETKEY, function (err, decoded) {
                 if (err) {
                     console.log(err)
                     result.status(401).send('Unauthorized: Invalid token');
