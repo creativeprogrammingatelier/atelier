@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import Home from "./Home";
 import Login from "./Login";
 import AuthHelper from "../../helpers/AuthHelper";
 
