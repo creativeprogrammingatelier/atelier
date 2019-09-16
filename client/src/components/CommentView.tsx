@@ -1,12 +1,4 @@
 import * as React from "react";
-import { Route, Switch } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import Home from "./Home";
-import Login from "./Login";
-import AuthHelper from "../../helpers/AuthHelper";
-import StudentView from "./StudentView";
-import TAView from "./TAView";
-import { throws } from "assert";
 type CommentType = { about: String, author: { email: String, role: String }, _id:String, body: String, created: Date, line: Number };
 type CommentViewProps = {comment: CommentType, deleteComment: Function};
 class CommentView extends React.Component<CommentViewProps> {

@@ -1,11 +1,6 @@
 import * as React from "react";
-import { Route, Switch } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import Login from "./Login";
 import UserHelper from "../../helpers/UserHelper";
 import FileViewer from "./FileViewer";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import FileHelper from "../../helpers/FileHelper";
 
 class TAView extends React.Component {
@@ -60,9 +55,9 @@ class TAView extends React.Component {
             }
             this.setState({
                 students: students,
-                currentStudent: currentStudent
+                currentStudent: (this.state.currentStudent == currentStudent) ? null : currentStudent
             })
-        }, (error: any) => console.log("Failure not implemented"))
+        }, (error: any) => alert("Failed to find student's files"))
     }
     render() {  
         return (
