@@ -13,37 +13,40 @@ export default class FileHelper {
                 onSuccess(json);
             });
         }).catch(function (error) {
+            console.log(error);
             onFailure(error)
         })
     }
 
-    static getAllFiles = (next: Function) => {
+    static getAllFiles = (onSuccess: Function, onFailure: Function) => {
         AuthHelper.fetch(`/getfiles`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
-                next(json)
+                onSuccess(json)
             });
         }).catch(function (error) {
-            console.log(error)
+            console.log(error);
+            onFailure()
         })
     }
 
 
-    static getFile = (fileId: string, next: Function) => {
+    static getFile = (fileId: string, onSuccess: Function, onFailure: Function) => {
         AuthHelper.fetch(`/getfile?fileId=${fileId}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
-                next(json);
+                onSuccess(json);
             });
         }).catch(function (error) {
-            console.log(error)
+            console.log(error);
+            onFailure()
         })
 
     }
 
-    static deleteFile = (fileId: Number, next: Function) => {
+    static deleteFile = (fileId: Number, onSuccess: Function, onFailure: Function) => {
         const config = {
             headers: {
                 'content-type': 'multipart/form-data',
@@ -55,16 +58,17 @@ export default class FileHelper {
         };
         axios.delete('/deletefile', config
         ).then((response) => {
-            next();
+            onSuccess();
 
         }).catch(function (error) {
             //TODO Handle errors in a nice way
-            console.log(error);
+            console.log(error)
+            onFailure();
         })
 
     }
 
-    static uploadFile = (file: any, next: Function) => {
+    static uploadFile = (file: any, onSuccess: Function, onFailure: Function) => {
         const formData = new FormData();
         formData.append('file', file);
         const config = {
@@ -75,10 +79,10 @@ export default class FileHelper {
         };
         axios.post('/uploadfile', formData, config
         ).then((response) => {
-            next();
+            onSuccess();
 
         }).catch(function (error) {
-            //TODO Handle errors in a nice way
+            onFailure();
             console.log(error);
         })
     }

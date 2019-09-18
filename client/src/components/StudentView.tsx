@@ -30,8 +30,8 @@ class StudentView extends React.Component {
                 })
             }
 
-        }
-
+        }, () => 
+        alert("Failed to fetch files")
         );
     }
 

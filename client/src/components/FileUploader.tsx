@@ -16,7 +16,7 @@ class FileUploader extends React.Component<{ update: Function }> {
     }
     onSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
-        FileHelper.uploadFile(this.state.uploadedFile, this.props.update);
+        FileHelper.uploadFile(this.state.uploadedFile, this.props.update, () => alert('File Failed to upload'));
     }
 
     handleFileSelection = (event: any) => {

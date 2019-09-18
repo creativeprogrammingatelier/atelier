@@ -1,8 +1,7 @@
 
 module.exports = 
 
-require('dotenv').config({ path: '../../' });
 
 Object.freeze({
-    AUTHSECRETKEY: process.env.AUTHSECRETKEY
+    AUTHSECRETKEY: require('fs').readFileSync('./keys/jwtRS256.key', 'utf8')
 });
