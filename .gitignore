@@ -1,3 +1,9 @@
+api/node_modules/
+client/node_modules/
+dist/
+uploads/
+api/package-lock.json
+/processing-examples
 node_modules
 npm-debug.log
 dist
@@ -8,3 +14,6 @@ api/node_modules
 api/package-lock.json
 client/node_modules
 client/dist
+publicCode/
+api/keys/
+

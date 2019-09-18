@@ -31,7 +31,7 @@ class Login extends Component {
             this.setState({
                 redirectToReferrer: true
             });
-        }
+        }, () =>  alert("Login Failed, Please register if you have not already")
         );
 
     };

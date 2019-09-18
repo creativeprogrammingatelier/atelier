@@ -36,7 +36,7 @@ class Register extends Component {
             this.setState({
                 redirectToReferrer: true
             });
-        });
+        }, () => alert('Registeration has failed, Do you already have an account ? '));
     };
 
     handleChange = (event: { target: { value: any; name: any; }; }) => {

@@ -21,7 +21,7 @@ export default class AuthHelper {
         this.domain = domain || "http://localhost:3000"; // API server domain
     }
 
-    static register(email: string, password: string, role: string, next: Function) {
+    static register(email: string, password: string, role: string, onSuccess: Function, onFailure: Function) {
         this.fetch('/register', {
             method: "POST",
             body: JSON.stringify({
@@ -32,12 +32,12 @@ export default class AuthHelper {
         }).then((res: any) => {
             res.json().then((json: any) => {
                 this.setToken(json.token); // Setting the token in localStorage
-                next();
-            });
-        })
+                onSuccess();
+            }).catch((e: any) =>{console.log(e), onFailure()})
+        }).catch((e: any) => {console.log(e), onFailure()})
     };
 
-    static login(email: string, password: string, next: Function) {
+    static login(email: string, password: string, onSuccess: Function, onFailure: Function) {
         // Get a token from api server using the fetch api
         this.fetch(`/login`, {
             method: "POST",
@@ -48,13 +48,12 @@ export default class AuthHelper {
         }).then((res: any) => {
             res.json().then((json: any) => {
                 this.setToken(json.token); // Setting the token in localStorage
-                next();
+                onSuccess();
             });
-        });
+        }).catch((e: any) => {console.log(e), onFailure()})
     };
 
     static loggedIn(): boolean {
-        // Checks if there is a saved token and it's still valid
         const token = AuthHelper.getToken(); // Getting token from localstorage
         return !!token && !AuthHelper.isTokenExpired(token); // handwaiving here
     };
@@ -63,15 +62,12 @@ export default class AuthHelper {
         const decoded: any = decode(token);
         try {
             if (decoded.exp < Date.now() / 1000) {
-                // Checking if token is expired.
                 return true;
             } else return false;
         } catch (err) {
-            console.log("expired check failed!");
+            console.log("Token expired check failed!");
             return false;
         }
-        return false;
-
     }
 
     static setToken = (idToken: string) => {

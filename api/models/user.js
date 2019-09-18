@@ -11,7 +11,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 /* TODO THIS MUST BE CHANGED BEFORE DEPLOYEMENT */
-const secret = 'SECRET';
 
 const saltRounds = 10; //Determines the efficiency vs speed
 
@@ -23,7 +22,7 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
     role: {
         type: String,

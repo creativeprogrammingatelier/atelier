@@ -8,8 +8,9 @@ import { faFileDownload, faEye, faTrash } from '@fortawesome/free-solid-svg-icon
 import AuthHelper from "../../helpers/AuthHelper";
 import FileUploader from "./FileUploader";
 import FileHelper from "../../helpers/FileHelper";
+import CommentsViewer from "./CommentsViewer";
 
-class FileViewer extends React.Component<{ files: any[], update: Function }> {
+class FileViewer extends React.Component<{ files: any[], update?: Function }> {
     state: { viewedFile: any }
 
     constructor(props: { files: any[], update: Function }) {
@@ -28,8 +29,8 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
                 rows.push(<tr>
                     <td>{file.name}</td>
                     <td><a key={`download-${file._id}`} href={`/downloadfile?fileId=${file._id}`}><FontAwesomeIcon icon={faFileDownload} /></a></td>
-                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.getFile(file._id, (file: any) => this.setState({ viewedFile: file }))}><FontAwesomeIcon icon={faEye} /></button></td>
-                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.deleteFile(file._id, () => this.props.update())}><FontAwesomeIcon icon={faTrash} /></button></td>
+                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.getFile(file._id, (file: any) => this.setState({ viewedFile: file }), () => alert("Failed to get file"))}><FontAwesomeIcon icon={faEye} /></button></td>
+                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.deleteFile(file._id, () => this.props.update(), ()=> alert('File deletion has failed'))}><FontAwesomeIcon icon={faTrash} /></button></td>
                 </tr>);
             }
         }
@@ -41,6 +42,7 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
                             <th scope="col">File Name</th>
                             <th scope="col">Download</th>
                             <th scope="col" >View</th>
+                            <th scope="col" >Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,7 +60,15 @@ class FileViewer extends React.Component<{ files: any[], update: Function }> {
                     {this.populateTable()}
                 </div>
                 <div>
-                    {(this.state.viewedFile != null) ? <CodeViewer {...{ file: this.state.viewedFile }} /> : null}
+                    <div className="row">
+                        <div className="col-sm-8">
+                            {(this.state.viewedFile != null) ? <CodeViewer {...{ file: this.state.viewedFile }} /> : null}
+                        </div>
+                        <div className="col-sm-4">
+                            {(this.state.viewedFile != null) ? <CommentsViewer {...{ file: this.state.viewedFile }} /> : null}
+                        </div>
+
+                    </div>
                 </div>
             </div>
 

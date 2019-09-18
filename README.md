@@ -19,16 +19,7 @@ The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 2. Clone the Repo on your computer.
 3. Open the project in your editor of choice ( I recommend Visual studio code) 
 4. Run: `npm i` in both the 'api' and 'client' folders
-5. Create a [.gitignore](https://git-scm.com/docs/gitignore): containing non-source code folders created by the previous step 
-* client/node_modules
-* client/dist
-* client/package-lock.json
-* api/node_modules
-* api/bin
-* api/uploads
-* api/package-lock.json
-* /.vscode
-Any development folders or settings that are not source code should not be in git
+5. -
 6. Navigate to the /api folder. and run:
 `npm run start`
 7. Navigate to the /client folder. and run:
@@ -77,3 +68,7 @@ Tokens are stored in local storage.
 
 Kill running process
 `fuser -k [port]/tcp` 
+Start mongo
+`sudo service mongod start`
+
+ssh s2054256@linux571.ewi.utwente.nl

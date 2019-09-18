@@ -6,11 +6,12 @@
  */
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/user')
+const User = require('../models/user');
+const Usermid = require('../middleware/usersmid');
 /**
  * CHANGE THIS BEFORE DEPLOYEMENT ! 
  */
-const secret = 'SECRET';
+const Constants = require('../lib/constants');
 module.exports = {
 
     /**
@@ -25,7 +26,7 @@ module.exports = {
         if (!token) {
             result.status(401).send('Unauthorized: No token provided');
         } else {
-            jwt.verify(token, secret, function (err, decoded) {
+            jwt.verify(token, Constants.AUTHSECRETKEY, function (err, decoded) {
                 if (err) {
                     console.log(err)
                     result.status(401).send('Unauthorized: Invalid token');
@@ -36,31 +37,37 @@ module.exports = {
             });
         }
     },
-    /**
-     * Get the user object corresponding to the request
-     * @param {*} request 
-     * @param {*} next callback
-     */
-    getUser: function (request, next) {
-        const token =
-            request.headers.authorization;
-        jwt.verify(token, secret, function (error, decoded) {
-            if (error) {
-                return error;
+    isTa: function (request, result, next) {
+        Usermid.getUser(request, (user) => {
+            if (user.role.toLowerCase() == "ta") {
+               next();
             } else {
-                let email = decoded.email;
-                User.findOne({
-                    email
-                }, (error, user) => {
-                    if (user) {
-                        next(user, request)
-                    } else {
-                        throw new Error(error);
-                    }
-                }).catch((error) => {
-                    throw new Error(error);
-                });
+                result.status(401).send();
             }
-        });
+        },() => result.status(401).send())
+    },
+
+
+    getAllStudents: (onSuccess, onFailure) => {
+        User.find({
+            role: "student"
+        }, (error, result) => {
+            if (!error) {
+                onSuccess(result);
+            } else {
+                onFailure(error);
+            }
+        })
+    },
+    checkRole: (request, role, onSuccess, onFailure) => {
+        Usermid.getUser(request, (user) => {
+            if (user.role.toLowerCase() == role.toLowerCase()) {
+                onSuccess();
+            } else {
+                onFailure('Unauthorized: Incorrect role');
+            }
+        }, onFailure )
     }
+       
+        
 }

@@ -33,8 +33,25 @@ module.exports = {
             {
                 test: /\.(s*)css$/i,
                 use: ['style-loader', 'css-loader', 'sass-loader'],
-            }
-
+            },
+            // { 
+            //     test: /\.m?ts$/,
+            //     exclude: /(node_modules|bower_components)/,
+            //     use: {
+            //       loader: 'babel-loader',
+            //       options: {
+            //         presets: ['@babel/preset-env'],
+            //         plugins: [
+            //             ["prismjs", {
+            //               languages: ["processing"],
+            //               plugins: ["line-numbers"],
+            //               theme: "okaidia",
+            //               css: true
+            //             }]
+            //           ]
+            //       }
+            //     }
+            //   }
         ],
 
     },

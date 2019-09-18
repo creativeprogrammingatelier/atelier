@@ -13,9 +13,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 
+var authRouter = require('./routes/auth');
 var usersRouter = require('./routes/users');
 var filesRouter = require('./routes/files');
+var commentRouter = require('./routes/comments');
 var indexRouter = require('./routes/index');
+
 
 var app = express();
 app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -34,8 +37,10 @@ app.use(express.static(path.join(__dirname, '../client/')));
  * Setting routes
  * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all 
  */
+app.use('/', authRouter);
 app.use('/', usersRouter);
 app.use('/', filesRouter);
+app.use('/', commentRouter);
 app.use('/', indexRouter);
 
 
