@@ -77,34 +77,34 @@ router.get('/checkToken', auth.withAuth, function (req, res) {
 /**
  * User registration tool 
  */
-router.post('/register', (request, result) => {
-  const {
-    email,
-    password,
-    role
-  } = request.body;
-  const user = new User({
-    email,
-    password,
-    role
-  });
-  user.save((error) => {
-    if (error) {
-      result.status(500).send('Error registering User');
-    } else {
-      const payload = {
-        email
-      };
-      const token = jwt.sign(payload, Constants.AUTHSECRETKEY, {
-        expiresIn: '1h'
-      });
-      result.status(200).send({
-        token: token
-      });
+// router.post('/register', (request, result) => {
+//   const {
+//     email,
+//     password,
+//     role
+//   } = request.body;
+//   const user = new User({
+//     email,
+//     password,
+//     role
+//   });
+//   user.save((error) => {
+//     if (error) {
+//       result.status(500).send('Error registering User');
+//     } else {
+//       const payload = {
+//         email
+//       };
+//       const token = jwt.sign(payload, Constants.AUTHSECRETKEY, {
+//         expiresIn: '1h'
+//       });
+//       result.status(200).send({
+//         token: token
+//       });
 
-    }
-  });
-});
+//     }
+//   });
+// });
 
 /**
  * Checks if role of user, (using token) is valid compared to that passed in the body

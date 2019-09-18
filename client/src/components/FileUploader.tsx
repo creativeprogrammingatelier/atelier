@@ -28,7 +28,7 @@ class FileUploader extends React.Component<{ update: Function }> {
     render() {
         return (
             <form onSubmit={this.onSubmit}>
-                <input type="file" name="file-pmd" required onChange={this.handleFileSelection} />
+                <input accept=".pde" type="file" name="file-pmd" required onChange={this.handleFileSelection} />
                 <input type="submit" value="Submit" />
             </form>
         )
