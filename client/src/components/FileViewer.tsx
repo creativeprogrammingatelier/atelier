@@ -26,7 +26,7 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
         if (this.props.files && this.props.files[0] != undefined) {
 
             for (let file of this.props.files) {
-                rows.push(<tr>
+                rows.push(<tr key={file._id}>
                     <td>{file.name}</td>
                     <td><a key={`download-${file._id}`} href={`/downloadfile?fileId=${file._id}`}><FontAwesomeIcon icon={faFileDownload} /></a></td>
                     <td><button key={`view-${file._id}`} onClick={() => FileHelper.getFile(file._id, (file: any) => this.setState({ viewedFile: file }), () => alert("Failed to get file"))}><FontAwesomeIcon icon={faEye} /></button></td>
@@ -38,7 +38,7 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
             <div>
                 <table className="table">
                     <thead>
-                        <tr>
+                        <tr key='header'>
                             <th scope="col">File Name</th>
                             <th scope="col">Download</th>
                             <th scope="col" >View</th>
