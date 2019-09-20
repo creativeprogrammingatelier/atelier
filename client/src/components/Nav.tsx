@@ -28,7 +28,7 @@ class Nav extends React.Component {
                                 <li className="nav-item"><Link className="nav-link" to="/logout" onClick={this.props.onLogout}>Logout</Link></li>
                             </React.Fragment> :
                             <React.Fragment>
-                                {/* <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li> */}
+                                <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li>
                                 <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
                             </React.Fragment>
                         }

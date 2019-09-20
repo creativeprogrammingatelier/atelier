@@ -72,7 +72,7 @@ class App extends React.Component {
                     <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} />
                     < Switch >
                         <Redirect exact from="/" to="/roleview" />
-                        {/* <Route path='/register' component={Register} /> */}
+                        <Route path='/register' component={Register} />
                         <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
                         <PrivateRoute exact path='/ta' component={TAView} roles={["ta"]} />
                         <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
