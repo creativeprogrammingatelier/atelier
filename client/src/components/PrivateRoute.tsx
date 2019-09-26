@@ -13,7 +13,10 @@ class PrivateRoute extends Route<PrivateRouteProps> {
         this.state = {
             roleAuthorised: false
         }
-        this.checkRole()
+    }
+
+    componentDidMount() {
+        this.checkRole()  
     }
 
     componentDidUpdate(prevProps: PrivateRouteProps) {
