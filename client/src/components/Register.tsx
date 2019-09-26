@@ -36,6 +36,7 @@ class Register extends Component {
             this.setState({
                 redirectToReferrer: true
             });
+            this.props.onLogin(this.state.email);
         }, () => alert('Registeration has failed, Do you already have an account ? '));
     };
 
@@ -50,7 +51,7 @@ class Register extends Component {
     render() {
         if (this.state.redirectToReferrer) {
             return (
-                <Redirect to="/" />
+                <Redirect to="/roleview" />
             )
         }
         return (
