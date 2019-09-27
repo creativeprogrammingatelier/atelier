@@ -9,8 +9,12 @@ class TAView extends React.Component {
     constructor(props:any){
         super(props);
         this.state={ students: [], currentStudent: null};
+    }
+
+    componentDidMount() {
         this.getStudents();
     }
+
     getStudents() {
         UserHelper.getStudents((students: any) => this.setState({students: students} ), (e: any) => console.log(e))
     }

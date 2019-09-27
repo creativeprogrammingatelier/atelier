@@ -11,6 +11,9 @@ class StudentView extends React.Component {
         this.state = {
             files: null
         }
+    }
+
+    componentDidMount() {
         this.getAllFiles()
     }
 
