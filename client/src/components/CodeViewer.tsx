@@ -11,7 +11,9 @@ class CodeViewer extends React.Component {
             formattedCode: this.beutifyCode(props.file)
         }
     }
-    componentWillReceiveProps(props: any) {
+
+    //TODO refactor for React v17
+    UNSAFE_componentWillReceiveProps(props: any) {
         this.setState({
             file: props.file,
             formattedCode: this.beutifyCode(props.file)
