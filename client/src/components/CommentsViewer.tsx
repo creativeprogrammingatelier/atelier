@@ -35,12 +35,13 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     deleteComment = (commentId: String) =>{
         CommentHelper.deleteComment(commentId, () => this.fetchComments(), () => alert("Failed to delete Comment"))
     }
+
     populate = () => {
         let comments = [];
         if (this.state.comments != null) {
             for (const comment of this.state.comments) {
                 comments.push(
-                    <li className="list-group-item"> <CommentView comment = {...comment} deleteComment ={this.deleteComment} /></li>
+                    <li className="list-group-item" key={comment._id}> <CommentView comment = {...comment} deleteComment ={this.deleteComment} /></li>
                 )
             }
         }
