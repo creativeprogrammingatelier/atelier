@@ -3,21 +3,14 @@
  * Author: Andrew Heath 
  * Date created: 13/08/19
  */
-var auth = require('../middleware/auth');
+
+
 var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
 const Constants = require('../lib/constants');
-
-/**
- * Logout endpoint, JWT can't be destoryed, there are not dession to be closed  
- * @deprecated
- */
-// router.get('/logout', function (req, res) {
-//   req.logOut();
-// });
-
+import User from "../models/user";
+import AuthMiddleware from "../middleware/AuthMiddleware";
 /* Authentication */
 /**
  * Login end point 
@@ -70,7 +63,7 @@ router.post('/login', (request, result) => {
 /**
  * Checks if request JWT token passed is valid using withAuth middleware method 
  * */
-router.get('/checkToken', auth.withAuth, function (req, res) {
+router.get('/checkToken', AuthMiddleware.withAuth, function (req, res) {
   res.sendStatus(200);
 });
 
@@ -110,11 +103,11 @@ router.get('/checkToken', auth.withAuth, function (req, res) {
  * Checks if role of user, (using token) is valid compared to that passed in the body
  * @TODO refactor move functions into middleware
  */
-router.post('/checkRole', auth.withAuth, function (request, result) {
+router.post('/checkRole', AuthMiddleware.withAuth, function (request, result) {
   const {
     role
   } = request.body;
-  auth.checkRole(request, role, () => result.status(204).send(), (error) => result.status(401).send(error))
+  AuthMiddleware.checkRole(request, role, () => result.status(204).send(), (error) => result.status(401).send(error))
 });
 
 module.exports = router;

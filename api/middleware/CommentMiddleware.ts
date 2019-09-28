@@ -4,9 +4,9 @@ const fs = require('fs');
  * Files middleware provides helper methods for interacting with comments in the DB
  * @Author Andrew Heath
  */
-module.exports = {
+export default class CommentMiddleware{
 
-    makeComment: function (fileId, userId, line, body, successCallback, errorCallback) {
+    static makeComment (fileId, userId, line, body, successCallback, errorCallback) {
         const newComment = new Comment({
             about: fileId,
             author: userId,
@@ -21,9 +21,9 @@ module.exports = {
             }
         }))
 
-    },
+    }
 
-    getComments: function (fileId, successCallback, failureCallback) {
+    static getComments(fileId, successCallback, failureCallback) {
         Comment.find({
                 about: fileId
             })
@@ -35,8 +35,8 @@ module.exports = {
                 failureCallback(error);
             }
         })
-    },
-    deleteComment: function (commentId, successCallback, failureCallback){
+    }
+    static deleteComment (commentId, successCallback, failureCallback){
         Comment.deleteOne({
             _id: commentId
         },(error, result) => {

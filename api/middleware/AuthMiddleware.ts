@@ -5,22 +5,21 @@
  * Created: 13/08/19
  */
 
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const Usermid = require('../middleware/usersmid');
+import jwt from 'jsonwebtoken';
+import UsersMiddleware from './UsersMiddleware';
+import User from '../models/user';
 /**
  * CHANGE THIS BEFORE DEPLOYEMENT ! 
  */
-const Constants = require('../lib/constants');
-module.exports = {
-
+import Constants from '../lib/constants';
+export default class AuthMiddleWare { 
     /**
      * Checks to see whether requset is authenticated correctly
      * @param {*} request 
      * @param {*} result 
      * @param {*} next callback
      */
-    withAuth: function (request, result, next) {
+    static withAuth (request, result, next) {
         const token =
             request.headers.authorization;
         if (!token) {
@@ -36,19 +35,17 @@ module.exports = {
                 }
             });
         }
-    },
-    isTa: function (request, result, next) {
-        Usermid.getUser(request, (user) => {
+    }
+    static isTa (request, result, next) {
+        UsersMiddleware.getUser(request, (user) => {
             if (user.role.toLowerCase() == "ta") {
                next();
             } else {
                 result.status(401).send();
             }
         },() => result.status(401).send())
-    },
-
-
-    getAllStudents: (onSuccess, onFailure) => {
+    }
+    static getAllStudents(onSuccess, onFailure){
         User.find({
             role: "student"
         }, (error, result) => {
@@ -58,9 +55,9 @@ module.exports = {
                 onFailure(error);
             }
         })
-    },
-    checkRole: (request, role, onSuccess, onFailure) => {
-        Usermid.getUser(request, (user) => {
+    }
+    static checkRole(request, role, onSuccess, onFailure){
+        UsersMiddleware.getUser(request, (user) => {
             if (user.role.toLowerCase() == role.toLowerCase()) {
                 onSuccess();
             } else {
@@ -68,6 +65,5 @@ module.exports = {
             }
         }, onFailure )
     }
-       
-        
+
 }

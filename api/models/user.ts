@@ -7,13 +7,17 @@
 /**
  * Dependecies 
  */
-const mongoose = require('mongoose');
+import mongoose, { Schema, Document } from 'mongoose';
 const bcrypt = require('bcrypt');
 
 /* TODO THIS MUST BE CHANGED BEFORE DEPLOYEMENT */
 
 const saltRounds = 10; //Determines the efficiency vs speed
-
+export interface IUser {
+    email: String,
+    password: String,
+    role: String, 
+}
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -63,4 +67,4 @@ UserSchema.methods.isCorrectPassword = function (password, callback) {
 }
 
 
-module.exports = mongoose.model('User', UserSchema);
+export default mongoose.model<IUser>('User', UserSchema);

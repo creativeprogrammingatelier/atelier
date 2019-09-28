@@ -6,19 +6,18 @@
 /**
  * Dependencies
  */
+import path from "path"
 var createError = require('http-errors');
 var express = require('express');
-var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 
-var authRouter = require('./routes/auth');
-var usersRouter = require('./routes/users');
-var filesRouter = require('./routes/files');
-var commentRouter = require('./routes/comments');
-var indexRouter = require('./routes/index');
-
+var authRouter = require('./routes/AuthRouter');
+var usersRouter = require('./routes/UsersRouter');
+var filesRouter = require('./routes/FilesRouter');
+var commentRouter = require('./routes/CommentsRouter');
+var indexRouter = require('./routes/IndexRouter');
 
 var app = express();
 app.listen(5000, () => console.log('Listening on port 5000!'))

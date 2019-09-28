@@ -16,4 +16,4 @@ client/node_modules
 client/dist
 publicCode/
 api/keys/
-
+api/build

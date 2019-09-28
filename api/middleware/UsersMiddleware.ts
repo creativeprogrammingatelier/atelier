@@ -7,8 +7,8 @@ const Constants = require('../lib/constants')
  * Files middleware provides helper methods for interacting with comments in the DB
  * @Author Andrew Heath
  */
-module.exports = {
-    getAllStudents: (onSuccess, onFailure) => {
+export default class UsersMiddleware{
+    static getAllStudents (onSuccess, onFailure){
         User.find({
             role: "student"
         }, -"password",(error, result) => {
@@ -18,14 +18,13 @@ module.exports = {
                 onFailure(error);
             }
         })
-    },
-
+    }
         /**
      * Get the user object corresponding to the request
      * @param {*} request 
      * @param {*} next callback
      */
-    getUser: function (request, onSuccess, onFailure) {
+    static getUser(request, onSuccess, onFailure) {
         const token =
             request.headers.authorization;
         jwt.verify(token, Constants.AUTHSECRETKEY,  (error, decoded) => {
@@ -42,10 +41,10 @@ module.exports = {
                         onFailure(error);
                     }
             }).catch((error) => {
-                console.log(e)
+                console.log(error)
                 onFailure(error);
             });
             }
         });
-    },
+    }
 }

@@ -4,12 +4,8 @@
  * Date created: 13/08/19
  */
 
-/**
- * Dependecies 
- */
-const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+import mongoose, { Schema, Document } from 'mongoose';
 
 const CommentSchema = new mongoose.Schema({
 
