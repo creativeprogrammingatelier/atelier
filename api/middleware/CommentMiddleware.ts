@@ -1,49 +1,49 @@
-const Comment = require('../models/comment');
-const fs = require('fs');
 /**
  * Files middleware provides helper methods for interacting with comments in the DB
  * @Author Andrew Heath
  */
+
+import Comment, {IComment} from "../models/comment";
 export default class CommentMiddleware{
 
-    static makeComment (fileId, userId, line, body, successCallback, errorCallback) {
-        const newComment = new Comment({
+    static makeComment (fileId: String, userId : String, line: String, body: any, onSuccess: Function, onFailure: Function) {
+        const newComment: IComment = new Comment({
             about: fileId,
             author: userId,
             body: body,
             line: line
         })
-        newComment.save((error => {
+        newComment.save((error: Error) => {
             if (!error) {
-                successCallback();
+                onSuccess();
             } else {
-                errorCallback(error);
+                onFailure(error);
             }
-        }))
+        });
 
     }
 
-    static getComments(fileId, successCallback, failureCallback) {
+    static getComments(fileId: String, onSuccess: Function, onFailure : Function){
         Comment.find({
                 about: fileId
             })
             .populate('author', "-_id -password").
-        exec((error, result) => {
+        exec((error, response) => {
             if (!error) {
-                successCallback(result);
+                onSuccess(response);
             } else {
-                failureCallback(error);
+                onFailure(error);
             }
         })
     }
-    static deleteComment (commentId, successCallback, failureCallback){
+    static deleteComment (commentId: String, onSuccess: Function, onFailure: Function){
         Comment.deleteOne({
             _id: commentId
-        },(error, result) => {
+        },(error: Error) => {
             if (!error) {
-                successCallback(result);
+                onSuccess();
             } else {
-                failureCallback(error);
+                onFailure(error);
             }
         }
         )

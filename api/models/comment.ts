@@ -7,6 +7,14 @@
 
 import mongoose, { Schema, Document } from 'mongoose';
 
+
+export interface IComment extends Document{
+        about: Schema.Types.ObjectId,
+        line: number,
+        author: Schema.Types.ObjectId,
+        created: Date,
+        body: any
+}
 const CommentSchema = new mongoose.Schema({
 
     about: {
@@ -28,9 +36,4 @@ const CommentSchema = new mongoose.Schema({
 });
 
 
-/**
- * Done before a user object is created
- * Hashing the password and then calling callback
- */
-
-module.exports = mongoose.model('Comment', CommentSchema);
+export default mongoose.model<IComment>('Comment', CommentSchema);

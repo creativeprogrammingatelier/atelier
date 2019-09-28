@@ -1,5 +1,3 @@
-import FilesMiddleware  from "../middleware/FilesMiddleware";
-
 /**
  * Routes for request relating to Files
  * 
@@ -18,6 +16,7 @@ var router = express.Router();
 
 import AuthMiddlware from "../middleware/AuthMiddleware";
 import UserMiddleware from "../middleware/UsersMiddleware";
+import FilesMiddleware from "../middleware/FilesMiddleware";
 /**
  * Upload file end point, uses multer to read file
  * @TODO refactor
@@ -39,13 +38,13 @@ router.post('/uploadfile', AuthMiddlware.withAuth, upload.single('file'),
  */
 router.get('/getfiles', AuthMiddlware.withAuth, (request, result) => {
     UserMiddleware.getUser(request, (user) => {
-            Filesmid.getFiles(user.id, (files) => result.status(200).send(files), error => result.status(500).send(error));
+        FilesMiddleware.getFiles(user.id, (files) => result.status(200).send(files), error => result.status(500).send(error));
         }, error => result.status(500).send(error))
 });
 
 router.get('/getStudentFiles', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request, result)=>{
     const studentId = request.query.studentId;
-    Filesmid.getFiles(studentId, (files) => result.status(200).send(files), error => result.status(500).send(error));
+    FilesMiddleware.getFiles(studentId, (files) => result.status(200).send(files), error => result.status(500).send(error));
 });
 
 
@@ -54,7 +53,7 @@ router.get('/getStudentFiles', AuthMiddlware.withAuth, AuthMiddlware.isTa, (requ
  * @TODO check user has permissions required to delete files
  */
 router.delete('/deletefile', AuthMiddlware.withAuth, (request, result) => {
-    Filesmid.deleteFile(request.query.fileId).then(() => result.status(200).send()).catch(error => result.status(500).send(error));
+    FilesMiddleware.deleteFile(request.query.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error));
 })
 
 /**
@@ -63,13 +62,13 @@ router.delete('/deletefile', AuthMiddlware.withAuth, (request, result) => {
  */
 router.get('/getfile', AuthMiddlware.withAuth, (request, result) => {
     const fileId = request.query.fileId;
-    Filesmid.getFile(fileId, (file) => {
+    FilesMiddleware.getFile(fileId, (file) => {
         UserMiddleware.getUser(request, (user, request) => {
             file = file[0];
             if (user.id == file.owner || user.role == "ta") {
                 let pathToFile = path.join(`${__dirname}../../${file.path}`);
                 try {
-                    Filesmid.readFile(pathToFile, (fileData) => {
+                    FilesMiddleware.readFile(pathToFile, (fileData) => {
                         let returnFile = {
                             name: file.name,
                             body: fileData,
@@ -94,7 +93,7 @@ router.get('/getfile', AuthMiddlware.withAuth, (request, result) => {
  */
 router.get('/downloadfile', (request, result) => {
     const fileId = request.query.fileId;
-    Filesmid.getFilePath(fileId).then(file => {
+    FilesMiddleware.getFilePath(fileId).then(file => {
         const filepath = `${__dirname}../../${file[0].path}`;
         result.download(filepath, file[0].name);
     }).catch(error => result.status(500).send(error))

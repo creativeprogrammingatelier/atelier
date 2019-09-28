@@ -1,8 +1,6 @@
-import { IUser } from "../models/user";
-
-const FileModel = require('../models/file');
-const fs = require('fs');
-import UserModel from "../models/user";
+import FileModel from "../models/file";
+import fs, { PathLike } from "fs";
+import UserModel, { IUser } from "../models/user";
 /**
  * Files middleware provides helper methods for interacting with Files in the DB
  * @Author Andrew Heath
@@ -14,12 +12,12 @@ export default class FilesMiddleware{
      * @param {*} numberOfFiles # of files to be returned 
      * @TODO implement numberOfFiles
      */
-    static getFiles(userid, onSuccess, onFailure){
+    static getFiles(userid: String, onSuccess: Function, onFailure: Function){
         FileModel.find({
                 owner: userid
-            }, "_id name", (error, result) => {
+            }, "_id name", (error: Error, response: Response) => {
                 if(!error){
-                    onSuccess(result);
+                    onSuccess(response);
                 }
                 else{
                     onFailure(error)
@@ -31,18 +29,18 @@ export default class FilesMiddleware{
      * @param {*} fileId 
      * @param {*} next callback
      */
-    static getFile (fileId, next) {
+    static getFile (fileId: String, onSuccess: Function, onFailure: Function) {
         return FileModel.find({
             _id: fileId
-        }, "_id name body owner path", (error, result) => {
-            return next(result);
+        }, "_id name body owner path", (error: Error, response: Response) => {
+            return onSuccess(response);
         })
     }
     /**
      * Returns file path of files with Id
      * @param {*} fileid 
      */
-    static getFilePath (fileid) {
+    static getFilePath (fileid: String) {
         return FileModel.find({
             _id: fileid
         }, "-_id path name", {
@@ -54,12 +52,12 @@ export default class FilesMiddleware{
      * @param {*} filePath location of file
      * @param {*} next callback
      */
-    static readFile (filePath, onSuccess: Function, onFailure: Function) {
+    static readFile (filePath: PathLike, onSuccess: Function, onFailure: Function) {
         fs.readFile(filePath, {
             encoding: 'utf-8'
-        }, (err, data) => {
-            if (err) {
-                onFailure(err);
+        }, (error: Error, data: any) => {
+            if (error) {
+                onFailure(error);
             }
             onSuccess(data);
         });
@@ -72,7 +70,7 @@ export default class FilesMiddleware{
     static deleteFile (fileid: String, onSuccess: Function, onFailure: Function) {
         FileModel.deleteOne({
             _id: fileid
-        }, (error, data) => {
+        }, (error: Error, data: any) => {
             if (error) {
                 onFailure(error);
             }
@@ -85,9 +83,9 @@ export default class FilesMiddleware{
         const newFile = new FileModel({
             file: {fileName: fileName},
             path: path,
-            owner: user
+            owner: useri
         });
-        newFile.save((error) => {
+        newFile.save((error: Error) => {
             if (error) {
                 console.log(`File Uploading error has occured: ${error}`)
                 onFailure('Error Uploading File');

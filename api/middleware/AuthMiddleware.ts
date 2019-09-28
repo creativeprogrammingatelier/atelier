@@ -7,48 +7,46 @@
 
 import jwt from 'jsonwebtoken';
 import UsersMiddleware from './UsersMiddleware';
-import User from '../models/user';
-/**
- * CHANGE THIS BEFORE DEPLOYEMENT ! 
- */
-import Constants from '../lib/constants';
+import User, {IUser} from '../models/user';
+import {Constants}  from '../lib/constants';
+import {Request, Response} from "express";
+
+
 export default class AuthMiddleWare { 
     /**
      * Checks to see whether requset is authenticated correctly
      * @param {*} request 
      * @param {*} result 
-     * @param {*} next callback
+     * @param {*} next Callback
      */
-    static withAuth (request, result, next) {
-        const token =
-            request.headers.authorization;
+    static withAuth (request: Request , result: Response, onSuccess: Function, onFailure: Function) : void {
+        const token = request.headers.authorization;
         if (!token) {
             result.status(401).send('Unauthorized: No token provided');
         } else {
-            jwt.verify(token, Constants.AUTHSECRETKEY, function (err, decoded) {
-                if (err) {
-                    console.log(err)
+            jwt.verify(token, Constants.AUTHSECRETKEY, function (error: Error, decoded: Object) {
+                if (error) {
+                    console.log(error)
                     result.status(401).send('Unauthorized: Invalid token');
                 } else {
-                    result.email = decoded.email;
-                    next();
+                    onSuccess();
                 }
             });
         }
     }
-    static isTa (request, result, next) {
-        UsersMiddleware.getUser(request, (user) => {
+    static isTa (request: Request, result: Response, onSuccess: Function, onFailure: Function) {
+        UsersMiddleware.getUser(request, (user : IUser) => {
             if (user.role.toLowerCase() == "ta") {
-               next();
+                onSuccess();
             } else {
                 result.status(401).send();
             }
         },() => result.status(401).send())
     }
-    static getAllStudents(onSuccess, onFailure){
+    static getAllStudents(onSuccess: Function, onFailure: Function){
         User.find({
             role: "student"
-        }, (error, result) => {
+        }, (error: Error, result : any[]) => {
             if (!error) {
                 onSuccess(result);
             } else {
@@ -56,8 +54,8 @@ export default class AuthMiddleWare {
             }
         })
     }
-    static checkRole(request, role, onSuccess, onFailure){
-        UsersMiddleware.getUser(request, (user) => {
+    static checkRole(request: Request, role: String, onSuccess: Function, onFailure: Function){
+        UsersMiddleware.getUser(request, (user : IUser) => {
             if (user.role.toLowerCase() == role.toLowerCase()) {
                 onSuccess();
             } else {

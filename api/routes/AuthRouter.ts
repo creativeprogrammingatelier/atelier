@@ -5,12 +5,14 @@
  */
 
 
-var express = require('express');
+import express from "express";
 var router = express.Router();
-const jwt = require('jsonwebtoken');
-const Constants = require('../lib/constants');
+import jwt from "jsonwebtoken";
+import {Constants} from'../lib/constants';
 import User from "../models/user";
 import AuthMiddleware from "../middleware/AuthMiddleware";
+import {Request, Response} from "express";
+
 /* Authentication */
 /**
  * Login end point 
@@ -33,21 +35,19 @@ router.post('/login', (request, result) => {
         error: 'Incorrect email or password'
       })
     } else {
-      user.isCorrectPassword(password, (error, same) => {
+      User.schema.methods.isCorrectPassword(password, (error: Error, correct: boolean) => {
         if (error) {
           console.log(error)
           result.status(500).json({
             error: 'Internal error please try again'
           });
-        } else if (!same) {
+        } else if (!correct) {
           result.status(401).json({
             error: 'Incorrect email or password'
           });
         } else {
           // Issue token to user
-          const payload = {
-            email
-          };
+          const payload = {email};
           const token = jwt.sign(payload, Constants.AUTHSECRETKEY, {
             expiresIn: '1h'
           });
@@ -63,8 +63,8 @@ router.post('/login', (request, result) => {
 /**
  * Checks if request JWT token passed is valid using withAuth middleware method 
  * */
-router.get('/checkToken', AuthMiddleware.withAuth, function (req, res) {
-  res.sendStatus(200);
+router.get('/checkToken', AuthMiddleware.withAuth, function (request: Request, response: Response) {
+  response.sendStatus(200);
 });
 
 /**

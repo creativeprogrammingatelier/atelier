@@ -10,7 +10,7 @@ const User = require('../models/user')
 import mongoose, { Schema, Document } from 'mongoose';
 
 
-export interface IFile{
+export interface IFile extends Document{
     name:String,
     path:String,
     owne:String
