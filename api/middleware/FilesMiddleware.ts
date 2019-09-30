@@ -70,11 +70,11 @@ export default class FilesMiddleware{
     static deleteFile (fileid: String, onSuccess: Function, onFailure: Function) {
         FileModel.deleteOne({
             _id: fileid
-        }, (error: Error, data: any) => {
+        }, (error: Error) => {
             if (error) {
                 onFailure(error);
             }
-            onSuccess(data);
+            onSuccess();
         })
     }
 
@@ -83,7 +83,7 @@ export default class FilesMiddleware{
         const newFile = new FileModel({
             file: {fileName: fileName},
             path: path,
-            owner: useri
+            owner: user
         });
         newFile.save((error: Error) => {
             if (error) {

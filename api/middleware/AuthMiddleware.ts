@@ -19,7 +19,7 @@ export default class AuthMiddleWare {
      * @param {*} result 
      * @param {*} next Callback
      */
-    static withAuth (request: Request , result: Response, onSuccess: Function, onFailure: Function) : void {
+    static withAuth (request: Request , result: Response, onSuccess: Function) : void {
         const token = request.headers.authorization;
         if (!token) {
             result.status(401).send('Unauthorized: No token provided');
@@ -34,7 +34,7 @@ export default class AuthMiddleWare {
             });
         }
     }
-    static isTa (request: Request, result: Response, onSuccess: Function, onFailure: Function) {
+    static isTa (request: Request, result: Response, onSuccess: Function) {
         UsersMiddleware.getUser(request, (user : IUser) => {
             if (user.role.toLowerCase() == "ta") {
                 onSuccess();

@@ -107,7 +107,7 @@ router.post('/checkRole', AuthMiddleware.withAuth, function (request, result) {
   const {
     role
   } = request.body;
-  AuthMiddleware.checkRole(request, role, () => result.status(204).send(), (error) => result.status(401).send(error))
+  AuthMiddleware.checkRole(request, role, () => result.status(204).send(), (error: Error) => result.status(401).send(error))
 });
 
 module.exports = router;

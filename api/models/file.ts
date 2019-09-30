@@ -13,7 +13,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IFile extends Document{
     name:String,
     path:String,
-    owne:String
+    owner:String
 }
 const FileSchema = new mongoose.Schema({
 
