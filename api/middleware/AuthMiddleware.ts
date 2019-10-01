@@ -26,7 +26,7 @@ export default class AuthMiddleWare {
         } else {
             jwt.verify(token, Constants.AUTHSECRETKEY, function (error: Error, decoded: Object) {
                 if (error) {
-                    console.log(error)
+                    console.error(error)
                     result.status(401).send('Unauthorized: Invalid token');
                 } else {
                     onSuccess();

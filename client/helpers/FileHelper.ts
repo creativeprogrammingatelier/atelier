@@ -13,7 +13,7 @@ export default class FileHelper {
                 onSuccess(json);
             });
         }).catch(function (error) {
-            console.log(error);
+            console.error(error);
             onFailure(error)
         })
     }
@@ -26,7 +26,7 @@ export default class FileHelper {
                 onSuccess(json)
             });
         }).catch(function (error) {
-            console.log(error);
+            console.error(error);
             onFailure()
         })
     }
@@ -40,7 +40,7 @@ export default class FileHelper {
                 onSuccess(json);
             });
         }).catch(function (error) {
-            console.log(error);
+            console.error(error);
             onFailure()
         })
 
@@ -62,7 +62,7 @@ export default class FileHelper {
 
         }).catch(function (error) {
             //TODO Handle errors in a nice way
-            console.log(error)
+            console.error(error)
             onFailure();
         })
 
@@ -83,7 +83,7 @@ export default class FileHelper {
 
         }).catch(function (error) {
             onFailure();
-            console.log(error);
+            console.error(error);
         })
     }
 

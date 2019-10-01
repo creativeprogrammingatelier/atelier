@@ -43,10 +43,64 @@ export default class UsersMiddleware{
                         onFailure(error);
                     }
             }).catch((error) => {
-                console.log(error)
+                console.error(error)
                 onFailure(error);
             });
             }
         });
+    }
+
+    static createUser(request: Request, onSuccess: Function, onFailure: Function){
+        const {
+            email,
+            password,
+            role
+          } = request.body;
+          const newUser = new User({
+            email,
+            password,
+            role
+          });
+          newUser.save((error: Error) => {
+            if (error) {
+              onFailure(error)
+            } else {
+              onSuccess(this.issueToken(email));
+            }
+          });
+    }
+
+    static loginUser(request: Request, onSuccess: Function, onUnauthorised: Function, onFailure: Function){
+        const {
+            email,
+            password
+          } = request.body;
+          User.findOne({
+            email
+          }, (error, user) => {
+            if (error) {
+                onFailure(error);
+            } else if (!user) {
+                onUnauthorised();
+            } else {
+              User.schema.methods.isCorrectPassword(password, (error: Error, correct: boolean) => {
+                if (error) {
+                    onFailure(error);
+                } else if (!correct) {
+                  onUnauthorised();
+                } else {
+                  onSuccess(this.issueToken(email))
+                }
+              })
+            }
+          });
+    }
+
+    private static  issueToken(email: String): String{
+        const payload = {email};
+        const token: String = jwt.sign(payload, Constants.AUTHSECRETKEY, {
+          expiresIn: '1h'
+        });
+        return token;
     }
 }

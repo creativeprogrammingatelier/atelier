@@ -29,7 +29,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
         CommentHelper.getComments(this.props.file.id, (comments: any) => this.setState({
             comments: comments,
             commentCreatorToggle: false
-        }), (error: any) => console.log(error))
+        }), (error: any) => console.error(error))
     }
 
     deleteComment = (commentId: String) =>{

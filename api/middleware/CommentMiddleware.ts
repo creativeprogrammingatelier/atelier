@@ -20,7 +20,6 @@ export default class CommentMiddleware{
                 onFailure(error);
             }
         });
-
     }
 
     static getComments(fileId: String, onSuccess: Function, onFailure : Function){

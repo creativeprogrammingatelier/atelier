@@ -1,4 +1,4 @@
-import FileModel from "../models/file";
+import FileModel, { IFile } from "../models/file";
 import fs, { PathLike } from "fs";
 import UserModel, { IUser } from "../models/user";
 /**
@@ -40,11 +40,16 @@ export default class FilesMiddleware{
      * Returns file path of files with Id
      * @param {*} fileid 
      */
-    static getFilePath (fileid: String) {
-        return FileModel.find({
+    static getFilePath (fileid: String, onSuccess:Function, onFailure: Function) {
+        FileModel.find({
             _id: fileid
         }, "-_id path name", {
             limit: 1
+        },(error: Error, data: any) => {
+            if (error) {
+                onFailure(error);
+            }
+            onSuccess(data);
         });
     }
     /*
@@ -52,14 +57,18 @@ export default class FilesMiddleware{
      * @param {*} filePath location of file
      * @param {*} next callback
      */
-    static readFile (filePath: PathLike, onSuccess: Function, onFailure: Function) {
+    static readFileFromDisk (file: IFile, filePath: PathLike, onSuccess: Function, onFailure: Function) {
         fs.readFile(filePath, {
             encoding: 'utf-8'
         }, (error: Error, data: any) => {
             if (error) {
                 onFailure(error);
             }
-            onSuccess(data);
+            onSuccess({
+                name: file.name,
+                body: data,
+                id: file._id
+            });
         });
     }
     /**

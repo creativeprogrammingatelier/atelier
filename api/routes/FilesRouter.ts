@@ -21,21 +21,20 @@ import {Response, Request} from "express";
 import { IUser } from "../models/user";
 import { IFile } from "../models/file";
 import path from "path";
+import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
 /**
  * Upload file end point, uses multer to read file
  * @TODO refactor
  */
 router.post('/uploadfile', AuthMiddlware.withAuth, upload.single('file'),
-    (request: any, result: Response, next: Function) => {
-        try {
-            let file = request.file;
-            UserMiddleware.getUser(request, (user: IUser) => {
-                FilesMiddleware.createFile(file.originalname, file.path, user,()=>  result.status(200).send("File Uploaded"), () => result.status(500).send('Error Uploading File'));
-            }, () => result.status(500).send('Error Uploading File'));
-            } catch (error) {
-            console.log(`File Uploading error has occured: ${error}`), result.status(500).send('Error Uploading File');
-        }
-    })
+    (request: any, result: Response) => {
+        let file = request.file;
+        UserMiddleware.getUser(request, 
+            (user: IUser) => { FilesMiddleware.createFile(file.originalname, file.path, user,
+                ()=>  result.status(200).send("File Uploaded"),
+                (error: Error) => {console.error(error); result.status(500).send('Error Uploading File')})},
+            (error: Error) => result.status(500).send('Error Uploading File'));
+})
 /**
  * End point to fetch all files belonging to a user
  * @TODO implement a selected number of files to fetch possible pagination 
@@ -66,41 +65,33 @@ router.delete('/deletefile', AuthMiddlware.withAuth, (request: Request, result: 
  */
 router.get('/getfile', AuthMiddlware.withAuth, (request : Request, result: Response) => {
     const fileId = request.query.fileId;
-    FilesMiddleware.getFile(fileId, (files: IFile[]) => {
-        UserMiddleware.getUser(request, (user: IUser, request : Request) => {
-            let file = files[0];
-            if (user.id == file.owner || user.role == "ta") {
-                let pathToFile = path.join(`${__dirname}../../${file.path}`);
-                try {
-                    FilesMiddleware.readFile(pathToFile, (fileData: any) => {
-                        let returnFile = {
-                            name: file.name,
-                            body: fileData,
-                            id: file._id
-                        };
-                        result.status(200).json(returnFile);
-                    },(error: Error)=> result.status(500).send("error"));
-                } catch (error) {
-                    result.status(500).send("error");
-                }
-            } else {
-                result.status(401).send("You are not the file owner");
-            }
-        },(error: Error) => result.status(500).send(error))
-    },(error : Error) => {
-        result.status(500).send("Error");
-    });
+    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
+        (file: IFile) => {
+            FilesMiddleware.readFileFromDisk(file, path.join(`${__dirname}../../${file.path}`), 
+                (fileWithData: any) => {result.status(200).json(fileWithData)},
+                (error: Error)=> {console.error(error); result.status(500).send("error")}
+            )
+        },
+        () => {result.status(401).send()},
+        (error : Error) => {
+            console.error(error);
+            result.status(500).send("Error");
+        }
+    );
 });
 /**
  * Download file given a ID
  * @TODO check if user has permission to view file
  */
-router.get('/downloadfile', (request: Request, result: Response) => {
+router.get('/downloadfile', AuthMiddlware.withAuth, (request: Request, result: Response) => {
     const fileId = request.query.fileId;
-    FilesMiddleware.getFilePath(fileId).then((files:IFile[]) =>  {
-        let file = files[0];
-        const filepath = `${__dirname}../../${file.path}`;
-        result.download(filepath);
-    }).catch(error => result.status(500).send(error))
+    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
+        (file: IFile) => {
+            const filepath = `${__dirname}../../${file.path}`;
+            result.download(filepath); 
+        },
+        () => {result.status(401).send()},
+        (error :Error) => {console.error(error), result.status(500).send(error)}
+    );
 });
 module.exports = router;

@@ -14,7 +14,7 @@ export default class UserHelper {
                 onSuccess(json)
             });
         }).catch(function (error) {
-            console.log(error);
+            console.error(error);
             onFailure(error);
         })
     }
