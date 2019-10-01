@@ -6,10 +6,15 @@
 /**
  * Dependecies 
  */
-const mongoose = require('mongoose');
 const User = require('../models/user')
-const Schema = mongoose.Schema;
+import mongoose, { Schema, Document } from 'mongoose';
 
+
+export interface IFile extends Document{
+    name:String,
+    path:String,
+    owner:String
+}
 const FileSchema = new mongoose.Schema({
 
     name: {
@@ -28,4 +33,4 @@ const FileSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('File', FileSchema);
+export default mongoose.model<IFile>('File', FileSchema);

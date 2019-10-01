@@ -3,17 +3,19 @@
  * Author: Andrew Heath
  * Date created: 13/08/19
  */
-
 /**
  * Dependecies 
  */
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-
+import mongoose, { Schema, Document } from 'mongoose';
+import bcrypt from "bcrypt";
 /* TODO THIS MUST BE CHANGED BEFORE DEPLOYEMENT */
 
 const saltRounds = 10; //Determines the efficiency vs speed
-
+export interface IUser extends Document{
+    email: String,
+    password: String,
+    role: String, 
+}
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -29,20 +31,20 @@ const UserSchema = new mongoose.Schema({
         required: true
     }
 });
-
 /**
  * Done before a user object is created
  * Hashing the password and then calling callback
  */
 UserSchema.pre('save', function (next) {
     if (this.isNew || this.isModified('password')) {
-        const document = this;
-        bcrypt.hash(document.password, saltRounds,
+        // remove this any @TODO
+        const user: any = this;
+        bcrypt.hash(user.password, saltRounds,
             (error, hashedPassword) => {
                 if (error) {
                     next(error);
                 } else {
-                    document.password = hashedPassword;
+                    user.password = hashedPassword;
                     next();
                 }
             })
@@ -52,15 +54,14 @@ UserSchema.pre('save', function (next) {
 })
 
 /* Autheticating the user*/
-UserSchema.methods.isCorrectPassword = function (password, callback) {
+UserSchema.methods.isCorrectPassword = function (password: String, next:Function) {
     bcrypt.compare(password, this.password, function (err, same) {
         if (err) {
-            callback(err);
+            next(err);
         } else {
-            callback(err, same);
+            next(same);
         }
     });
 }
 
-
-module.exports = mongoose.model('User', UserSchema);
+export default mongoose.model<IUser>('User', UserSchema);
