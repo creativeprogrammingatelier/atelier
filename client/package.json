@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "npx webpack --watch",
     "build": "npx webpack ",
-    "test": "mocha -r ts-node/register -r tests/compiler.tsx tests/*.test.tsx"
+    "test": "mocha -r ts-node/register -r tests/compiler.tsx -r mock-local-storage tests/*.test.tsx"
   },
   "keywords": [],
   "author": "",
@@ -55,6 +55,7 @@
     "events": "^3.0.0",
     "glob": "^7.1.4",
     "jwt-decode": "^2.2.0",
+    "mock-local-storage": "^1.1.8",
     "npx": "^10.2.0",
     "primjs": "^0.6.5",
     "prismjs": "^1.17.1",
