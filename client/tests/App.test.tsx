@@ -8,8 +8,8 @@ import Adapter from 'enzyme-adapter-react-16'
 configure({ adapter: new Adapter() });
 const wrapper = shallow(<App />); 
 
-describe('<App />', function() {
-    it('should always render a navbar', function() {
+describe('<App />', () => {
+    it('should always render a navbar', () => {
         expect(wrapper.find('nav').length).to.equal(1);
     });
   });
