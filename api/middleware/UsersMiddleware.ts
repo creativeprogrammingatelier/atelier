@@ -13,7 +13,7 @@ export default class UsersMiddleware{
     static getAllStudents (onSuccess: Function, onFailure: Function){
         User.find({
             role: "student"
-        }, -"password",(error, result) => {
+        }, "-password",(error, result) => {
             if (!error) {
                 onSuccess(result);
             } else {
@@ -36,7 +36,7 @@ export default class UsersMiddleware{
                 let email = decoded.email;
                 User.findOne({
                     email
-                }, (error, user) => {
+                },"-password", (error, user) => {
                     if (user) {
                         onSuccess(user, request)
                     } else {

@@ -90,13 +90,13 @@ export default class FilesMiddleware{
 
     static createFile (fileName :String, path :String, user: IUser, onSuccess: Function, onFailure: Function ){
         const newFile = new FileModel({
-            file: {fileName: fileName},
             path: path,
-            owner: user
+            owner: user,
+            name: fileName
         });
         newFile.save((error: Error) => {
             if (error) {
-                console.log(`File Uploading error has occured: ${error}`)
+                console.error(error)
                 onFailure('Error Uploading File');
             } else {
                 onSuccess("File Uploaded");
