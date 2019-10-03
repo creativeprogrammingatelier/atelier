@@ -47,7 +47,7 @@ app.use('/', indexRouter);
  * Error handling 404
  * */
 
-app.use(function (err, req, res, next) {
+app.use(function (err:any, req:any, res:any, next:any) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -61,7 +61,7 @@ app.use(function (err, req, res, next) {
  * @TODO refactor
  */
 const mongo_uri = 'mongodb://localhost/react-auth';
-mongoose.connect(mongo_uri, function (err) {
+mongoose.connect(mongo_uri, function (err:any) {
   if (err) {
     throw err;
 
