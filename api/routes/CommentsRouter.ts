@@ -28,12 +28,8 @@ router.put('/', AuthMiddleware.withAuth, (request, result) => {
 });
 
 // TODO check user has permission to get comments
-router.get('/:commentId', AuthMiddleware.withAuth, (request, result) => {
-    const {
-        fileId,
-    } = request.query;
-
-    CommentsMiddleware.getComments(fileId, (data:any ) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
+router.get('/file/:fileId', AuthMiddleware.withAuth, (request, result) => {
+    CommentsMiddleware.getComments(request.params.fileId, (data:any ) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
 });
 // TODO check user has permission to delete comment
 router.delete('/:commentId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (request, result) => {

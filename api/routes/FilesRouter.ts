@@ -46,7 +46,7 @@ router.get('/', AuthMiddlware.withAuth, (request: Request, result: Response) => 
 });
 
 router.get('/user/:userId', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request: Request, result: Response)=>{
-    const studentId = request.query.studentId;
+    const studentId = request.params.uesrId;
     FilesMiddleware.getFiles(studentId, (files: any) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
 });
 
@@ -64,7 +64,7 @@ router.delete('/', AuthMiddlware.withAuth, (request: Request, result: Response) 
  * @TODO Refactor, far too nested 
  */
 router.get('/:studentId', AuthMiddlware.withAuth, (request : Request, result: Response) => {
-    const fileId = request.query.fileId;
+    const fileId = request.params.studentId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
             FilesMiddleware.readFileFromDisk(file, path.join(`${__dirname}../../${file.path}`), 
@@ -84,7 +84,7 @@ router.get('/:studentId', AuthMiddlware.withAuth, (request : Request, result: Re
  * @TODO check if user has permission to view file
  */
 router.get('/:studentId/download', AuthMiddlware.withAuth, (request: Request, result: Response) => {
-    const fileId = request.query.fileId;
+    const fileId = request.params.studentId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
             const filepath = `${__dirname}../../${file.path}`;
