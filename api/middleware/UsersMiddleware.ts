@@ -72,28 +72,25 @@ export default class UsersMiddleware{
 
     static loginUser(request: Request, onSuccess: Function, onUnauthorised: Function, onFailure: Function){
         const {
-            email,
-            password
-          } = request.body;
-          User.findOne({
-            email
-          }, (error, user) => {
-            if (error) {
-                onFailure(error);
-            } else if (!user) {
+          email,
+          password
+        } = request.body;
+        User.findOne({
+          email
+        }, (error, user) => {
+          if (error) {
+              onFailure(error);
+          } else if (!user) {
+              onUnauthorised();
+          } else {
+              if(user.comparePassword(password)){
+                onSuccess(this.issueToken(email))
+              }
+              else{
                 onUnauthorised();
-            } else {
-              User.schema.methods.isCorrectPassword(password, (error: Error, correct: boolean) => {
-                if (error) {
-                    onFailure(error);
-                } else if (!correct) {
-                  onUnauthorised();
-                } else {
-                  onSuccess(this.issueToken(email))
-                }
-              })
-            }
-          });
+              }
+          }
+        });
     }
 
     private static  issueToken(email: String): String{

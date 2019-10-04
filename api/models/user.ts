@@ -6,17 +6,15 @@
 /**
  * Dependecies 
  */
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model, model } from 'mongoose';
 import bcrypt from "bcrypt";
-/* TODO THIS MUST BE CHANGED BEFORE DEPLOYEMENT */
+import { IUserDocument } from '../interfaces/IUserDocument';
 
 const saltRounds = 10; //Determines the efficiency vs speed
-export interface IUser extends Document{
-    email: String,
-    password: String,
-    role: String, 
+export interface IUser extends IUserDocument{
+   comparePassword(password: String):boolean;
 }
-const UserSchema = new mongoose.Schema({
+export const UserSchema = new Schema({
     email: {
         type: String,
         required: true,
@@ -31,37 +29,20 @@ const UserSchema = new mongoose.Schema({
         required: true
     }
 });
-/**
- * Done before a user object is created
- * Hashing the password and then calling callback
- */
-UserSchema.pre('save', function (next) {
-    if (this.isNew || this.isModified('password')) {
-        // remove this any @TODO
-        const user: any = this;
-        bcrypt.hash(user.password, saltRounds,
-            (error, hashedPassword) => {
-                if (error) {
-                    next(error);
-                } else {
-                    user.password = hashedPassword;
-                    next();
-                }
-            })
-    } else {
-        next();
-    }
-})
-
-/* Autheticating the user*/
-UserSchema.methods.isCorrectPassword = function (password: String, next:Function) {
-    bcrypt.compare(password, this.password, function (err, same) {
-        if (err) {
-            next(err);
-        } else {
-            next(same);
-        }
-    });
+export interface IUserModel extends Model<IUser> {
+    hashPassword(password: string): string;
 }
 
-export default mongoose.model<IUser>('User', UserSchema);
+UserSchema.method('comparePassword', function (password: string): boolean {
+    console.log(this.password)
+    if (bcrypt.compareSync(password, this.password)) return true;
+    return false;
+});
+
+UserSchema.static('hashPassword', (password: string): string => {
+    return bcrypt.hashSync(password, saltRounds);
+});
+
+export const User: IUserModel = model<IUser, IUserModel>('User', UserSchema);
+
+export default User;
