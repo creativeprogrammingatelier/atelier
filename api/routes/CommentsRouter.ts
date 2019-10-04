@@ -15,7 +15,7 @@ import { IUser } from "../models/user";
 var router = express.Router();
 // TODO check user has permission make comment
 // TODO get comment author id from the token not from the parameter
-router.put('/makeComment', AuthMiddleware.withAuth, (request, result) => {
+router.put('/', AuthMiddleware.withAuth, (request, result) => {
     UsersMiddlware.getUser(request, (user: IUser, request: Request) => {
         const {
             fileId,
@@ -28,7 +28,7 @@ router.put('/makeComment', AuthMiddleware.withAuth, (request, result) => {
 });
 
 // TODO check user has permission to get comments
-router.get('/getComments', AuthMiddleware.withAuth, (request, result) => {
+router.get('/:commentId', AuthMiddleware.withAuth, (request, result) => {
     const {
         fileId,
     } = request.query;
@@ -36,7 +36,7 @@ router.get('/getComments', AuthMiddleware.withAuth, (request, result) => {
     CommentsMiddleware.getComments(fileId, (data:any ) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
 });
 // TODO check user has permission to delete comment
-router.delete('/comment/:commentId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (request, result) => {
+router.delete('/:commentId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (request, result) => {
     CommentsMiddleware.deleteComment(request.params.commentId, (data: any) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
 });
 module.exports = router;

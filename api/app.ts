@@ -36,10 +36,10 @@ app.use(express.static(path.join(__dirname, '../client/')));
  * Setting routes
  * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all 
  */
-app.use('/', authRouter);
-app.use('/', usersRouter);
-app.use('/', filesRouter);
-app.use('/', commentRouter);
+app.use('/auth', authRouter);
+app.use('/users', usersRouter);
+app.use('/files', filesRouter);
+app.use('/comments', commentRouter);
 app.use('/', indexRouter);
 
 

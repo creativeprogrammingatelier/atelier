@@ -30,7 +30,7 @@ router.post('/login', (request: Request, response: Response) => {
 /**
  * Checks if request JWT token passed is valid using withAuth middleware method 
  * */
-router.get('/checkToken', AuthMiddleware.withAuth, function (request: Request, response: Response) {
+router.get('/token', AuthMiddleware.withAuth, function (request: Request, response: Response) {
   response.sendStatus(200);
 });
 
@@ -48,7 +48,7 @@ router.post('/register', (request, result) => {
  * Checks if role of user, (using token) is valid compared to that passed in the body
  * @TODO refactor move functions into middleware
  */
-router.post('/checkRole', AuthMiddleware.withAuth, function (request, result) {
+router.post('/role', AuthMiddleware.withAuth, function (request, result) {
   const {
     role
   } = request.body;

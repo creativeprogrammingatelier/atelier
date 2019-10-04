@@ -26,7 +26,7 @@ import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
  * Upload file end point, uses multer to read file
  * @TODO refactor
  */
-router.post('/uploadfile', AuthMiddlware.withAuth, upload.single('file'),
+router.put('/', AuthMiddlware.withAuth, upload.single('file'),
     (request: any, result: Response) => {
         let file = request.file;
         UserMiddleware.getUser(request, 
@@ -39,13 +39,13 @@ router.post('/uploadfile', AuthMiddlware.withAuth, upload.single('file'),
  * End point to fetch all files belonging to a user
  * @TODO implement a selected number of files to fetch possible pagination 
  */
-router.get('/getfiles', AuthMiddlware.withAuth, (request: Request, result: Response) => {
+router.get('/', AuthMiddlware.withAuth, (request: Request, result: Response) => {
     UserMiddleware.getUser(request, (user: IUser) => {
         FilesMiddleware.getFiles(user.id, (files:any ) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
         }, (error: Error) => result.status(500).send(error))
 });
 
-router.get('/getStudentFiles', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request: Request, result: Response)=>{
+router.get('/user/:userId', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request: Request, result: Response)=>{
     const studentId = request.query.studentId;
     FilesMiddleware.getFiles(studentId, (files: any) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
 });
@@ -55,7 +55,7 @@ router.get('/getStudentFiles', AuthMiddlware.withAuth, AuthMiddlware.isTa, (requ
  * End point pint to delete a file with a given ID
  * @TODO check user has permissions required to delete files
  */
-router.delete('/deletefile', AuthMiddlware.withAuth, (request: Request, result: Response) => {
+router.delete('/', AuthMiddlware.withAuth, (request: Request, result: Response) => {
     FilesMiddleware.deleteFile(request.query.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error));
 })
 
@@ -63,7 +63,7 @@ router.delete('/deletefile', AuthMiddlware.withAuth, (request: Request, result: 
  * End point to read file from disk with given ID 
  * @TODO Refactor, far too nested 
  */
-router.get('/getfile', AuthMiddlware.withAuth, (request : Request, result: Response) => {
+router.get('/:studentId', AuthMiddlware.withAuth, (request : Request, result: Response) => {
     const fileId = request.query.fileId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
@@ -83,7 +83,7 @@ router.get('/getfile', AuthMiddlware.withAuth, (request : Request, result: Respo
  * Download file given a ID
  * @TODO check if user has permission to view file
  */
-router.get('/downloadfile', AuthMiddlware.withAuth, (request: Request, result: Response) => {
+router.get('/:studentId/download', AuthMiddlware.withAuth, (request: Request, result: Response) => {
     const fileId = request.query.fileId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
