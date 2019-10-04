@@ -30,7 +30,7 @@ class CommentCreator extends React.Component<CommentCreatorProps> {
             comment: this.state.commentBody,
             line: (this.state.lineNum) ? this.state.lineNum: undefined
         }
-        CommentHelper.putComment(JSON.stringify(body), this.props.onSuccess, ()=> console.log("Failed, Please handle"))
+        CommentHelper.putComment(JSON.stringify(body), this.props.onSuccess, ()=> alert("Failed, to fetch Comments"))
     }
 
     render() {

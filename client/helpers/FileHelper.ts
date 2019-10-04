@@ -19,7 +19,7 @@ export default class FileHelper {
     }
 
     static getAllFiles = (onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/getfiles`, {
+        AuthHelper.fetch(`/files`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
@@ -33,7 +33,7 @@ export default class FileHelper {
 
 
     static getFile = (fileId: string, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/getfile?fileId=${fileId}`, {
+        AuthHelper.fetch(`/files/${fileId}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
@@ -51,21 +51,16 @@ export default class FileHelper {
             headers: {
                 'content-type': 'multipart/form-data',
                 "Authorization": AuthHelper.getToken()
-            },
-            params: {
-                "fileId": fileId,
             }
         };
-        axios.delete('/deletefile', config
+        axios.delete(`/files/${fileId}`, config
         ).then((response) => {
             onSuccess();
-
         }).catch(function (error) {
             //TODO Handle errors in a nice way
             console.error(error)
             onFailure();
         })
-
     }
 
     static uploadFile = (file: any, onSuccess: Function, onFailure: Function) => {
@@ -77,7 +72,7 @@ export default class FileHelper {
                 "Authorization": AuthHelper.getToken()
             }
         };
-        axios.post('/uploadfile', formData, config
+        axios.put('/files/', formData, config
         ).then((response) => {
             onSuccess();
 

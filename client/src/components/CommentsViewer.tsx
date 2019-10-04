@@ -12,7 +12,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     constructor(props: { file: any }) {
         super(props);
         this.state = {
-            file: props.file,
+            file: props.file[0],
             commentCreatorToggle: false
         }
         this.fetchComments()
@@ -28,7 +28,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     }
 
     fetchComments = () => {
-        CommentHelper.getComments(this.props.file.id, (comments: any) => this.setState({
+        CommentHelper.getFileComments(this.props.file._id, (comments: any) => this.setState({
             comments: comments,
             commentCreatorToggle: false
         }), (error: any) => console.error(error))

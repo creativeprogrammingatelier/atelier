@@ -41,8 +41,12 @@ router.put('/', AuthMiddlware.withAuth, upload.single('file'),
  */
 router.get('/', AuthMiddlware.withAuth, (request: Request, result: Response) => {
     UserMiddleware.getUser(request, (user: IUser) => {
-        FilesMiddleware.getFiles(user.id, (files:any ) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
+        FilesMiddleware.getFiles(user.id, (files:IFile[] ) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
         }, (error: Error) => result.status(500).send(error))
+});
+
+router.get('/:fileId', AuthMiddlware.withAuth, (request: Request, result: Response) => {
+        FilesMiddleware.getFile(request.params.fileId, (file: IFile ) => result.status(200).send(file), (error: Error) => result.status(500).send(error));
 });
 
 router.get('/user/:userId', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request: Request, result: Response)=>{
@@ -55,7 +59,7 @@ router.get('/user/:userId', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request
  * End point pint to delete a file with a given ID
  * @TODO check user has permissions required to delete files
  */
-router.delete('/', AuthMiddlware.withAuth, (request: Request, result: Response) => {
+router.delete('/:fileId', AuthMiddlware.withAuth, (request: Request, result: Response) => {
     FilesMiddleware.deleteFile(request.query.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error));
 })
 
@@ -83,8 +87,8 @@ router.get('/:studentId', AuthMiddlware.withAuth, (request : Request, result: Re
  * Download file given a ID
  * @TODO check if user has permission to view file
  */
-router.get('/:studentId/download', AuthMiddlware.withAuth, (request: Request, result: Response) => {
-    const fileId = request.params.studentId;
+router.get('/:fileId/download', AuthMiddlware.withAuth, (request: Request, result: Response) => {
+    const fileId = request.params.fileId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
             const filepath = `${__dirname}../../${file.path}`;

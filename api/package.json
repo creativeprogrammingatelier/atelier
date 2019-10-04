@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www",
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpileOnly ./app.ts",
     "prod": "tsc && node ./build/app.js"

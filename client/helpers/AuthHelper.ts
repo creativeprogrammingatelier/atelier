@@ -6,7 +6,7 @@ export default class AuthHelper {
 
 
     static checkRole(role: string) {
-        return this.fetch(`/checkRole`, {
+        return this.fetch(`/auth/role`, {
             method: "POST",
             body: JSON.stringify({
                 role,
@@ -22,7 +22,7 @@ export default class AuthHelper {
     }
 
     static register(email: string, password: string, role: string, onSuccess: Function, onFailure: Function) {
-        this.fetch('/register', {
+        this.fetch('/auth/register', {
             method: "POST",
             body: JSON.stringify({
                 email,
@@ -39,7 +39,7 @@ export default class AuthHelper {
 
     static login(email: string, password: string, onSuccess: Function, onFailure: Function) {
         // Get a token from api server using the fetch api
-        this.fetch(`/login`, {
+        this.fetch(`/auth/login`, {
             method: "POST",
             body: JSON.stringify({
                 email,

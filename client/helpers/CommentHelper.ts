@@ -6,8 +6,8 @@ import axios from "axios";
  */
 export default class CommentHelper {
 
-    static getComments = (fileId: number, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/getComments?fileId=${fileId}`, {
+    static getFileComments = (fileId: number, onSuccess: Function, onFailure: Function) => {
+        AuthHelper.fetch(`/comments/file/${fileId}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
@@ -19,7 +19,7 @@ export default class CommentHelper {
     }
 
     static putComment = (body: any, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/makeComment`, {
+        AuthHelper.fetch(`/comments`, {
             method: "PUT",
             body
         }).then(() => {
@@ -30,7 +30,7 @@ export default class CommentHelper {
     }
 
     static deleteComment = (commentId: String, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/comment/${commentId}`, {
+        AuthHelper.fetch(`/comments/${commentId}`, {
             method: "delete"
         }).then(() => {
             onSuccess()
