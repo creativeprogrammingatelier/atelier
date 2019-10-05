@@ -2,6 +2,6 @@ import { Document } from 'mongoose';
 
 export interface IUserDocument extends Document {
     email: string;
-    name: string;
+    role: string;
     password: string;
 }

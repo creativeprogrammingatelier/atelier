@@ -1,6 +1,4 @@
-import decode from "jwt-decode";
 import AuthHelper from "./AuthHelper";
-import axios from "axios";
 /**
  * Helpers for request for files
  */

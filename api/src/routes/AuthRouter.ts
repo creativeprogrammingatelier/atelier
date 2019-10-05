@@ -7,9 +7,6 @@
 
 import express from "express";
 var router = express.Router();
-import jwt from "jsonwebtoken";
-import {Constants} from'../lib/constants';
-import User from "../models/user";
 import AuthMiddleware from "../middleware/AuthMiddleware";
 import {Request, Response} from "express";
 import UsersMiddleware from "../middleware/UsersMiddleware";
