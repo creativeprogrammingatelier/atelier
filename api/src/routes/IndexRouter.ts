@@ -10,7 +10,7 @@
 var express = require('express');
 var router = express.Router();
 const path = require('path');
-
+  
 import {Response} from "express";
 /**
  * Serves default index
@@ -23,7 +23,7 @@ router.get('/', function (request: Request, result: Response, next: Function) {
  * Serves the react bundle 
  */
 router.get('*', function (request: Request, result: Response, next: Function) {
-  result.sendFile(path.resolve(__dirname + '/../../client/index.html'));
+  result.render('index');
 });
 
 

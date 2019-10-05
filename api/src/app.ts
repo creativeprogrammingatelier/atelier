@@ -31,7 +31,7 @@ const secret = 'SECRET';
 /**
  * Adding default static
  */
-app.use(express.static(path.join(__dirname, '../client/')));
+app.use(express.static(path.join(__dirname, '../../client/')));
 /**
  * Setting routes
  * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all 
