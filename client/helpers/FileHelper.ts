@@ -38,10 +38,10 @@ export default class FileHelper {
         }).then((response) => {
             response.json().then((json: any) => {
                 onSuccess(json);
-            });
+            }); 
         }).catch(function (error) {
             console.error(error);
-            onFailure()
+            onFailure(error)
         })
 
     }

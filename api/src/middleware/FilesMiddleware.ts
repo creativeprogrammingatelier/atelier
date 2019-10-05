@@ -1,6 +1,7 @@
 import FileModel, { IFile } from "../models/file";
 import fs, { PathLike } from "fs";
 import UserModel, { IUser } from "../models/user";
+import path from "path";
 /**
  * Files middleware provides helper methods for interacting with Files in the DB
  * @Author Andrew Heath
@@ -30,10 +31,14 @@ export default class FilesMiddleware{
      * @param {*} next callback
      */
     static getFile (fileId: String, onSuccess: Function, onFailure: Function) {
-        return FileModel.find({
+        FileModel.find({
             _id: fileId
-        }, "_id name body owner path", (error: Error, response: Response) => {
-            return onSuccess(response);
+        }, "_id name owner path", (error: Error, response: IFile[]) => {
+            if(error){
+                onFailure(error)
+            }else{
+                onSuccess(response[0]);
+            }
         })
     }
     /**
@@ -57,18 +62,21 @@ export default class FilesMiddleware{
      * @param {*} filePath location of file
      * @param {*} next callback
      */
-    static readFileFromDisk (file: IFile, filePath: PathLike, onSuccess: Function, onFailure: Function) {
-        fs.readFile(filePath, {
+    static readFileFromDisk (file: IFile, filePath: string, onSuccess: Function, onFailure: Function) {
+        fs.readFile(path.join(filePath), {
             encoding: 'utf-8'
         }, (error: Error, data: any) => {
             if (error) {
+                console.error(error)
                 onFailure(error);
             }
-            onSuccess({
-                name: file.name,
-                body: data,
-                id: file._id
-            });
+            else{
+                onSuccess({
+                    name: file.name,
+                    body: data,
+                    id: file._id
+                });
+            }
         });
     }
     /**

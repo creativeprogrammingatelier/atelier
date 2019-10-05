@@ -20,7 +20,7 @@ router.post('/login', (request: Request, response: Response) => {
   UsersMiddleware.loginUser(request,
     (token: String) => {response.status(200).send({token: token})}, //onSuccess
     () => {response.status(401).send()}, //onUnauthorised 
-    (error: Error) => {console.error(error), response.status(500).send()} //onFailure
+    (error: Error) => {console.error(error); response.status(500).send()} //onFailure
     );
 });
 

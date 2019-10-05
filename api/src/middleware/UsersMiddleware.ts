@@ -91,6 +91,7 @@ export default class UsersMiddleware{
               }
           }
         });
+  
     }
 
     private static  issueToken(email: String): String{

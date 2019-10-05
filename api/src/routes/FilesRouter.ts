@@ -9,7 +9,7 @@
 var multer = require('multer');
 var express = require('express');
 var upload = multer({
-    dest: 'uploads/'
+    dest: '../uploads/'
 })
 
 var router = express.Router();
@@ -22,6 +22,7 @@ import { IUser } from "../models/user";
 import { IFile } from "../models/file";
 import path from "path";
 import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
+import fs, { PathLike } from "fs";
 /**
  * Upload file end point, uses multer to read file
  * @TODO refactor
@@ -46,7 +47,13 @@ router.get('/', AuthMiddlware.withAuth, (request: Request, result: Response) => 
 });
 
 router.get('/:fileId', AuthMiddlware.withAuth, (request: Request, result: Response) => {
-        FilesMiddleware.getFile(request.params.fileId, (file: IFile ) => result.status(200).send(file), (error: Error) => result.status(500).send(error));
+        FilesMiddleware.getFile(request.params.fileId, (file: IFile ) => {
+            FilesMiddleware.readFileFromDisk(file.id, file.path, (fileFromDisk: any)=>{
+                 let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
+                result.status(200).send(fileWithBody);
+                } ,(error: Error) => result.status(500).send(error));
+            },
+        (error: Error) => result.status(500).send(error));
 });
 
 router.get('/user/:userId', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request: Request, result: Response)=>{
