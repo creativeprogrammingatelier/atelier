@@ -75,23 +75,23 @@ export default class UsersMiddleware{
           email,
           password
         } = request.body;
-        User.findOne({
-          email
-        }, (error, user) => {
-          if (error) {
-              onFailure(error);
-          } else if (!user) {
-              onUnauthorised();
-          } else {
-              if(user.comparePassword(password)){
-                onSuccess(this.issueToken(email))
-              }
-              else{
-                onUnauthorised();
-              }
-          }
-        });
-  
+            User.findOne({
+                email: email
+              }, (error, user) => {
+                if (error) {
+                    onFailure(error);
+                } else if (!user) {
+                    onUnauthorised();
+                } else {
+                    if(user.comparePassword(password)){
+                      onSuccess(this.issueToken(email))
+                    }
+                    else{
+                      onUnauthorised();
+                    }
+                }
+              });
+
     }
 
     private static  issueToken(email: String): String{
