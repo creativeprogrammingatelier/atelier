@@ -7,7 +7,7 @@ import axios from "axios";
 export default class UserHelper {
 
     static getStudents = (onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/students`, {
+        AuthHelper.fetch(`users//students`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {

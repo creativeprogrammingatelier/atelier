@@ -57,8 +57,8 @@ router.get('/:fileId', AuthMiddlware.withAuth, (request: Request, result: Respon
 });
 
 router.get('/user/:userId', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request: Request, result: Response)=>{
-    const studentId = request.params.uesrId;
-    FilesMiddleware.getFiles(studentId, (files: any) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
+    const userId = request.params.userId;
+    FilesMiddleware.getFiles(userId, (files: any) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
 });
 
 
@@ -67,7 +67,7 @@ router.get('/user/:userId', AuthMiddlware.withAuth, AuthMiddlware.isTa, (request
  * @TODO check user has permissions required to delete files
  */
 router.delete('/:fileId', AuthMiddlware.withAuth, (request: Request, result: Response) => {
-    FilesMiddleware.deleteFile(request.query.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error));
+    FilesMiddleware.deleteFile(request.params.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error));
 })
 
 /**

@@ -6,8 +6,8 @@ import fileDownload from "js-file-download";
  */
 export default class FileHelper {
 
-    static getStudentsFiles = (id:String, onSuccess: Function, onFailure: Function) =>{
-        AuthHelper.fetch(`/getStudentFiles?studentId=${id}`, {
+    static getUsersFiles = (id:String, onSuccess: Function, onFailure: Function) =>{
+        AuthHelper.fetch(`files/user/${id}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
