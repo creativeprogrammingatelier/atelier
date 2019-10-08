@@ -75,7 +75,7 @@ export default class FilesMiddleware{
                     name: file.name,
                     body: data,
                     id: file._id
-                });
+                }); //@TODO define this as type 
             }
         });
     }

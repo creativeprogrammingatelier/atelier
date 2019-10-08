@@ -54,6 +54,7 @@
     "clipboard": "^2.0.4",
     "events": "^3.0.0",
     "glob": "^7.1.4",
+    "js-file-download": "^0.4.8",
     "jwt-decode": "^2.2.0",
     "mock-local-storage": "^1.1.8",
     "npx": "^10.2.0",

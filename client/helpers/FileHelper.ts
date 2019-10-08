@@ -1,5 +1,6 @@
 import AuthHelper from "./AuthHelper";
 import axios from "axios";
+import fileDownload from "js-file-download";
 /**
  * Helpers for request for files
  */
@@ -39,6 +40,20 @@ export default class FileHelper {
             response.json().then((json: any) => {
                 onSuccess(json);
             }); 
+        }).catch(function (error) {
+            console.error(error);
+            onFailure(error)
+        })
+
+    }
+
+    static downloadFile = (fileId: String, onFailure: Function) => {
+        AuthHelper.fetch(`/files/${fileId}/download`, {
+            method: "GET",
+        }).then((response: Response) => {
+        response.json().then((json: any) => {
+            fileDownload(json.body, json.name);
+        })
         }).catch(function (error) {
             console.error(error);
             onFailure(error)

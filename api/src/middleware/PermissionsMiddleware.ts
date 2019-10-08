@@ -25,8 +25,7 @@ export default class PermissionsMiddleware{
      */
     static checkFileAccessPermissionWithId(fileId: String, request: Request, onAuthorised: Function, onUnauthorised: Function, onFailure: Function){
         FilesMiddleware.getFile(fileId, 
-            (files: IFile[]) => {
-                let file = files[0];
+            (file: IFile) => {
                 UserMiddleware.getUser(request, 
                     (user: IUser, request : Request) => {
                         if(this.checkFileAccessPermission(file, user)){

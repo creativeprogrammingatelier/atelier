@@ -48,7 +48,7 @@ router.get('/', AuthMiddlware.withAuth, (request: Request, result: Response) => 
 
 router.get('/:fileId', AuthMiddlware.withAuth, (request: Request, result: Response) => {
         FilesMiddleware.getFile(request.params.fileId, (file: IFile ) => {
-            FilesMiddleware.readFileFromDisk(file.id, file.path, (fileFromDisk: any)=>{
+            FilesMiddleware.readFileFromDisk(file.id, path.join(__dirname,'/../../',file.path), (fileFromDisk: any)=>{
                  let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
                 result.status(200).send(fileWithBody);
                 } ,(error: Error) => result.status(500).send(error));
@@ -78,7 +78,7 @@ router.get('/:studentId', AuthMiddlware.withAuth, (request : Request, result: Re
     const fileId = request.params.studentId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
-            FilesMiddleware.readFileFromDisk(file, path.join(`${__dirname}../../${file.path}`), 
+            FilesMiddleware.readFileFromDisk(file, path.join(__dirname,'/../../',file.path), 
                 (fileWithData: any) => {result.status(200).json(fileWithData)},
                 (error: Error)=> {console.error(error); result.status(500).send("error")}
             )
@@ -98,8 +98,9 @@ router.get('/:fileId/download', AuthMiddlware.withAuth, (request: Request, resul
     const fileId = request.params.fileId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
-            const filepath = `${__dirname}../../${file.path}`;
-            result.download(filepath); 
+            FilesMiddleware.readFileFromDisk(file, path.join(__dirname,'/../../',file.path), 
+                (fileWithData:any )=> result.status(200).json(fileWithData), 
+                (error: Error)=> {console.error(error); result.sendStatus(500)})
         },
         () => {result.status(401).send()},
         (error :Error) => {console.error(error), result.status(500).send(error)}
