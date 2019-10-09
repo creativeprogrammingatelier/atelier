@@ -37,7 +37,7 @@ router.put('/', AuthMiddleware.withAuth, upload.single('file'),
             (error: Error) => result.status(500).send('Error Uploading File'));
 })
 /**
- * End point to fetch all files belonging to a user
+ * End point to fetch all files belonging to the user making the request
  * @TODO implement a selected number of files to fetch possible pagination 
  */
 router.get('/', AuthMiddleware.withAuth, (request: Request, result: Response) => {
@@ -47,13 +47,17 @@ router.get('/', AuthMiddleware.withAuth, (request: Request, result: Response) =>
 });
 
 router.get('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Response) => {
-        FilesMiddleware.getFile(request.params.fileId, (file: IFile ) => {
-            FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any)=>{
-                 let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
-                result.status(200).send(fileWithBody);
-                } ,(error: Error) => result.status(500).send(error));
+    const fileId = request.params.fileId;
+    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request,
+        () => {FilesMiddleware.getFile(fileId, (file: IFile ) => {
+                FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any)=>{
+                     let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
+                    result.status(200).send(fileWithBody);
+                    } ,(error: Error) => result.status(500).send())
+                },(error: Error) => result.status(500).send())
             },
-        (error: Error) => result.status(500).send(error));
+        ()=> result.status(401).send(),
+        () => result.status(500).send());
 });
 
 router.get('/user/:userId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (request: Request, result: Response)=>{
@@ -67,7 +71,11 @@ router.get('/user/:userId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (reque
  * @TODO check user has permissions required to delete files
  */
 router.delete('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Response) => {
-    FilesMiddleware.deleteFile(request.params.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error));
+    PermissionsMiddleware.checkFileAccessPermissionWithId(request.params.fileId, request,
+        () =>  FilesMiddleware.deleteFile(request.params.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error)),
+        () => result.status(401).send(),
+        () => result.status(500).send()
+        )
 })
 
 /**
