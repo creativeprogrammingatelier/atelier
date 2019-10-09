@@ -12,6 +12,7 @@ import AuthMiddleware from "../middleware/AuthMiddleware";
 import CommentsMiddleware from "../middleware/CommentMiddleware";
 import UsersMiddlware from "../middleware/UsersMiddleware";
 import { IUser } from "../models/user";
+import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
 var router = express.Router();
 // TODO check user has permission make comment
 // TODO get comment author id from the token not from the parameter
@@ -22,14 +23,24 @@ router.put('/', AuthMiddleware.withAuth, (request, result) => {
             comment,
             line
         } = request.body;
-        CommentsMiddleware.makeComment(fileId, user._id, line, comment, () => result.status(204).send(), (error: Error) => result.status(500).send(error))
+        PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request,
+            ()=> CommentsMiddleware.makeComment(fileId, user._id, line, comment, () => result.status(204).send(), (error: Error) => result.status(500).send(error)),
+            ()=> result.status(401).send(),
+            ()=> result.status(500).send()
+            )
     },(error: Error) => result.status(500).send(error)
     )
 });
 
 // TODO check user has permission to get comments
 router.get('/file/:fileId', AuthMiddleware.withAuth, (request, result) => {
-    CommentsMiddleware.getComments(request.params.fileId, (data:any ) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
+    const fileId = request.params.fileId;
+    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request,
+        ()=>  CommentsMiddleware.getComments(fileId, (data:any ) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
+        ,
+        ()=> result.status(401).send(),
+        ()=> result.status(500).send()
+        )
 });
 // TODO check user has permission to delete comment
 router.delete('/:commentId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (request, result) => {
