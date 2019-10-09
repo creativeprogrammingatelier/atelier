@@ -48,7 +48,7 @@ router.get('/', AuthMiddleware.withAuth, (request: Request, result: Response) =>
 
 router.get('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Response) => {
         FilesMiddleware.getFile(request.params.fileId, (file: IFile ) => {
-            FilesMiddleware.readFileFromDisk(file.id, (fileFromDisk: any)=>{
+            FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any)=>{
                  let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
                 result.status(200).send(fileWithBody);
                 } ,(error: Error) => result.status(500).send(error));
@@ -78,7 +78,7 @@ router.get('/:studentId', AuthMiddleware.withAuth, (request : Request, result: R
     const fileId = request.params.studentId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
-            FilesMiddleware.readFileFromDisk(file, path.join(__dirname,'/../../',file.path), 
+            FilesMiddleware.readFileFromDisk(file, 
                 (fileWithData: any) => {result.status(200).json(fileWithData)},
                 (error: Error)=> {console.error(error); result.status(500).send("error")}
             )
@@ -98,7 +98,7 @@ router.get('/:fileId/download', AuthMiddleware.withAuth, (request: Request, resu
     const fileId = request.params.fileId;
     PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
         (file: IFile) => {
-            FilesMiddleware.readFileFromDisk(file, path.join(__dirname,'/../../',file.path), 
+            FilesMiddleware.readFileFromDisk(file, 
                 (fileWithData:any )=> result.status(200).json(fileWithData), 
                 (error: Error)=> {console.error(error); result.sendStatus(500)})
         },
