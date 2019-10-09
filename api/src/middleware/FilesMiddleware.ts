@@ -62,8 +62,8 @@ export default class FilesMiddleware{
      * @param {*} filePath location of file
      * @param {*} next callback
      */
-    static readFileFromDisk (file: IFile, filePath: string, onSuccess: Function, onFailure: Function) {
-        fs.readFile(path.join(filePath), {
+    static readFileFromDisk (file: IFile, onSuccess: Function, onFailure: Function) {
+        fs.readFile(path.join(file.path), {
             encoding: 'utf-8'
         }, (error: Error, data: any) => {
             if (error) {
@@ -79,20 +79,35 @@ export default class FilesMiddleware{
             }
         });
     }
+    private static deleteFromDisk(file: IFile, onSuccess: Function, onFailure: Function){
+        fs.unlink(file.path.toString(),
+            (error:Error)=> {
+                if(error){
+                    onFailure();
+                }else{
+                    onSuccess();
+                }
+            }
+        )
+    }
+
     /**
      * Deletes file from the database 
      * @param {*} fileid 
-     * @TODO delete file from disk as well
+     * @TODO Refactor
      */
     static deleteFile (fileid: String, onSuccess: Function, onFailure: Function) {
-        FileModel.deleteOne({
-            _id: fileid
-        }, (error: Error) => {
-            if (error) {
-                onFailure(error);
-            }
-            onSuccess();
-        })
+        this.getFile(fileid, 
+            (file: IFile) => {
+                this.deleteFromDisk(file, 
+                    ()=> FileModel.deleteOne({
+                        _id: fileid
+                    }, (error: Error) => {
+                        (error)? onFailure(error):onSuccess();
+                    })
+                    , onFailure);
+
+            },onFailure)
     }
 
 
