@@ -48,7 +48,7 @@ router.get('/', AuthMiddlware.withAuth, (request: Request, result: Response) => 
 
 router.get('/:fileId', AuthMiddlware.withAuth, (request: Request, result: Response) => {
         FilesMiddleware.getFile(request.params.fileId, (file: IFile ) => {
-            FilesMiddleware.readFileFromDisk(file.id, path.join(__dirname,'/../../',file.path), (fileFromDisk: any)=>{
+            FilesMiddleware.readFileFromDisk(file.id, (fileFromDisk: any)=>{
                  let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
                 result.status(200).send(fileWithBody);
                 } ,(error: Error) => result.status(500).send(error));
