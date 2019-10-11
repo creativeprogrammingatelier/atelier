@@ -10,7 +10,7 @@ import { IComment } from "../models/comment";
 export default class PermissionsMiddleware{
 
     static checkFileAccessPermission(file: IFile , user: IUser): boolean{
-        if (user.id == file.owner || user.role == "ta") {
+        if (file.owner && user.id && user.id == file.owner || user.role == "ta") {
             return true;
         }
         return false;
