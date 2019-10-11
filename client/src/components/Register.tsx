@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import AuthHelper from "../../helpers/AuthHelper";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter, Redirect, Link } from "react-router-dom";
 
 class Register extends Component {
 
@@ -55,39 +55,66 @@ class Register extends Component {
             )
         }
         return (
-            <form onSubmit={this.onSubmit}>
-                <h3>Sign up</h3>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter email"
-                    value={this.state.email}
-                    onChange={this.handleChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Enter password"
-                    value={this.state.password}
-                    onChange={this.handleChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="passwordConfirmation"
-                    placeholder="Confirm password"
-                    value={this.state.passwordConfirmation}
-                    onChange={this.handleChange}
-                    required
-                />
-                <select name="role" value={this.state.role} onChange={this.handleChange}>
-                    <option value="student">Student</option>
-                    <option value="ta">Teaching Assistant</option>
-                </select>                
-                <p>{this.state.response}</p>
-                <input type="submit" value="Submit" />
-            </form>
+            <div>
+                <div className="row justify-content-md-center">
+                    <div className="col col-md-8 offset-md-2">
+                        <form onSubmit={this.onSubmit}>
+                            <div className="form-group">
+                                <input
+                                    className="form-control"
+                                    type="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    value={this.state.email}
+                                    onChange={this.handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <input
+                                    className="form-control"
+                                    type="password"
+                                    name="password"
+                                    placeholder="Password"
+                                    value={this.state.password}
+                                    onChange={this.handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <input
+                                    className="form-control"
+                                    type="password"
+                                    name="passwordConfirmation"
+                                    placeholder="Confirm password"
+                                    value={this.state.passwordConfirmation}
+                                    onChange={this.handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <select className="form-control" name="role" value={this.state.role} onChange={this.handleChange}>
+                                    <option value="student">Student</option>
+                                    <option value="ta">Teaching Assistant</option>
+                                </select>                
+                            </div>
+                            <p>{this.state.response}</p>
+                            <div className="form-submit">
+                                    <ul>
+                                        <li>
+                                            <input className="btn btn-primary" type="submit" value="Register" />
+                                        </li>
+                                        <li>
+                                            <React.Fragment>
+                                                <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
+                                            </React.Fragment>
+                                        </li>
+                                    </ul>
+                                </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         )
     }
 }
