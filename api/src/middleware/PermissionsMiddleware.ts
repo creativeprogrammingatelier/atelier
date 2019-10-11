@@ -50,7 +50,7 @@ export default class PermissionsMiddleware{
             );
         }
     static checkComment(commentId: String, request: Request, onAuthorised: Function, onUnauthorised: Function, onFailure: Function){
-        CommentMiddleware.getComments(commentId, 
+        CommentMiddleware.getComment(commentId, 
             (comment: IComment) => {
                 UserMiddleware.getUser(request, 
                     (user: IUser, request : Request) => {

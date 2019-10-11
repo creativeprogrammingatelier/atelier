@@ -22,7 +22,7 @@ export default class CommentMiddleware{
         });
     }
 
-    static getComments(fileId: String, onSuccess: Function, onFailure : Function){
+    static getFileComments(fileId: String, onSuccess: Function, onFailure : Function){
         Comment.find({
                 about: fileId
             })
