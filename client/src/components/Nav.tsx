@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPalette } from "@fortawesome/free-solid-svg-icons";
+import { faPalette, faSignOutAlt, faFolder } from "@fortawesome/free-solid-svg-icons";
 import "../styles/nav.scss"
 class Nav extends React.Component {
 
@@ -24,17 +24,13 @@ class Nav extends React.Component {
                     <ul className="nav menu-left">
                         {this.props.loggedIn ?
                             <React.Fragment>
-                                <li className="nav-item"><Link className="nav-link" to="/roleview">Submissions</Link></li>
-                                <li className="nav-item"><Link className="nav-link" to="/logout" onClick={this.props.onLogout}>Logout</Link></li>
+                                <li className="nav-item"><Link className="nav-link" to="/roleview">Submissions <FontAwesomeIcon icon={faFolder}></FontAwesomeIcon></Link></li>
+                                <li className="nav-item"><Link className="nav-link" to="/logout" onClick={this.props.onLogout}><FontAwesomeIcon icon={faSignOutAlt}></FontAwesomeIcon></Link></li>
                             </React.Fragment> : null
-                            // <React.Fragment>
-                            //     <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li>
-                            //     <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
-                            // </React.Fragment>
                         }
                     </ul>
                     <div className="menu-right" id="user">
-                        {this.props.loggedIn && <div> Logged in as {this.props.role}: {this.props.email} </div> }
+                        {this.props.loggedIn && <div>  {this.props.email} </div> }
                     </div>
                 </div>
             </div>

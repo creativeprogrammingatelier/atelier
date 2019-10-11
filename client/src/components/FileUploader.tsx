@@ -4,6 +4,9 @@ import PrivateRoute from "./PrivateRoute";
 import axios from "axios";
 import AuthHelper from "../../helpers/AuthHelper";
 import FileHelper from "../../helpers/FileHelper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import "../styles/file-uploader.scss";
 
 class FileUploader extends React.Component<{ update: Function }> {
     state: { uploadedFile: any, update: Function }
@@ -27,10 +30,24 @@ class FileUploader extends React.Component<{ update: Function }> {
 
     render() {
         return (
-            <form onSubmit={this.onSubmit}>
-                <input accept=".pde" type="file" name="file-pmd" required onChange={this.handleFileSelection} />
-                <input type="submit" value="Submit" />
-            </form>
+            <div className="row">
+                <form onSubmit={this.onSubmit}>
+                <div className="form-group">
+                    <ul>
+                        <li>
+                            <div className="custom-file">
+                                <label htmlFor="select-file" className="custom-file-label">Select File</label>
+                                <input id="select-file" type="file" className="custom-file-input "accept=".pde" name="file-pmd" required onChange={this.handleFileSelection} />
+                            </div>
+
+                        </li>
+                        <li>
+                            <button className="form-control" type="submit" value="Submit" ><FontAwesomeIcon icon={faUpload}></FontAwesomeIcon></button>
+                        </li>
+                    </ul>
+                </div>
+                </form>
+            </div>
         )
     }
 } export default FileUploader;

@@ -55,7 +55,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
             <div className="CommentViewer">
                 <span onClick={(e:any)=> this.setState({
                     commentCreatorToggle: !this.state.commentCreatorToggle
-                })}><FontAwesomeIcon icon={faPlus}/></span>
+                })}><FontAwesomeIcon icon={faPlus}/> New Comment</span>
                 <div>
                     {(this.state.commentCreatorToggle? <CommentCreator onSuccess={this.fetchComments} fileId={this.props.file.id}/>: null)}
                 </div>
