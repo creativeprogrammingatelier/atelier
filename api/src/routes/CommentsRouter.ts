@@ -23,7 +23,7 @@ router.put('/', AuthMiddleware.withAuth, (request, result) => {
             comment,
             line
         } = request.body;
-        PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request,
+        PermissionsMiddleware.checkFileWithId(fileId, request,
             ()=> CommentsMiddleware.makeComment(fileId, user._id, line, comment, () => result.status(204).send(), (error: Error) => result.status(500).send(error)),
             ()=> result.status(401).send(),
             ()=> result.status(500).send()
@@ -35,7 +35,7 @@ router.put('/', AuthMiddleware.withAuth, (request, result) => {
 // TODO check user has permission to get comments
 router.get('/file/:fileId', AuthMiddleware.withAuth, (request, result) => {
     const fileId = request.params.fileId;
-    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request,
+    PermissionsMiddleware.checkFileWithId(fileId, request,
         ()=>  CommentsMiddleware.getComments(fileId, (data:any ) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
         ,
         ()=> result.status(401).send(),
@@ -44,6 +44,11 @@ router.get('/file/:fileId', AuthMiddleware.withAuth, (request, result) => {
 });
 // TODO check user has permission to delete comment
 router.delete('/:commentId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (request, result) => {
-    CommentsMiddleware.deleteComment(request.params.commentId, (data: any) => result.status(200).send(data), (error: Error) => result.status(500).send(error))
+    const commentId = request.params.commentId;
+    PermissionsMiddleware.checkComment(commentId, request,
+        ()=>    CommentsMiddleware.deleteComment(commentId, (data: any) => result.status(200).send(data), (error: Error) => result.status(500).send(error)),
+        ()=> result.status(401).send(),
+        ()=> result.status(500).send()
+        )
 });
 module.exports = router;

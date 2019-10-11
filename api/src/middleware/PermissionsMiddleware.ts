@@ -4,11 +4,20 @@ import {Request} from "express"
 import e = require("express");
 import FilesMiddleware from "./FilesMiddleware";
 import UserMiddleware from "./UsersMiddleware";
+import CommentMiddleware from "./CommentMiddleware";
+import { IComment } from "../models/comment";
 
 export default class PermissionsMiddleware{
 
-    static checkFileAccessPermission(file: IFile, user: IUser): boolean{
+    static checkFileAccessPermission(file: IFile , user: IUser): boolean{
         if (user.id == file.owner || user.role == "ta") {
+            return true;
+        }
+        return false;
+    }
+
+    static checkCommentAccessPermission(comment: IComment , user: IUser): boolean{
+        if (user.id == comment.author || user.role == "ta") {
             return true;
         }
         return false;
@@ -23,7 +32,7 @@ export default class PermissionsMiddleware{
      * @param onUnauthorised 
      * @param onFailure 
      */
-    static checkFileAccessPermissionWithId(fileId: String, request: Request, onAuthorised: Function, onUnauthorised: Function, onFailure: Function){
+    static checkFileWithId(fileId: String, request: Request, onAuthorised: Function, onUnauthorised: Function, onFailure: Function){
         FilesMiddleware.getFile(fileId, 
             (file: IFile) => {
                 UserMiddleware.getUser(request, 
@@ -40,4 +49,21 @@ export default class PermissionsMiddleware{
             (error: Error) => {console.error(error), onFailure()}
             );
         }
+    static checkComment(commentId: String, request: Request, onAuthorised: Function, onUnauthorised: Function, onFailure: Function){
+        CommentMiddleware.getComments(commentId, 
+            (comment: IComment) => {
+                UserMiddleware.getUser(request, 
+                    (user: IUser, request : Request) => {
+                        if(this.checkCommentAccessPermission(comment, user)){
+                            onAuthorised(comment);
+                        }else{
+                            onUnauthorised();
+                        }
+                    },
+                    (error: Error) => {console.error(error), onFailure()}
+                );
+            },
+            (error: Error) => {console.error(error), onFailure()}
+            );
     }
+}

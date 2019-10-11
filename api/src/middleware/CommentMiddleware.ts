@@ -35,6 +35,19 @@ export default class CommentMiddleware{
             }
         })
     }
+
+    static getComment(commentId: String, onSuccess: Function, onFailure: Function){
+        Comment.findById(commentId,
+            (error: Error, comment: IComment) =>{
+                if(error){
+                    onFailure(error);
+                }else{
+                    onSuccess(comment);
+                }
+            }
+        );
+    }
+
     static deleteComment (commentId: String, onSuccess: Function, onFailure: Function){
         Comment.deleteOne({
             _id: commentId

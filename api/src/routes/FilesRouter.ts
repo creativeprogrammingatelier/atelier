@@ -48,7 +48,7 @@ router.get('/', AuthMiddleware.withAuth, (request: Request, result: Response) =>
 
 router.get('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Response) => {
     const fileId = request.params.fileId;
-    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request,
+    PermissionsMiddleware.checkFileWithId(fileId, request,
         () => {FilesMiddleware.getFile(fileId, (file: IFile ) => {
                 FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any)=>{
                      let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
@@ -71,7 +71,7 @@ router.get('/user/:userId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (reque
  * @TODO check user has permissions required to delete files
  */
 router.delete('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Response) => {
-    PermissionsMiddleware.checkFileAccessPermissionWithId(request.params.fileId, request,
+    PermissionsMiddleware.checkFileWithId(request.params.fileId, request,
         () =>  FilesMiddleware.deleteFile(request.params.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error)),
         () => result.status(401).send(),
         () => result.status(500).send()
@@ -84,7 +84,7 @@ router.delete('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Re
  */
 router.get('/:studentId', AuthMiddleware.withAuth, (request : Request, result: Response) => {
     const fileId = request.params.studentId;
-    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
+    PermissionsMiddleware.checkFileWithId(fileId, request, 
         (file: IFile) => {
             FilesMiddleware.readFileFromDisk(file, 
                 (fileWithData: any) => {result.status(200).json(fileWithData)},
@@ -104,7 +104,7 @@ router.get('/:studentId', AuthMiddleware.withAuth, (request : Request, result: R
  */
 router.get('/:fileId/download', AuthMiddleware.withAuth, (request: Request, result: Response) => {
     const fileId = request.params.fileId;
-    PermissionsMiddleware.checkFileAccessPermissionWithId(fileId, request, 
+    PermissionsMiddleware.checkFileWithId(fileId, request, 
         (file: IFile) => {
             FilesMiddleware.readFileFromDisk(file, 
                 (fileWithData:any )=> result.status(200).json(fileWithData), 

@@ -14,7 +14,6 @@ export default class FileHelper {
                 onSuccess(json);
             });
         }).catch(function (error) {
-            console.error(error);
             onFailure(error)
         })
     }
@@ -27,7 +26,6 @@ export default class FileHelper {
                 onSuccess(json)
             });
         }).catch(function (error) {
-            console.error(error);
             onFailure()
         })
     }
@@ -41,7 +39,6 @@ export default class FileHelper {
                 onSuccess(json);
             }); 
         }).catch(function (error) {
-            console.error(error);
             onFailure(error)
         })
 
@@ -55,7 +52,6 @@ export default class FileHelper {
             fileDownload(json.body, json.name);
         })
         }).catch(function (error) {
-            console.error(error);
             onFailure(error)
         })
 
@@ -73,7 +69,6 @@ export default class FileHelper {
             onSuccess();
         }).catch(function (error) {
             //TODO Handle errors in a nice way
-            console.error(error)
             onFailure();
         })
     }
@@ -92,8 +87,7 @@ export default class FileHelper {
             onSuccess();
 
         }).catch(function (error) {
-            onFailure();
-            console.error(error);
+            onFailure();    
         })
     }
 
