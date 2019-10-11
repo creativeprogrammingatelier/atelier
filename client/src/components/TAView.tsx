@@ -47,7 +47,7 @@ class TAView extends React.Component {
     
     }
     viewStudentFiles(element:any, studentId: String){
-        FileHelper.getStudentsFiles(studentId, (result:any ) => {
+        FileHelper.getUsersFiles(studentId, (result:any ) => {
             let students: any = this.state.students;
             let currentStudent;
             for (const student of students) {

@@ -34,9 +34,22 @@ export interface IUserModel extends Model<IUser> {
 }
 
 UserSchema.method('comparePassword', function (password: string): boolean {
-    console.log(this.password)
-    if (bcrypt.compareSync(password, this.password)) return true;
+    if (bcrypt.compareSync(password, this.password)){
+        return true;
+    } 
     return false;
+});
+
+UserSchema.pre<IUser>('save', function(next) {
+    const user = this;
+    if (!user.isModified('password')) return next();
+    bcrypt.hash(user.password, saltRounds, function(err, hash) {
+        if (err) {
+            return next(err);
+        }
+        user.password = hash;
+        next();
+    });
 });
 
 UserSchema.static('hashPassword', (password: string): string => {

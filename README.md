@@ -38,6 +38,9 @@ The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 * **[Postman](https://www.getpostman.com/)** - A API testing tool
 
 ### Deployment (being expanded)
+#### setup debug: 
+https://fettblog.eu/typescript-node-visual-studio-code/
+
 ## Using
 pm2
 ## Built with 

@@ -1,47 +1,58 @@
 import AuthHelper from "./AuthHelper";
 import axios from "axios";
+import fileDownload from "js-file-download";
 /**
  * Helpers for request for files
  */
 export default class FileHelper {
 
-    static getStudentsFiles = (id:String, onSuccess: Function, onFailure: Function) =>{
-        AuthHelper.fetch(`/getStudentFiles?studentId=${id}`, {
+    static getUsersFiles = (id:String, onSuccess: Function, onFailure: Function) =>{
+        AuthHelper.fetch(`files/user/${id}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
                 onSuccess(json);
             });
         }).catch(function (error) {
-            console.error(error);
             onFailure(error)
         })
     }
 
     static getAllFiles = (onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/getfiles`, {
+        AuthHelper.fetch(`/files`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
                 onSuccess(json)
             });
         }).catch(function (error) {
-            console.error(error);
             onFailure()
         })
     }
 
 
     static getFile = (fileId: string, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/getfile?fileId=${fileId}`, {
+        AuthHelper.fetch(`/files/${fileId}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
                 onSuccess(json);
-            });
+            }); 
         }).catch(function (error) {
-            console.error(error);
-            onFailure()
+            onFailure(error)
+        })
+
+    }
+
+    static downloadFile = (fileId: String, onFailure: Function) => {
+        AuthHelper.fetch(`/files/${fileId}/download`, {
+            method: "GET",
+        }).then((response: Response) => {
+        response.json().then((json: any) => {
+            fileDownload(json.body, json.name);
+        })
+        }).catch(function (error) {
+            onFailure(error)
         })
 
     }
@@ -51,21 +62,15 @@ export default class FileHelper {
             headers: {
                 'content-type': 'multipart/form-data',
                 "Authorization": AuthHelper.getToken()
-            },
-            params: {
-                "fileId": fileId,
             }
         };
-        axios.delete('/deletefile', config
+        axios.delete(`/files/${fileId}`, config
         ).then((response) => {
             onSuccess();
-
         }).catch(function (error) {
             //TODO Handle errors in a nice way
-            console.error(error)
             onFailure();
         })
-
     }
 
     static uploadFile = (file: any, onSuccess: Function, onFailure: Function) => {
@@ -77,13 +82,12 @@ export default class FileHelper {
                 "Authorization": AuthHelper.getToken()
             }
         };
-        axios.post('/uploadfile', formData, config
+        axios.put('/files/', formData, config
         ).then((response) => {
             onSuccess();
 
         }).catch(function (error) {
-            onFailure();
-            console.error(error);
+            onFailure();    
         })
     }
 

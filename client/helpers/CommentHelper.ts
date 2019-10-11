@@ -1,25 +1,25 @@
-import decode from "jwt-decode";
 import AuthHelper from "./AuthHelper";
-import axios from "axios";
 /**
  * Helpers for request for files
  */
 export default class CommentHelper {
 
-    static getComments = (fileId: number, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/getComments?fileId=${fileId}`, {
+    static getFileComments = (fileId: String, onSuccess: Function, onFailure: Function) => {
+        AuthHelper.fetch(`/comments/file/${fileId}`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: any) => {
                 onSuccess(json)
             });
-        }).catch(function (error) {
+        }).catch((error) =>  {
             onFailure(error)
         })
+
+    
     }
 
     static putComment = (body: any, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/makeComment`, {
+        AuthHelper.fetch(`/comments`, {
             method: "PUT",
             body
         }).then(() => {
@@ -30,7 +30,7 @@ export default class CommentHelper {
     }
 
     static deleteComment = (commentId: String, onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`/comment/${commentId}`, {
+        AuthHelper.fetch(`/comments/${commentId}`, {
             method: "delete"
         }).then(() => {
             onSuccess()

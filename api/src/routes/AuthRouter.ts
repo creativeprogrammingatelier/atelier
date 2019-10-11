@@ -7,9 +7,6 @@
 
 import express from "express";
 var router = express.Router();
-import jwt from "jsonwebtoken";
-import {Constants} from'../lib/constants';
-import User from "../models/user";
 import AuthMiddleware from "../middleware/AuthMiddleware";
 import {Request, Response} from "express";
 import UsersMiddleware from "../middleware/UsersMiddleware";
@@ -23,14 +20,14 @@ router.post('/login', (request: Request, response: Response) => {
   UsersMiddleware.loginUser(request,
     (token: String) => {response.status(200).send({token: token})}, //onSuccess
     () => {response.status(401).send()}, //onUnauthorised 
-    (error: Error) => {console.error(error), response.status(500).send()} //onFailure
+    (error: Error) => {console.error(error); response.status(500).send()} //onFailure
     );
 });
 
 /**
  * Checks if request JWT token passed is valid using withAuth middleware method 
  * */
-router.get('/checkToken', AuthMiddleware.withAuth, function (request: Request, response: Response) {
+router.get('/token', AuthMiddleware.withAuth, function (request: Request, response: Response) {
   response.sendStatus(200);
 });
 
@@ -48,7 +45,7 @@ router.post('/register', (request, result) => {
  * Checks if role of user, (using token) is valid compared to that passed in the body
  * @TODO refactor move functions into middleware
  */
-router.post('/checkRole', AuthMiddleware.withAuth, function (request, result) {
+router.post('/role', AuthMiddleware.withAuth, function (request, result) {
   const {
     role
   } = request.body;
