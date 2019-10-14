@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import CommentHelper from "../../helpers/CommentHelper";
+import "../styles/comment-creator.scss"
 type CommentCreatorProps = {onSuccess: Function, fileId: String};
 class CommentCreator extends React.Component<CommentCreatorProps> {
     state:{commentBody: String, lineNum?: Number}
@@ -38,18 +39,24 @@ class CommentCreator extends React.Component<CommentCreatorProps> {
             <div className="form-group">
                 <div className="toast" role="alert" aria-live="assertive" aria-atomic="true">
                     <div className="toast-header">
-                        <strong className="mr-auto">New Comment</strong>
-                        {/* <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" >
-                            <span aria-hidden="true">&times;</span>
-                        </button> */}
+                        <strong className="mr-auto">New Comment</strong>                             
+                        <div className="save-comment-btn">
+                                <div onClick={this.submit}>
+                                    <FontAwesomeIcon icon={faSave} />
+                                </div>
+                            </div>
                     </div>
                     <div className="toast-body">
                         <div>
-                            <input type="number" name = "lineNum" placeholder="About Line" onChange={this.handleChange} /> 
-                            <textarea  name = "commentBody" placeholder="Comment" onChange={this.handleChange} /> 
-                            <div onClick={this.submit}>
-                                <FontAwesomeIcon icon={faSave} />
-                            </div>
+                        <div className="form-group">
+                            <input type="number" className="form-control" name = "lineNum" placeholder="About Line" onChange={this.handleChange} /> 
+                        </div>
+                        <div className="form-group">
+                            <textarea  name = "commentBody" className="form-control" placeholder="Comment" onChange={this.handleChange} /> 
+                        </div>            
+                        <div className="form-group">
+
+                        </div>
                         </div>
                     </div>
                 </div>
