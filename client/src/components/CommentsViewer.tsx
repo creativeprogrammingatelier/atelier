@@ -9,6 +9,8 @@ import CommentCreator from "./CommentCreator";
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
     state: { file: any, comments?: any[], commentCreatorToggle: boolean }
+    private readonly commentFreshFrequency = 1000;
+
     constructor(props: { file: any }) {
         super(props);
         this.state = {
@@ -27,16 +29,29 @@ class CommentsViewer extends React.Component<{ file: any }>  {
 
     }
 
-    fetchComments = () => {
+    componentDidMount(){
+        this.createTimercheckforNewComments();
+    }
+    fetchCommentsHideCommentCreator = () => {
+        this.fetchComments(true);
+    }
+    fetchComments = (hideCommentCreator? : boolean) => {
         CommentHelper.getFileComments(this.state.file.id, (comments: any) => this.setState({
             comments: comments,
-            commentCreatorToggle: false
+            commentCreatorToggle: (hideCommentCreator) ? false: this.state.commentCreatorToggle
         }), (error: any) => console.log(error))
     }
 
     deleteComment = (commentId: String) =>{
-        CommentHelper.deleteComment(commentId, () => this.fetchComments(), () => alert("Failed to delete Comment"))
+        CommentHelper.deleteComment(commentId, () => this.fetchComments, () => alert("Failed to delete Comment"))
     }
+
+    createTimercheckforNewComments() {
+        setInterval(
+            () => this.fetchComments(),
+            this.commentFreshFrequency
+        )
+    } 
 
     populate = () => {
         let comments = [];
@@ -57,9 +72,9 @@ class CommentsViewer extends React.Component<{ file: any }>  {
                     commentCreatorToggle: !this.state.commentCreatorToggle
                 })}><FontAwesomeIcon icon={faPlus}/> New Comment</span>
                 <div>
-                    {(this.state.commentCreatorToggle? <CommentCreator onSuccess={this.fetchComments} fileId={this.props.file.id}/>: null)}
+                    {(this.state.commentCreatorToggle? <CommentCreator onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.id}/>: null)}
                 </div>
-                <ul className="list-group">
+                <ul className="list-group"> 
                     {this.populate()}
                 </ul>
             </div>
