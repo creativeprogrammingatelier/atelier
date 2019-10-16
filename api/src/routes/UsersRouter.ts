@@ -12,8 +12,9 @@ var router = express.Router();
 import UsersMiddleware from "../middleware/UsersMiddleware";
 import AuthMiddleWare from "../middleware/AuthMiddleware";
 import {Response} from "express"
+import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
 
-router.get('/students', AuthMiddleWare.withAuth, AuthMiddleWare.isTa, (request : Request, result: Response) => {
+router.get('/students', AuthMiddleWare.withAuth, PermissionsMiddleware.isTa, (request : Request, result: Response) => {
     UsersMiddleware.getAllStudents((data: any) => result.status(200).send(data), (error : Error) =>result.status(500).send(error));
 });
 

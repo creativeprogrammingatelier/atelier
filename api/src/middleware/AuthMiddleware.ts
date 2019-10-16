@@ -34,15 +34,7 @@ export default class AuthMiddleWare {
             });
         }
     }
-    static isTa (request: Request, result: Response, onSuccess: Function) {
-        UsersMiddleware.getUser(request, (user : IUser) => {
-            if (user.role.toLowerCase() == "ta") {
-                onSuccess();
-            } else {
-                result.status(401).send();
-            }
-        },() => result.status(401).send())
-    }
+
     static getAllStudents(onSuccess: Function, onFailure: Function){
         User.find({
             role: "student"

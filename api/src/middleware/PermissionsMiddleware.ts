@@ -6,6 +6,7 @@ import FilesMiddleware from "./FilesMiddleware";
 import UserMiddleware from "./UsersMiddleware";
 import CommentMiddleware from "./CommentMiddleware";
 import { IComment } from "../models/comment";
+import UsersMiddleware from "./UsersMiddleware";
 
 export default class PermissionsMiddleware{
 
@@ -54,6 +55,16 @@ export default class PermissionsMiddleware{
             },
             (error: Error) => {console.error(error), response.status(500).send()}
         );
+    }
+
+    static isTa (request: Request, result: Response, onSuccess: Function) {
+        UsersMiddleware.getUser(request, (user : IUser) => {
+            if (user.role.toLowerCase() == "ta") {
+                onSuccess();
+            } else {
+                result.status(401).send();
+            }
+        },() => result.status(401).send())
     }
 
     static checkComment(request: Request, response: Response, onAuthorised: Function){
