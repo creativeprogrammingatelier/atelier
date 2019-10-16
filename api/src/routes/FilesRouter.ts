@@ -23,6 +23,7 @@ import { IFile } from "../models/file";
 import path from "path";
 import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
 import fs, { PathLike } from "fs";
+import RoutesHelper from "../helpers/RoutesHelper";
 /**
  * Upload file end point, uses multer to read file
  * @TODO refactor
@@ -46,21 +47,17 @@ router.get('/', AuthMiddleware.withAuth, (request: Request, result: Response) =>
         }, (error: Error) => result.status(500).send(error))
 });
 
-router.get('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Response) => {
-    const fileId = request.params.fileId;
-    PermissionsMiddleware.checkFileWithId(fileId, request,
-        () => {FilesMiddleware.getFile(fileId, (file: IFile ) => {
-                FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any)=>{
-                     let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
-                    result.status(200).send(fileWithBody);
-                    } ,(error: Error) => result.status(500).send())
-                },(error: Error) => result.status(500).send())
-            },
-        ()=> result.status(401).send(),
-        () => result.status(500).send());
+router.get('/:fileId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request: Request, response: Response) => {
+    const fileId = RoutesHelper.getValueFromParams('fileId', request, response);
+    FilesMiddleware.getFile(fileId, (file: IFile ) => {
+        FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any)=>{
+                let fileWithBody  = { id: file.id, name: file.name, body: fileFromDisk.body}
+                response.status(200).send(fileWithBody);
+            } ,(error: Error) => {console.error(error),response.status(500).send()})
+        },(error: Error) => {console.error(error),response.status(500).send()});
 });
 
-router.get('/user/:userId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (request: Request, result: Response)=>{
+router.get('/user/:userId', AuthMiddleware.withAuth, PermissionsMiddleware.isTa, (request: Request, result: Response)=>{
     const userId = request.params.userId;
     FilesMiddleware.getFiles(userId, (files: any) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
 });
@@ -70,48 +67,41 @@ router.get('/user/:userId', AuthMiddleware.withAuth, AuthMiddleware.isTa, (reque
  * End point pint to delete a file with a given ID
  * @TODO check user has permissions required to delete files
  */
-router.delete('/:fileId', AuthMiddleware.withAuth, (request: Request, result: Response) => {
-    PermissionsMiddleware.checkFileWithId(request.params.fileId, request,
-        () =>  FilesMiddleware.deleteFile(request.params.fileId, () => result.status(200).send(), (error: Error) => result.status(500).send(error)),
-        () => result.status(401).send(),
-        () => result.status(500).send()
-        )
+router.delete('/:fileId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request: Request, response: Response) => {
+    const fileId: string = RoutesHelper.getValueFromParams('fileId', request, response);
+    FilesMiddleware.deleteFile(fileId, () => response.status(200).send(), (error: Error) => response.status(500).send(error));
 })
 
 /**
  * End point to read file from disk with given ID 
  * @TODO Refactor, far too nested 
  */
-router.get('/:studentId', AuthMiddleware.withAuth, (request : Request, result: Response) => {
-    const fileId = request.params.studentId;
-    PermissionsMiddleware.checkFileWithId(fileId, request, 
+router.get('/:studentId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request : Request, response: Response) => {
+    const fileId: string = RoutesHelper.getValueFromParams('fileId', request, response);
+    FilesMiddleware.getFile(fileId, 
         (file: IFile) => {
             FilesMiddleware.readFileFromDisk(file, 
-                (fileWithData: any) => {result.status(200).json(fileWithData)},
-                (error: Error)=> {console.error(error); result.status(500).send("error")}
+                (fileWithData: any) => {response.status(200).json(fileWithData)},
+                (error: Error)=> {console.error(error); response.status(500).send("error")}
             )
         },
-        () => {result.status(401).send()},
-        (error : Error) => {
-            console.error(error);
-            result.status(500).send("Error");
-        }
+        (error: Error)=> {console.error(error); response.status(500).send("error")}
     );
 });
+
 /**
  * Download file given a ID
  * @TODO check if user has permission to view file
  */
-router.get('/:fileId/download', AuthMiddleware.withAuth, (request: Request, result: Response) => {
-    const fileId = request.params.fileId;
-    PermissionsMiddleware.checkFileWithId(fileId, request, 
+router.get('/:fileId/download', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request: Request, response: Response) => {
+    const fileId: string = RoutesHelper.getValueFromParams('fileId', request, response);
+    FilesMiddleware.getFile(fileId, 
         (file: IFile) => {
             FilesMiddleware.readFileFromDisk(file, 
-                (fileWithData:any )=> result.status(200).json(fileWithData), 
-                (error: Error)=> {console.error(error); result.sendStatus(500)})
+                (fileWithData:any )=> response.status(200).json(fileWithData), 
+                (error: Error)=> {console.error(error); response.sendStatus(500)})
         },
-        () => {result.status(401).send()},
-        (error :Error) => {console.error(error), result.status(500).send(error)}
+        (error :Error) => {console.error(error), response.status(500).send(error)}
     );
 });
 module.exports = router;

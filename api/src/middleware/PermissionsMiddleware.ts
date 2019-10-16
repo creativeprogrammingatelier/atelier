@@ -1,22 +1,23 @@
 import { IFile } from "../models/file";
 import { IUser } from "../models/user";
-import {Request} from "express"
+import {Request, Response} from "express"
 import e = require("express");
 import FilesMiddleware from "./FilesMiddleware";
 import UserMiddleware from "./UsersMiddleware";
 import CommentMiddleware from "./CommentMiddleware";
 import { IComment } from "../models/comment";
+import UsersMiddleware from "./UsersMiddleware";
 
 export default class PermissionsMiddleware{
 
-    static checkFileAccessPermission(file: IFile , user: IUser): boolean{
+    private static checkFileAccessPermission(file: IFile , user: IUser): boolean{
         if (file && file.owner && user.id && user.id == file.owner || user.role == "ta") {
             return true;
         }
         return false;
     }
 
-    static checkCommentAccessPermission(comment: IComment , user: IUser): boolean{
+    private static checkCommentAccessPermission(comment: IComment , user: IUser): boolean{
         if (user.id == comment.author || user.role == "ta") {
             return true;
         }
@@ -32,38 +33,61 @@ export default class PermissionsMiddleware{
      * @param onUnauthorised 
      * @param onFailure 
      */
-    static checkFileWithId(fileId: String, request: Request, onAuthorised: Function, onUnauthorised: Function, onFailure: Function){
+    static checkFileWithId(request: Request, response: Response, onAuthorised: Function){
+        const fileId: String | null = (request.params.fileId) ? request.params.fileId: (request.body.fileId) ? request.body.fileId :  null;
+        if(fileId === null){
+            console.error('File Id not provided');
+            response.status(400).send();
+            return;
+        }
         FilesMiddleware.getFile(fileId, 
             (file: IFile) => {
                 UserMiddleware.getUser(request, 
                     (user: IUser, request : Request) => {
-                        if(this.checkFileAccessPermission(file, user)){
-                            onAuthorised(file);
+                        if(PermissionsMiddleware.checkFileAccessPermission(file, user)){
+                            onAuthorised();
                         }else{
-                            onUnauthorised();
+                            response.status(401).send()
                         }
                     },
-                    (error: Error) => {console.error(error), onFailure()}
+                    (error: Error) => {console.error(error),response.status(500).send()}
                 );
             },
-            (error: Error) => {console.error(error), onFailure()}
-            );
+            (error: Error) => {console.error(error), response.status(500).send()}
+        );
+    }
+
+    static isTa (request: Request, result: Response, onSuccess: Function) {
+        UsersMiddleware.getUser(request, (user : IUser) => {
+            if (user.role.toLowerCase() == "ta") {
+                onSuccess();
+            } else {
+                result.status(401).send();
+            }
+        },() => result.status(401).send())
+    }
+
+    static checkComment(request: Request, response: Response, onAuthorised: Function){
+        const commentId: String | null = (request.params.commentId) ? request.params.commentId: (request.body.commentId) ? request.body.commentId :  null;
+        if(commentId === null){
+            console.error('File Id not provided');
+            response.status(400).send();
+            return;
         }
-    static checkComment(commentId: String, request: Request, onAuthorised: Function, onUnauthorised: Function, onFailure: Function){
         CommentMiddleware.getComment(commentId, 
             (comment: IComment) => {
                 UserMiddleware.getUser(request, 
                     (user: IUser, request : Request) => {
-                        if(this.checkCommentAccessPermission(comment, user)){
-                            onAuthorised(comment);
+                        if(PermissionsMiddleware.checkCommentAccessPermission(comment, user)){
+                            onAuthorised();
                         }else{
-                            onUnauthorised();
+                            response.status(401).send()
                         }
                     },
-                    (error: Error) => {console.error(error), onFailure()}
+                    (error: Error) => {console.error(error); response.status(500).send()}
                 );
             },
-            (error: Error) => {console.error(error), onFailure()}
+            (error: Error) => {console.error(error); response.status(500).send()}
             );
     }
 }

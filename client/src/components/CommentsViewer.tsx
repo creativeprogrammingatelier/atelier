@@ -30,7 +30,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     }
 
     componentDidMount(){
-        this.createTimercheckforNewComments();
+        // this.createTimercheckforNewComments();
     }
     fetchCommentsHideCommentCreator = () => {
         this.fetchComments(true);
