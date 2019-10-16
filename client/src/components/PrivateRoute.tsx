@@ -67,8 +67,9 @@ class PrivateRoute extends Route<PrivateRouteProps> {
         }
         else {
             if (AuthHelper.loggedIn()) {
-                return (
-                    <h3>You have incorrect permission to view this page</h3>
+                return(
+                    <span></span>
+                                    //     // <h3>You have incorrect permission to view this page</h3>
                 )
             } else {
                 return <Redirect to={{ pathname: '/login', state: { from: this.props.location } }} />;
