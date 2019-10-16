@@ -49,15 +49,21 @@ export default class CommentMiddleware{
     }
 
     static deleteComment (commentId: String, onSuccess: Function, onFailure: Function){
-        Comment.deleteOne({
-            _id: commentId
-        },(error: Error) => {
-            if (!error) {
-                onSuccess();
-            } else {
+        CommentMiddleware.getComment(commentId,
+            (comment: IComment)=>{
+                Comment.deleteOne({
+                    _id: commentId
+                },(error: Error) => {
+                    if (!error) {
+                        onSuccess(comment);
+                    } else {
+                        onFailure(error);
+                    }
+                }
+            )},
+            (error: Error)=>{
                 onFailure(error);
             }
-        }
         )
     }
 }

@@ -27,12 +27,11 @@ class CommentsViewer extends React.Component<{ file: any }>  {
             file: props.file
         }, () => this.fetchComments()
         )
-
     }
 
     componentDidMount(){
         const socket = io();
-        socket.on('hello', (data) => {
+        socket.on(this.props.file.id, (data) => {
             this.fetchComments();
         });
     }

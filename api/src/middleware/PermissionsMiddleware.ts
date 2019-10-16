@@ -18,7 +18,7 @@ export default class PermissionsMiddleware{
     }
 
     private static checkCommentAccessPermission(comment: IComment , user: IUser): boolean{
-        if (user.id == comment.author || user.role == "ta") {
+        if (comment && ( user.id == comment.author || user.role == "ta")) {
             return true;
         }
         return false;
