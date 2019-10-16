@@ -16,13 +16,17 @@ import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
 import FilesMiddleware from "../middleware/FilesMiddleware";
 import { IFile } from "../models/file";
 import RoutesHelper from "../helpers/RoutesHelper";
+import { Socket } from "socket.io";
+import SocketMiddleware from "../middleware/SocketMiddleware";
 var router = express.Router();
+
+
 router.put('/', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request : Request, response: Response) => {
     const fileId: String =  RoutesHelper.getValueFromBody('fileId', request, response);
     const lineId: String = RoutesHelper.getValueFromBody('lineId', request, response);
     const comment: String = RoutesHelper.getValueFromBody('comment', request, response);
     UsersMiddlware.getUser(request, (user: IUser, request: Request) => {
-        CommentsMiddleware.makeComment(fileId, user._id, lineId, comment, () => response.status(204).send(), (error: Error) => {console.error(error); response.status(500).send()})
+        CommentsMiddleware.makeComment(fileId, user._id, lineId, comment, () =>{SocketMiddleware.sendMessage(request, "comments updated") ,response.status(204).send() }, (error: Error) => {console.error(error); response.status(500).send()})
     },(error: Error) => {console.error(error); response.status(500).send()}
     )
 });
@@ -36,4 +40,7 @@ router.delete('/:commentId', AuthMiddleware.withAuth, PermissionsMiddleware.chec
     const commentId: String = RoutesHelper.getValueFromParams('commentId', request, response);
     CommentsMiddleware.deleteComment(commentId, (data: any) => response.status(200).send(data), (error: Error) => {console.error(error); response.status(500).send()})
 });
+
+
+
 module.exports = router;

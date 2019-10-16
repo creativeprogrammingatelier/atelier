@@ -6,6 +6,7 @@ import CommentView from "./CommentView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CommentCreator from "./CommentCreator";
+import io from 'socket.io-client';
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
     state: { file: any, comments?: any[], commentCreatorToggle: boolean }
@@ -30,7 +31,10 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     }
 
     componentDidMount(){
-        // this.createTimercheckforNewComments();
+        const socket = io();
+        socket.on('hello', (data) => {
+            this.fetchComments();
+        });
     }
     fetchCommentsHideCommentCreator = () => {
         this.fetchComments(true);
