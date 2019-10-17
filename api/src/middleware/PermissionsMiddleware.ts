@@ -17,8 +17,10 @@ export default class PermissionsMiddleware{
         return false;
     }
 
-    private static checkCommentAccessPermission(comment: IComment , user: IUser): boolean{
-        if (comment && ( user.id == comment.author || user.role == "ta")) {
+    private static checkCommentAccessPermission(comment: any , user: IUser): boolean{
+        console.log(comment);
+        console.log(user)
+        if (comment && ( user.email == comment.author.email || user.role == "ta")) {
             return true;
         }
         return false;
