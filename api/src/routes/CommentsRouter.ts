@@ -18,7 +18,7 @@ import { IFile } from "../models/file";
 import RoutesHelper from "../helpers/RoutesHelper";
 import { Socket } from "socket.io";
 import SocketMiddleware from "../middleware/SocketMiddleware";
-import { IComment } from "../models/comment";
+import comment, { IComment } from "../models/comment";
 var router = express.Router();
 
 
@@ -27,7 +27,7 @@ router.put('/', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, 
     const lineId: String = RoutesHelper.getValueFromBody('lineId', request, response);
     const comment: String = RoutesHelper.getValueFromBody('comment', request, response);
     UsersMiddlware.getUser(request, (user: IUser, request: Request) => {
-        CommentsMiddleware.makeComment(fileId, user._id, lineId, comment, () =>{response.status(204).send(), SocketMiddleware.sendCommentUpdate(request, fileId.toString()) }, (error: Error) => {console.error(error); response.status(500).send()})
+        CommentsMiddleware.makeCommentReturnComment(fileId, user._id, lineId, comment, (comment: any) =>{response.status(204).send(), SocketMiddleware.sendCommentUpdate(request, fileId.toString(), comment) }, (error: Error) => {console.error(error); response.status(500).send()})
     },(error: Error) => {console.error(error); response.status(500).send()}
     )
 });
@@ -39,7 +39,7 @@ router.get('/file/:fileId', AuthMiddleware.withAuth, PermissionsMiddleware.check
 
 router.delete('/:commentId', AuthMiddleware.withAuth, PermissionsMiddleware.checkComment, (request, response) => {
     const commentId: String = RoutesHelper.getValueFromParams('commentId', request, response);
-    CommentsMiddleware.deleteComment(commentId, (data: IComment) => { response.status(200).send(), SocketMiddleware.sendCommentUpdate(request, data.about.toString())}, (error: Error) => {console.error(error); response.status(500).send()})
+    CommentsMiddleware.deleteComment(commentId, (comment: IComment) => { response.status(200).send(), SocketMiddleware.sendCommentDelete(request, comment.about.toString(), comment)}, (error: Error) => {console.error(error); response.status(500).send()})
 });
 
 

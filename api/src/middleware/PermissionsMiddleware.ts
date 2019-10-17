@@ -70,7 +70,7 @@ export default class PermissionsMiddleware{
     static checkComment(request: Request, response: Response, onAuthorised: Function){
         const commentId: String | null = (request.params.commentId) ? request.params.commentId: (request.body.commentId) ? request.body.commentId :  null;
         if(commentId === null){
-            console.error('File Id not provided');
+            console.error('File id not provided');
             response.status(400).send();
             return;
         }
