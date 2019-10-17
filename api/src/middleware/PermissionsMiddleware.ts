@@ -17,8 +17,10 @@ export default class PermissionsMiddleware{
         return false;
     }
 
-    private static checkCommentAccessPermission(comment: IComment , user: IUser): boolean{
-        if (user.id == comment.author || user.role == "ta") {
+    private static checkCommentAccessPermission(comment: any , user: IUser): boolean{
+        console.log(comment);
+        console.log(user)
+        if (comment && ( user.email == comment.author.email || user.role == "ta")) {
             return true;
         }
         return false;
@@ -70,7 +72,7 @@ export default class PermissionsMiddleware{
     static checkComment(request: Request, response: Response, onAuthorised: Function){
         const commentId: String | null = (request.params.commentId) ? request.params.commentId: (request.body.commentId) ? request.body.commentId :  null;
         if(commentId === null){
-            console.error('File Id not provided');
+            console.error('File id not provided');
             response.status(400).send();
             return;
         }

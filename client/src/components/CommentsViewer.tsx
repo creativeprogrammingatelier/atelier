@@ -6,16 +6,18 @@ import CommentView from "./CommentView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CommentCreator from "./CommentCreator";
+import io from 'socket.io-client';
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
-    state: { file: any, comments?: any[], commentCreatorToggle: boolean }
+    state: { file: any, comments: any[], commentCreatorToggle: boolean }
     private readonly commentFreshFrequency = 1000;
 
     constructor(props: { file: any }) {
         super(props);
         this.state = {
             file: props.file,
-            commentCreatorToggle: false
+            commentCreatorToggle: false,
+            comments: []
         }
         this.fetchComments()
     }
@@ -26,20 +28,69 @@ class CommentsViewer extends React.Component<{ file: any }>  {
             file: props.file
         }, () => this.fetchComments()
         )
-
     }
 
-    componentDidMount(){
-        // this.createTimercheckforNewComments();
+    componentDidMount= () => {
+        const socket = io();
+        socket.on(this.props.file.id, (data) => {
+            let newComments: any[] = this.state.comments;
+            if(data.type === "put"){
+                newComments.push(data.comment);
+                let sortedComments = newComments.sort(CommentsViewer.sortComments);
+                this.setState({
+                    comments: newComments
+                });
+            } else{
+                newComments = CommentsViewer.removeComment(newComments, data.comment);
+                let sortedComments = newComments.sort(CommentsViewer.sortComments);
+                this.setState({
+                    comments: sortedComments
+                });
+            }
+        })
     }
+
+    static removeComment(comments, commentToRemove) {
+        for (let index = 0; index < comments.length; index++) {
+            const comment = comments[index];
+            if(comment._id === commentToRemove._id){
+                comments.splice(index, 1)
+                return comments;
+            } 
+        }
+    }
+
+    static sortComments(a,b){
+        let aDate = new Date(a.created);
+        let bDate = new Date(b.created);
+
+        if ( aDate < bDate ){
+            return 1;
+        }
+        if ( aDate > bDate ){
+            return -1;
+        }
+        return 0;
+          
+    }
+
     fetchCommentsHideCommentCreator = () => {
-        this.fetchComments(true);
+        this.setState({
+            commentCreatorToggle: false
+        })
     }
+
     fetchComments = (hideCommentCreator? : boolean) => {
-        CommentHelper.getFileComments(this.state.file.id, (comments: any) => this.setState({
-            comments: comments,
-            commentCreatorToggle: (hideCommentCreator) ? false: this.state.commentCreatorToggle
-        }), (error: any) => console.log(error))
+        CommentHelper.getFileComments(this.state.file.id, (comments: any) => 
+        {
+            let sortedComments = comments.sort(CommentsViewer.sortComments);
+            this.setState({
+                comments: sortedComments,
+                commentCreatorToggle: (hideCommentCreator) ? false: this.state.commentCreatorToggle
+            })
+        }
+        
+        , (error: any) => console.log(error))
     }
 
     deleteComment = (commentId: String) =>{

@@ -15,11 +15,18 @@ export default class CommentMiddleware{
         })
         newComment.save((error: Error) => {
             if (!error) {
-                onSuccess();
+                onSuccess(newComment);
             } else {
                 onFailure(error);
             }
         });
+    }
+
+    static makeCommentReturnComment(fileId: String, userId : String, line: String, body: any, onSuccess: Function, onFailure: Function) {
+        CommentMiddleware.makeComment(fileId, userId, line, body, 
+            (newComment: IComment)=> this.getComment(newComment.id, onSuccess, onFailure), 
+            () => onFailure()
+        );
     }
 
     static getFileComments(fileId: String, onSuccess: Function, onFailure : Function){
@@ -38,26 +45,32 @@ export default class CommentMiddleware{
 
     static getComment(commentId: String, onSuccess: Function, onFailure: Function){
         Comment.findById(commentId,
-            (error: Error, comment: IComment) =>{
-                if(error){
-                    onFailure(error);
-                }else{
-                    onSuccess(comment);
-                }
-            }
-        );
-    }
-
-    static deleteComment (commentId: String, onSuccess: Function, onFailure: Function){
-        Comment.deleteOne({
-            _id: commentId
-        },(error: Error) => {
+        ).populate('author', "-_id -password").
+        exec((error, response) => {
             if (!error) {
-                onSuccess();
+                onSuccess(response);
             } else {
                 onFailure(error);
             }
-        }
+        })
+    }
+
+    static deleteComment (commentId: String, onSuccess: Function, onFailure: Function){
+        CommentMiddleware.getComment(commentId,
+            (comment: IComment)=>{
+                Comment.deleteOne({
+                    _id: commentId
+                },(error: Error) => {
+                    if (!error) {
+                        onSuccess(comment);
+                    } else {
+                        onFailure(error);
+                    }
+                }
+            )},
+            (error: Error)=>{
+                onFailure(error);
+            }
         )
     }
 }

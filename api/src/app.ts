@@ -7,6 +7,7 @@
  * Dependencies
  */
 import path from "path"
+import { Socket } from "socket.io";
 var createError = require('http-errors');
 var express = require('express');
 var cookieParser = require('cookie-parser');
@@ -19,13 +20,26 @@ var filesRouter = require('./routes/FilesRouter');
 var commentRouter = require('./routes/CommentsRouter');
 var indexRouter = require('./routes/IndexRouter');
 
+
+
 var app = express();
-app.listen(5000, () => console.log('Listening on port 5000!'))
+// app.listen(5000, () => console.log('Listening on port 5000!'))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({
   extended: false
 }));
+
+//Socket io
+var http = require('http').createServer(app);
+http.listen(5000, "127.0.0.1");
+const socket: Socket = require('socket.io')(http);
+app.set('socket-io', socket);
+
+socket.on('connect', (socket: Socket) => {
+  socket.emit('id', socket.id) // send each client their socket id
+})
+
 app.use(cookieParser());
 const secret = 'SECRET';
 /**
