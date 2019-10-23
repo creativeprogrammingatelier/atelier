@@ -1,14 +1,17 @@
 import * as React from "react";
-type CommentType = { about: String, author: { email: String, role: String }, _id:String, body: String, created: Date, line: Number };
-type CommentViewProps = {comment: CommentType, deleteComment: Function};
+type CommentType = { updateCurrentCursorLine: Function, about: String, author: { email: String, role: String }, _id:String, body: String, created: Date, line: Number };
+type CommentViewProps = {updateCurrentCursorLine: Function, comment: CommentType, deleteComment: Function};
 class CommentView extends React.Component<CommentViewProps> {
-
+    state:{updateCurrentCursorLine: Function}
     constructor(props: CommentViewProps) {
         super(props)
+        this.state = {
+            updateCurrentCursorLine: props.updateCurrentCursorLine
+        }
     }
     render() {
         return (
-            <div className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div className="toast" role="alert" aria-live="assertive" aria-atomic="true" onClick={() => {this.state.updateCurrentCursorLine(this.props.comment.line)}}>
                 <div className="toast-header">
                   <div className="container">
                         <div className="row">

@@ -7,13 +7,14 @@ import CommentsViewer from "./CommentsViewer";
 import { useRef } from "react";
 
 class FileViewer extends React.Component<{ files: any[], update?: Function }> {
-    state: { viewedFile: any, currentLineNumber: Number }
+    state: { viewedFile: any, currentLineNumber: Number, commentLineNumber: number }
     codeViewerRef: React.RefObject<CodeViewer>;
     constructor(props: { files: any[], update: Function }) {
         super(props);
         this.state = {
             viewedFile: null,
-            currentLineNumber: 0
+            currentLineNumber: 0,
+            commentLineNumber: 0
         }
         this.codeViewerRef = React.createRef<CodeViewer>();    
     }
@@ -56,6 +57,12 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
         })
     }
 
+    updateCurrentCursorLine = (commentLineNumber: number) =>{
+        this.setState({
+            commentLineNumber: commentLineNumber
+        })
+    }
+
     render() {
         return (
             <div>
@@ -65,10 +72,10 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
                 <div>
                     <div className="row">
                         <div className="col-sm-8">
-                            {(this.state.viewedFile != null) ? <CodeViewer {  ...{file: this.state.viewedFile, ref: this.codeViewerRef, updateLineNumber: this.updateCurrentLineNumber  }} /> : null}
+                            {(this.state.viewedFile != null) ? <CodeViewer {  ...{file: this.state.viewedFile, commentLineNumber: this.state.commentLineNumber, updateLineNumber: this.updateCurrentLineNumber  }} /> : null}
                         </div>
                         <div className="col-sm-4">
-                            {(this.state.viewedFile != null) ? <CommentsViewer {...{currentLineNumber: this.state.currentLineNumber, codeViewerRef:this.codeViewerRef.current,file: this.state.viewedFile }} /> : null}
+                            {(this.state.viewedFile != null) ? <CommentsViewer {...{updateCurrentCursorLine: this.updateCurrentCursorLine, currentLineNumber: this.state.currentLineNumber, codeViewerRef:this.codeViewerRef.current,file: this.state.viewedFile }} /> : null}
                         </div>
 
                     </div>

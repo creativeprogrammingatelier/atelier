@@ -17,7 +17,7 @@ class CommentCreator extends React.Component<CommentCreatorProps> {
             currentLineNumber: props.currentLineNumber
         }
     }
-    componentWillReceiveProps(props: CommentCreatorProps){
+    UNSAFE_componentWillReceiveProps(props: any) {
         this.setState({
             currentLineNumber: props.currentLineNumber
         })
@@ -34,7 +34,7 @@ class CommentCreator extends React.Component<CommentCreatorProps> {
         let body = {
             fileId: this.props.fileId,
             comment: this.state.commentBody,
-            line: (this.state.lineNum) ? this.state.lineNum: undefined
+            line: (this.state.currentLineNumber) ? this.state.currentLineNumber: undefined
         }
         CommentHelper.putComment(JSON.stringify(body), this.props.onSuccess, ()=> alert("Failed, to fetch Comments"))
     }
