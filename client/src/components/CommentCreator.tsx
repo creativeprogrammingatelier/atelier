@@ -7,16 +7,21 @@ import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import CommentHelper from "../../helpers/CommentHelper";
 import "../styles/comment-creator.scss"
-type CommentCreatorProps = {onSuccess: Function, fileId: String};
+type CommentCreatorProps = {currentLineNumber:number, onSuccess: Function, fileId: String};
 class CommentCreator extends React.Component<CommentCreatorProps> {
-    state:{commentBody: String, lineNum?: Number}
+    state:{currentLineNumber:number, commentBody: String, lineNum?: Number}
     constructor(props: CommentCreatorProps){
         super(props);
         this.state = {
-            commentBody: ""
+            commentBody: "",
+            currentLineNumber: props.currentLineNumber
         }
     }
-    
+    componentWillReceiveProps(props: CommentCreatorProps){
+        this.setState({
+            currentLineNumber: props.currentLineNumber
+        })
+    }
     handleChange = (event: { target: { value: any; name: any; }; }) => {
             const { value, name } = event.target;
             this.setState({
@@ -49,7 +54,7 @@ class CommentCreator extends React.Component<CommentCreatorProps> {
                     <div className="toast-body">
                         <div>
                         <div className="form-group">
-                            <input type="number" className="form-control" name = "lineNum" placeholder="About Line" onChange={this.handleChange} /> 
+                            <input type="number" className="form-control"  value={this.state.currentLineNumber} name = "currentLineNumber" placeholder="About Line" onChange={this.handleChange} /> 
                         </div>
                         <div className="form-group">
                             <textarea  name = "commentBody" className="form-control" placeholder="Comment" onChange={this.handleChange} /> 

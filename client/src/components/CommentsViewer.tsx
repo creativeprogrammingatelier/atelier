@@ -7,15 +7,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CommentCreator from "./CommentCreator";
 import io from 'socket.io-client';
+import CodeViewer from "./CodeViewer";
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
-    state: { file: any, comments: any[], commentCreatorToggle: boolean }
+    state: { file: any, currentLineNumber: number, comments: any[], commentCreatorToggle: boolean }
     private readonly commentFreshFrequency = 1000;
 
-    constructor(props: { file: any }) {
+    constructor(props: {currentLineNumber: number, file: any, codeViewerRef:  React.RefObject<CodeViewer> }) {
         super(props);
         this.state = {
             file: props.file,
+            currentLineNumber: (props.currentLineNumber) ?  props.currentLineNumber : 0,
             commentCreatorToggle: false,
             comments: []
         }
@@ -25,7 +27,8 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO refactor for React v17
     UNSAFE_componentWillReceiveProps(props: any) {
         this.setState({
-            file: props.file
+            file: props.file,
+            currentLineNumber: props.currentLineNumber
         }, () => this.fetchComments()
         )
     }
@@ -123,7 +126,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
                     commentCreatorToggle: !this.state.commentCreatorToggle
                 })}><FontAwesomeIcon icon={faPlus}/> New Comment</span>
                 <div>
-                    {(this.state.commentCreatorToggle? <CommentCreator onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.id}/>: null)}
+                    {(this.state.commentCreatorToggle? <CommentCreator currentLineNumber={this.state.currentLineNumber} onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.id}/>: null)}
                 </div>
                 <ul className="list-group"> 
                     {this.populate()}
