@@ -28,6 +28,9 @@ class CodeViewer extends React.Component {
 
     }
     componentDidUpdate(props){
+        if(props.file != this.state.file){
+            this.codeMirrorUpdate();
+        }
         this.selectLine();
     }
 
