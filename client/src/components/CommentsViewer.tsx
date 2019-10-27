@@ -10,14 +10,14 @@ import io from 'socket.io-client';
 import CodeViewer from "./CodeViewer";
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
-    state: { file: any, currentLineNumber: number, comments: any[], commentCreatorToggle: boolean, updateCurrentCursorLine: Function }
+    state: { file: any, currentLineNumber: number, comments: any[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
     private readonly commentFreshFrequency = 1000;
 
-    constructor(props: {updateCurrentCursorLine: Function, currentLineNumber: number, file: any, codeViewerRef:  React.RefObject<CodeViewer> }) {
+    constructor(props: {updateCurrentLineNumber: Function, currentLineNumber: number, file: any, codeViewerRef:  React.RefObject<CodeViewer> }) {
         super(props);
         this.state = {
             file: props.file,
-            updateCurrentCursorLine: props.updateCurrentCursorLine,
+            updateCurrentLineNumber: props.updateCurrentLineNumber,
             currentLineNumber: (props.currentLineNumber) ?  props.currentLineNumber : 0,
             commentCreatorToggle: false,
             comments: []
@@ -113,7 +113,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
         if (this.state.comments != null) {
             for (const comment of this.state.comments) {
                 comments.push(
-                    <li className="list-group-item" key={comment._id}> <CommentView updateCurrentCursorLine ={this.state.updateCurrentCursorLine} comment = {...comment} deleteComment ={this.deleteComment} /></li>
+                    <li className="list-group-item" key={comment._id}> <CommentView updateCurrentLineNumber ={this.state.updateCurrentLineNumber} comment = {...comment} deleteComment ={this.deleteComment} /></li>
                 )
             }
         }

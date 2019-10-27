@@ -13,9 +13,8 @@ type CodeViewerProps = {
     file: any;
     updateLineNumber: Function;
 };
-
 class CodeViewer extends React.Component {
-    //TODO make a object defintion for file
+    movedByMouse: boolean = false;
     state: { file: any, formattedCode: any, updateLineNumber: Function, commentLineNumber: number};
     codeMirror: CodeMirror.Editor ;
     constructor(props: CodeViewerProps) {
@@ -28,7 +27,7 @@ class CodeViewer extends React.Component {
         }
 
     }
-    componentDidUpdate(){
+    componentDidUpdate(props){
         this.selectLine();
     }
 
@@ -43,12 +42,19 @@ class CodeViewer extends React.Component {
     codeMirrorUpdate(){
         let tae: any = document.getElementById('text-editor');
         this.codeMirror = CodeMirror.fromTextArea(tae, {mode: 'text/x-java', lineNumbers: true ,styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
+        this.codeMirror.setSize("100%", "100%");
         this.codeMirror.on("cursorActivity",(hint:any)=>{
-            this.setStateSelectedLine();
+            if(this.movedByMouse){
+                this.setStateSelectedLine();
+            }
+        });
+        this.codeMirror.on("mousedown", (hint:any)=> {
+            this.movedByMouse = true;
         });
     }
 
     selectLine(){
+        this.movedByMouse = false;
         this.codeMirror.setCursor(this.state.commentLineNumber -1 );
     }
 
@@ -57,8 +63,8 @@ class CodeViewer extends React.Component {
         let doc: any = this.codeMirror.getDoc();
         let anchor = doc.sel.ranges[0].anchor.line;
         let head = doc.sel.ranges[0].head.line;
-        let lineNumber = (anchor > head) ? head : anchor;
-        this.state.updateLineNumber(lineNumber - 1);
+        let lineNumber = (anchor > head) ? head : anchor;       
+      this.state.updateLineNumber(lineNumber - 1);
     }
 
     //TODO refactor for React v17
