@@ -4,15 +4,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileDownload, faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
 import FileHelper from "../../helpers/FileHelper";
 import CommentsViewer from "./CommentsViewer";
+import { useRef } from "react";
 
 class FileViewer extends React.Component<{ files: any[], update?: Function }> {
-    state: { viewedFile: any }
-
+    state: { viewedFile: any, currentLineNumber: number }
+    codeViewerRef: React.RefObject<CodeViewer>;
     constructor(props: { files: any[], update: Function }) {
         super(props);
         this.state = {
             viewedFile: null,
+            currentLineNumber: 0,
         }
+        this.codeViewerRef = React.createRef<CodeViewer>();    
     }
 
     populateTable = () => {
@@ -47,6 +50,12 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
         )
     }
 
+    updateCurrentLineNumber = (lineNumber: number) => {
+        this.setState({
+            currentLineNumber: lineNumber
+        })
+    }
+
     render() {
         return (
             <div>
@@ -56,10 +65,10 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
                 <div>
                     <div className="row">
                         <div className="col-sm-8">
-                            {(this.state.viewedFile != null) ? <CodeViewer {...{ file: this.state.viewedFile }} /> : null}
+                            {(this.state.viewedFile != null) ? <CodeViewer {  ...{file: this.state.viewedFile, commentLineNumber: this.state.currentLineNumber, updateLineNumber: this.updateCurrentLineNumber  }} /> : null}
                         </div>
                         <div className="col-sm-4">
-                            {(this.state.viewedFile != null) ? <CommentsViewer {...{ file: this.state.viewedFile }} /> : null}
+                            {(this.state.viewedFile != null) ? <CommentsViewer {...{updateCurrentLineNumber: this.updateCurrentLineNumber, currentLineNumber: this.state.currentLineNumber, codeViewerRef:this.codeViewerRef.current,file: this.state.viewedFile }} /> : null}
                         </div>
 
                     </div>

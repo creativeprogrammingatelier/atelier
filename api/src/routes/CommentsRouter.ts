@@ -24,7 +24,7 @@ var router = express.Router();
 
 router.put('/', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request : Request, response: Response) => {
     const fileId: String =  RoutesHelper.getValueFromBody('fileId', request, response);
-    const lineId: String = RoutesHelper.getValueFromBody('lineId', request, response);
+    const lineId: String = RoutesHelper.getValueFromBody('line', request, response);
     const comment: String = RoutesHelper.getValueFromBody('comment', request, response);
     UsersMiddlware.getUser(request, (user: IUser, request: Request) => {
         CommentsMiddleware.makeCommentReturnComment(fileId, user._id, lineId, comment, (comment: any) =>{response.status(204).send(), SocketMiddleware.sendCommentUpdate(request, fileId.toString(), comment) }, (error: Error) => {console.error(error); response.status(500).send()})

@@ -7,15 +7,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CommentCreator from "./CommentCreator";
 import io from 'socket.io-client';
+import CodeViewer from "./CodeViewer";
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
-    state: { file: any, comments: any[], commentCreatorToggle: boolean }
+    state: { file: any, currentLineNumber: number, comments: any[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
     private readonly commentFreshFrequency = 1000;
 
-    constructor(props: { file: any }) {
+    constructor(props: {updateCurrentLineNumber: Function, currentLineNumber: number, file: any, codeViewerRef:  React.RefObject<CodeViewer> }) {
         super(props);
         this.state = {
             file: props.file,
+            updateCurrentLineNumber: props.updateCurrentLineNumber,
+            currentLineNumber: (props.currentLineNumber) ?  props.currentLineNumber : 0,
             commentCreatorToggle: false,
             comments: []
         }
@@ -25,7 +28,8 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO refactor for React v17
     UNSAFE_componentWillReceiveProps(props: any) {
         this.setState({
-            file: props.file
+            file: props.file,
+            currentLineNumber: props.currentLineNumber
         }, () => this.fetchComments()
         )
     }
@@ -109,7 +113,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
         if (this.state.comments != null) {
             for (const comment of this.state.comments) {
                 comments.push(
-                    <li className="list-group-item" key={comment._id}> <CommentView comment = {...comment} deleteComment ={this.deleteComment} /></li>
+                    <li className="list-group-item" key={comment._id}> <CommentView updateCurrentLineNumber ={this.state.updateCurrentLineNumber} comment = {...comment} deleteComment ={this.deleteComment} /></li>
                 )
             }
         }
@@ -123,7 +127,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
                     commentCreatorToggle: !this.state.commentCreatorToggle
                 })}><FontAwesomeIcon icon={faPlus}/> New Comment</span>
                 <div>
-                    {(this.state.commentCreatorToggle? <CommentCreator onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.id}/>: null)}
+                    {(this.state.commentCreatorToggle? <CommentCreator currentLineNumber={this.state.currentLineNumber} onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.id}/>: null)}
                 </div>
                 <ul className="list-group"> 
                     {this.populate()}

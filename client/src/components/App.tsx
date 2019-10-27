@@ -68,7 +68,7 @@ class App extends React.Component {
     render() {
         return (
             <div className="wrapper">
-                <div className="container">
+                <div className="container-fluid">
                     <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} />
                     < Switch >
                         <Redirect exact from="/" to="/roleview" />
