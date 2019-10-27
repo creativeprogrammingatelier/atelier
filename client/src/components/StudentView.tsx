@@ -6,6 +6,7 @@ import AuthHelper from "../../helpers/AuthHelper";
 import FileHelper from "../../helpers/FileHelper";
 class StudentView extends React.Component {
     state: { files: any[] }
+    _ismounted: boolean;
     constructor(props: any) {
         super(props);
         this.state = {
@@ -14,6 +15,7 @@ class StudentView extends React.Component {
     }
 
     componentDidMount() {
+        this._ismounted = true;
         this.getAllFiles()
     }
 
@@ -23,11 +25,14 @@ class StudentView extends React.Component {
             [name]: value
         })
     };
-
+      
+      componentWillUnmount() {
+         this._ismounted = false;
+      }
 
     getAllFiles = () => {
         FileHelper.getAllFiles((result: any) => {
-            if (result != null) {
+            if (result != null && this._ismounted) {
                 this.setState({
                     files: result
                 })
