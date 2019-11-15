@@ -56,4 +56,9 @@ export default class AuthMiddleWare {
         }, onFailure )
     }
 
+    static getRole(request: Request, onSuccess: Function, onFailure: Function){
+        UsersMiddleware.getUser(request, (user : IUser) => {
+                onSuccess(user.role.toLowerCase());
+        }, onFailure )
+    }
 }
