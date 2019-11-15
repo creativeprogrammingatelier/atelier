@@ -6,7 +6,7 @@
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpileOnly ./api/src/app.ts",
     "prod": "tsc && node ./build/app.js",
-    "watch": "npx webpack --watch",
+    "watch": "npx webpack --watch ./client/src",
     "build": "npx webpack ",
     "test": "mocha -r ts-node/register -r tests/compiler.tsx -r mock-local-storage tests/*.test.tsx"
   },
@@ -44,6 +44,7 @@
     "multer": "^1.4.2",
     "nodemon": "^1.19.2",
     "npx": "^10.2.0",
+    "path": "^0.12.7",
     "primjs": "^0.6.5",
     "prismjs": "^1.17.1",
     "react": "^16.9.0",

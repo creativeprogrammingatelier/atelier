@@ -9,7 +9,7 @@
 var multer = require('multer');
 var express = require('express');
 var upload = multer({
-    dest: '../uploads/'
+    dest: '../../uploads/'
 })
 
 var router = express.Router();

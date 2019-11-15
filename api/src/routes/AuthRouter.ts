@@ -3,10 +3,8 @@
  * Author: Andrew Heath 
  * Date created: 13/08/19
  */
-
-
-import express from "express";
-var router = express.Router();
+import express from "express"
+ var router = express.Router();
 import AuthMiddleware from "../middleware/AuthMiddleware";
 import {Request, Response} from "express";
 import UsersMiddleware from "../middleware/UsersMiddleware";

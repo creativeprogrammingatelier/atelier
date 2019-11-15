@@ -7,19 +7,17 @@
  * Dependencies
  */
 import path from "path"
+import express from 'express';
 import { Socket } from "socket.io";
 var createError = require('http-errors');
-var express = require('express');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
-
-var authRouter = require('./routes/AuthRouter');
 var usersRouter = require('./routes/UsersRouter');
+var authRouter = require('./routes/AuthRouter');
 var filesRouter = require('./routes/FilesRouter');
 var commentRouter = require('./routes/CommentsRouter');
 var indexRouter = require('./routes/IndexRouter');
-
 
 
 var app = express();
@@ -41,7 +39,6 @@ socket.on('connect', (socket: Socket) => {
 })
 
 app.use(cookieParser());
-const secret = 'SECRET';
 /**
  * Adding default static
  */
