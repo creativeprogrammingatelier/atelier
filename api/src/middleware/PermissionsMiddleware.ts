@@ -1,11 +1,11 @@
-import { IFile } from "../models/file";
-import { IUser } from "../models/user";
+import { IFile } from "../../../models/file";
+import { IUser } from "../../../models/user";
 import {Request, Response} from "express"
 import e = require("express");
 import FilesMiddleware from "./FilesMiddleware";
 import UserMiddleware from "./UsersMiddleware";
 import CommentMiddleware from "./CommentMiddleware";
-import { IComment } from "../models/comment";
+import { IComment } from "../../../models/comment";
 import UsersMiddleware from "./UsersMiddleware";
 
 export default class PermissionsMiddleware{

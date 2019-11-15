@@ -1,9 +1,10 @@
+import Comment, { IComment } from "../../../models/comment";
+
 /**
  * Files middleware provides helper methods for interacting with comments in the DB
  * @Author Andrew Heath
  */
 
-import Comment, {IComment} from "../models/comment";
 export default class CommentMiddleware{
 
     static makeComment (fileId: String, userId : String, line: String, body: any, onSuccess: Function, onFailure: Function) {

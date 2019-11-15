@@ -1,6 +1,6 @@
-import FileModel, { IFile } from "../models/file";
+import FileModel, { IFile } from "../../../models/file";
 import fs, { PathLike } from "fs";
-import UserModel, { IUser } from "../models/user";
+import UserModel, { IUser } from "../../../models/user";
 import path from "path";
 /**
  * Files middleware provides helper methods for interacting with Files in the DB

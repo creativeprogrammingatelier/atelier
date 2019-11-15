@@ -2,7 +2,7 @@
 
 import {Request} from "express";
 import { Socket } from "socket.io";
-import { IComment } from "../models/comment";
+import { IComment } from "../../../models/comment";
 export default class SocketMiddleware{
 
     static sendCommentUpdate(request: Request, fileId: string, comment: IComment): void{

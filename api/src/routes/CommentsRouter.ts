@@ -11,14 +11,14 @@ import express, {Request, Response} from "express";
 import AuthMiddleware from "../middleware/AuthMiddleware";
 import CommentsMiddleware from "../middleware/CommentMiddleware";
 import UsersMiddlware from "../middleware/UsersMiddleware";
-import { IUser } from "../models/user";
+import { IUser } from "../../../models/user";
 import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
 import FilesMiddleware from "../middleware/FilesMiddleware";
-import { IFile } from "../models/file";
+import { IFile } from "../../../models/file";
 import RoutesHelper from "../helpers/RoutesHelper";
 import { Socket } from "socket.io";
 import SocketMiddleware from "../middleware/SocketMiddleware";
-import comment, { IComment } from "../models/comment";
+import comment, { IComment } from "../../../models/comment";
 var router = express.Router();
 
 

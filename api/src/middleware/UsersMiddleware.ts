@@ -1,9 +1,9 @@
 
-import User from "../models/user";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 import {Constants} from "../lib/constants";
 import {Request, Response} from "express";
+import { User } from "../../../models/user";
 
 /**
  * Files middleware provides helper methods for interacting with comments in the DB

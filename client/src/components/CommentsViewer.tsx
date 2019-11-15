@@ -8,9 +8,10 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CommentCreator from "./CommentCreator";
 import io from 'socket.io-client';
 import CodeViewer from "./CodeViewer";
+import { IComment } from "../../../models/comment";
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
-    state: { file: any, currentLineNumber: number, comments: any[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
+    state: { file: any, currentLineNumber: number, comments: IComment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
     private readonly commentFreshFrequency = 1000;
 
     constructor(props: {updateCurrentLineNumber: Function, currentLineNumber: number, file: any, codeViewerRef:  React.RefObject<CodeViewer> }) {

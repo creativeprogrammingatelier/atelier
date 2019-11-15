@@ -7,9 +7,9 @@
 
 import jwt from 'jsonwebtoken';
 import UsersMiddleware from './UsersMiddleware';
-import User, {IUser} from '../models/user';
 import {Constants}  from '../lib/constants';
 import {Request, Response} from "express";
+import { User, IUser } from '../../../models/user';
 
 
 export default class AuthMiddleWare { 
