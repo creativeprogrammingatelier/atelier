@@ -11,7 +11,7 @@ import CodeViewer from "./CodeViewer";
 import { IComment } from "../../../models/comment";
 class CommentsViewer extends React.Component<{ file: any }>  {
     //TODO make a object defintion for file
-    state: { file: any, currentLineNumber: number, comments: IComment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
+    state: { file: any, currentLineNumber: number, comments: any[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
     private readonly commentFreshFrequency = 1000;
 
     constructor(props: {updateCurrentLineNumber: Function, currentLineNumber: number, file: any, codeViewerRef:  React.RefObject<CodeViewer> }) {
@@ -114,7 +114,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
         if (this.state.comments != null) {
             for (const comment of this.state.comments) {
                 comments.push(
-                    <li className="list-group-item" key={comment._id}> <CommentView updateCurrentLineNumber ={this.state.updateCurrentLineNumber} comment = {...comment} deleteComment ={this.deleteComment} /></li>
+                    <li className="list-group-item" key={comment._id}> <CommentView updateCurrentLineNumber ={this.state.updateCurrentLineNumber} comment = {...comments} deleteComment ={this.deleteComment} /></li>
                 )
             }
         }
