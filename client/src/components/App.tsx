@@ -28,7 +28,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        this.checkTAorStudent();
+        this.getAndSetRole();
     }
 
     handleLogin(email: string) {
@@ -37,7 +37,7 @@ class App extends React.Component {
             email: email,
         })
         localStorage.setItem('email', email)
-        this.checkTAorStudent();
+        this.getAndSetRole();
     }
 
     handleLogout() {
@@ -48,20 +48,17 @@ class App extends React.Component {
         })
     }
 
-    // Horrible stuff that should be refactored
-    checkTAorStudent() {
-        this.checkAndSetRole('ta');
-        this.checkAndSetRole('student');
-    }
-
-    checkAndSetRole(role: string) {
-        AuthHelper.checkRole(role).then((response: any) => {
-            if (response.status == 204) {
-                this.setState({
-                    role: role,
-                    loggedIn: true
-                });
-            }
+    getAndSetRole() {
+        AuthHelper.getRole().then((response: any) => {
+            response.json().then((json: any) => {
+                let userRole = json.role;
+                if (response.status == 200) {
+                    this.setState({
+                        role: userRole,
+                        loggedIn: true
+                    });
+                }
+            })
         });
     }
 

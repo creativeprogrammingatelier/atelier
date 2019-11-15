@@ -8,6 +8,9 @@ module.exports = {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".ts", ".tsx"]
     },
+    output: {
+		path: __dirname + "/client/dist",
+	},
 
     module: {
         rules: [{

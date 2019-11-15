@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpileOnly ./api/src/app.ts",
     "prod": "tsc && node ./build/app.js",
     "watch": "npx webpack --watch ./client/src",
-    "build": "npx webpack ",
+    "build": "npx webpack ./client/src",
     "test": "mocha -r ts-node/register -r tests/compiler.tsx -r mock-local-storage tests/*.test.tsx"
   },
   "dependencies": {

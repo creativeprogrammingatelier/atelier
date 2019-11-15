@@ -54,11 +54,19 @@ router.post('/role', AuthMiddleware.withAuth, function (request, result) {
  * Checks if role of user, (using token) is valid compared to that passed in the body
  * @TODO refactor move functions into middleware
  */
-router.get('/role', AuthMiddleware.withAuth, function (request, result) {
+router.post('/roles', AuthMiddleware.withAuth, function (request, result) {
   const {
-    role
+    roles
   } = request.body;
-  AuthMiddleware.getRole(request, () => result.status(204).send(), (error: Error) => result.status(401).send(error))
+  AuthMiddleware.checkRoles(request, roles, () => result.status(204).send(), (error: Error) => result.status(401).send(error))
+});
+
+/**
+ * Checks if role of user, (using token) is valid compared to that passed in the body
+ * @TODO refactor move functions into middleware
+ */
+router.get('/role', AuthMiddleware.withAuth, function (request, result) {
+  AuthMiddleware.getRole(request, (role: String) => result.status(200).send({role: role}), (error: Error) => result.status(401).send(error))
 });
 
 

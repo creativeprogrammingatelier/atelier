@@ -56,6 +56,16 @@ export default class AuthMiddleWare {
         }, onFailure )
     }
 
+    static async checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure: Function){
+        for (const role of roles) {
+            UsersMiddleware.getUser(request, (user : IUser) => {
+                    if (user.role.toLowerCase() == role.toLowerCase()) {
+                        onSuccess();
+                    }
+                }, onFailure)
+        }
+    }
+
     static getRole(request: Request, onSuccess: Function, onFailure: Function){
         UsersMiddleware.getUser(request, (user : IUser) => {
                 onSuccess(user.role.toLowerCase());

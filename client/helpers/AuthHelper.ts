@@ -13,6 +13,14 @@ export default class AuthHelper {
             })
         });
     }
+    static checkRoles(roles: string[]) {
+        return this.fetch(`/auth/roles`, {
+            method: "POST",
+            body: JSON.stringify({
+                roles,
+            })
+        });
+    }
 
     static getRole() {
         return this.fetch(`/auth/role`, {
