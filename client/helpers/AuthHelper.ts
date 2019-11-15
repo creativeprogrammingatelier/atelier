@@ -14,6 +14,12 @@ export default class AuthHelper {
         });
     }
 
+    static getRole() {
+        return this.fetch(`/auth/role`, {
+            method: "GET"
+        });
+    }
+
     private domain: any;
     // Initializing important variables
     constructor(domain: any) {

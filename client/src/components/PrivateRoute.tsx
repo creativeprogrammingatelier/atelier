@@ -36,7 +36,6 @@ class PrivateRoute extends Route<PrivateRouteProps> {
                         this.setState({
                             roleAuthorised: true
                         });
-
                     }
                 });
 
