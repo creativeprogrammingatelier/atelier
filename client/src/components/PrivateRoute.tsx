@@ -30,15 +30,12 @@ class PrivateRoute extends Route<PrivateRouteProps> {
             this.setState({
                 roleAuthorised: false
             });
-            this.props.roles.forEach((role: string) => {
-                AuthHelper.checkRole(role).then((response: any) => {
-                    if (response.status == 204) {
-                        this.setState({
-                            roleAuthorised: true
-                        });
-                    }
-                });
-
+            AuthHelper.checkRoles(this.props.roles).then((response: any) => {
+                if (response.status == 204) {
+                    this.setState({
+                        roleAuthorised: true
+                    });
+                }
             });
         }
     }
