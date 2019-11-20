@@ -114,7 +114,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
         if (this.state.comments != null) {
             for (const comment of this.state.comments) {
                 comments.push(
-                    <li className="list-group-item" key={comment._id}> <CommentView updateCurrentLineNumber ={this.state.updateCurrentLineNumber} comment = {...comments} deleteComment ={this.deleteComment} /></li>
+                    <li className="list-group-item" key={comment._id}> <CommentView updateCurrentLineNumber ={this.state.updateCurrentLineNumber} comment = {comment} deleteComment ={this.deleteComment} /></li>
                 )
             }
         }

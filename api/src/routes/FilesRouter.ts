@@ -4,7 +4,7 @@
  * @Author Andrew Heath
  */
 
-var multer = require('multer');
+import multer from "multer";
 var express = require('express');
 var upload = multer({
     dest: 'uploads/'
@@ -26,6 +26,7 @@ import RoutesHelper from "../helpers/RoutesHelper";
  * Upload file end point, uses multer to read file
  * @TODO refactor
  */
+
 router.put('/', AuthMiddleware.withAuth, upload.single('file'),
     (request: any, result: Response) => {
         let file = request.file;
