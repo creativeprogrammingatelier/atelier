@@ -34,7 +34,7 @@ class CommentCreator extends React.Component<CommentCreatorProps, CommentCreator
             
         };
 
-    submit = (event:any) => {
+    submit = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.preventDefault();
         let body = {
             fileId: this.props.fileId,

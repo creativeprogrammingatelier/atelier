@@ -1,4 +1,4 @@
-import React, { Component, Ref, TextareaHTMLAttributes, useImperativeHandle } from "react";
+import React, { Component, Ref, TextareaHTMLAttributes, useImperativeHandle, DOMElement } from "react";
 import "../styles/prism.scss"
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/oceanic-next.css"
@@ -6,19 +6,20 @@ import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import CodeMirror from "codemirror";
+import { IFile } from "../../../models/file";
 
 type CodeViewerProps = {
     commentLineNumber: number;
-    fileViewerRef: Ref<any>;
-    file: any;
+    fileViewerRef: Ref<String>;
+    file: IFile;
     updateLineNumber: Function;
 };
 
 type CodeViewerState = {
-    file: any,
-     formattedCode: any,
-      updateLineNumber: Function,
-       commentLineNumber: number
+    file: IFile,
+    formattedCode: string,
+    updateLineNumber: Function,
+    commentLineNumber: number
 }
 
 class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
@@ -49,7 +50,10 @@ class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
 
 
     codeMirrorUpdate(){
-        let tae: any = document.getElementById('text-editor');
+        let textEditor: HTMLElement | null = document.getElementById('text-editor');
+        if(textEditor != null) { 
+
+        }
         this.codeMirror = CodeMirror.fromTextArea(tae, {mode: 'text/x-java', lineNumbers: true ,styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
         this.codeMirror.setSize("100%", "100%");
         this.codeMirror.on("cursorActivity",(hint:any)=>{
