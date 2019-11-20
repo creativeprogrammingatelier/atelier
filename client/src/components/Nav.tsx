@@ -13,9 +13,6 @@ class Nav extends React.Component {
     render() {
         return (
             <div>
-                <div className  ="alert alert-warning" role="alert">
-                    Atelier is currently in version 0.1 of development.
-                </div>
                 <div className="mx-auto" style={{ width: "200px" }}>
                     <FontAwesomeIcon size={"4x"} icon={faPalette} />
                     <h2 className="title">Atelier</h2>
