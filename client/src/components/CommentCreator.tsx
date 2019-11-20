@@ -7,9 +7,13 @@ import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import CommentHelper from "../../helpers/CommentHelper";
 import "../styles/comment-creator.scss"
-type CommentCreatorProps = {currentLineNumber:number, onSuccess: Function, fileId: String};
-class CommentCreator extends React.Component<CommentCreatorProps> {
-    state:{currentLineNumber:number, commentBody: String, lineNum?: Number}
+
+
+type CommentCreatorProps = {currentLineNumber: number, onSuccess: Function, fileId: String};
+type CommentCreatorState = {currentLineNumber: number, commentBody: String, lineNum?: Number}
+
+
+class CommentCreator extends React.Component<CommentCreatorProps, CommentCreatorState> {
     constructor(props: CommentCreatorProps){
         super(props);
         this.state = {
@@ -17,16 +21,17 @@ class CommentCreator extends React.Component<CommentCreatorProps> {
             currentLineNumber: props.currentLineNumber
         }
     }
-    UNSAFE_componentWillReceiveProps(props: any) {
-        this.setState({
-            currentLineNumber: props.currentLineNumber
-        })
+
+    static getDerivedStateFromProps(nextProps: CommentCreatorProps, prevState: CommentCreatorState) {
+        return {currentLineNumber: nextProps.currentLineNumber }
     }
-    handleChange = (event: { target: { value: any; name: any; }; }) => {
+    
+    handleChange = (event: { target: { value: number | String, name: string }}) => {
             const { value, name } = event.target;
             this.setState({
                 [name]: value
-            })
+            }as unknown as Pick<CommentCreatorState, keyof CommentCreatorState>)
+            
         };
 
     submit = (event:any) => {

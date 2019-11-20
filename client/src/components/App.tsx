@@ -10,18 +10,23 @@ import Logout from "./Logout";
 import Register from "./Register"
 import AuthHelper from "../../helpers/AuthHelper"
 import "../styles/app.scss"
+/**
+ *  
+ */
+const emailLocalStorageKey = 'email';
+type AppState = { loggedIn: boolean, email: string, role: roleEnum  };
+
+type AppProps = {};
 
 
-class App extends React.Component {
+class App extends React.Component<AppProps, AppState> {
 
-    state: { loggedIn: boolean, email: string, role: string };
-    props: any;
-    constructor(props: any) {
+    constructor(props: AppProps) {
         super(props);
         this.state = {
             loggedIn: false,
-            email: localStorage.getItem('email') || '',
-            role: 'none'
+            email: localStorage.getItem(emailLocalStorageKey) || '',
+            role: roleEnum.None
         }
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
@@ -36,7 +41,7 @@ class App extends React.Component {
             loggedIn: true,
             email: email,
         })
-        localStorage.setItem('email', email)
+        localStorage.setItem(emailLocalStorageKey, email)
         this.getAndSetRole();
     }
 
@@ -44,7 +49,7 @@ class App extends React.Component {
         this.setState({
             loggedIn: false,
             email: '',
-            role: null
+            role: roleEnum.None
         })
     }
 

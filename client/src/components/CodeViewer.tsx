@@ -13,10 +13,18 @@ type CodeViewerProps = {
     file: any;
     updateLineNumber: Function;
 };
-class CodeViewer extends React.Component {
+
+type CodeViewerState = {
+    file: any,
+     formattedCode: any,
+      updateLineNumber: Function,
+       commentLineNumber: number
+}
+
+class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
     movedByMouse: boolean = false;
-    state: { file: any, formattedCode: any, updateLineNumber: Function, commentLineNumber: number};
-    codeMirror: CodeMirror.Editor ;
+    codeMirror!: CodeMirror.Editor;
+
     constructor(props: CodeViewerProps) {
         super(props);
         this.state = {
@@ -27,7 +35,7 @@ class CodeViewer extends React.Component {
         }
 
     }
-    componentDidUpdate(props){
+    componentDidUpdate(props: CodeViewerProps){
         if(props.file != this.state.file){
             this.codeMirrorUpdate();
         }
@@ -38,8 +46,6 @@ class CodeViewer extends React.Component {
         this.codeMirrorUpdate();
         this.selectLine();
     }
-
-
 
 
     codeMirrorUpdate(){
@@ -70,14 +76,14 @@ class CodeViewer extends React.Component {
       this.state.updateLineNumber(lineNumber - 1);
     }
 
-    //TODO refactor for React v17
-    UNSAFE_componentWillReceiveProps(props: CodeViewerProps) {
-        this.setState({
-            file: props.file,
-            commentLineNumber: props.commentLineNumber,
-           formattedCode: props.file.body,
-        },
-    )}
+    //https://hackernoon.com/replacing-componentwillreceiveprops-with-getderivedstatefromprops-c3956f7ce607
+    static getDerivedStateFromProps(nextProps: CodeViewerProps, prevState: CodeViewerState){
+        return {
+            file: nextProps.file,
+            commentLineNumber: nextProps.commentLineNumber,
+           formattedCode: nextProps.file.body,
+        }
+    }
 
     render() {
         return (

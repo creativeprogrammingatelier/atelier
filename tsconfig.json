@@ -2,12 +2,17 @@
     "compilerOptions": {
         "outDir": "./build/",
         "sourceMap": true,
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "module": "commonjs",
         "target": "es6",
         "jsx": "react",
+        "strict": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true
 
+    },
+    "typedocOptions": {
+        "mode": "modules",
+        "out": "docs"
     }
 }

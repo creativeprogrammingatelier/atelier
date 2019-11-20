@@ -11,9 +11,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 
 export interface IFile extends Document{
-    name:String,
-    path:string,
-    owner:String,
+    name: String,
+    path: string,
+    owner: String,
     body?:any
 }
 const FileSchema = new mongoose.Schema({

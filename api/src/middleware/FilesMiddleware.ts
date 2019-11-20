@@ -65,23 +65,20 @@ export default class FilesMiddleware{
     static readFileFromDisk (file: IFile, onSuccess: Function, onFailure: Function) {
         fs.readFile(path.join(file.path), {
             encoding: 'utf-8'
-        }, (error: Error, data: any) => {
+        }, (error: any, data: string) => {
             if (error) {
                 console.error(error)
                 onFailure(error);
             }
             else{
-                onSuccess({
-                    name: file.name,
-                    body: data,
-                    id: file._id
-                }); //@TODO define this as type 
+                file.body = data
+                onSuccess(file); 
             }
         });
     }
     private static deleteFromDisk(file: IFile, onSuccess: Function, onFailure: Function){
         fs.unlink(file.path.toString(),
-            (error:Error)=> {
+            (error: any)=> {
                 if(error){
                     onFailure();
                 }else{
