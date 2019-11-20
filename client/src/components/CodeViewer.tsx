@@ -50,20 +50,20 @@ class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
 
 
     codeMirrorUpdate(){
-        let textEditor: HTMLElement | null = document.getElementById('text-editor');
-        if(textEditor != null) { 
-
+        let textEditorNullable: HTMLElement | null = document.getElementById('text-editor');
+        if(textEditorNullable != null && textEditorNullable  instanceof  HTMLTextAreaElement) { 
+            let textEditor: HTMLTextAreaElement = textEditorNullable;
+            this.codeMirror = CodeMirror.fromTextArea(textEditor, {mode: 'text/x-java', lineNumbers: true ,styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
+            this.codeMirror.setSize("100%", "100%");
+            this.codeMirror.on("cursorActivity",(instanceCodeMirror: CodeMirror.Editor)=>{
+                if(this.movedByMouse){
+                    this.setStateSelectedLine();
+                }
+            });
+            this.codeMirror.on("mousedown", (instanceCodeMirror: CodeMirror.Editor)=> {
+                this.movedByMouse = true;
+            });
         }
-        this.codeMirror = CodeMirror.fromTextArea(tae, {mode: 'text/x-java', lineNumbers: true ,styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
-        this.codeMirror.setSize("100%", "100%");
-        this.codeMirror.on("cursorActivity",(hint:any)=>{
-            if(this.movedByMouse){
-                this.setStateSelectedLine();
-            }
-        });
-        this.codeMirror.on("mousedown", (hint:any)=> {
-            this.movedByMouse = true;
-        });
     }
 
     selectLine(){
