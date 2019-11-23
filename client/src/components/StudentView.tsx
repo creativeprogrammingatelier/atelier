@@ -21,19 +21,13 @@ class StudentView extends React.Component {
         this.getAllFiles()
     }
 
-    handleInputChange = (event: { target: { value: any; name: any } }) => {
-        const { value, name } = event.target;
-        this.setState({
-            [name]: value
-        })
-    };
       
       componentWillUnmount() {
          this._ismounted = false;
       }
 
     getAllFiles = () => {
-        FileHelper.getAllFiles((result: any) => {
+        FileHelper.getAllFiles((result: IFile[]) => {
             if (result != null && this._ismounted) {
                 this.setState({
                     files: result

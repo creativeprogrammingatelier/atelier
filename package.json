@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "kill": "fuser -k 5000/tcp",
     "tsc": "tsc",
     "dev": "sudo service mongod start && ts-node-dev --respawn --transpileOnly ./api/src/app.ts ",
     "prod": "tsc && node ./build/app.js",

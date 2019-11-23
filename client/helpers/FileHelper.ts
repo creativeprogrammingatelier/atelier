@@ -1,6 +1,7 @@
 import AuthHelper from "./AuthHelper";
 import axios from "axios";
 import fileDownload from "js-file-download";
+import { IFile } from "../../models/file";
 /**
  * Helpers for request for files
  */
@@ -10,7 +11,7 @@ export default class FileHelper {
         AuthHelper.fetch(`files/user/${id}`, {
             method: "GET",
         }).then((response) => {
-            response.json().then((json: any) => {
+            response.json().then((json: File[]) => {
                 onSuccess(json);
             });
         }).catch(function (error) {
@@ -22,7 +23,7 @@ export default class FileHelper {
         AuthHelper.fetch(`/files`, {
             method: "GET",
         }).then((response) => {
-            response.json().then((json: any) => {
+            response.json().then((json: File[]) => {
                 onSuccess(json)
             });
         }).catch(function (error) {
@@ -35,7 +36,7 @@ export default class FileHelper {
         AuthHelper.fetch(`/files/${fileId}`, {
             method: "GET",
         }).then((response) => {
-            response.json().then((json: any) => {
+            response.json().then((json: IFile) => {
                 onSuccess(json);
             }); 
         }).catch(function (error) {
@@ -48,7 +49,7 @@ export default class FileHelper {
         AuthHelper.fetch(`/files/${fileId}/download`, {
             method: "GET",
         }).then((response: Response) => {
-        response.json().then((json: any) => {
+        response.json().then((json: IFile) => {
             fileDownload(json.body, json.name);
         })
         }).catch(function (error) {
@@ -73,7 +74,7 @@ export default class FileHelper {
         })
     }
 
-    static uploadFile = (file: any, onSuccess: Function, onFailure: Function) => {
+    static uploadFile = (file: IFile, onSuccess: Function, onFailure: Function) => {
         const formData = new FormData();
         formData.append('file', file);
         const config = {

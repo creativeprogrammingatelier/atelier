@@ -1,4 +1,5 @@
 import AuthHelper from "./AuthHelper";
+import { IComment } from "../../models/comment";
 /**
  * Helpers for request for files
  */
@@ -8,7 +9,7 @@ export default class CommentHelper {
         AuthHelper.fetch(`/comments/file/${fileId}`, {
             method: "GET",
         }).then((response) => {
-            response.json().then((json: any) => {
+            response.json().then((json: IComment[]) => {
                 onSuccess(json)
             });
         }).catch((error) =>  {
@@ -18,13 +19,14 @@ export default class CommentHelper {
     
     }
 
-    static putComment = (body: any, onSuccess: Function, onFailure: Function) => {
+    static putComment = (comment: IComment, onSuccess: Function, onFailure: Function) => {
+        let commentAsString: string = comment.toString();
         AuthHelper.fetch(`/comments`, {
             method: "PUT",
-            body
+            body: commentAsString
         }).then(() => {
             onSuccess()
-        }).catch(function (error) {
+        }).catch(function (error: Error) {
             onFailure(error)
         })
     }

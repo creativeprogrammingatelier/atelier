@@ -3,9 +3,10 @@ import UserHelper from "../../helpers/UserHelper";
 import FileViewer from "./FileViewer";
 import FileHelper from "../../helpers/FileHelper";
 import { IUser } from "../../../models/user";
+import { IFile } from "../../../models/file";
 
 class TAView extends React.Component {
-    state: { students: any, currentStudent: any }
+    state: { students: any[], currentStudent: IUser | null }
 
     constructor(props:any){
         super(props);
@@ -17,7 +18,7 @@ class TAView extends React.Component {
     }
 
     getStudents() {
-        UserHelper.getStudents((students: IUser[]) => this.setState({students: students} ), (e: any) => console.log(e))
+        UserHelper.getStudents((students: IUser[]) => this.setState({students: students} ), (error: Error) => console.log(error))
     }
 
     populateTable(){
@@ -47,9 +48,9 @@ class TAView extends React.Component {
         return rows;
     
     }
-    viewStudentFiles(element:any, studentId: String){
-        FileHelper.getUsersFiles(studentId, (result:any ) => {
-            let students: any = this.state.students;
+    viewStudentFiles(element: Element, studentId: String){
+        FileHelper.getUsersFiles(studentId, (result: IFile[] ) => {
+            let students: any[] = this.state.students;
             let currentStudent;
             for (const student of students) {
                 if(student._id == studentId){
@@ -62,7 +63,7 @@ class TAView extends React.Component {
                 students: students,
                 currentStudent: (this.state.currentStudent == currentStudent) ? null : currentStudent
             })
-        }, (error: any) => alert("Failed to find student's files"))
+        }, (error: Error) => alert("Failed to find student's files"))
     }
     render() {  
         return (

@@ -50,7 +50,7 @@ export default class FilesMiddleware{
             _id: fileid
         }, "-_id path name", {
             limit: 1
-        },(error: Error, data: any) => {
+        },(error: Error, data: IFile[]) => {
             if (error) {
                 onFailure(error);
             }
@@ -78,7 +78,7 @@ export default class FilesMiddleware{
     }
     private static deleteFromDisk(file: IFile, onSuccess: Function, onFailure: Function){
         fs.unlink(file.path.toString(),
-            (error: any)=> {
+            (error:  any)=> {
                 if(error){
                     onFailure();
                 }else{

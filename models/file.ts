@@ -11,10 +11,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 
 export interface IFile extends Document{
-    name: String,
-    path: string,
-    owner: String,
-    body?:any
+    name: string,
+    path: string
+    owner: string,
+    body?: any
 }
 const FileSchema = new mongoose.Schema({
 

@@ -10,7 +10,7 @@ import { IFile } from "../../../models/file";
 class FileViewer extends React.Component<{ files: IFile[], update: Function }> {
     state: { viewedFile: IFile | null, currentLineNumber: number }
     codeViewerRef: React.RefObject<CodeViewer>;
-    constructor(props: { files: any[], update: Function }) {
+    constructor(props: { files: IFile[], update: Function }) {
         super(props);
         this.state = {
             viewedFile: null,
@@ -27,7 +27,7 @@ class FileViewer extends React.Component<{ files: IFile[], update: Function }> {
                 rows.push(<tr key={file._id} className={this.state.viewedFile != null && this.state.viewedFile.id != null &&  this.state.viewedFile.id == file._id ? 'table-active': ""} >
                     <td>{file.name}</td>
                     <td><button key={`download-${file._id}`} onClick={() => FileHelper.downloadFile(file._id, ()=>{alert("Failed to download file")})}><FontAwesomeIcon icon={faFileDownload} /></button></td>
-                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.getFile(file._id, (file: any) => { this.setState({ viewedFile: file })}, () => alert("Failed to get file"))}><FontAwesomeIcon icon={faEye} /></button></td>
+                    <td><button key={`view-${file._id}`} onClick={() => FileHelper.getFile(file._id, (file: IFile) => { this.setState({ viewedFile: file })}, () => alert("Failed to get file"))}><FontAwesomeIcon icon={faEye} /></button></td>
                     <td><button key={`view-${file._id}`} onClick={() => FileHelper.deleteFile(file._id, () => this.props.update(), ()=> alert('File deletion has failed'))}><FontAwesomeIcon icon={faTrash} /></button></td>
                 </tr>);
             }

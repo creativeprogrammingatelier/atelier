@@ -2,8 +2,9 @@ import * as React from "react";
 import { Route, Switch, Redirect, RouteProps } from "react-router-dom";
 import { Component } from "react";
 import AuthHelper from "../../helpers/AuthHelper";
+import roleEnum from "../../../enums/roleEnum";
 type PrivateRouteProps = RouteProps & {
-    roles?: any,
+    roles?: roleEnum[],
     component: React.ComponentClass<any, any>  | Function
 }
 class PrivateRoute extends Route<PrivateRouteProps> {

@@ -1,5 +1,6 @@
 import decode from "jwt-decode";
 import { type } from "os";
+import roleEnum from "../../enums/roleEnum";
 /**
  * Helper with function to do with Authentication and users
  */
@@ -14,7 +15,7 @@ export default class AuthHelper {
             })
         });
     }
-    static checkRoles(roles: string[]) {
+    static checkRoles(roles: roleEnum[]) {
         return this.fetch(`/auth/roles`, {
             method: "POST",
             body: JSON.stringify({
@@ -29,9 +30,9 @@ export default class AuthHelper {
         });
     }
 
-    private domain: any;
+    private domain: string;
     // Initializing important variables
-    constructor(domain: any) {
+    constructor(domain: string) {
         //THIS LINE IS ONLY USED WHEN YOU'RE IN PRODUCTION MODE!
         this.domain = domain || "http://localhost:3000"; // API server domain
     }

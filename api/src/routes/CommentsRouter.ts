@@ -25,16 +25,16 @@ var router = express.Router();
 router.put('/', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request : Request, response: Response) => {
     const fileId: String =  RoutesHelper.getValueFromBody('fileId', request, response);
     const lineId: String = RoutesHelper.getValueFromBody('line', request, response);
-    const comment: String = RoutesHelper.getValueFromBody('comment', request, response);
+    const comment: string = RoutesHelper.getValueFromBody('comment', request, response);
     UsersMiddlware.getUser(request, (user: IUser, request: Request) => {
-        CommentsMiddleware.makeCommentReturnComment(fileId, user._id, lineId, comment, (comment: any) =>{response.status(204).send(), SocketMiddleware.sendCommentUpdate(request, fileId.toString(), comment) }, (error: Error) => {console.error(error); response.status(500).send()})
+        CommentsMiddleware.makeCommentReturnComment(fileId, user._id, lineId, comment, (comment: IComment) =>{response.status(204).send(), SocketMiddleware.sendCommentUpdate(request, fileId.toString(), comment) }, (error: Error) => {console.error(error); response.status(500).send()})
     },(error: Error) => {console.error(error); response.status(500).send()}
     )
 });
 
 router.get('/file/:fileId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request, response) => {
     const fileId: String =  RoutesHelper.getValueFromParams('fileId', request, response);
-    CommentsMiddleware.getFileComments(fileId, (data:any ) => response.status(200).send(data), (error: Error) => {console.error(error); response.status(500).send()});
+    CommentsMiddleware.getFileComments(fileId, (data: IComment[] ) => response.status(200).send(data), (error: Error) => {console.error(error); response.status(500).send()});
 });
 
 router.delete('/:commentId', AuthMiddleware.withAuth, PermissionsMiddleware.checkComment, (request, response) => {

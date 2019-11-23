@@ -7,7 +7,7 @@
  * Dependencies
  */
 import path from "path"
-import express from 'express';
+import express, {Request, Response, Errback} from 'express';
 import { Socket } from "socket.io";
 let createError = require('http-errors');
 let cookieParser = require('cookie-parser');
@@ -58,7 +58,7 @@ app.use('/', indexRouter);
  * Error handling 404
  * */
 
-app.use(function (err:any, req:any, res:any, next:any) {
+app.use(function (err: any, req: Request, res: Response, next: Function) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -72,7 +72,7 @@ app.use(function (err:any, req:any, res:any, next:any) {
  * @TODO refactor
  */
 const mongo_uri = 'mongodb://localhost/react-auth';
-mongoose.connect(mongo_uri, function (err:any) {
+mongoose.connect(mongo_uri, function (err: Error) {
   if (err) {
     throw err;
 
