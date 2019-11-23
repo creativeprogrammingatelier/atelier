@@ -1,4 +1,5 @@
 import decode from "jwt-decode";
+import { type } from "os";
 /**
  * Helper with function to do with Authentication and users
  */
@@ -89,9 +90,10 @@ export default class AuthHelper {
         localStorage.setItem("id_token", idToken);
     };
 
-    static getToken(): string {
+    static getToken(): any {
         // Retrieves the user token from localStorage
-        return localStorage.getItem("id_token");
+        let idToken: any = localStorage.getItem("id_token")
+        return idToken;
     };
 
     static logout = () => {

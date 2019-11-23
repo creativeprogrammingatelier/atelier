@@ -10,10 +10,11 @@ import Logout from "./Logout";
 import Register from "./Register"
 import AuthHelper from "../../helpers/AuthHelper"
 import "../styles/app.scss"
+import roleEnum from "../../../enums/roleEnum"
 /**
  *  
  */
-const emailLocalStorageKey = 'email';
+const EMAILLOCALSTORAGEKEY = 'email';
 type AppState = { loggedIn: boolean, email: string, role: roleEnum  };
 
 type AppProps = {};
@@ -25,7 +26,7 @@ class App extends React.Component<AppProps, AppState> {
         super(props);
         this.state = {
             loggedIn: false,
-            email: localStorage.getItem(emailLocalStorageKey) || '',
+            email: localStorage.getItem(EMAILLOCALSTORAGEKEY) || '',
             role: roleEnum.None
         }
         this.handleLogin = this.handleLogin.bind(this);
@@ -41,7 +42,7 @@ class App extends React.Component<AppProps, AppState> {
             loggedIn: true,
             email: email,
         })
-        localStorage.setItem(emailLocalStorageKey, email)
+        localStorage.setItem(EMAILLOCALSTORAGEKEY, email)
         this.getAndSetRole();
     }
 
@@ -54,7 +55,7 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     getAndSetRole() {
-        AuthHelper.getRole().then((response: any) => {
+        AuthHelper.getRole().then((response: Response) => {
             response.json().then((json: any) => {
                 let userRole = json.role;
                 if (response.status == 200) {

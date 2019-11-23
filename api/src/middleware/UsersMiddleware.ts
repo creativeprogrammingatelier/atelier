@@ -48,8 +48,9 @@ export default class UsersMiddleware{
                 });
                 }
             });
+        } else{
+            onFailure();
         }
-        onFailure();
     }
 
     static createUser(request: Request, onSuccess: Function, onFailure: Function){

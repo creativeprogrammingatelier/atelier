@@ -5,9 +5,10 @@ import { faFileDownload, faEye, faTrash } from '@fortawesome/free-solid-svg-icon
 import FileHelper from "../../helpers/FileHelper";
 import CommentsViewer from "./CommentsViewer";
 import { useRef } from "react";
+import { IFile } from "../../../models/file";
 
-class FileViewer extends React.Component<{ files: any[], update?: Function }> {
-    state: { viewedFile: any, currentLineNumber: number }
+class FileViewer extends React.Component<{ files: IFile[], update: Function }> {
+    state: { viewedFile: IFile | null, currentLineNumber: number }
     codeViewerRef: React.RefObject<CodeViewer>;
     constructor(props: { files: any[], update: Function }) {
         super(props);
@@ -23,7 +24,7 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
         if (this.props.files && this.props.files[0] != undefined) {
 
             for (let file of this.props.files) {
-                rows.push(<tr key={file._id}   className={this.state.viewedFile && this.state.viewedFile.id == file._id ? 'table-active': null} >
+                rows.push(<tr key={file._id} className={this.state.viewedFile != null && this.state.viewedFile.id != null &&  this.state.viewedFile.id == file._id ? 'table-active': ""} >
                     <td>{file.name}</td>
                     <td><button key={`download-${file._id}`} onClick={() => FileHelper.downloadFile(file._id, ()=>{alert("Failed to download file")})}><FontAwesomeIcon icon={faFileDownload} /></button></td>
                     <td><button key={`view-${file._id}`} onClick={() => FileHelper.getFile(file._id, (file: any) => { this.setState({ viewedFile: file })}, () => alert("Failed to get file"))}><FontAwesomeIcon icon={faEye} /></button></td>
@@ -68,7 +69,7 @@ class FileViewer extends React.Component<{ files: any[], update?: Function }> {
                             {(this.state.viewedFile != null) ? <CodeViewer {  ...{file: this.state.viewedFile, commentLineNumber: this.state.currentLineNumber, updateLineNumber: this.updateCurrentLineNumber  }} /> : null}
                         </div>
                         <div className="col-sm-4">
-                            {(this.state.viewedFile != null) ? <CommentsViewer {...{updateCurrentLineNumber: this.updateCurrentLineNumber, currentLineNumber: this.state.currentLineNumber, codeViewerRef:this.codeViewerRef.current,file: this.state.viewedFile }} /> : null}
+                            {(this.state.viewedFile != null ) ? <CommentsViewer {...{updateCurrentLineNumber: this.updateCurrentLineNumber, currentLineNumber: this.state.currentLineNumber, file: this.state.viewedFile }} /> : null}
                         </div>
 
                     </div>

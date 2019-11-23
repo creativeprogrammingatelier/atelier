@@ -13,7 +13,7 @@ import { IFile } from "../../../models/file";
 
 
 
-type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: IFile, codeViewerRef:  React.RefObject<CodeViewer> }
+type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: IFile }
 type CommentsViewerState = { file: IFile, currentLineNumber: number, comments: IComment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
 
 

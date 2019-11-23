@@ -2,6 +2,7 @@ import * as React from "react";
 import UserHelper from "../../helpers/UserHelper";
 import FileViewer from "./FileViewer";
 import FileHelper from "../../helpers/FileHelper";
+import { IUser } from "../../../models/user";
 
 class TAView extends React.Component {
     state: { students: any, currentStudent: any }
@@ -16,7 +17,7 @@ class TAView extends React.Component {
     }
 
     getStudents() {
-        UserHelper.getStudents((students: any) => this.setState({students: students} ), (e: any) => console.log(e))
+        UserHelper.getStudents((students: IUser[]) => this.setState({students: students} ), (e: any) => console.log(e))
     }
 
     populateTable(){
@@ -36,7 +37,7 @@ class TAView extends React.Component {
                     </div>
                     <div id={`student-card-collapse-${student._id}`}  className={`collapse ${(student.files != null && student == this.state.currentStudent)?"show":null}`} aria-labelledby={`student-card-collapse-${student._id}`} data-parent="#accordionStudentFiles">
                     <div className="card-body">
-                        {(student.files != null)?<FileViewer files={student.files}></FileViewer>:null}
+                        {(student.files != null)?<FileViewer update={this.getStudents} files={student.files}></FileViewer>:null}
                    </div>
                     </div>
                 </div>

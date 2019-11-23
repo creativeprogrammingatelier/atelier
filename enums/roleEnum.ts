@@ -3,3 +3,5 @@ enum roleEnum{
     "teacher",
     "None"
 }
+
+export default roleEnum;

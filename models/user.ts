@@ -34,6 +34,7 @@ export interface IUserModel extends Model<IUser> {
 }
 
 UserSchema.method('comparePassword', function (password: string): boolean {
+    //@ts-ignore
     if (bcrypt.compareSync(password, this.password)){
         return true;
     } 

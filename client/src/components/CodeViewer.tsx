@@ -10,7 +10,6 @@ import { IFile } from "../../../models/file";
 
 type CodeViewerProps = {
     commentLineNumber: number;
-    fileViewerRef: Ref<String>;
     file: IFile;
     updateLineNumber: Function;
 };
