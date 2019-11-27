@@ -77,9 +77,9 @@ class App extends React.Component<AppProps, AppState> {
                         <Redirect exact from="/" to="/roleview" />
                         <Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin} />} />
                         <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
-                        <PrivateRoute exact path='/ta' component={TAView} roles={["ta"]} />
+                        <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
                         <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
-                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["ta", "student"]} />
+                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student"]} />
                         <PrivateRoute path='/logout' component={Logout} />
                     </Switch >
                 </div>

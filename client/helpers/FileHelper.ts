@@ -74,7 +74,7 @@ export default class FileHelper {
         })
     }
 
-    static uploadFile = (file: IFile, onSuccess: Function, onFailure: Function) => {
+    static uploadFile = (file: any, onSuccess: Function, onFailure: Function) => {
         const formData = new FormData();
         formData.append('file', file);
         const config = {

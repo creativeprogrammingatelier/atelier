@@ -7,6 +7,7 @@ import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import CommentHelper from "../../helpers/CommentHelper";
 import "../styles/comment-creator.scss"
+import { IComment } from "../../../models/comment";
 
 
 type CommentCreatorProps = {currentLineNumber: number, onSuccess: Function, fileId: String};
@@ -36,12 +37,12 @@ class CommentCreator extends React.Component<CommentCreatorProps, CommentCreator
 
     submit = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.preventDefault();
-        let body = {
+        let body: any = {
             fileId: this.props.fileId,
             comment: this.state.commentBody,
             line: (this.state.currentLineNumber) ? this.state.currentLineNumber: undefined
         }
-        CommentHelper.putComment(JSON.stringify(body), this.props.onSuccess, ()=> alert("Failed, to fetch Comments"))
+        CommentHelper.putComment(body, this.props.onSuccess, ()=> alert("Failed, to fetch Comments"))
     }
 
     render() {

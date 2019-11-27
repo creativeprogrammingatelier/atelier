@@ -29,7 +29,7 @@ class TAView extends React.Component {
                 <div className="card" key={student._id}>
                     <div className="card-header" id={`student-card-header-${student._id}`}>
                     <h2 className="mb-0">
-                        <button className="btn btn-link"  onClick={(element)  =>this.viewStudentFiles(element, student._id,)} 
+                        <button className="btn btn-link"  onClick={(element: React.MouseEvent<HTMLButtonElement, MouseEvent>)  =>this.viewStudentFiles(element, student._id,)} 
                             type="button" data-toggle="collapse" data-target={`student-card-collapse-${student._id}`} 
                             aria-controls={`student-card-collapse-${student._id}`}>
                         {student.email}
@@ -48,7 +48,7 @@ class TAView extends React.Component {
         return rows;
     
     }
-    viewStudentFiles(element: Element, studentId: String){
+    viewStudentFiles(element: React.MouseEvent<HTMLButtonElement, MouseEvent>, studentId: String){
         FileHelper.getUsersFiles(studentId, (result: IFile[] ) => {
             let students: any[] = this.state.students;
             let currentStudent;

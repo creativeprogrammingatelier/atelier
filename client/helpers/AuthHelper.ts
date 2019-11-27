@@ -15,7 +15,7 @@ export default class AuthHelper {
             })
         });
     }
-    static checkRoles(roles: roleEnum[]) {
+    static checkRoles(roles: string[]) {
         return this.fetch(`/auth/roles`, {
             method: "POST",
             body: JSON.stringify({

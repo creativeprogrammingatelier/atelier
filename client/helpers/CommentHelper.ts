@@ -19,8 +19,8 @@ export default class CommentHelper {
     
     }
 
-    static putComment = (comment: IComment, onSuccess: Function, onFailure: Function) => {
-        let commentAsString: string = comment.toString();
+    static putComment = (comment: any, onSuccess: Function, onFailure: Function) => {
+        let commentAsString: any = comment.toString();
         AuthHelper.fetch(`/comments`, {
             method: "PUT",
             body: commentAsString
