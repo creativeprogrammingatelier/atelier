@@ -7,7 +7,7 @@ import Comment, { IComment } from "../../../models/comment";
 
 export default class CommentMiddleware{
 
-    static makeComment (fileId: String, userId : String, line: String, body: any, onSuccess: Function, onFailure: Function) {
+    static makeComment (fileId: String, userId : String, line: String, body: string, onSuccess: Function, onFailure: Function) {
         const newComment: IComment = new Comment({
             about: fileId,
             author: userId,
@@ -23,7 +23,7 @@ export default class CommentMiddleware{
         });
     }
 
-    static makeCommentReturnComment(fileId: String, userId : String, line: String, body: any, onSuccess: Function, onFailure: Function) {
+    static makeCommentReturnComment(fileId: String, userId : String, line: String, body: string, onSuccess: Function, onFailure: Function) {
         CommentMiddleware.makeComment(fileId, userId, line, body, 
             (newComment: IComment)=> this.getComment(newComment.id, onSuccess, onFailure), 
             () => onFailure()

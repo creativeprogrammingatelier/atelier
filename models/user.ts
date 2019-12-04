@@ -9,6 +9,7 @@
 import mongoose, { Schema, Document, Model, model } from 'mongoose';
 import bcrypt from "bcrypt";
 import { IUserDocument } from '../interfaces/IUserDocument';
+import roleEnum from '../enums/roleEnum';
 
 const saltRounds = 10; //Determines the efficiency vs speed
 export interface IUser extends IUserDocument{
@@ -34,6 +35,7 @@ export interface IUserModel extends Model<IUser> {
 }
 
 UserSchema.method('comparePassword', function (password: string): boolean {
+    //@ts-ignore
     if (bcrypt.compareSync(password, this.password)){
         return true;
     } 

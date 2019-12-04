@@ -17,5 +17,9 @@ client/dist
 publicCode/
 api/keys/
 api/build
+<<<<<<< HEAD
 api/uploads
 /build
+=======
+build
+>>>>>>> refactor-typescript-strict

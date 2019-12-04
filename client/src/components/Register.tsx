@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import AuthHelper from "../../helpers/AuthHelper";
 import { withRouter, Redirect, Link } from "react-router-dom";
+import { IUser } from "../../../models/user";
 
 class Register extends Component {
 
-    state: { email: string, password: string, passwordConfirmation: string, role: string, user: any, response: string, redirectToReferrer: boolean };
+    state: { email: string, password: string, passwordConfirmation: string, role: string, user: IUser |  null, response: string, redirectToReferrer: boolean };
     props: any;
     constructor(props: any) {
         super(props)
@@ -13,7 +14,7 @@ class Register extends Component {
             password: '',
             passwordConfirmation: '',
             role: 'student',
-            user: {},
+            user: null,
             response: "",
             redirectToReferrer: false
         };
@@ -40,7 +41,7 @@ class Register extends Component {
         }, () => alert('Registeration has failed, Do you already have an account ? '));
     };
 
-    handleChange = (event: { target: { value: any; name: any; }; }) => {
+    handleChange = (event: { target: { value: string; name: string; }; }) => {
         const { value, name } = event.target;
         this.setState({
             [name]: value
@@ -95,7 +96,7 @@ class Register extends Component {
                             <div className="form-group">
                                 <select className="form-control" name="role" value={this.state.role} onChange={this.handleChange}>
                                     <option value="student">Student</option>
-                                    <option value="ta">Teaching Assistant</option>
+                                    <option value="teacher">Teaching Assistant</option>
                                 </select>                
                             </div>
                             <p>{this.state.response}</p>

@@ -6,15 +6,22 @@ import CommentView from "./CommentView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CommentCreator from "./CommentCreator";
+//@ts-ignore
 import io from 'socket.io-client';
 import CodeViewer from "./CodeViewer";
 import { IComment } from "../../../models/comment";
-class CommentsViewer extends React.Component<{ file: any }>  {
-    //TODO make a object defintion for file
-    state: { file: any, currentLineNumber: number, comments: any[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
-    private readonly commentFreshFrequency = 1000;
+import { IFile } from "../../../models/file";
 
-    constructor(props: {updateCurrentLineNumber: Function, currentLineNumber: number, file: any, codeViewerRef:  React.RefObject<CodeViewer> }) {
+
+
+type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: IFile }
+type CommentsViewerState = { file: IFile, currentLineNumber: number, comments: IComment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function }
+
+
+class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerState>  {
+    private readonly commentRefreshFrequency = 1000;
+
+    constructor(props: CommentViewerProps) {
         super(props);
         this.state = {
             file: props.file,
@@ -27,7 +34,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     }
     
     //TODO refactor for React v17
-    UNSAFE_componentWillReceiveProps(props: any) {
+    UNSAFE_componentWillReceiveProps(props: CommentViewerProps) {
         this.setState({
             file: props.file,
             currentLineNumber: props.currentLineNumber
@@ -37,25 +44,29 @@ class CommentsViewer extends React.Component<{ file: any }>  {
 
     componentDidMount= () => {
         const socket = io();
-        socket.on(this.props.file.id, (data) => {
-            let newComments: any[] = this.state.comments;
+        //@ts-ignore
+        socket.on(this.props.file.id, (data: any) => {
+            let newComments: IComment[] | undefined = this.state.comments;
             if(data.type === "put"){
                 newComments.push(data.comment);
                 let sortedComments = newComments.sort(CommentsViewer.sortComments);
                 this.setState({
-                    comments: newComments
-                });
-            } else{
-                newComments = CommentsViewer.removeComment(newComments, data.comment);
-                let sortedComments = newComments.sort(CommentsViewer.sortComments);
-                this.setState({
                     comments: sortedComments
                 });
+            } else{
+                newComments =  CommentsViewer.removeComment(newComments, data.comment);
+                if( newComments != undefined){
+                    let newCommentsDefined: IComment[] = newComments;
+                    let sortedComments = newCommentsDefined.sort(CommentsViewer.sortComments);
+                    this.setState({
+                        comments: sortedComments
+                    });
+                }
             }
         })
     }
 
-    static removeComment(comments, commentToRemove) {
+    static removeComment(comments: IComment[], commentToRemove: IComment) {
         for (let index = 0; index < comments.length; index++) {
             const comment = comments[index];
             if(comment._id === commentToRemove._id){
@@ -65,7 +76,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
         }
     }
 
-    static sortComments(a,b){
+    static sortComments(a: IComment,b: IComment){
         let aDate = new Date(a.created);
         let bDate = new Date(b.created);
 
@@ -86,7 +97,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     }
 
     fetchComments = (hideCommentCreator? : boolean) => {
-        CommentHelper.getFileComments(this.state.file.id, (comments: any) => 
+        CommentHelper.getFileComments(this.state.file.id, (comments: IComment[]) => 
         {
             let sortedComments = comments.sort(CommentsViewer.sortComments);
             this.setState({
@@ -95,7 +106,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
             })
         }
         
-        , (error: any) => console.log(error))
+        , (error: Error) => console.log(error))
     }
 
     deleteComment = (commentId: String) =>{
@@ -105,7 +116,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     createTimercheckforNewComments() {
         setInterval(
             () => this.fetchComments(),
-            this.commentFreshFrequency
+            this.commentRefreshFrequency
         )
     } 
 
@@ -124,7 +135,7 @@ class CommentsViewer extends React.Component<{ file: any }>  {
     render() {
         return (
             <div className="CommentViewer">
-                <span onClick={(e:any)=> this.setState({
+                <span onClick={(e: React.MouseEvent<HTMLSpanElement, MouseEvent>)=> this.setState({
                     commentCreatorToggle: !this.state.commentCreatorToggle
                 })}><FontAwesomeIcon icon={faPlus}/> New Comment</span>
                 <div>

@@ -27,27 +27,30 @@ export default class UsersMiddleware{
      * @param {*} next callback
      */
     static getUser(request: Request, onSuccess: Function, onFailure: Function) {
-        const token =
-            request.headers.authorization;
-        jwt.verify(token, Constants.AUTHSECRETKEY,  (error: Error, decoded: any) => {
-            if (error) {
-                onFailure(error);
-            } else {
-                let email = decoded.email;
-                User.findOne({
-                    email
-                },"-password", (error, user) => {
-                    if (user) {
-                        onSuccess(user, request)
-                    } else {
-                        onFailure(error);
-                    }
-            }).catch((error) => {
-                console.error(error)
-                onFailure(error);
+        const token = (request.headers && request.headers.authorization) ? request.headers.authorization: undefined;
+        if(token != undefined){
+            jwt.verify(token, Constants.AUTHSECRETKEY,  (error: Error, decoded: any) => {
+                if (error) {
+                    onFailure(error);
+                } else {
+                    let email = decoded.email;
+                    User.findOne({
+                        email
+                    },"-password", (error, user) => {
+                        if (user) {
+                            onSuccess(user, request)
+                        } else {
+                            onFailure(error);
+                        }
+                }).catch((error) => {
+                    console.error(error)
+                    onFailure(error);
+                });
+                }
             });
-            }
-        });
+        } else{
+            onFailure();
+        }
     }
 
     static createUser(request: Request, onSuccess: Function, onFailure: Function){

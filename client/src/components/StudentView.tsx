@@ -4,14 +4,16 @@ import FileViewer from './FileViewer'
 import FileUploader from "./FileUploader";
 import AuthHelper from "../../helpers/AuthHelper";
 import FileHelper from "../../helpers/FileHelper";
+import { IFile } from "../../../models/file";
 class StudentView extends React.Component {
-    state: { files: any[] }
+    state: { files: IFile[] }
     _ismounted: boolean;
     constructor(props: any) {
         super(props);
         this.state = {
-            files: null
+            files: []
         }
+        this._ismounted = false;
     }
 
     componentDidMount() {
@@ -19,19 +21,13 @@ class StudentView extends React.Component {
         this.getAllFiles()
     }
 
-    handleInputChange = (event: { target: { value: any; name: any } }) => {
-        const { value, name } = event.target;
-        this.setState({
-            [name]: value
-        })
-    };
       
       componentWillUnmount() {
          this._ismounted = false;
       }
 
     getAllFiles = () => {
-        FileHelper.getAllFiles((result: any) => {
+        FileHelper.getAllFiles((result: IFile[]) => {
             if (result != null && this._ismounted) {
                 this.setState({
                     files: result

@@ -7,20 +7,20 @@
  * Dependencies
  */
 import path from "path"
-import express from 'express';
+import express, {Request, Response, Errback} from 'express';
 import { Socket } from "socket.io";
-var createError = require('http-errors');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+let createError = require('http-errors');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 const mongoose = require('mongoose');
-var usersRouter = require('./routes/UsersRouter');
-var authRouter = require('./routes/AuthRouter');
-var filesRouter = require('./routes/FilesRouter');
-var commentRouter = require('./routes/CommentsRouter');
-var indexRouter = require('./routes/IndexRouter');
+let usersRouter = require('./routes/UsersRouter');
+let authRouter = require('./routes/AuthRouter');
+let filesRouter = require('./routes/FilesRouter');
+let commentRouter = require('./routes/CommentsRouter');
+let indexRouter = require('./routes/IndexRouter');
 
 
-var app = express();
+let app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
 app.use(logger('dev'));
 app.use(express.json());
@@ -29,7 +29,7 @@ app.use(express.urlencoded({
 }));
 
 //Socket io
-var http = require('http').createServer(app);
+let http = require('http').createServer(app);
 http.listen(5000, "127.0.0.1");
 const socket: Socket = require('socket.io')(http);
 app.set('socket-io', socket);
@@ -42,6 +42,7 @@ app.use(cookieParser());
 /**
  * Adding default static
  */
+
 app.use(express.static(path.join(__dirname, '../../client/')));
 /**
  * Setting routes
@@ -58,7 +59,7 @@ app.use('/', indexRouter);
  * Error handling 404
  * */
 
-app.use(function (err:any, req:any, res:any, next:any) {
+app.use(function (err: any, req: Request, res: Response, next: Function) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -72,7 +73,7 @@ app.use(function (err:any, req:any, res:any, next:any) {
  * @TODO refactor
  */
 const mongo_uri = 'mongodb://localhost/react-auth';
-mongoose.connect(mongo_uri, function (err:any) {
+mongoose.connect(mongo_uri, function (err: Error) {
   if (err) {
     throw err;
 

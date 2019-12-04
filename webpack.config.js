@@ -9,7 +9,7 @@ module.exports = {
         extensions: [".ts", ".tsx"]
     },
     output: {
-		path: __dirname + "/client/dist",
+		path: __dirname + "/build/client",
 	},
 
     module: {

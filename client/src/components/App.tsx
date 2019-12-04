@@ -10,18 +10,24 @@ import Logout from "./Logout";
 import Register from "./Register"
 import AuthHelper from "../../helpers/AuthHelper"
 import "../styles/app.scss"
+import roleEnum from "../../../enums/roleEnum"
+/**
+ *  
+ */
+const EMAILLOCALSTORAGEKEY = 'email';
+type AppState = { loggedIn: boolean, email: string, role: roleEnum  };
+
+type AppProps = {};
 
 
-class App extends React.Component {
+class App extends React.Component<AppProps, AppState> {
 
-    state: { loggedIn: boolean, email: string, role: string };
-    props: any;
-    constructor(props: any) {
+    constructor(props: AppProps) {
         super(props);
         this.state = {
             loggedIn: false,
-            email: localStorage.getItem('email') || '',
-            role: 'none'
+            email: localStorage.getItem(EMAILLOCALSTORAGEKEY) || '',
+            role: roleEnum.None
         }
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
@@ -36,7 +42,7 @@ class App extends React.Component {
             loggedIn: true,
             email: email,
         })
-        localStorage.setItem('email', email)
+        localStorage.setItem(EMAILLOCALSTORAGEKEY, email)
         this.getAndSetRole();
     }
 
@@ -44,12 +50,12 @@ class App extends React.Component {
         this.setState({
             loggedIn: false,
             email: '',
-            role: null
+            role: roleEnum.None
         })
     }
 
     getAndSetRole() {
-        AuthHelper.getRole().then((response: any) => {
+        AuthHelper.getRole().then((response: Response) => {
             response.json().then((json: any) => {
                 let userRole = json.role;
                 if (response.status == 200) {
@@ -71,9 +77,9 @@ class App extends React.Component {
                         <Redirect exact from="/" to="/roleview" />
                         <Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin} />} />
                         <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
-                        <PrivateRoute exact path='/ta' component={TAView} roles={["ta"]} />
+                        <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
                         <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
-                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["ta", "student"]} />
+                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student"]} />
                         <PrivateRoute path='/logout' component={Logout} />
                     </Switch >
                 </div>

@@ -29,7 +29,7 @@ The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 9. Make a call  (using postman) to /register passing email, password and role in the body
 - Install [Postman](https://www.getpostman.com/)
 - Create a POST request (dropwdown) to `localhost:5000/register`
-- Select Body, Select 'raw', Change 'Text' to 'JSON' in dropdown and enter something like `{"email":"margot@example.com", "password":"1234", "role":"ta"}`.
+- Select Body, Select 'raw', Change 'Text' to 'JSON' in dropdown and enter something like `{"email":"margot@example.com", "password":"1234", "role":"teacher"}`.
 
 ### Developing
 #### Optional Tools

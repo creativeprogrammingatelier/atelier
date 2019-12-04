@@ -2,8 +2,10 @@ import * as React from "react";
 import { Route, Switch, Redirect, RouteProps } from "react-router-dom";
 import { Component } from "react";
 import AuthHelper from "../../helpers/AuthHelper";
+import roleEnum from "../../../enums/roleEnum";
 type PrivateRouteProps = RouteProps & {
-    roles?: any
+    roles?: string[],
+    component: React.ComponentClass<any, any>  | Function
 }
 class PrivateRoute extends Route<PrivateRouteProps> {
 
@@ -65,7 +67,6 @@ class PrivateRoute extends Route<PrivateRouteProps> {
             if (AuthHelper.loggedIn()) {
                 return(
                     <span></span>
-                                    //     // <h3>You have incorrect permission to view this page</h3>
                 )
             } else {
                 return <Redirect to={{ pathname: '/login', state: { from: this.props.location } }} />;
