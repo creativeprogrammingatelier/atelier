@@ -96,7 +96,7 @@ class Register extends Component {
                             <div className="form-group">
                                 <select className="form-control" name="role" value={this.state.role} onChange={this.handleChange}>
                                     <option value="student">Student</option>
-                                    <option value="ta">Teaching Assistant</option>
+                                    <option value="teacher">Teaching Assistant</option>
                                 </select>                
                             </div>
                             <p>{this.state.response}</p>

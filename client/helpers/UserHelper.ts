@@ -8,7 +8,7 @@ import { IUser } from "../../models/user";
 export default class UserHelper {
 
     static getStudents = (onSuccess: Function, onFailure: Function) => {
-        AuthHelper.fetch(`users//students`, {
+        AuthHelper.fetch(`users/students`, {
             method: "GET",
         }).then((response) => {
             response.json().then((json: IUser[]) => {
