@@ -6,6 +6,7 @@ import CommentView from "./CommentView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CommentCreator from "./CommentCreator";
+//@ts-ignore
 import io from 'socket.io-client';
 import CodeViewer from "./CodeViewer";
 import { IComment } from "../../../models/comment";

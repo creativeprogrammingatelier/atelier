@@ -11,6 +11,7 @@
         "allowSyntheticDefaultImports": true
 
     },
+    "exclude": ["./client"],
     "typedocOptions": {
         "mode": "modules",
         "out": "docs"

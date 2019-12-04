@@ -20,10 +20,9 @@ export default class CommentHelper {
     }
 
     static putComment = (comment: any, onSuccess: Function, onFailure: Function) => {
-        let commentAsString: any = comment.toString();
         AuthHelper.fetch(`/comments`, {
             method: "PUT",
-            body: commentAsString
+            body: JSON.stringify(comment)
         }).then(() => {
             onSuccess()
         }).catch(function (error: Error) {

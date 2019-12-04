@@ -23,7 +23,8 @@ router.get('/', function (request: Request, result: Response, next: Function) {
  * Serves the react bundle 
  */
 router.get('*', function (request: Request, result: Response, next: Function) {
-  result.sendFile(path.resolve(__dirname + '../../../../client/index.html'));
+  result.sendFile(path.resolve(__dirname + '../../../../../client/'));
+
 });
 
 

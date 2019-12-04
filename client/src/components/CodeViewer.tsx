@@ -1,5 +1,4 @@
 import React, { Component, Ref, TextareaHTMLAttributes, useImperativeHandle, DOMElement } from "react";
-import "../styles/prism.scss"
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/oceanic-next.css"
 import 'codemirror/mode/clike/clike.js';
@@ -52,7 +51,7 @@ class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
         let textEditorNullable: HTMLElement | null = document.getElementById('text-editor');
         if(textEditorNullable != null && textEditorNullable  instanceof  HTMLTextAreaElement) { 
             let textEditor: HTMLTextAreaElement = textEditorNullable;
-            this.codeMirror = CodeMirror.fromTextArea(textEditor, {mode: 'text/x-java', lineNumbers: true ,styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
+            this.codeMirror = CodeMirror.fromTextArea(textEditor, {mode: 'text/x-java', lineNumbers: true, styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
             this.codeMirror.setSize("100%", "100%");
             this.codeMirror.on("cursorActivity",(instanceCodeMirror: CodeMirror.Editor)=>{
                 if(this.movedByMouse){

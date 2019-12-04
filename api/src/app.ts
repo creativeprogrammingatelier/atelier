@@ -42,6 +42,7 @@ app.use(cookieParser());
 /**
  * Adding default static
  */
+
 app.use(express.static(path.join(__dirname, '../../client/')));
 /**
  * Setting routes
