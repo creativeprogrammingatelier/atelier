@@ -8,7 +8,7 @@
     "start-db": "sudo service mongod start",
     "copy-client-static": "cp  client/index.html build/client",
     "dev": "sudo service mongod start && ts-node-dev --respawn --transpileOnly ./api/src/app.ts ",
-    "prod": "tsc && node ./build/app.js",
+    "prod": "tsc && node ./build/api/src/app.js",
     "watch": "npx webpack --watch ./client/src",
     "build": "npx webpack ./client/src",
     "style": "npx gts init",
@@ -18,7 +18,6 @@
     "compile": "tsc -p .",
     "fix": "gts fix",
     "prepare": "npm run compile",
-    "pretest": "npm run compile",
     "posttest": "npm run check",
     "copy-keys": "cp  -a ./api/keys/ build/api/keys/"
   },
