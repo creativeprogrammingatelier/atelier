@@ -9,40 +9,26 @@ This repo contains the front-end and back-end of the atelier app.
 It does not contain the automated code checking please see atelier-PMD.
 The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
 ## Prerequisites
-* Node.js ( & NPM)
+* Node.js (& NPM)
 * MongoDB
+* Development has only been done on linux, unknown problems may arise on other operating systems
 * Visual Studio Code (Recommended editor)
 
-## Installing
+## Dev set-up
 
 1. Install all the Prerequisites.
-2. Clone the Repo on your computer.
-3. Open the project in your editor of choice ( I recommend Visual studio code) 
-4. Run: `npm i` in both the 'api' and 'client' folders
-5. -
-6. Navigate to the /api folder. and run:
-`npm run start`
-7. Navigate to the /client folder. and run:
-`npm run watch`
-- If during any of these steps it starts complaining 'module X is missing', `npm install X`
-8. Open [localhost:5000](localhost:5000)
-9. Make a call  (using postman) to /register passing email, password and role in the body
-- Install [Postman](https://www.getpostman.com/)
-- Create a POST request (dropwdown) to `localhost:5000/register`
-- Select Body, Select 'raw', Change 'Text' to 'JSON' in dropdown and enter something like `{"email":"margot@example.com", "password":"1234", "role":"teacher"}`.
+2. Pull the repo from GitHub
+3. Run npm install 
+4. Run npm dev - start Backend (if any packages are missing you npm i [package name] to install them)
+5. Run npm watch - build (and watch) the react bundle
+6. View the dev environment by going to localhost:5000 in your browser
 
-### Developing
-#### Optional Tools
+
+#### Optional Tools for Development
 * **[React Chrome plugin](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en)**- Tool to help react debuggin
 * **[NoSQLBooster](https://nosqlbooster.com/)** - GUI tool for NoSQL Databases
 * **[Postman](https://www.getpostman.com/)** - A API testing tool
 
-### Deployment (being expanded)
-#### setup debug: 
-https://fettblog.eu/typescript-node-visual-studio-code/
-
-## Using
-pm2
 ## Built with 
 
 * [React](https://reactjs.org/) - Front end framework (written in Typescript)
@@ -59,11 +45,10 @@ Tokens are stored in local storage.
 
 ## Authors
 
-* **[Andrew Heath](mailto:a.j.heath@student.utwente.nl)** - Full Stack - 
+* **[Andrew Heath](mailto:a.j.heath@student.utwente.nl)** - Repo Manager / Backend / Devops - 
 
-* **Margot Rutgers** - Full Stack
+* **Margot Rutgers** - Front-end
 
-* **Carmen Burghardt** - Front-End and Design
 
 
 
