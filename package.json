@@ -8,9 +8,10 @@
     "start-db": "sudo service mongod start",
     "copy-client-static": "cp  client/index.html build/client",
     "dev": "sudo service mongod start && ts-node-dev --respawn --transpileOnly ./api/src/app.ts ",
-    "prod": "tsc && node ./build/api/src/app.js",
+    "prod": "node ./build/api/src/app.js",
     "watch": "npx webpack --watch ./client/src",
-    "build": "npx webpack ./client/src",
+    "build-all": "npx webpack ./client/src && npm run tsc && npm run copy-client-static && npm run copy-keys",
+
     "style": "npx gts init",
     "test": "mocha -r ts-node/register -r tests/compiler.tsx -r mock-local-storage tests/*.test.tsx",
     "check": "gts check",
