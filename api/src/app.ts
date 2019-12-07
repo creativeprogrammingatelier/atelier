@@ -72,6 +72,11 @@ app.use(function (err:any, req:any, res:any, next:any) {
  * @TODO refactor
  */
 const mongo_uri = 'mongodb://localhost/react-auth';
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+
 mongoose.connect(mongo_uri, function (err:any) {
   if (err) {
     throw err;
