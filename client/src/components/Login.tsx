@@ -2,15 +2,16 @@ import React, { Component } from "react";
 import AuthHelper from "../../helpers/AuthHelper";
 import { withRouter, Redirect, Link } from "react-router-dom";
 import "../styles/login.scss"
+import { IUser } from "../../../models/user";
 class Login extends Component {
-    state: { email: string, password: string, user: any, response: string, redirectToReferrer: boolean };
+    state: { email: string, password: string, user: IUser | null, response: string, redirectToReferrer: boolean };
     props: any;
     constructor(props: any) {
         super(props)
         this.state = {
             email: '',
             password: '',
-            user: {},
+            user: null,
             response: "",
             redirectToReferrer: false
         };

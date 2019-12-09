@@ -11,7 +11,7 @@ import UsersMiddleware from "./UsersMiddleware";
 export default class PermissionsMiddleware{
 
     private static checkFileAccessPermission(file: IFile , user: IUser): boolean{
-        if (file && file.owner && user.id && user.id == file.owner || user.role == "ta") {
+        if (file && file.owner && user.id && user.id == file.owner || user.role == "teacher") {
             return true;
         }
         return false;
@@ -20,7 +20,7 @@ export default class PermissionsMiddleware{
     private static checkCommentAccessPermission(comment: any , user: IUser): boolean{
         console.log(comment);
         console.log(user)
-        if (comment && ( user.email == comment.author.email || user.role == "ta")) {
+        if (comment && ( user.email == comment.author.email || user.role == "teacher")) {
             return true;
         }
         return false;
@@ -61,7 +61,7 @@ export default class PermissionsMiddleware{
 
     static isTa (request: Request, result: Response, onSuccess: Function) {
         UsersMiddleware.getUser(request, (user : IUser) => {
-            if (user.role.toLowerCase() == "ta") {
+            if (user.role.toLowerCase() == "teacher") {
                 onSuccess();
             } else {
                 result.status(401).send();

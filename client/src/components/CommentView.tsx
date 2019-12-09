@@ -1,5 +1,6 @@
 import * as React from "react";
-type CommentType = { updateCurrentLineNumber: Function, about: String, author: { email: String, role: String }, _id:String, body: String, created: Date, line: Number };
+import { IComment } from "../../../models/comment";
+import { IUser } from "../../../models/user";
 type CommentViewProps = {updateCurrentLineNumber: Function, comment: any, deleteComment: Function};
 class CommentView extends React.Component<CommentViewProps> {
     state:{updateCurrentLineNumber: Function}

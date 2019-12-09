@@ -7,10 +7,11 @@ import FileHelper from "../../helpers/FileHelper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import "../styles/file-uploader.scss";
+type FileUploaderState = { uploadedFile: any, update: Function }
+type FileUploaderProps =  { update: Function }
 
-class FileUploader extends React.Component<{ update: Function }> {
-    state: { uploadedFile: any, update: Function }
-    constructor(props: { update: Function }) {
+class FileUploader extends React.Component<FileUploaderProps, FileUploaderState> {
+    constructor(props: FileUploaderProps) {
         super(props)
         this.state = {
             uploadedFile: null,
@@ -22,10 +23,12 @@ class FileUploader extends React.Component<{ update: Function }> {
         FileHelper.uploadFile(this.state.uploadedFile, this.props.update, () => alert('File Failed to upload'));
     }
 
-    handleFileSelection = (event: any) => {
-        this.setState({
-            uploadedFile: event.target.files[0]
-        })
+    handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if(event.target && event.target.files && event.target.files[0]){ 
+            this.setState({
+                uploadedFile: event.target.files[0]
+            })
+        }
     }
 
     render() {

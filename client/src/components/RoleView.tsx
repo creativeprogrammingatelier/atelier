@@ -16,7 +16,7 @@ class RoleView extends React.Component {
         let correctView;
         if (this.props.role == 'student') {
             correctView = <StudentView />
-        } else if (this.props.role == 'ta') {
+        } else if (this.props.role == 'teacher') {
             correctView = <TAView />
         } else {
             correctView = '';

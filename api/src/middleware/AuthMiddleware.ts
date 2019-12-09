@@ -38,7 +38,7 @@ export default class AuthMiddleWare {
     static getAllStudents(onSuccess: Function, onFailure: Function){
         User.find({
             role: "student"
-        }, (error: Error, result : any[]) => {
+        }, (error: Error, result : IUser[]) => {
             if (!error) {
                 onSuccess(result);
             } else {

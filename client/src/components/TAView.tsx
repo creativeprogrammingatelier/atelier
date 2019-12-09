@@ -2,9 +2,11 @@ import * as React from "react";
 import UserHelper from "../../helpers/UserHelper";
 import FileViewer from "./FileViewer";
 import FileHelper from "../../helpers/FileHelper";
+import { IUser } from "../../../models/user";
+import { IFile } from "../../../models/file";
 
 class TAView extends React.Component {
-    state: { students: any, currentStudent: any }
+    state: { students: any[], currentStudent: IUser | null }
 
     constructor(props:any){
         super(props);
@@ -16,7 +18,7 @@ class TAView extends React.Component {
     }
 
     getStudents() {
-        UserHelper.getStudents((students: any) => this.setState({students: students} ), (e: any) => console.log(e))
+        UserHelper.getStudents((students: IUser[]) => this.setState({students: students} ), (error: Error) => console.log(error))
     }
 
     populateTable(){
@@ -27,7 +29,7 @@ class TAView extends React.Component {
                 <div className="card" key={student._id}>
                     <div className="card-header" id={`student-card-header-${student._id}`}>
                     <h2 className="mb-0">
-                        <button className="btn btn-link"  onClick={(element)  =>this.viewStudentFiles(element, student._id,)} 
+                        <button className="btn btn-link"  onClick={(element: React.MouseEvent<HTMLButtonElement, MouseEvent>)  =>this.viewStudentFiles(element, student._id,)} 
                             type="button" data-toggle="collapse" data-target={`student-card-collapse-${student._id}`} 
                             aria-controls={`student-card-collapse-${student._id}`}>
                         {student.email}
@@ -36,7 +38,7 @@ class TAView extends React.Component {
                     </div>
                     <div id={`student-card-collapse-${student._id}`}  className={`collapse ${(student.files != null && student == this.state.currentStudent)?"show":null}`} aria-labelledby={`student-card-collapse-${student._id}`} data-parent="#accordionStudentFiles">
                     <div className="card-body">
-                        {(student.files != null)?<FileViewer files={student.files}></FileViewer>:null}
+                        {(student.files != null)?<FileViewer update={this.getStudents} files={student.files}></FileViewer>:null}
                    </div>
                     </div>
                 </div>
@@ -46,9 +48,9 @@ class TAView extends React.Component {
         return rows;
     
     }
-    viewStudentFiles(element:any, studentId: String){
-        FileHelper.getUsersFiles(studentId, (result:any ) => {
-            let students: any = this.state.students;
+    viewStudentFiles(element: React.MouseEvent<HTMLButtonElement, MouseEvent>, studentId: String){
+        FileHelper.getUsersFiles(studentId, (result: IFile[] ) => {
+            let students: any[] = this.state.students;
             let currentStudent;
             for (const student of students) {
                 if(student._id == studentId){
@@ -61,7 +63,7 @@ class TAView extends React.Component {
                 students: students,
                 currentStudent: (this.state.currentStudent == currentStudent) ? null : currentStudent
             })
-        }, (error: any) => alert("Failed to find student's files"))
+        }, (error: Error) => alert("Failed to find student's files"))
     }
     render() {  
         return (

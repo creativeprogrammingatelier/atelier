@@ -1,4 +1,6 @@
 import decode from "jwt-decode";
+import { type } from "os";
+import roleEnum from "../../enums/roleEnum";
 /**
  * Helper with function to do with Authentication and users
  */
@@ -28,9 +30,9 @@ export default class AuthHelper {
         });
     }
 
-    private domain: any;
+    private domain: string;
     // Initializing important variables
-    constructor(domain: any) {
+    constructor(domain: string) {
         //THIS LINE IS ONLY USED WHEN YOU'RE IN PRODUCTION MODE!
         this.domain = domain || "http://localhost:3000"; // API server domain
     }
@@ -89,9 +91,10 @@ export default class AuthHelper {
         localStorage.setItem("id_token", idToken);
     };
 
-    static getToken(): string {
+    static getToken(): any {
         // Retrieves the user token from localStorage
-        return localStorage.getItem("id_token");
+        let idToken: any = localStorage.getItem("id_token")
+        return idToken;
     };
 
     static logout = () => {

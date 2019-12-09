@@ -6,14 +6,15 @@
 
 
 import mongoose, { Schema, Document } from 'mongoose';
+import { IUser } from './user';
 
 
 export interface IComment extends Document{
         about: Schema.Types.ObjectId,
         line: number,
-        author: Schema.Types.ObjectId,
+        author: Schema.Types.ObjectId | IUser,
         created: Date,
-        body: any
+        body: string
 }
 const CommentSchema = new mongoose.Schema({
 

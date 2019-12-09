@@ -4,11 +4,11 @@
  * Date created: 13/08/19
  */
 import express from "express"
- var router = express.Router();
 import AuthMiddleware from "../middleware/AuthMiddleware";
 import {Request, Response} from "express";
 import UsersMiddleware from "../middleware/UsersMiddleware";
 
+let router = express.Router();
 /* Authentication */
 /**
  * Login end point 

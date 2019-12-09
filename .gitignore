@@ -18,3 +18,5 @@ publicCode/
 api/keys/
 api/build
 api/uploads
+/build
+build

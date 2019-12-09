@@ -28,7 +28,7 @@ import RoutesHelper from "../helpers/RoutesHelper";
  */
 
 router.put('/', AuthMiddleware.withAuth, upload.single('file'),
-    (request: any, result: Response) => {
+    (request: Request, result: Response) => {
         let file = request.file;
         UserMiddleware.getUser(request, 
             (user: IUser) => { FilesMiddleware.createFile(file.originalname, file.path, user,
@@ -58,7 +58,7 @@ router.get('/:fileId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileW
 
 router.get('/user/:userId', AuthMiddleware.withAuth, PermissionsMiddleware.isTa, (request: Request, result: Response)=>{
     const userId = request.params.userId;
-    FilesMiddleware.getFiles(userId, (files: any) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
+    FilesMiddleware.getFiles(userId, (files: IFile[]) => result.status(200).send(files), (error: Error) => result.status(500).send(error));
 });
 
 
@@ -80,7 +80,7 @@ router.get('/:studentId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFi
     FilesMiddleware.getFile(fileId, 
         (file: IFile) => {
             FilesMiddleware.readFileFromDisk(file, 
-                (fileWithData: any) => {response.status(200).json(fileWithData)},
+                (fileWithData: IFile) => {response.status(200).json(fileWithData)},
                 (error: Error)=> {console.error(error); response.status(500).send("error")}
             )
         },
@@ -97,7 +97,7 @@ router.get('/:fileId/download', AuthMiddleware.withAuth, PermissionsMiddleware.c
     FilesMiddleware.getFile(fileId, 
         (file: IFile) => {
             FilesMiddleware.readFileFromDisk(file, 
-                (fileWithData:any )=> response.status(200).json(fileWithData), 
+                (fileWithData: IFile)=> response.status(200).json(fileWithData), 
                 (error: Error)=> {console.error(error); response.sendStatus(500)})
         },
         (error :Error) => {console.error(error), response.status(500).send(error)}

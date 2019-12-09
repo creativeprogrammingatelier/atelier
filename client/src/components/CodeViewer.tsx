@@ -1,22 +1,29 @@
-import React, { Component, Ref, TextareaHTMLAttributes, useImperativeHandle } from "react";
-import "../styles/prism.scss"
+import React, { Component, Ref, TextareaHTMLAttributes, useImperativeHandle, DOMElement } from "react";
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/oceanic-next.css"
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import CodeMirror from "codemirror";
+import { IFile } from "../../../models/file";
 
 type CodeViewerProps = {
     commentLineNumber: number;
-    fileViewerRef: Ref<any>;
-    file: any;
+    file: IFile;
     updateLineNumber: Function;
 };
-class CodeViewer extends React.Component {
+
+type CodeViewerState = {
+    file: IFile,
+    formattedCode: string,
+    updateLineNumber: Function,
+    commentLineNumber: number
+}
+
+class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
     movedByMouse: boolean = false;
-    state: { file: any, formattedCode: any, updateLineNumber: Function, commentLineNumber: number};
-    codeMirror: CodeMirror.Editor ;
+    codeMirror!: CodeMirror.Editor;
+
     constructor(props: CodeViewerProps) {
         super(props);
         this.state = {
@@ -27,7 +34,7 @@ class CodeViewer extends React.Component {
         }
 
     }
-    componentDidUpdate(props){
+    componentDidUpdate(props: CodeViewerProps){
         if(props.file != this.state.file){
             this.codeMirrorUpdate();
         }
@@ -40,20 +47,21 @@ class CodeViewer extends React.Component {
     }
 
 
-
-
     codeMirrorUpdate(){
-        let tae: any = document.getElementById('text-editor');
-        this.codeMirror = CodeMirror.fromTextArea(tae, {mode: 'text/x-java', lineNumbers: true ,styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
-        this.codeMirror.setSize("100%", "100%");
-        this.codeMirror.on("cursorActivity",(hint:any)=>{
-            if(this.movedByMouse){
-                this.setStateSelectedLine();
-            }
-        });
-        this.codeMirror.on("mousedown", (hint:any)=> {
-            this.movedByMouse = true;
-        });
+        let textEditorNullable: HTMLElement | null = document.getElementById('text-editor');
+        if(textEditorNullable != null && textEditorNullable  instanceof  HTMLTextAreaElement) { 
+            let textEditor: HTMLTextAreaElement = textEditorNullable;
+            this.codeMirror = CodeMirror.fromTextArea(textEditor, {mode: 'text/x-java', lineNumbers: true, styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
+            this.codeMirror.setSize("100%", "100%");
+            this.codeMirror.on("cursorActivity",(instanceCodeMirror: CodeMirror.Editor)=>{
+                if(this.movedByMouse){
+                    this.setStateSelectedLine();
+                }
+            });
+            this.codeMirror.on("mousedown", (instanceCodeMirror: CodeMirror.Editor)=> {
+                this.movedByMouse = true;
+            });
+        }
     }
 
     selectLine(){
@@ -70,14 +78,14 @@ class CodeViewer extends React.Component {
       this.state.updateLineNumber(lineNumber - 1);
     }
 
-    //TODO refactor for React v17
-    UNSAFE_componentWillReceiveProps(props: CodeViewerProps) {
-        this.setState({
-            file: props.file,
-            commentLineNumber: props.commentLineNumber,
-           formattedCode: props.file.body,
-        },
-    )}
+    //https://hackernoon.com/replacing-componentwillreceiveprops-with-getderivedstatefromprops-c3956f7ce607
+    static getDerivedStateFromProps(nextProps: CodeViewerProps, prevState: CodeViewerState){
+        return {
+            file: nextProps.file,
+            commentLineNumber: nextProps.commentLineNumber,
+           formattedCode: nextProps.file.body,
+        }
+    }
 
     render() {
         return (
