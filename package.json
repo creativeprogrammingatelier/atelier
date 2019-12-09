@@ -10,7 +10,7 @@
     "dev": "sudo service mongod start && ts-node-dev --respawn --transpileOnly ./api/src/app.ts ",
     "prod": "node ./build/api/src/app.js",
     "watch": "npx webpack --watch ./client/src",
-    "test": "mocha test/*.spec.ts --require ts-node/register --recursive --exit"
+    "test": "mocha test/*.spec.ts --require ts-node/register --recursive --exit",
     "build-all": "npx webpack ./client/src && npm run tsc && npm run copy-client-static && npm run copy-keys",
     "style": "npx gts init",
     "check": "gts check",
