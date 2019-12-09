@@ -10,10 +10,9 @@
     "dev": "sudo service mongod start && ts-node-dev --respawn --transpileOnly ./api/src/app.ts ",
     "prod": "node ./build/api/src/app.js",
     "watch": "npx webpack --watch ./client/src",
+    "test": "mocha test/*.spec.ts --require ts-node/register --recursive --exit"
     "build-all": "npx webpack ./client/src && npm run tsc && npm run copy-client-static && npm run copy-keys",
-
     "style": "npx gts init",
-    "test": "mocha -r ts-node/register -r tests/compiler.tsx -r mock-local-storage tests/*.test.tsx",
     "check": "gts check",
     "clean": "gts clean",
     "compile": "tsc -p .",
@@ -69,10 +68,15 @@
     "webpack-hot-dev-clients": "^2.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.7.5",
+    "@babel/node": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.7.5",
+    "@babel/register": "^7.7.4",
     "@types/bcrypt": "^3.0.0",
     "@types/chai": "^4.2.3",
+    "@types/chai-http": "^4.2.0",
     "@types/enzyme": "^3.10.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/express": "^4.17.1",
@@ -88,6 +92,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-prismjs": "^1.1.1",
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "css-loader": "^3.2.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
