@@ -61,3 +61,7 @@ Start mongo
 
 
 ssh s2054256@linux571.ewi.utwente.nl
+
+## Problems with webpack cli
+
+https://stackoverflow.com/questions/16151018/npm-throws-error-without-sudo?page=1&tab=votes#tab-top
