@@ -73,6 +73,12 @@ app.use(function (err: any, req: Request, res: Response, next: Function) {
  * @TODO refactor
  */
 const mongo_uri = 'mongodb://localhost/react-auth';
+
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+
 mongoose.connect(mongo_uri, function (err: Error) {
   if (err) {
     throw err;
@@ -81,6 +87,5 @@ mongoose.connect(mongo_uri, function (err: Error) {
     console.log(`Successfully connected to ${mongo_uri}`);
   }
 });
-
 
 module.exports = app;
