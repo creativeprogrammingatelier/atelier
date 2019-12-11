@@ -42,6 +42,8 @@ If you wish to contribute please, first make a branch named after yourself or th
 Authentication is done using [JWT-tokens](https://jwt.io/) is a session less approach to user authentication.
 Tokens are stored in local storage.
 
+## Generate keys
+https://gist.github.com/ygotthilf/baa58da5c3dd1f69fae9
 
 ## Authors
 
