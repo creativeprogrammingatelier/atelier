@@ -17,7 +17,7 @@
     "clean": "gts clean",
     "compile": "tsc -p .",
     "fix": "gts fix",
-    "check": "gts check",
+    "check": "gts check"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.22",
