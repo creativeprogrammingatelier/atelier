@@ -8,7 +8,8 @@ git --git-dir=/var/www/linux571.ewi.utwente.nl/atelier.git --work-tree=/var/www/
 echo "NPM install"
 npm i 
 npm run prod-build
-npm run prod-server
+pm2 delete "atelier" || true
+pm2 start npm --name "atelier"  -- start
 echo "Atelier Deployed"
 
 
