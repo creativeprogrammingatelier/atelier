@@ -25,10 +25,12 @@ export const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    // Role can be {teacher | module coordinator | teaching assistant | student}
     role: {
         type: String,
         required: true
-    }
+    },
+
 });
 export interface IUserModel extends Model<IUser> {
     hashPassword(password: string): string;
