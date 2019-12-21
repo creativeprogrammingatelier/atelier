@@ -105,7 +105,6 @@ export default class AuthHelper {
     static getConfirm = () => {
         // Using jwt-decode npm package to decode the token
         let answer = decode(AuthHelper.getToken());
-        console.log("Recieved answer!");
         return answer;
     };
     /**

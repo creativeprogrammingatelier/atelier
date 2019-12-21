@@ -4,7 +4,7 @@
 </div>
 
 # Atelier Core
-
+### NPM run DEV-server not working using Prod instead fix coming soon
 This repo contains the front-end and back-end of the atelier app. 
 It does not contain the automated code checking please see atelier-PMD.
 The development [Trello board](https://trello.com/b/UBKdT7aZ/atelier-prototype)
