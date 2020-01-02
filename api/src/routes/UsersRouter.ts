@@ -15,8 +15,12 @@ import {Response} from "express"
 import PermissionsMiddleware from "../middleware/PermissionsMiddleware";
 import { IUser } from "../../../models/user";
 
+router.get('/', AuthMiddleWare.withAuth, PermissionsMiddleware.isAdmin, (request : Request, result: Response) => {
+    UsersMiddleware.getAllUsers((data: IUser[]) => result.status(200).send(data), (error : Error) =>result.status(500).send(error));
+});
 router.get('/students', AuthMiddleWare.withAuth, PermissionsMiddleware.isTa, (request : Request, result: Response) => {
     UsersMiddleware.getAllStudents((data: IUser[]) => result.status(200).send(data), (error : Error) =>result.status(500).send(error));
 });
+
 
 module.exports = router;

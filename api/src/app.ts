@@ -37,7 +37,6 @@ app.set('socket-io', socket);
 socket.on('connect', (socket: Socket) => {
   socket.emit('id', socket.id) // send each client their socket id
 })
-
 app.use(cookieParser());
 /**
  * Adding default static

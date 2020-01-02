@@ -21,6 +21,17 @@ export default class UsersMiddleware{
             }
         })
     }
+
+    static getAllUsers(onSuccess: Function, onFailure: Function){
+        User.find({
+        }, "-password",(error, result) => {
+            if (!error) {
+                onSuccess(result);
+            } else {
+                onFailure(error);
+            }
+        })
+    }
         /**
      * Get the user object corresponding to the request
      * @param {*} request 
