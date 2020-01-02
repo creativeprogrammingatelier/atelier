@@ -79,7 +79,7 @@ class App extends React.Component<AppProps, AppState> {
                         <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
                         <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
                         <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
-                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student"]} />
+                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student", "admin"]} />
                         <PrivateRoute path='/logout' component={Logout} />
                     </Switch >
                 </div>

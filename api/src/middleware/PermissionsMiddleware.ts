@@ -18,8 +18,6 @@ export default class PermissionsMiddleware{
     }
 
     private static checkCommentAccessPermission(comment: any , user: IUser): boolean{
-        console.log(comment);
-        console.log(user)
         if (comment && ( user.email == comment.author.email || user.role == "teacher")) {
             return true;
         }
