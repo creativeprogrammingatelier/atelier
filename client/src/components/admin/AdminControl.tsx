@@ -1,12 +1,6 @@
 import * as React from "react";
-import UserHelper from "../../helpers/UserHelper";
-import FileViewer from "./FileViewer";
-import FileHelper from "../../helpers/FileHelper";
-import User, { IUser } from "../../../models/user";
-import { IFile } from "../../../models/file";
-import axios from "axios";
-import AuthHelper from "../../helpers/AuthHelper";
-import { Admin } from "mongodb";
+import { IUser } from "../../../../models/user";
+
 type AdminControlProps = {}
 type AdminControlState = {users: IUser[]}
 

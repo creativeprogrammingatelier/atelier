@@ -1,7 +1,7 @@
 import * as React from "react";
 import StudentView from "./StudentView";
 import TAView from "./TAView";
-import AdminView from "./AdminView";
+import AdminView from "./admin/AdminView";
 /**
  * Yet to be implemeneted 
  */
