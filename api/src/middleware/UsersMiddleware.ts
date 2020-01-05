@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import {Constants} from "../lib/constants";
 import {Request, Response} from "express";
 import { User } from "../../../models/user";
+import FilesMiddleware from "./FilesMiddleware";
 
 /**
  * Files middleware provides helper methods for interacting with comments in the DB
@@ -82,6 +83,18 @@ export default class UsersMiddleware{
               onSuccess(this.issueToken(email));
             }
           });
+    }
+
+    static deleteUser(userId: String, onSuccess: Function, onFailure: Function){
+        User.deleteOne({
+            _id: userId
+        }, (error: Error) => {
+            if (error) {
+              onFailure(error)
+            } else {
+              onSuccess();
+            }
+          })
     }
 
     static loginUser(request: Request, onSuccess: Function, onUnauthorised: Function, onFailure: Function){

@@ -32,4 +32,17 @@ export default class UserHelper {
             onFailure(error);
         })
     }
+
+    static deleteUser = (userId: any, onSuccess: Function, onFailure: Function) => {
+        AuthHelper.fetch(`users/${userId}`, {
+            method: "delete",
+        }).then((response) => {
+            response.json().then((res: any) => {
+                onSuccess(res)
+            })
+        }).catch(function (error) {
+            console.error(error);
+            onFailure(error);
+        })
+    }
 }
