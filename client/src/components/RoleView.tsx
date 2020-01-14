@@ -1,6 +1,7 @@
 import * as React from "react";
 import StudentView from "./StudentView";
 import TAView from "./TAView";
+import AdminView from "./admin/AdminView";
 /**
  * Yet to be implemeneted 
  */
@@ -18,6 +19,8 @@ class RoleView extends React.Component {
             correctView = <StudentView />
         } else if (this.props.role == 'teacher') {
             correctView = <TAView />
+        } else if (this.props.role == 'admin') {
+            correctView = <AdminView />
         } else {
             correctView = '';
         }

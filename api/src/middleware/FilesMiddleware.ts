@@ -2,6 +2,8 @@ import FileModel, { IFile } from "../../../models/file";
 import fs, { PathLike } from "fs";
 import UserModel, { IUser } from "../../../models/user";
 import path from "path";
+import CommentMiddleware from "./CommentMiddleware";
+import { IComment } from "../../../models/comment";
 /**
  * Files middleware provides helper methods for interacting with Files in the DB
  * @Author Andrew Heath
@@ -106,6 +108,20 @@ export default class FilesMiddleware{
 
             },onFailure)
     }
+
+    static deleteUserFiles(userId: String, onSuccess: Function, onFailure: Function){
+        FileModel.deleteMany({
+            owner: userId
+        }), (error: Error) => {
+            if (error) {
+                console.error(error)
+                onFailure();
+            } else {
+                onSuccess();
+            }
+        }
+    }
+
 
 
     static createFile (fileName :String, path :String, user: IUser, onSuccess: Function, onFailure: Function ){

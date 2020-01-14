@@ -18,8 +18,6 @@ export default class PermissionsMiddleware{
     }
 
     private static checkCommentAccessPermission(comment: any , user: IUser): boolean{
-        console.log(comment);
-        console.log(user)
         if (comment && ( user.email == comment.author.email || user.role == "teacher")) {
             return true;
         }
@@ -61,7 +59,19 @@ export default class PermissionsMiddleware{
 
     static isTa (request: Request, result: Response, onSuccess: Function) {
         UsersMiddleware.getUser(request, (user : IUser) => {
-            if (user.role.toLowerCase() == "teacher") {
+            const teacherString = "teacher";
+            if (user.role.toLowerCase() == teacherString) {
+                onSuccess();
+            } else {
+                result.status(401).send();
+            }
+        },() => result.status(401).send())
+    }
+
+    static isAdmin (request: Request, result: Response, onSuccess: Function) {
+        UsersMiddleware.getUser(request, (user : IUser) => {
+            const adminString = "admin";
+            if (user.role.toLowerCase() == adminString) {
                 onSuccess();
             } else {
                 result.status(401).send();

@@ -11,6 +11,7 @@ import Register from "./Register"
 import AuthHelper from "../../helpers/AuthHelper"
 import "../styles/app.scss"
 import roleEnum from "../../../enums/roleEnum"
+
 /**
  *  
  */

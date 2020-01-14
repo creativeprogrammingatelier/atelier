@@ -74,4 +74,16 @@ export default class CommentMiddleware{
             }
         )
     }
+
+    static deleteUserComments(userId: String, onSuccess: Function, onFailure: Function){
+        Comment.deleteMany({
+            author: userId
+        },(error: Error) => {
+            if (!error) {
+                onSuccess();
+            } else {
+                onFailure(error);
+            }
+        })
+    }
 }

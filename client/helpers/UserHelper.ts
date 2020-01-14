@@ -19,4 +19,50 @@ export default class UserHelper {
             onFailure(error);
         })
     }
+
+    static getUsers = (onSuccess: Function, onFailure: Function) => {
+        AuthHelper.fetch(`users`, {
+            method: "GET",
+        }).then((response) => {
+            response.json().then((json: IUser[]) => {
+                onSuccess(json)
+            });
+        }).catch(function (error) {
+            console.error(error);
+            onFailure(error);
+        })
+    }
+
+    static deleteUser = (userId: any, onSuccess: Function, onFailure: Function) => {
+        AuthHelper.fetch(`users/${userId}`, {
+            method: "delete",
+        }).then((response) => {
+            response.json().then((res: any) => {
+                onSuccess(res)
+            })
+        }).catch(function (error) {
+            console.error(error);
+            onFailure(error);
+        })
+    }
+
+    static updateUser = (user: any, onSuccess: Function, onFailure: Function) => {
+        const config = {
+            headers: {
+                "Authorization": AuthHelper.getToken()
+            }
+        };
+        axios.put(`users`,{
+            "user": user
+        },
+        config
+        ).then((response) => {
+            onSuccess();
+
+        }).catch(function (error) {
+            onFailure();    
+        })
+
+    }
+    
 }
