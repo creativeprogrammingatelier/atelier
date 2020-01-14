@@ -3,8 +3,9 @@ import fs from "fs";
 import jwt from "jsonwebtoken";
 import {Constants} from "../lib/constants";
 import {Request, Response} from "express";
-import { User } from "../../../models/user";
+import { User, UserSchema } from "../../../models/user";
 import FilesMiddleware from "./FilesMiddleware";
+import AuthMiddleWare from "./AuthMiddleware";
 
 /**
  * Files middleware provides helper methods for interacting with comments in the DB
@@ -83,6 +84,21 @@ export default class UsersMiddleware{
               onSuccess(this.issueToken(email));
             }
           });
+    }
+
+    static updateUser(user: any, onSuccess: Function, onFailure: Function){
+        user.password = User.hashPassword(user.password);
+        User.updateOne(
+            {email: user.email},
+            user
+            , (error: Error) => {
+                if (error) {
+                  onFailure(error)
+                } else {
+                  onSuccess();
+                }
+              }
+        )
     }
 
     static deleteUser(userId: String, onSuccess: Function, onFailure: Function){

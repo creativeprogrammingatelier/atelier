@@ -109,9 +109,17 @@ export default class FilesMiddleware{
             },onFailure)
     }
 
-    static deleteFilesAndComments(fileIds: String[], onSuccess: Function, onFailure: Function){
-        CommentMiddleware
-
+    static deleteUserFiles(userId: String, onSuccess: Function, onFailure: Function){
+        FileModel.deleteMany({
+            owner: userId
+        }), (error: Error) => {
+            if (error) {
+                console.error(error)
+                onFailure();
+            } else {
+                onSuccess();
+            }
+        }
     }
 
 

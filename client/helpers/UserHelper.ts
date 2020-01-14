@@ -45,4 +45,24 @@ export default class UserHelper {
             onFailure(error);
         })
     }
+
+    static updateUser = (user: any, onSuccess: Function, onFailure: Function) => {
+        const config = {
+            headers: {
+                "Authorization": AuthHelper.getToken()
+            }
+        };
+        axios.put(`users`,{
+            "user": user
+        },
+        config
+        ).then((response) => {
+            onSuccess();
+
+        }).catch(function (error) {
+            onFailure();    
+        })
+
+    }
+    
 }

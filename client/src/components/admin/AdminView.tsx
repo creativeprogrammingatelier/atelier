@@ -9,6 +9,7 @@ import AuthHelper from "../../../helpers/AuthHelper";
 import AdminControl from "./AdminControl";
 import EditUserModal from "./EditUserModal";
 import {Button} from "react-bootstrap"
+import Octicon, { Pencil } from "@primer/octicons-react";
 type AdminViewProps = {}
 type AdminViewState = {users: IUser[], viewedUser?: IUser , deleteUserModalOpen: boolean, editUserModalOpen: boolean}
 
@@ -36,7 +37,7 @@ class AdminView extends React.Component<AdminViewProps, AdminViewState> {
                 <tr>
                     <td>{user.email}</td>
                     <td>{user.role}</td>
-                    <td><Button onClick={() => this.openEditModal(user)}>Edit</Button></td>
+                    <td><Button onClick={() => this.openEditModal(user)}><Octicon icon={Pencil} /></Button></td>
                 </tr>
             )
         }
