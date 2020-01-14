@@ -42,7 +42,7 @@ class StudentView extends React.Component {
 
     render() {
         return (
-            < div >
+            < div className="bordered-container">
                 <div className="row " >
                     <div className="col-sm-5 offset-sm-4">
                         <br />

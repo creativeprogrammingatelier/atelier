@@ -16,7 +16,7 @@ import roleEnum from "../../../enums/roleEnum"
  *  
  */
 const EMAILLOCALSTORAGEKEY = 'email';
-type AppState = { loggedIn: boolean, email: string, role: roleEnum  };
+type AppState = { loggedIn: boolean, email: string, role: roleEnum };
 
 type AppProps = {};
 
@@ -71,18 +71,20 @@ class App extends React.Component<AppProps, AppState> {
 
     render() {
         return (
-            <div className="wrapper">
-                <div className="container-fluid">
-                    <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} />
-                    < Switch >
-                        <Redirect exact from="/" to="/roleview" />
-                        <Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin} />} />
-                        <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
-                        <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
-                        <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
-                        <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student", "admin"]} />
-                        <PrivateRoute path='/logout' component={Logout} />
-                    </Switch >
+            <div className="container">
+                <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} />
+                <div className="wrapper">
+                    <div className="container-fluid">
+                        < Switch >
+                            <Redirect exact from="/" to="/roleview" />
+                            <Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin} />} />
+                            <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
+                            <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
+                            <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
+                            <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student"]} />
+                            <PrivateRoute path='/logout' component={Logout} />
+                        </Switch >
+                    </div>
                 </div>
             </div>
 
