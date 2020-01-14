@@ -74,14 +74,16 @@ class AdminView extends React.Component<AdminViewProps, AdminViewState> {
           </table>
           <div>
           </div>
-          <div id="editUserModal">
-            <EditUserModal
-              show = {this.state.editUserModalOpen}
-              onHide = {this.closeEditModal}
-              user = {this.state.viewedUser}
-            >
-            </EditUserModal>
-          </div>
+          {
+            (this.state.viewedUser != undefined ) ?
+              <div id="editUserModal">
+                <EditUserModal
+                  show = {this.state.editUserModalOpen}
+                  onHide = {this.closeEditModal}
+                  user = {this.state.viewedUser}>
+                </EditUserModal>
+              </div> : null
+          }
         </div>
         )
     }

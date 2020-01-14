@@ -1,7 +1,8 @@
 import React, { MouseEvent } from 'react';
 import { IUser } from "../../../../models/user";
-import {FormGroup, Button, FormControl, Modal, ModalProps, FormLabel} from "react-bootstrap"
+import {FormGroup, Button, FormControl, Modal, ModalProps, FormLabel, Form} from "react-bootstrap"
 import UserHelper from "../../../helpers/UserHelper";
+import { FiUserX, FiTrash2 } from 'react-icons/fi';
 type EditUserModalProps = ModalProps & {user?: IUser}
 type EditUserModalState = {password: any, role: string, updated: boolean}
 class EditUserModal extends React.Component<EditUserModalProps, EditUserModalState>{
@@ -38,15 +39,13 @@ class EditUserModal extends React.Component<EditUserModalProps, EditUserModalSta
                 <Modal.Body>
                 <form>
                     <FormGroup
-                    controlId="formBasicText"
+                    controlId="UpdateUser"
                     >
-                    <FormControl
-                        type="text"
-                        name="role"
-                        placeholder="Role"
-                        value={this.state.role}
-                        onChange={(event: any)=> this.setState({role: event.target.value})}
-                    />
+                     <Form.Control as="select"  value={this.state.role} onChange={(event: any)=> this.setState({role: event.target.value})}>
+                            <option>Student</option>
+                            <option>Teacher</option>
+                            <option>Admin</option>
+                    </Form.Control>
                     <FormControl
                         type="text"
                         name="password"
@@ -57,16 +56,14 @@ class EditUserModal extends React.Component<EditUserModalProps, EditUserModalSta
                     />
                     <FormControl.Feedback />
                     </FormGroup>
-                    <Button type="button" onClick={(e: MouseEvent) => (this.props.user) ? this.deleteUser(e, this.props.user): e.preventDefault()}>Delete User</Button>
-                    <Button type="submit" onClick={(e: MouseEvent) => (this.props.user) ? this.updateUser(e, this.props.user): e.preventDefault()} >Update User</Button>
+                    <Button  type="button" onClick={(e: MouseEvent) => (this.props.user) ? this.deleteUser(e, this.props.user): e.preventDefault()}><FiUserX /></Button>
+                    <Button  type="submit" onClick={(e: MouseEvent) => (this.props.user) ? this.updateUser(e, this.props.user): e.preventDefault()} ><FiTrash2 /></Button>
+                    
                 </form>
                 </Modal.Body>
             </Modal>
             )
         } 
-        return (
-            <p>fail</p>
-        )
     }
 
 } export default EditUserModal;
