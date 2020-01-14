@@ -67,7 +67,7 @@ class TAView extends React.Component {
     }
     render() {  
         return (
-            <div className="accordion" id="accordionStudentFiles">
+            <div className="accordion bordered-container" id="accordionStudentFiles">
                 {this.populateTable()}
             </div>
         )

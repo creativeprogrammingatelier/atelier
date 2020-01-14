@@ -70,7 +70,7 @@ class App extends React.Component<AppProps, AppState> {
 
     render() {
         return (
-            <div>
+            <div className="container">
                 <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} />
                 <div className="wrapper">
                     <div className="container-fluid">
