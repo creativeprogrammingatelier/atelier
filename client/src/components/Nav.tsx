@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPalette, faSignOutAlt, faFolder } from "@fortawesome/free-solid-svg-icons";
 import "../styles/nav.scss"
+import { Navbar } from "react-bootstrap";
 class Nav extends React.Component {
 
     props: any;
@@ -13,23 +14,29 @@ class Nav extends React.Component {
     render() {
         return (
             <div>
-                <div className="mx-auto" style={{ width: "200px" }}>
-                    <FontAwesomeIcon size={"4x"} icon={faPalette} />
-                    <h2 className="title">Atelier</h2>
-                </div>
-                <div className="nav-bar">
-                    <ul className="nav menu-left">
-                        {this.props.loggedIn ?
-                            <React.Fragment>
-                                <li className="nav-item"><Link className="nav-link" to="/roleview">Submissions <FontAwesomeIcon icon={faFolder}></FontAwesomeIcon></Link></li>
-                                <li className="nav-item"><Link className="nav-link" to="/logout" onClick={this.props.onLogout}><FontAwesomeIcon icon={faSignOutAlt}></FontAwesomeIcon></Link></li>
-                            </React.Fragment> : null
-                        }
-                    </ul>
-                    <div className="menu-right" id="user">
-                        {this.props.loggedIn && <div>  {this.props.email} </div> }
-                    </div>
-                </div>
+                <Navbar bg="dark" variant="dark" fixed="top" id="main-nav">
+                    <Navbar.Brand href="#home">
+                        <FontAwesomeIcon size={"2x"} icon={faPalette} /> {' '}
+                        <h2 className="title">Atelier</h2>
+                    </Navbar.Brand>
+                    {this.props.loggedIn ?
+                        <React.Fragment>
+                            <Navbar.Collapse className="justify-content-end">
+                                <Navbar.Text>
+                                    <Link className="nav-link" to="/roleview">Submissions <FontAwesomeIcon icon={faFolder}></FontAwesomeIcon></Link>
+                                </Navbar.Text>
+
+                                <Navbar.Text>
+                                    Signed in as: <a href="#login">{this.props.email}</a>
+                                </Navbar.Text>
+                                <Navbar.Text>
+                                    <Link className="nav-link" to="/logout" onClick={this.props.onLogout}><FontAwesomeIcon icon={faSignOutAlt}></FontAwesomeIcon></Link>
+                                </Navbar.Text>
+                            </Navbar.Collapse>
+                        </React.Fragment> : null
+                    }
+
+                </Navbar>
             </div>
         )
     }
