@@ -3,6 +3,7 @@ import AuthHelper from "../../helpers/AuthHelper";
 import { withRouter, Redirect, Link } from "react-router-dom";
 import "../styles/login.scss"
 import { IUser } from "../../../models/user";
+import { Form, Button } from "react-bootstrap";
 class Login extends Component {
     state: { email: string, password: string, user: IUser | null, response: string, redirectToReferrer: boolean };
     props: any;
@@ -32,7 +33,7 @@ class Login extends Component {
             this.setState({
                 redirectToReferrer: true
             });
-        }, () =>  alert("Login Failed, Please register if you have not already")
+        }, () => alert("Login Failed, Please register if you have not already")
         );
 
     };
@@ -44,49 +45,47 @@ class Login extends Component {
             )
         }
         return (
-            <div>
-                <div className="row justify-content-md-center">
-                    <div className="col col-md-8 offset-md-2">
-                        <form onSubmit={this.onSubmit}>
-                                <div className="form-group">
-                                    <input
-                                        className="form-control"
-                                        type="email"
-                                        name="email"
-                                        placeholder="Email"
-                                        value={this.state.email}
-                                        onChange={this.handleInputChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
+            <div className="center-form-container">
+                <h3>Login to Atelier</h3>
+                <div className="form-container">
+                    <Form onSubmit={this.onSubmit}>
+                        <div className="form-group">
+                            <input
+                                className="form-control"
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                value={this.state.email}
+                                onChange={this.handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                className="form-control"
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                value={this.state.password}
+                                onChange={this.handleInputChange}
+                                required
+                            />
+                        </div>
+                        <p>{this.state.response}</p>
+                        <div className="form-submit">
+                            <ul>
+                                <li>
+                                    <input className="btn btn-primary" type="submit" value="Login" />
+                                </li>
+                                <li>
+                                    <React.Fragment>
+                                        <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li>
+                                    </React.Fragment>
+                                </li>
+                            </ul>
+                        </div>
 
-                                    <input
-                                        className="form-control"
-                                        type="password"
-                                        name="password"
-                                        placeholder="Password"
-                                        value={this.state.password}
-                                        onChange={this.handleInputChange}
-                                        required
-                                    />
-                                </div>
-                                <p>{this.state.response}</p>
-                                <div className="form-submit">
-                                    <ul>
-                                        <li>
-                                            <input className="btn btn-primary" type="submit" value="Login" />
-                                        </li>
-                                        <li>
-                                            <React.Fragment>
-                                                <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li>
-                                            </React.Fragment>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                        </form>
-                    </div>
+                    </Form>
                 </div>
             </div>
         );

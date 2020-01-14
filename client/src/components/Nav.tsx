@@ -23,7 +23,7 @@ class Nav extends React.Component {
                         <React.Fragment>
                             <Navbar.Collapse className="justify-content-end">
                                 <Navbar.Text>
-                                    <Link className="nav-link" to="/roleview">Submissions <FontAwesomeIcon icon={faFolder}></FontAwesomeIcon></Link>
+                                    <Link className="nav-link" to="/roleview"> <FontAwesomeIcon icon={faFolder}></FontAwesomeIcon> Submissions </Link>
                                 </Navbar.Text>
 
                                 <Navbar.Text>
