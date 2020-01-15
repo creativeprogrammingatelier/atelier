@@ -20,7 +20,7 @@ type CodeViewerState = {
     commentLineNumber: number
 }
 
-class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
+class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
     movedByMouse: boolean = false;
     codeMirror!: CodeMirror.Editor;
 
@@ -34,63 +34,67 @@ class CodeViewer extends React.Component<CodeViewerProps,CodeViewerState> {
         }
 
     }
-    componentDidUpdate(props: CodeViewerProps){
-        if(props.file != this.state.file){
+    componentDidUpdate(props: CodeViewerProps) {
+        if (props.file != this.state.file) {
             this.codeMirrorUpdate();
         }
         this.selectLine();
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.codeMirrorUpdate();
         this.selectLine();
     }
 
-
-    codeMirrorUpdate(){
+    codeMirrorUpdate() {
         let textEditorNullable: HTMLElement | null = document.getElementById('text-editor');
-        if(textEditorNullable != null && textEditorNullable  instanceof  HTMLTextAreaElement) { 
+        if (textEditorNullable != null && textEditorNullable instanceof HTMLTextAreaElement) {
             let textEditor: HTMLTextAreaElement = textEditorNullable;
-            this.codeMirror = CodeMirror.fromTextArea(textEditor, {mode: 'text/x-java', lineNumbers: true, styleActiveLine:true, theme: 'oceanic-next', value: this.state.formattedCode }, )
+
+            (this.codeMirror != null) ?
+                this.codeMirror.setValue(this.state.formattedCode)
+                :
+                this.codeMirror = CodeMirror.fromTextArea(textEditor, { mode: 'text/x-java', lineNumbers: true, styleActiveLine: true, theme: 'oceanic-next', value: this.state.formattedCode })
+
             this.codeMirror.setSize("100%", "100%");
-            this.codeMirror.on("cursorActivity",(instanceCodeMirror: CodeMirror.Editor)=>{
-                if(this.movedByMouse){
+            this.codeMirror.on("cursorActivity", (instanceCodeMirror: CodeMirror.Editor) => {
+                if (this.movedByMouse) {
                     this.setStateSelectedLine();
                 }
             });
-            this.codeMirror.on("mousedown", (instanceCodeMirror: CodeMirror.Editor)=> {
+            this.codeMirror.on("mousedown", (instanceCodeMirror: CodeMirror.Editor) => {
                 this.movedByMouse = true;
             });
         }
     }
 
-    selectLine(){
+    selectLine() {
         this.movedByMouse = false;
-        this.codeMirror.setCursor(this.state.commentLineNumber -1 );
+        this.codeMirror.setCursor(this.state.commentLineNumber - 1);
     }
 
 
-    setStateSelectedLine(){
+    setStateSelectedLine() {
         let doc: any = this.codeMirror.getDoc();
         let anchor = doc.sel.ranges[0].anchor.line;
         let head = doc.sel.ranges[0].head.line;
-        let lineNumber = (anchor > head) ? head : anchor;       
-      this.state.updateLineNumber(lineNumber - 1);
+        let lineNumber = (anchor > head) ? head : anchor;
+        this.state.updateLineNumber(lineNumber - 1);
     }
 
     //https://hackernoon.com/replacing-componentwillreceiveprops-with-getderivedstatefromprops-c3956f7ce607
-    static getDerivedStateFromProps(nextProps: CodeViewerProps, prevState: CodeViewerState){
+    static getDerivedStateFromProps(nextProps: CodeViewerProps, prevState: CodeViewerState) {
         return {
             file: nextProps.file,
             commentLineNumber: nextProps.commentLineNumber,
-           formattedCode: nextProps.file.body,
+            formattedCode: nextProps.file.body,
         }
     }
 
     render() {
         return (
             <div>
-                <textarea  id="text-editor" autoComplete='off' value ={ this.state.formattedCode}  />
+                <textarea id="text-editor" autoComplete='off' value={this.state.formattedCode} />
             </div>
 
         );

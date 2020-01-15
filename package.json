@@ -28,7 +28,6 @@
     "@types/codemirror": "0.0.78",
     "@types/jwt-decode": "^2.2.1",
     "@types/prismjs": "^1.16.0",
-    "@types/react-bootstrap": "^0.32.20",
     "@types/react-router-dom": "^4.3.4",
     "@types/socket.io": "^2.1.4",
     "axios": "^0.19.0",
