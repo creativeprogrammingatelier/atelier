@@ -2,7 +2,7 @@ import React, { MouseEvent } from 'react';
 import { IUser } from "../../../../models/user";
 import {FormGroup, Button, FormControl, Modal, ModalProps, FormLabel, Form} from "react-bootstrap"
 import UserHelper from "../../../helpers/UserHelper";
-//import { FiUserX, FiTrash2 } from 'react-icons/fi';
+import { FiUserX, FiTrash2 } from 'react-icons/fi';
 type EditUserModalProps = ModalProps & {user?: IUser}
 type EditUserModalState = {password: any, role: string, updated: boolean}
 class EditUserModal extends React.Component<EditUserModalProps, EditUserModalState>{

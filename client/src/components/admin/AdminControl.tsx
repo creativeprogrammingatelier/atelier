@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IUser } from "../../../../models/user";
-//import { FiUserPlus, FiFilter } from "react-icons/fi";
+import { FiUserPlus, FiFilter } from "react-icons/fi";
 
 type AdminControlProps = {}
 type AdminControlState = {users: IUser[]}
