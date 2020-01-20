@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPalette, faSignOutAlt, faFolder } from "@fortawesome/free-solid-svg-icons";
+import { faPalette, faSignOutAlt, faFolder, faBell } from "@fortawesome/free-solid-svg-icons";
 import "../styles/nav.scss"
 import { Navbar } from "react-bootstrap";
 class Nav extends React.Component {
@@ -32,6 +32,9 @@ class Nav extends React.Component {
                                 <Navbar.Text>
                                     <Link className="nav-link" to="/logout" onClick={this.props.onLogout}><FontAwesomeIcon icon={faSignOutAlt}></FontAwesomeIcon></Link>
                                 </Navbar.Text>
+                                <span id="toggle-sidebar" onClick={this.props.onSetSidebarOpen}>
+                                    <FontAwesomeIcon icon={faBell}></FontAwesomeIcon>
+                                </span>
                             </Navbar.Collapse>
                         </React.Fragment> : null
                     }

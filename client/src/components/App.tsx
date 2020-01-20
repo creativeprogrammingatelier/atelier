@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Route, Switch, Link, Redirect } from "react-router-dom";
+import Sidebar from "react-sidebar";
 import PrivateRoute from "./PrivateRoute";
 import Login from "./Login";
 import TAView from "./TAView";
@@ -12,11 +13,12 @@ import AuthHelper from "../../helpers/AuthHelper"
 import "../styles/app.scss"
 import roleEnum from "../../../enums/roleEnum"
 
+
 /**
  *  
  */
 const EMAILLOCALSTORAGEKEY = 'email';
-type AppState = { loggedIn: boolean, email: string, role: roleEnum };
+type AppState = { loggedIn: boolean, email: string, role: roleEnum, sidebarOpen: boolean };
 
 type AppProps = {};
 
@@ -28,14 +30,20 @@ class App extends React.Component<AppProps, AppState> {
         this.state = {
             loggedIn: false,
             email: localStorage.getItem(EMAILLOCALSTORAGEKEY) || '',
-            role: roleEnum.None
+            role: roleEnum.None,
+            sidebarOpen: true
         }
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
+        this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
     }
 
     componentDidMount() {
         this.getAndSetRole();
+    }
+
+    onSetSidebarOpen(open) {
+        this.setState({ sidebarOpen: open });
     }
 
     handleLogin(email: string) {
@@ -72,20 +80,30 @@ class App extends React.Component<AppProps, AppState> {
     render() {
         return (
             <div className="container">
-                <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} />
-                <div className="wrapper">
-                    <div className="container-fluid">
-                        < Switch >
-                            <Redirect exact from="/" to="/roleview" />
-                            <Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin} />} />
-                            <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
-                            <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
-                            <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
-                            <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student"]} />
-                            <PrivateRoute path='/logout' component={Logout} />
-                        </Switch >
+                <Sidebar
+                    sidebar={<b>Sidebar content</b>}
+                    open={this.state.sidebarOpen}
+                    onSetOpen={this.onSetSidebarOpen}
+                    pullRight={true}
+                    styles={{ sidebar: { background: "white" } }}
+                >
+                    <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} onSetSidebarOpen={this.onSetSidebarOpen} />
+
+                    <div className="wrapper">
+                        <div className="container-fluid">
+                            < Switch >
+                                <Redirect exact from="/" to="/roleview" />
+                                <Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin} />} />
+                                <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
+                                <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
+                                <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
+                                <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student"]} />
+                                <PrivateRoute path='/logout' component={Logout} />
+                            </Switch >
+                        </div>
                     </div>
-                </div>
+                </Sidebar>
+
             </div>
 
         )
