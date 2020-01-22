@@ -32,8 +32,8 @@ class Nav extends React.Component {
                                 <Navbar.Text>
                                     <Link className="nav-link" to="/logout" onClick={this.props.onLogout}><FontAwesomeIcon icon={faSignOutAlt}></FontAwesomeIcon></Link>
                                 </Navbar.Text>
-                                <span id="toggle-sidebar" onClick={this.props.onSetSidebarOpen}>
-                                    <FontAwesomeIcon icon={faBell}></FontAwesomeIcon>
+                                <span id="toggle-sidebar" onClick={this.props.onSidebarToggle}>
+                                    <FontAwesomeIcon icon={faBell} color="white" ></FontAwesomeIcon>
                                 </span>
                             </Navbar.Collapse>
                         </React.Fragment> : null

@@ -12,7 +12,8 @@ import Register from "./Register"
 import AuthHelper from "../../helpers/AuthHelper"
 import "../styles/app.scss"
 import roleEnum from "../../../enums/roleEnum"
-
+import SidebarContent from "./sidebar/SidebarContent"
+import "../styles/sidebar.scss"
 
 /**
  *  
@@ -31,19 +32,21 @@ class App extends React.Component<AppProps, AppState> {
             loggedIn: false,
             email: localStorage.getItem(EMAILLOCALSTORAGEKEY) || '',
             role: roleEnum.None,
-            sidebarOpen: true
+            sidebarOpen: false
         }
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
-        this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
+        this.onSidebarToggle = this.onSidebarToggle.bind(this);
     }
 
     componentDidMount() {
         this.getAndSetRole();
     }
 
-    onSetSidebarOpen(open) {
-        this.setState({ sidebarOpen: open });
+    onSidebarToggle(open) {
+        this.setState(prevState => ({
+            sidebarOpen: !prevState.sidebarOpen
+        }));
     }
 
     handleLogin(email: string) {
@@ -81,13 +84,13 @@ class App extends React.Component<AppProps, AppState> {
         return (
             <div className="container">
                 <Sidebar
-                    sidebar={<b>Sidebar content</b>}
+                    sidebar={<SidebarContent />}
                     open={this.state.sidebarOpen}
-                    onSetOpen={this.onSetSidebarOpen}
+                    onSetOpen={this.onSidebarToggle}
                     pullRight={true}
                     styles={{ sidebar: { background: "white" } }}
                 >
-                    <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} onSetSidebarOpen={this.onSetSidebarOpen} />
+                    <Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout} onSidebarToggle={this.onSidebarToggle} />
 
                     <div className="wrapper">
                         <div className="container-fluid">
