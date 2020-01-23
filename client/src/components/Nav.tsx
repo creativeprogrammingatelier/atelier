@@ -11,6 +11,48 @@ class Nav extends React.Component {
         super(props);
     }
 
+    populateNavbar = () => {
+        let links = []
+
+        if (this.props.loggedIn) {
+
+            if (this.props.role == 'admin') {
+                links.push(this.formattedLink('/admin', null, 'Admin'))
+            }
+
+            if (this.props.role == ('admin' || 'teacher' || 'ta' || 'teaching assistant')) {
+                links.push(this.formattedLink('/ta', faFolder, 'All submissions'))
+            }
+
+            if (this.props.role == ('student' || 'students')) {
+                links.push(this.formattedLink('/student', faFolder, 'My submissions'))
+            }
+
+            links.push(
+                <Navbar.Text>
+                    Signed in as: <a href="#login">{this.props.email}</a>
+                </Navbar.Text>
+            )
+
+            links.push(this.formattedLink('/logout', faSignOutAlt, ''))
+
+        }
+
+        return (
+            <React.Fragment>
+                {links}
+            </React.Fragment>
+        )
+    }
+
+    formattedLink = (path: any, icon: any, linkText: string) => {
+        return (
+            <Navbar.Text>
+                <Link className="nav-link" to={path}> <FontAwesomeIcon icon={icon}></FontAwesomeIcon> {linkText} </Link>
+            </Navbar.Text>
+        )
+    }
+
     render() {
         return (
             <div>
@@ -19,23 +61,11 @@ class Nav extends React.Component {
                         <FontAwesomeIcon size={"2x"} icon={faPalette} /> {' '}
                         <h2 className="title">Atelier</h2>
                     </Navbar.Brand>
-                    {this.props.loggedIn ?
-                        <React.Fragment>
-                            <Navbar.Collapse className="justify-content-end">
-                                <Navbar.Text>
-                                    <Link className="nav-link" to="/roleview"> <FontAwesomeIcon icon={faFolder}></FontAwesomeIcon> Submissions </Link>
-                                </Navbar.Text>
-
-                                <Navbar.Text>
-                                    Signed in as: <a href="#login">{this.props.email}</a>
-                                </Navbar.Text>
-                                <Navbar.Text>
-                                    <Link className="nav-link" to="/logout" onClick={this.props.onLogout}><FontAwesomeIcon icon={faSignOutAlt}></FontAwesomeIcon></Link>
-                                </Navbar.Text>
-                            </Navbar.Collapse>
-                        </React.Fragment> : null
-                    }
-
+                    <React.Fragment>
+                        <Navbar.Collapse className="justify-content-end">
+                            {this.populateNavbar()}
+                        </Navbar.Collapse>
+                    </React.Fragment>
                 </Navbar>
             </div>
         )

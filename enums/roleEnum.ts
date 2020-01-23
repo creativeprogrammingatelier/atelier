@@ -1,4 +1,4 @@
-enum roleEnum{
+enum roleEnum {
     "students",
     "teacher",
     "admin",

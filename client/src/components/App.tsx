@@ -5,6 +5,7 @@ import Login from "./Login";
 import TAView from "./TAView";
 import StudentView from "./StudentView";
 import RoleView from "./RoleView";
+import AdminView from "./admin/AdminView"
 import Nav from "./Nav";
 import Logout from "./Logout";
 import Register from "./Register"
@@ -79,9 +80,10 @@ class App extends React.Component<AppProps, AppState> {
                             <Redirect exact from="/" to="/roleview" />
                             <Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin} />} />
                             <Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin} />} />
-                            <PrivateRoute exact path='/ta' component={TAView} roles={["teacher"]} />
+                            <PrivateRoute exact path='/ta' component={TAView} roles={["teacher", "admin"]} />
                             <PrivateRoute exact path='/student' component={StudentView} roles={["student"]} />
-                            <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student"]} />
+                            <PrivateRoute exact path='/admin' component={AdminView} roles={["admin"]} />
+                            <PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role} />} roles={["teacher", "student", "admin"]} />
                             <PrivateRoute path='/logout' component={Logout} />
                         </Switch >
                     </div>
