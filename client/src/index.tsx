@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 import App from './components/App';
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 //Changes to commit changes more 123
 ReactDOM.render((
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>
+	<BrowserRouter>
+		<App/>
+	</BrowserRouter>
 ), document.getElementById('root'));

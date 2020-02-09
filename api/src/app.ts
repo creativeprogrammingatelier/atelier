@@ -6,9 +6,10 @@
 /**
  * Dependencies
  */
-import path from "path"
+import path from 'path';
 import express, {Request, Response, Errback} from 'express';
-import { Socket } from "socket.io";
+import {Socket} from 'socket.io';
+
 let createError = require('http-errors');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
@@ -25,18 +26,18 @@ let app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({
-  extended: false
+	extended: false
 }));
 
 //Socket io
 let http = require('http').createServer(app);
-http.listen(5000, "127.0.0.1");
+http.listen(5000, '127.0.0.1');
 const socket: Socket = require('socket.io')(http);
 app.set('socket-io', socket);
 
 socket.on('connect', (socket: Socket) => {
-  socket.emit('id', socket.id) // send each client their socket id
-})
+	socket.emit('id', socket.id); // send each client their socket id
+});
 app.use(cookieParser());
 /**
  * Adding default static
@@ -45,7 +46,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../../client/')));
 /**
  * Setting routes
- * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all 
+ * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all
  */
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
@@ -58,13 +59,13 @@ app.use('/', indexRouter);
  * Error handling 404
  * */
 
-app.use(function (err: any, req: Request, res: Response, next: Function) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500).json({
-    error: err
-  });
+app.use(function(err: any, req: Request, res: Response, next: Function) {
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
+	res.status(err.status || 500).json({
+		error: err
+	});
 });
 
 //Databse connection 
@@ -78,13 +79,13 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-mongoose.connect(mongo_uri, function (err: Error) {
-  if (err) {
-    throw err;
+mongoose.connect(mongo_uri, function(err: Error) {
+	if (err) {
+		throw err;
 
-  } else {
-    console.log(`Successfully connected to ${mongo_uri}`);
-  }
+	} else {
+		console.log(`Successfully connected to ${mongo_uri}`);
+	}
 });
 
 module.exports = app;

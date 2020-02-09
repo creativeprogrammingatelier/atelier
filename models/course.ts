@@ -4,32 +4,32 @@
  * Date created: 15/08/19
  */
 /**
- * Dependecies 
+ * Dependecies
  */
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, {Schema, Document} from 'mongoose';
 
 
-export interface ICourse extends Document{
-    name: string,
-    students: string[],
-    coordinator: string
+export interface ICourse extends Document {
+	name: string,
+	students: string[],
+	coordinator: string
 
 }
 const CourseSchema = new mongoose.Schema({
 
-    name: {
-        type: String,
-        required: true
-    },
-    coordinator:{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    students: {
-        type: [Schema.Types.ObjectId],
-        required: false,
-        ref: "User"
-        }
+	name: {
+		type: String,
+		required: true
+	},
+	coordinator: {
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	},
+	students: {
+		type: [Schema.Types.ObjectId],
+		required: false,
+		ref: 'User'
+	}
 
 });
 

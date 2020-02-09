@@ -1,20 +1,21 @@
 @import "boostrap-overwrite.scss";
 
 .bordered-container {
-    border-color: #eaecef;
-    border-radius: 3px;
-    border: 1px solid #e1e4e8;
+  border-color: #eaecef;
+  border-radius: 3px;
+  border: 1px solid #e1e4e8;
 }
 
 .wrapper {
-    margin-top: 80px;
-    button {
-        background-color: Transparent;
-        background-repeat:no-repeat;
-        border: none;
-        cursor:pointer;
-        overflow: hidden;
-        outline:none;
-    }
+  margin-top: 80px;
+
+  button {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+  }
 }
 

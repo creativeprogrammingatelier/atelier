@@ -4,26 +4,26 @@
  * Date created: 15/08/19
  */
 /**
- * Dependecies 
+ * Dependecies
  */
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, {Schema, Document} from 'mongoose';
 
 
-export interface IProject extends Document{
-    name: string,
-    course: string,
+export interface IProject extends Document {
+	name: string,
+	course: string,
 }
 const ProjecSchema = new mongoose.Schema({
 
-    name: {
-        type: String,
-        required: true
-    },
-    course: {
-        type: Schema.Types.ObjectId,
-        required: false,
-        ref: "Course"
-        }
+	name: {
+		type: String,
+		required: true
+	},
+	course: {
+		type: Schema.Types.ObjectId,
+		required: false,
+		ref: 'Course'
+	}
 
 });
 
