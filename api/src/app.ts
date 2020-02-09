@@ -60,6 +60,8 @@ app.use('/', indexRouter);
  * */
 
 app.use(function(err: any, req: Request, res: Response, next: Function) {
+	// Log the full error to the console, we want to see what went wrong...
+	console.log('\x1b[31m', err);
 	// set locals, only providing error in development
 	res.locals.message = err.message;
 	res.locals.error = req.app.get('env') === 'development' ? err : {};
