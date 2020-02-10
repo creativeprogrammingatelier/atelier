@@ -11,6 +11,8 @@ import Register from './Register';
 import AuthHelper from '../../helpers/AuthHelper';
 import '../styles/app.scss';
 import roleEnum from '../../../enums/roleEnum';
+import {SubmissionOverview} from './submission/SubmissionOverview';
+
 
 /**
  *
@@ -83,6 +85,7 @@ class App extends React.Component<AppProps, AppState> {
 							<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
 							<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
 							<PrivateRoute path='/logout' component={Logout}/>
+							<PrivateRoute exact path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
 						</Switch>
 					</div>
 				</div>

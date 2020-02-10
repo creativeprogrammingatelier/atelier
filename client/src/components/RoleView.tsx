@@ -14,7 +14,6 @@ class RoleView extends React.Component {
 	}
 
 	render() {
-
 		let correctView;
 		if (this.props.role == 'student') {
 			correctView = <StudentView/>;
@@ -31,8 +30,6 @@ class RoleView extends React.Component {
 				{correctView}
 			</div>
 		);
-
-
 	}
 }
 export default RoleView;

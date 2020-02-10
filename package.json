@@ -9,7 +9,7 @@
 		"prod-server": "node ./build/api/src/app.js",
 		"start": "node ./build/api/src/app.js",
 		"dev-watch": "npx webpack --watch ---config webpack.development.config.js ./client/src",
-		"prod-build": "npx webpack ---config webpack.production.config.js ./client/src  && npm run copy-keys",
+		"prod-build": "npx webpack ---config webpack.production.config.js ./client/src",
 		"test": "mocha test/*.spec.ts --require ts-node/register --recursive --exit",
 		"prepare": "npm run compile",
 		"posttest": "npm run check",
