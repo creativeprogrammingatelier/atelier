@@ -1,7 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-interface DataTableProperties<T> {
+export interface DataTableRowMapping<T> {
+    0: string,
+    1: (item: T) => (JSX.Element | string),
+    2?: (item: T) => (string | null)
+}
+
+export interface DataTableProperties<T> {
     /** Title to show above the table */
     title: string,
     /** List of objects to display in the table */
@@ -11,11 +17,7 @@ interface DataTableProperties<T> {
      *  item as a React element and an optional third element
      *  that defines a link for this element
      */
-    table: Array<{
-        0: string;
-        1: (item: T) => (JSX.Element | string);
-        2?: (item: T) => (string | null);
-    }>
+    table: Array<DataTableRowMapping<T>>
 }
 
 /** A simple table, but probably providing more table-fucntionality
