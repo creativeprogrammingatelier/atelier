@@ -55,3 +55,18 @@ export interface Snippet {
      */
     fileLines: [number, number]
 }
+
+// User
+///////
+export interface User {
+    id: string,
+    name: string
+}
+
+// Submission
+/////////////
+export interface Submission {
+    id: string, 
+    name: string, 
+    date: Date
+}
