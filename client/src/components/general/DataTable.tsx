@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface DataTableProperties<T> {
     /** Title to show above the table */
@@ -9,13 +10,15 @@ interface DataTableProperties<T> {
      *  title of that column and a function to render the
      *  item as a React element
      */
-    table: Array<[string, (item: T) => (JSX.Element | string)]>
+    table: Array<[string, (item: T) => (JSX.Element | string)]>,
+    /** Function to create a link to an item */
+    link?: ((item: T) => string)
 }
 
 /** A simple table, but probably providing more table-fucntionality
  *  in the future
  */
-export function DataTable<T>({ title, data, table }: DataTableProperties<T>) {
+export function DataTable<T>({ title, data, table, link }: DataTableProperties<T>) {
     return (
         <div>
             <span>{title}</span>
@@ -24,7 +27,12 @@ export function DataTable<T>({ title, data, table }: DataTableProperties<T>) {
                 <tbody>
                     {data.map(item =>
                         <tr>
-                            {table.map(([_, f]) => <td>{f(item)}</td>)}
+                            {table.map(([_, f]) => 
+                                <td>
+                                    {link !== undefined && link(item) !== null
+                                     ? <Link to={link(item)}>{f(item)}</Link>
+                                     : f(item)}
+                                </td>)}
                         </tr>)}
                 </tbody>
             </table>
