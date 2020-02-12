@@ -13,8 +13,7 @@ import '../styles/app.scss';
 import roleEnum from '../../../enums/roleEnum';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {CommentThread} from './commentthread/CommentThread';
-import {SearchOverview} from './search/SearchOverview';
-import {CourseOverview} from './course/CourseOverview';
+import {SearchOverview} from "./search/SearchOverview";
 
 
 /**
@@ -91,7 +90,6 @@ class App extends React.Component<AppProps, AppState> {
 							<PrivateRoute exact path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
 							<PrivateRoute exact path='/commentThread' component={CommentThread} roles={['student', 'teacher']} />
 							<PrivateRoute exact path='/search' component={SearchOverview} roles={['student', 'teacher']} />
-							<PrivateRoute exact path='/courseOverview' component={CourseOverview} roles={['student', 'teacher']} />
 						</Switch>
 					</div>
 				</div>
