@@ -32,9 +32,9 @@ export function DataTable<T>({ title, data, table }: DataTableProperties<T>) {
                         <tr>
                             {table.map(({ 1: render, 2: link }) => 
                                 <td>
-                                    {link !== undefined && link(item) !== null
-                                     ? <Link to={link(item)}>{render(item)}</Link>
-                                     : render(item)}
+                                     {link !== undefined && link(item) !== null
+                                        ? <Link to={link(item)}>{render(item)}</Link>
+                                        : render(item)}
                                 </td>)}
                         </tr>)}
                 </tbody>

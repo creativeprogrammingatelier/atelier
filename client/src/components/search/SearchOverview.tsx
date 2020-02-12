@@ -1,12 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 
 import {SearchBar} from './SearchBar';
-import {Link} from "react-router-dom";
 import {DataTable, DataTableProperties} from "../general/DataTable";
 
-// title
-// data = []
-//
 
 const submissionData = {
     submissions : [{
@@ -24,32 +20,12 @@ const submissionData = {
     }]
 };
 
-interface Submission {
+/*interface Submission {
     userID : number,
     name : string,
     submissionID : number,
     submissionName : string,
     date: string
-}
-
-/*function SubmissionTable() {
-    console.log("getting submission table");
-    // TODO make database query for submission data
-    const submissionResult = submissionData;
-
-    const submissionTable : DataTableProperties<Submission> = {
-        title: 'Submissions',
-        data : submissionResult.submissions,
-        table : [
-            ['User', ({name}: Submission) => name],
-            ['Submission', ({submissionName} : Submission) => submissionName],
-            ['Date', ({date} : Submission) => date]
-        ]
-    };
-
-    console.log(submissionTable);
-
-    return DataTable<Submission>(submissionTable)
 }*/
 
 function handleSearch(value : string, setResults : Function) {
@@ -57,13 +33,13 @@ function handleSearch(value : string, setResults : Function) {
 
     // TODO: search
     setResults({
-        'submission' : submissionData,
-        'code' : {
+        submissions : submissionData.submissions,
+        codes : {
             title : 'Code',
             data : [],
             table : []
         },
-        'comments' : {
+        comments : {
             title : 'Comments',
             data : [],
             table : []
@@ -73,22 +49,30 @@ function handleSearch(value : string, setResults : Function) {
 
 export function SearchOverview() {
     const [results, setResults] = useState({
-        'submission' : {
+        submissions : {
             title : 'Submissions',
             data : [],
             table : []
         },
-        'code' : {
+        codes : {
             title : 'Code',
             data : [],
             table : []
         },
-        'comments' : {
+        comments : {
             title : 'Comments',
             data : [],
             table : []
         }
     });
+
+    console.log(results.submissions.title);
+    console.log(results.submissions.data);
+    console.log(results.submissions.table);
+
+    console.log(results.codes.title);
+    console.log(results.codes.data);
+    console.log(results.codes.table);
 
     return (
         <div>
@@ -98,16 +82,16 @@ export function SearchOverview() {
             />
 
             <DataTable
-                title={results.submission.title}
-                data={results.submission.data}
-                table={results.submission.table} />
+                title={results.submissions.title}
+                data={results.submissions.data}
+                table={results.submissions.table} />
 
             <hr />
 
             <DataTable
-                title={results.code.title}
-                data={results.code.data}
-                table={results.code.table} />
+                title={results.codes.title}
+                data={results.codes.data}
+                table={results.codes.table} />
 
             <hr />
 
