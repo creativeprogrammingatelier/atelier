@@ -22,6 +22,7 @@ export function CommentEssentials({commentName,lastMessage, snippet} : CommentEs
                 <li>Time: {lastMessage.time}</li>
                 <li>[CSS is putting me on the same line]</li>
             </ul>
+            <a href='/commentThread'>View comment thread</a>
         </div>
     )
 }

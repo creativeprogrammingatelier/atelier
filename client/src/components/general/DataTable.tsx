@@ -37,7 +37,7 @@ export function DataTable<T>({ title, data, table }: DataTableProperties<T>) {
                                         return <td><Link to={link(item)!}>{render(item)}</Link></td>;
                                     }
                                 }
-                                return <td>render(item)</td>;
+                                return <td>{render(item)}</td>;
                             })}
                         </tr>)}
                 </tbody>

@@ -1,40 +1,21 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+import {DataTable} from "../general/DataTable";
+import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
 
-const result = {
-    courses:
-        [{
-            name: "Module 7 - Data Structures",
-            courseID: 123456,
-            date: "2/12/2020",
-            members: 20,
-            visibility: "open"
-        }, {
-            name : "Module 1 - Pearls of Computer Science",
-            courseID : 1234567,
-            date : "2/11/2020",
-            members: 2,
-            visibility: "open"
-        }]
+const submissions = {
+    title : 'Course Submissions',
+    data : submissionData.submissions,
+    table : submissionRendering
 };
 
 export function CourseOverview() {
     return (
         <div>
             <h1>Course Overview</h1>
-            {result.courses.map((course) => {
-                return (
-                    <Link to={'submissionOverview?courseID=' + course.courseID}>
-                        <h4>{course.name}</h4>
-                        <p>Created: {course.date}</p>
-                        <p>Members: {course.members}</p>
-                        <p>Visibility: {course.visibility}</p>
-                    </Link>
-                )
-            })}
-            <Link to='/addCourse'>
-                <p>Add Course</p>
-            </Link>
+            <DataTable
+                title={submissions.title}
+                data={submissions.data}
+                table={submissions.table} />
         </div>
     )
 }
