@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-interface DataTableProperties<T> {
+export interface DataTableProperties<T> {
     /** Title to show above the table */
     title: string,
     /** List of objects to display in the table */
