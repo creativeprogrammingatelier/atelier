@@ -13,6 +13,7 @@ import '../styles/app.scss';
 import roleEnum from '../../../enums/roleEnum';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {CommentThread} from './commentthread/CommentThread';
+import { UserOverview } from './user/UserOverview';
 
 
 /**
@@ -88,6 +89,7 @@ class App extends React.Component<AppProps, AppState> {
 							<PrivateRoute path='/logout' component={Logout}/>
 							<PrivateRoute exact path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
 							<PrivateRoute exact path='/commentThread' component={CommentThread} roles={['student', 'teacher']} />
+							<PrivateRoute exact path='/user' component={UserOverview} roles={['student', 'teacher']} />
 						</Switch>
 					</div>
 				</div>
