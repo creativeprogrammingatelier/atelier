@@ -1,9 +1,17 @@
 import React, {useState} from 'react';
 
 import {SearchBar} from './SearchBar';
-import {DataTable, DataTableProperties} from "../general/DataTable";
+import {DataTable} from "../general/DataTable";
 import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
+import {codeData, codeRendering} from "../../helpers/CodeHelpers";
+import {SearchData} from "../../helpers/SearchHelpers";
+import {commentData, commentRendering} from "../../helpers/CommentHelper";
 
+/**
+ * Method to handle a search.
+ * @param value: value of the search field
+ * @param setResults: method to set the results of the tables for code, comments and submissions.
+ */
 function handleSearch(value : string, setResults : Function) {
     console.log("searching for " + value);
 
@@ -11,40 +19,26 @@ function handleSearch(value : string, setResults : Function) {
     setResults({
         submissions : {
             title : 'Submissions',
-            data : submissionData.submissions,
+            data : submissionData,
             table : submissionRendering
         },
         codes : {
             title : 'Code',
-            data : [],
-            table : []
+            data : codeData,
+            table : codeRendering
         },
         comments : {
             title : 'Comments',
-            data : [],
-            table : []
+            data : commentData,
+            table : commentRendering
         }
     });
 }
 
+
+
 export function SearchOverview() {
-    const [results, setResults] = useState({
-        submissions : {
-            title : 'Submissions',
-            data : [],
-            table : []
-        },
-        codes : {
-            title : 'Code',
-            data : [],
-            table : []
-        },
-        comments : {
-            title : 'Comments',
-            data : [],
-            table : []
-        }
-    });
+    const [results, setResults] = useState(null as unknown as SearchData);
 
     return (
         <div>
@@ -53,24 +47,30 @@ export function SearchOverview() {
                 handleSearch={(value) => handleSearch(value, setResults)}
             />
 
-            <DataTable
-                title={results.submissions.title}
-                data={results.submissions.data}
-                table={results.submissions.table} />
+            {
+                results &&
+                <div>
+                    <DataTable
+                        title={results.submissions.title}
+                        data={results.submissions.data}
+                        table={results.submissions.table}/>
 
-            <hr />
+                    <hr />
 
-            <DataTable
-                title={results.codes.title}
-                data={results.codes.data}
-                table={results.codes.table} />
+                    <DataTable
 
-            <hr />
+                        title={results.codes.title}
+                        data={results.codes.data}
+                        table={results.codes.table} />
 
-            <DataTable
-                title={results.comments.title}
-                data={results.comments.data}
-                table={results.comments.table} />
+                    <hr />
+
+                    <DataTable
+                        title={results.comments.title}
+                        data={results.comments.data}
+                        table={results.comments.table} />
+                </div>
+            }
         </div>
     )
 }

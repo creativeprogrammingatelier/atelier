@@ -86,7 +86,7 @@ class App extends React.Component<AppProps, AppState> {
 		<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
 		<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
 		<PrivateRoute path='/logout' component={Logout}/>
-		<PrivateRoute exact path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
+		<PrivateRoute path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
 		<PrivateRoute exact path='/commentThread' component={CommentThread} roles={['student', 'teacher']} />
 		<PrivateRoute exact path='/search' component={SearchOverview} roles={['student', 'teacher']} />
 		<PrivateRoute exact path='/courseOverview' component={CourseOverview} roles={['student', 'teacher']} />

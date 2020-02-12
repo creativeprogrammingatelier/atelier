@@ -2,6 +2,7 @@ import React from 'react';
 
 import {CommentEssentials} from "./CommentEssentials";
 
+// TODO this should be retrieved from the database
 const comments = {
   comment: [
       {
