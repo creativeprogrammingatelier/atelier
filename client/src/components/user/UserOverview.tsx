@@ -13,7 +13,7 @@ interface UserOverviewProperties {
 
 export function UserOverview({ userId }: UserOverviewProperties) {
     const [loading, updateLoading] = useState(LoadingState.Unloaded);
-    const [user, updateUser] = useState(null as Models.User);
+    const [user, updateUser] = useState(null as Models.User | null);
     const [submissions, updateSubmissions] = useState([] as Models.Submission[]);
     const [commentThreads, updateCommentThreads] = useState([] as Models.CommentThread[]);
 
@@ -71,14 +71,14 @@ export function UserOverview({ userId }: UserOverviewProperties) {
 
     return (
         <div>
-            <Header title={loading === LoadingState.Loaded ? user.name : "Atelier"}/>
+            <Header title={loading === LoadingState.Loaded ? user!.name : "Atelier"}/>
             <DataTable
                 title="To be reviewed"
                 data={submissions}
                 table={[
                     ["Project", x => x.name, _ => "/submissionOverview"], 
                     ["Date", x => x.date.toLocaleString()]
-                ]}/>
+                ]} />
             <DataTable 
                 title="Projects" 
                 data={submissions} 
