@@ -5,29 +5,29 @@ import {CommentEssentials} from "./CommentEssentials";
 const comments = {
   comment: [
       {
-          commentName : 'comment1',
+          commentName : 'Generic Comment Name 1',
           lastMessage : {
-              text : 'last message comment 1',
-              author : 'author1',
+              text : 'perhaps try calling the print function',
+              author : 'Klaas',
               time : '9:00AM'
           },
           snippet : 'hello world'
       },
       {
-          commentName: 'comment2',
+          commentName: 'Generic Comment Name 2',
           lastMessage : {
-              text : 'last message comment 2',
-              author : 'author2',
-              time : '9:00AM'
+              text : 'python3 requires the () for calling the print function :(',
+              author : 'Klaas',
+              time : '10:00AM'
           },
           snippet : 'print hello world'
       },
       {
-          commentName: 'comment3',
+          commentName: 'Generic Comment Name 3',
           lastMessage : {
               text : 'finally',
-              author : 'author3',
-              time : '9:00AM'
+              author : 'Klaas',
+              time : '3:00PM'
           },
           snippet : 'print("hello world")'
       }

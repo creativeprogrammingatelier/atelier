@@ -1,29 +1,23 @@
 import React from 'react';
 import {TabButton} from "./TabButton";
 
-function handleClick(event : any) {
-    const {value} = event.target;
-    console.log("Switching to " + value + " tab");
-}
-
-export function TabBar() {
+export function TabBar(props : any) {
     return (
         <div>
-            <h4>Tab BAR</h4>
             <TabButton
                 value = "Code"
                 name = "Code"
-                onClick = {handleClick}
+                onClick = {props.onClick}
             />
             <TabButton
                 value = "Comments"
                 name = "Comments"
-                onClick = {handleClick}
+                onClick = {props.onClick}
             />
             <TabButton
                 value = "Share"
                 name = "Share"
-                onClick = {handleClick}
+                onClick = {props.onClick}
             />
         </div>
     )
