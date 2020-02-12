@@ -32,7 +32,9 @@ export function CourseOverview() {
                     </Link>
                 )
             })}
+            <Link to='/addCourse'>
+                <p>Add Course</p>
+            </Link>
         </div>
-
     )
 }

@@ -1,6 +1,18 @@
-import React, {useState} from 'react';
+import React from 'react';
 
 import {SearchBar} from './SearchBar';
+
+// title
+// data = []
+//
+
+/*const SubmissionData = {
+    title : 'Submissions',
+    data : [
+        'Jake Walker',
+    ]
+};*/
+
 
 function handleSearch(value : string) {
     console.log("searching for " + value);
