@@ -1,4 +1,5 @@
 import React from 'react';
+import {DataTableRowMapping} from "../components/general/DataTable";
 
 export const submissionData = {
     submissions : [{
@@ -16,11 +17,21 @@ export const submissionData = {
     }]
 };
 
-export const submissionRendering = [
-    ['User', ({name} : Submission) => name],
+export const submissionRendering : DataTableRowMapping<Submission>[] = [
+    [
+        'User',
+        ({name} : Submission) => name,
+        ({userID} : Submission) => { return '/user?userID=' + userID}],
     ['Submission', ({submissionName} : Submission) => submissionName],
     ['Date', ({date} : Submission) => date]
 ];
+
+/*
+
+    ['User', ({name} : Submission) => name],
+    ['Submission', ({submissionName} : Submission) => submissionName],
+    ['Date', ({date} : Submission) => date]
+*/
 
 export interface Submission {
     name : string,
