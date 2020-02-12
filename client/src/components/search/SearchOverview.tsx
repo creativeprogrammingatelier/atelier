@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {SearchBar} from './SearchBar';
 import {Link} from "react-router-dom";
@@ -32,7 +32,7 @@ interface Submission {
     date: string
 }
 
-function SubmissionTable() {
+/*function SubmissionTable() {
     console.log("getting submission table");
     // TODO make database query for submission data
     const submissionResult = submissionData;
@@ -50,35 +50,71 @@ function SubmissionTable() {
     console.log(submissionTable);
 
     return DataTable<Submission>(submissionTable)
-}
+}*/
 
-function handleSearch(value : string) {
+function handleSearch(value : string, setResults : Function) {
     console.log("searching for " + value);
-    return (
-        <div>
-            <SubmissionTable />
-        </div>
-    )
+
+    // TODO: search
+    setResults({
+        'submission' : submissionData,
+        'code' : {
+            title : 'Code',
+            data : [],
+            table : []
+        },
+        'comments' : {
+            title : 'Comments',
+            data : [],
+            table : []
+        }
+    });
 }
 
 export function SearchOverview() {
+    const [results, setResults] = useState({
+        'submission' : {
+            title : 'Submissions',
+            data : [],
+            table : []
+        },
+        'code' : {
+            title : 'Code',
+            data : [],
+            table : []
+        },
+        'comments' : {
+            title : 'Comments',
+            data : [],
+            table : []
+        }
+    });
+
     return (
         <div>
             <h1>Search Overview Page</h1>
-            <SubmissionTable />
             <SearchBar
-                handleSearch={handleSearch}
+                handleSearch={(value) => handleSearch(value, setResults)}
             />
+
+            <DataTable
+                title={results.submission.title}
+                data={results.submission.data}
+                table={results.submission.table} />
+
             <hr />
-            <h4>Search Result: Submissions</h4>
-            <p>No submissions found</p>
+
+            <DataTable
+                title={results.code.title}
+                data={results.code.data}
+                table={results.code.table} />
+
             <hr />
-            <h4>Search Result: Code</h4>
-            <a href="/submissionOverview">Jake Walker - Bird Game - 10:00 2/12/2020</a>
-            <hr />
-            <h4>Search Result: Comment</h4>
-            <p>No comments found</p>
-            <hr />
+
+            <DataTable
+                title={results.comments.title}
+                data={results.comments.data}
+                table={results.comments.table} />
         </div>
     )
 }
