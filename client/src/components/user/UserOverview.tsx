@@ -76,29 +76,24 @@ export function UserOverview({ userId }: UserOverviewProperties) {
                 title="To be reviewed"
                 data={submissions}
                 table={[
-                    ["Project", x => x.name], 
+                    ["Project", x => x.name, _ => "/submissionOverview"], 
                     ["Date", x => x.date.toLocaleString()]
-                ]}
-                link={_ => "/submissionOverview"} />
+                ]}/>
             <DataTable 
                 title="Projects" 
                 data={submissions} 
                 table={[
-                    ["Project", x => x.name], 
+                    ["Project", x => x.name, _ => "/submissionOverview"], 
                     ["Date", x => x.date.toLocaleString()]
-                ]}
-                link={_ => "/submissionOverview"} />
+                ]} />
             <DataTable 
                 title="Comments" 
                 data={commentThreads} 
                 table={[
-                    ["Topic", x => x.topic],
-                    ["Last reply", x => { 
-                        const last = x.comments.slice(-1)[0];
-                        return <span><span>{last.author}</span>: {last.text}</span>
-                    }]
-                ]}
-                link={_ => "/commentThread"} />
+                    ["Topic", x => x.topic, _ => "/commentThread"],
+                    ["Last author", x => x.comments.slice(-1)[0].author, _ => "/user"],
+                    ["Last reply", x => x.comments.slice(-1)[0].text]
+                ]} />
         </div>
     );
 }

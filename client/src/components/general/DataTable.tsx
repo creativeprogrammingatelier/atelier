@@ -8,30 +8,33 @@ interface DataTableProperties<T> {
     data: T[],
     /** List of columns in the table as a pair of the 
      *  title of that column and a function to render the
-     *  item as a React element
+     *  item as a React element and an optional third element
+     *  that defines a link for this element
      */
-    table: Array<[string, (item: T) => (JSX.Element | string)]>,
-    /** Function to create a link to an item */
-    link?: ((item: T) => string)
+    table: Array<{
+        0: string;
+        1: (item: T) => (JSX.Element | string);
+        2?: (item: T) => (string | null);
+    }>
 }
 
 /** A simple table, but probably providing more table-fucntionality
  *  in the future
  */
-export function DataTable<T>({ title, data, table, link }: DataTableProperties<T>) {
+export function DataTable<T>({ title, data, table }: DataTableProperties<T>) {
     return (
         <div>
             <span>{title}</span>
             <table>
-                <thead><tr>{table.map(([header, _]) => <th>{header}</th>)}</tr></thead>
+                <thead><tr>{table.map(({ 0: header }) => <th>{header}</th>)}</tr></thead>
                 <tbody>
                     {data.map(item =>
                         <tr>
-                            {table.map(([_, f]) => 
+                            {table.map(({ 1: render, 2: link }) => 
                                 <td>
                                     {link !== undefined && link(item) !== null
-                                     ? <Link to={link(item)}>{f(item)}</Link>
-                                     : f(item)}
+                                     ? <Link to={link(item)}>{render(item)}</Link>
+                                     : render(item)}
                                 </td>)}
                         </tr>)}
                 </tbody>
