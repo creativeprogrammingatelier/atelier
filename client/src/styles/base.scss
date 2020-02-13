@@ -1,20 +1,55 @@
+$primaryColor: #7da888;
+$secondaryColor: #709178;
+
 .navbar {
-	height:70px;
-	margin:0 !important;
-	background-color: #7da888
+	height: 70px;
+	margin: 0 !important;
+	background-color: $primaryColor;
 }
 .sidebar {
-	top:0;
-	height:100vh;
-	padding:0 !important;
-	position:fixed !important;
-	background-color: #709178
+	top: 0;
+	height: 100vh;
+	padding: 0 !important;
+	position: fixed !important;
+	background-color: $secondaryColor;
+	z-index: 1050;
 }
 .logo {
 	color:#FFFFFF;
 }
 .panel {
-	width:24rem;
-	color:#FFFFFF;
-	background-color: #7da888
+	$width: 20rem;
+
+	width: $width;
+	height: 9rem;
+	padding-top: 0.5rem;
+	position: relative;
+	background-color: $primaryColor;
+
+	a {
+		color: #FFFFFF;
+
+		h3 {
+			margin: 0 0.5rem;
+		}
+		div {
+			bottom: 0;
+			width: $width;
+			padding: 0.5rem 1rem;
+			position: absolute;
+			background-color: $secondaryColor;
+		}
+	}
+}
+.panel:hover {
+	//background-color: $secondaryColor;
+
+	a {
+		text-decoration: none;
+		color: #EEEEEE;
+
+		div {
+			box-shadow: 0 -5px 10px 0 rgba(71,71,71,0.15);
+		}
+	}
 }
