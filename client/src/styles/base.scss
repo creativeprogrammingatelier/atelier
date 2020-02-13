@@ -5,6 +5,8 @@ $secondaryColor: #709178;
 $secondaryColor: #b36e39;
 $secondaryColor: #4ca1b0;
 
+$font-stack: 'Fredoka One', cursive;
+
 $headerHeight: 70px;
 
 .navbar {
@@ -36,6 +38,7 @@ $headerHeight: 70px;
 	overflow: auto;
 }
 .logo {
+	font-family: $font-stack;
 	color:#FFFFFF;
 }
 .content {
@@ -81,4 +84,14 @@ $headerHeight: 70px;
 			box-shadow: 0 -5px 10px 0 rgba(71,71,71,0.15);
 		}
 	}
+}
+.link {
+	padding: 1rem 0.5rem 0.5rem;
+
+	a {
+		color: #FFFFFF !important;
+	}
+}
+.link + .link {
+	border-top: 1px solid #FFFFFF;
 }
