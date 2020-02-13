@@ -9,8 +9,10 @@ interface CourseButtonProperties {
 export function PanelButton({display, location, icon}: CourseButtonProperties) {
 	return <div className="panel">
 		<a href={location}>
-			<h3>{display}</h3>
-			<div className="text-right">
+			<div className="panelText">
+				<h3>{display}</h3>
+			</div>
+			<div className="panelBottom text-right">
 				<FiChevronsRight size={32}/>
 			</div>
 		</a>

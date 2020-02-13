@@ -1,5 +1,9 @@
 $primaryColor: #7da888;
+$primaryColor: #d18636;
+$primaryColor: #56c3d6;
 $secondaryColor: #709178;
+$secondaryColor: #b36e39;
+$secondaryColor: #4ca1b0;
 
 $headerHeight: 70px;
 
@@ -41,23 +45,27 @@ $headerHeight: 70px;
 	padding: 1rem 2rem !important;
 }
 .panel {
+	width: 20rem;
 	max-width: 20rem;
-	height: 9rem;
-	padding-top: 0.5rem;
+	margin: 0 1rem 1rem 0;
 	position: relative;
+	display: inline-block;
 	background-color: $primaryColor;
 
 	a {
 		color: #FFFFFF;
 
-		h1, h2, h3, h4, h5, h6 {
-			margin: 0 0.5rem;
+		.panelText {
+			min-height: 7rem;
+			padding: 0.5rem;
+
+			h1, h2, h3, h4, h5, h6 {
+				margin: 0 0.5rem;
+			}
 		}
-		div {
-			bottom: 0;
+		.panelBottom {
 			width: 100%;
 			padding: 0.5rem 1rem;
-			position: absolute;
 			background-color: $secondaryColor;
 		}
 	}
@@ -69,7 +77,7 @@ $headerHeight: 70px;
 		text-decoration: none;
 		color: #EEEEEE;
 
-		div {
+		.panelBottom {
 			box-shadow: 0 -5px 10px 0 rgba(71,71,71,0.15);
 		}
 	}
