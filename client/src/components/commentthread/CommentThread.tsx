@@ -40,7 +40,7 @@ export function CommentThread({ threadId }: CommentThreadProperties) {
                 { text: "Example first comment", 
                   author: "Pietje Puk", 
                   time: new Date(Date.now() - 240000) },
-                { text: "Example second comment with mention to @PietjePuk", 
+                { text: "Example second comment with mention to @Pietje Puk", 
                   author: "Peter Tester", 
                   time: new Date(Date.now() - 10000) }
             ],

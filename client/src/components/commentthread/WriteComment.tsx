@@ -11,6 +11,7 @@ interface WriteCommentProperties {
 export function WriteComment({ newCommentCallback }: WriteCommentProperties) {
     const [text, updateText] = useState("");
     const [caretPosition, updateCaretPosition] = useState(0);
+    const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
     const [suggestionBase, updateSuggestionBase] = useState("");
 
     const textarea = useRef(null as (HTMLTextAreaElement | null));
@@ -45,17 +46,32 @@ export function WriteComment({ newCommentCallback }: WriteCommentProperties) {
             .filter(pair => pair.char === findChar)
             .map(pair => pair.index);
         }
-        
-        const mentionIndex =
-            allIndexesOf(text, '@')
-            .reverse()
-            .find(index => index < caretPosition);
+                    
+        updateMentionIndex(allIndexesOf(text, '@').reverse().find(index => index < caretPosition));
         if (mentionIndex !== undefined) {
-            updateSuggestionBase(text.substring(mentionIndex, caretPosition));
+            // Cut off the @ sign from the suggestionBase
+            updateSuggestionBase(text.substring(mentionIndex + 1, caretPosition));
         } else {
             updateSuggestionBase("");
         }
     }, [caretPosition]);
+
+    function handleMentionSelected(name: string) {
+        if (mentionIndex !== undefined) {
+            const textWithMention = text.substring(0, mentionIndex + 1) + name + " ";
+            const textAfter = text.substring(caretPosition);
+            updateText(textWithMention + textAfter);
+            if (textarea.current !== null) {
+                const position = textWithMention.length;
+                // Set focus back to the input textarea
+                textarea.current.focus();
+                // Set the caret back to the position after the insertion
+                // This happens with a 1 ms delay, otherwise the caret 
+                // appears at the end of the textarea
+                setTimeout(() => textarea.current.setSelectionRange(position, position), 1);
+            }
+        }
+    }
 
     return (
         <form onSubmit={handleSubmit}>
@@ -63,8 +79,12 @@ export function WriteComment({ newCommentCallback }: WriteCommentProperties) {
                 value={text} 
                 onChange={e => updateText(e.target.value)} 
                 ref={textarea} />
-            <button className="btn"><FiNavigation /></button>
-            <MentionSuggestions suggestionBase={suggestionBase} />
+            <button className="btn">
+                <FiNavigation />
+            </button>
+            <MentionSuggestions 
+                suggestionBase={suggestionBase} 
+                onSelected={handleMentionSelected} />
         </form>
     );
 }
