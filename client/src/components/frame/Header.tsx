@@ -19,10 +19,10 @@ interface HeaderProperties {
 export function Header({ title, transparent, leftButton, rightButton}: HeaderProperties) {
 	return (
 		<div className="fluid-container">
-			<Navbar className={transparent ? "row bg-transparent" : "row"}>
-				<div className="col-3 text-left">{leftButton && <HeaderButton name={leftButton.name} icon={leftButton.icon} onClick={leftButton.click}/>}</div>
-				<div className="col-6 text-center">{title && <h1>{title}</h1>}</div>
-				<div className="col-3 text-right">{rightButton && <HeaderButton  name={rightButton.name} icon={rightButton.icon} onClick={rightButton.click}/>}</div>
+			<Navbar className={"row no-gutters" + (transparent ? " bg-transparent" : "")}>
+				<div className="col-2 text-left">{leftButton && <HeaderButton name={leftButton.name} icon={leftButton.icon} onClick={leftButton.click}/>}</div>
+				<div className="col-8 text-center">{title && <h1 className="h3">{title}</h1>}</div>
+				<div className="col-2 text-right">{rightButton && <HeaderButton  name={rightButton.name} icon={rightButton.icon} onClick={rightButton.click}/>}</div>
 			</Navbar>
 		</div>
 	);

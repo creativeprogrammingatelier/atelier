@@ -1,26 +1,47 @@
 $primaryColor: #7da888;
 $secondaryColor: #709178;
 
+$headerHeight: 70px;
+
 .navbar {
-	height: 70px;
+	top: 0;
+	width:100%;
+	height: $headerHeight;
 	margin: 0 !important;
+	position: fixed !important;
 	background-color: $primaryColor;
+	z-index: 1040;
+
+	h1, h2, h3, h4, h5, h6 {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 }
 .sidebar {
 	top: 0;
 	height: 100vh;
-	padding: 0 !important;
+	padding: $headerHeight 0 0 !important;
 	position: fixed !important;
 	background-color: $secondaryColor;
 	z-index: 1050;
 }
+.sidebarContent {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	overflow: auto;
+}
 .logo {
 	color:#FFFFFF;
 }
+.content {
+	margin-top: $headerHeight;
+}
+.contentPage {
+	padding: 1rem 2rem !important;
+}
 .panel {
-	$width: 20rem;
-
-	width: $width;
+	max-width: 20rem;
 	height: 9rem;
 	padding-top: 0.5rem;
 	position: relative;
@@ -29,12 +50,12 @@ $secondaryColor: #709178;
 	a {
 		color: #FFFFFF;
 
-		h3 {
+		h1, h2, h3, h4, h5, h6 {
 			margin: 0 0.5rem;
 		}
 		div {
 			bottom: 0;
-			width: $width;
+			width: 100%;
 			padding: 0.5rem 1rem;
 			position: absolute;
 			background-color: $secondaryColor;

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import * as Models from '../../placeholdermodels';
 import { LoadingState } from '../../placeholdermodels';
 
-import { Header } from '../general/Header';
+import { Header } from '../frame/Header';
 import { DataTable } from '../general/DataTable';
 import { Model } from 'mongoose';
 

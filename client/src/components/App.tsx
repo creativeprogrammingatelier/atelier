@@ -16,7 +16,7 @@ import {SearchOverview} from './search/SearchOverview';
 import {CourseOverview} from './course/CourseOverview';
 import { UserOverview } from './user/UserOverview';
 import {Homepage} from './Homepage';
-import {Frame} from './general/Frame';
+import {Frame} from './frame/Frame';
 
 import '../styles/app.scss';
 import '../styles/base.scss';
@@ -79,7 +79,7 @@ class App extends React.Component<AppProps, AppState> {
 
 	render() {
 		return (
-			< Switch>
+			<Switch>
 				<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
 				<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
 				<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>

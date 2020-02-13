@@ -1,6 +1,6 @@
 import React from 'react';
 import {PanelButton} from './general/PanelButton'
-import {Frame} from './general/Frame';
+import {Frame} from './frame/Frame';
 
 export function Homepage() {
 	return (
