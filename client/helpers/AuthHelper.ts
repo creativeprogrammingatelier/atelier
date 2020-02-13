@@ -74,7 +74,19 @@ export default class AuthHelper {
 		}).catch((e: any) => {
 			console.log(e), onFailure();
 		});
-	};
+    };
+    
+    static refresh(onSuccess: Function, onFailure: Function) {
+        this.fetch(`/auth/refresh`, {})
+        .then(res => res.json())
+        .then(json => {
+            this.setToken(json.token);
+            onSuccess();
+        }).catch(e => {
+            console.log(e);
+            onFailure(e);
+        })
+    }
 
 	static loggedIn(): boolean {
 		const token = AuthHelper.getToken(); // Getting token from localstorage

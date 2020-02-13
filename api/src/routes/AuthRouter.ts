@@ -7,6 +7,7 @@ import express from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware';
 import {Request, Response} from 'express';
 import UsersMiddleware from '../middleware/UsersMiddleware';
+import { IUser } from '../../../models/user';
 
 let router = express.Router();
 /* Authentication */
@@ -28,6 +29,18 @@ router.post('/login', (request: Request, response: Response) => {
 		} //onFailure
 	);
 });
+
+router.post('/refresh', AuthMiddleware.withAuth, (request: Request, response: Response) => {
+    UsersMiddleware.getUser(request,
+        (user: IUser, request: Request) => {
+            const token = UsersMiddleware.issueToken(user.email);
+            response.status(200).send({token});
+        },
+        (error: any) => {
+            console.error(error);
+            response.status(500).send('Error refreshing token.')
+        });
+})
 
 /**
  * Checks if request JWT token passed is valid using withAuth middleware method
