@@ -11,7 +11,7 @@ $headerHeight: 70px;
 
 .navbar {
 	top: 0;
-	width:100%;
+	width: 100%;
 	height: $headerHeight;
 	margin: 0 !important;
 	position: fixed !important;
@@ -19,6 +19,8 @@ $headerHeight: 70px;
 	z-index: 1040;
 
 	h1, h2, h3, h4, h5, h6 {
+		margin: 0 !important;
+		line-height: $headerHeight !important;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
