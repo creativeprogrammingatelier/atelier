@@ -1,7 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import FileViewer from './FileViewer';
-import FileUploader from './FileUploader';
+import { FileUploader } from './FileUploader';
 import AuthHelper from '../../helpers/AuthHelper';
 import FileHelper from '../../helpers/FileHelper';
 import {IFile} from '../../../models/file';
