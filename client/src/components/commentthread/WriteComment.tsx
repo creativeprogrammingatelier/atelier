@@ -68,7 +68,7 @@ export function WriteComment({ newCommentCallback }: WriteCommentProperties) {
                 // Set the caret back to the position after the insertion
                 // This happens with a 1 ms delay, otherwise the caret 
                 // appears at the end of the textarea
-                setTimeout(() => textarea.current.setSelectionRange(position, position), 1);
+                setTimeout(() => textarea.current && textarea.current.setSelectionRange(position, position), 1);
             }
         }
     }
