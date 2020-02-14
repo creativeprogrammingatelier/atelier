@@ -47,7 +47,7 @@ class StudentView extends React.Component {
 				<div className="row ">
 					<div className="col-sm-5 offset-sm-4">
 						<br/>
-						<Uploader  {...{update: this.getAllFiles}} />
+						<Uploader onUploadComplete={this.getAllFiles} />
 					</div>
 					<div className="col-sm-12 ">
 						<br/>

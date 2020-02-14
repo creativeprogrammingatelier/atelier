@@ -29,6 +29,7 @@ export function DirectoryViewer({ filePaths }: DirectoryViewerProperties) {
     const renderNode = (node: Node) => 
         <li>
             {node.name}
+            {node.children.length > 0 && "/"}
             {node.children.length > 0 &&
              <ul>
                  {node.children.map(renderNode)}
@@ -36,7 +37,12 @@ export function DirectoryViewer({ filePaths }: DirectoryViewerProperties) {
         </li>;
 
     if (tree.children.length > 0) {
-        return <ul>{renderNode(tree.children[0])}</ul>;
+        return (
+            <div>
+                <p>These files will be uploaded:</p>
+                <ul>{renderNode(tree.children[0])}</ul>
+            </div>
+        );
     } else {
         return null;
     }
