@@ -5,6 +5,11 @@ export function TabBar(props : any) {
     return (
         <div>
             <TabButton
+                value= "Project"
+                name = "Project"
+                onClick = {props.onClick}
+            />
+            <TabButton
                 value = "Code"
                 name = "Code"
                 onClick = {props.onClick}

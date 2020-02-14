@@ -35,7 +35,7 @@ export const codeRendering : DataTableRowMapping<Code>[] = [
     [
         'Code',
         ({code} : Code) => code,
-        ({submissionID}) => '/submissionOverview'
+        ({submissionID}) => '/submissionOverview?tab=Code&file=somefile.java'
     ]
 ];
 

@@ -37,7 +37,7 @@ export const submissionRendering : DataTableRowMapping<Submission>[] = [
     [
         'Submission',
         ({submissionName} : Submission) => submissionName,
-        ({submissionID} : Submission) => '/submissionOverview'
+        ({submissionID} : Submission) => '/submissionOverview?tab=Project'
     ],
     ['Date', ({date} : Submission) => date]
 ];

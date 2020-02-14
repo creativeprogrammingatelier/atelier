@@ -47,12 +47,12 @@ export const commentRendering : DataTableRowMapping<Comment>[] = [
     [
         'Submission',
         ({submissionName} : Comment) => submissionName,
-        ({submissionID} : Comment) => '/submissionOverview'
+        ({submissionID} : Comment) => '/submissionOverview?tab=Project'
     ],
     [
         'Line Number',
         ({startLine, endLine} : Comment) => {return `Lines: ${startLine}-${endLine}`},
-        ({submissionID, startLine} : Comment) => {return '/submissionOverview?tab=Code&line=' + startLine}
+        ({submissionID, startLine} : Comment) => {return '/submissionOverview?tab=Code&file=filefromcomment.java&line=' + startLine}
     ],
     ['Date', ({date} : Comment) => date]
 ];
