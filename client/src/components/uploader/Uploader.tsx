@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
-import FileHelper from '../../helpers/FileHelper';
+import FileHelper from '../../../helpers/FileHelper';
+import { DirectoryViewer } from './DirectoryViewer';
+import { FileSelectionViewer } from './FileSelectionViewer';
 
 import '../styles/file-uploader.scss';
 
-interface FileUploaderProperties {
+interface UploaderProperties {
+    /** Callback to call when uploading is finished */
     update: () => void
 }
 
+// Extend the File and HTMLInputElement interfaces with
+// with properties to support folder uploading
 declare global {
     interface File {
         webkitRelativePath: string
@@ -20,12 +25,18 @@ declare global {
     }
 }
 
-export function FileUploader({ update }: FileUploaderProperties) {
+/** If the browser supports uploading directories, the component
+ *  will allow the user to pick a directory and upload it as project.
+ *  If folder upload is not supported, the user may choose multiple files
+ *  to upload and choose the main file to use for the project name.
+ */
+export function Uploader({ update }: UploaderProperties) {
     const [folderName, updateFolderName] = useState("");
     const [files, updateFiles] = useState([] as File[]);
 
-    let fileInputRef = null as HTMLInputElement | null;
-
+    // Directory upload is non-standard, so it is very possible that it doesn't work.
+    // Modern Chromium, EdgeHTML and Firefox, but, despite the name, Safari is supposed
+    // to have troubles with this, although I've not tested that.
     const folderUploadSupported = (() => {
         const input = document.createElement("input");
         input.type = "file";
@@ -40,12 +51,11 @@ export function FileUploader({ update }: FileUploaderProperties) {
         }
     };
 
-    function handleFileSelection(event: React.ChangeEvent<HTMLInputElement>) {
-        if (event.target && event.target.files && event.target.files[0]) {
-            updateFiles(Array.from(event.target.files));
-        }
+    function handleFilesSelected(event: React.ChangeEvent<HTMLInputElement>) {
+        updateFiles(Array.from(event.target.files));
     };
 
+    // Update the folder name when files are selected
     useEffect(() => {
         if (files.length > 0) {
             if (folderUploadSupported) {
@@ -55,10 +65,6 @@ export function FileUploader({ update }: FileUploaderProperties) {
             }
         }
     }, [files]);
-
-    useEffect(() => {
-        console.log(folderName);
-    }, [folderName]);
 
     return (
         <div className="row">
@@ -75,9 +81,8 @@ export function FileUploader({ update }: FileUploaderProperties) {
                                         if (x && folderUploadSupported) {
                                             x.webkitdirectory = true;
                                         }
-                                        fileInputRef = x;
                                     }}
-                                    onChange={handleFileSelection}
+                                    onChange={handleFilesSelected}
                                     accept=".pde" 
                                     required  />
                             </div>
@@ -90,79 +95,11 @@ export function FileUploader({ update }: FileUploaderProperties) {
                 </div>
             </form>
             {folderUploadSupported
-             ? <DirectoryStructure filePaths={files.map(f => f.webkitRelativePath)} />
-             : <FileSelectionList 
+             ? <DirectoryViewer filePaths={files.map(f => f.webkitRelativePath)} />
+             : <FileSelectionViewer 
                 fileNames={files.map(f => f.name)} 
                 selected={folderName + ".pde"} 
                 selectedUpdated={name => updateFolderName(name.replace(".pde", ""))} />}
         </div>
     );
-}
-
-interface DirectoryStructureProperties {
-    filePaths: string[]
-}
-
-function DirectoryStructure({ filePaths }: DirectoryStructureProperties) {
-    interface Node {
-        name: string
-        children: Node[]
-    }
-
-    const tree: Node = { name: ".", children: [] };
-    for (const path of filePaths) {
-        let current = tree;
-        for (const dir of path.split('/')) {
-            let next = current.children.find(c => c.name === dir);
-            if (next === undefined) {
-                next = { name: dir, children: [] }
-                current.children.push(next);
-            }
-            current = next;
-        }
-    }
-
-    const renderNode = (node: Node) => 
-        <li>
-            {node.name}
-            {node.children.length > 0 &&
-             <ul>
-                 {node.children.map(renderNode)}
-             </ul>}
-        </li>;
-
-    if (tree.children.length > 0) {
-        return <ul>{renderNode(tree.children[0])}</ul>;
-    } else {
-        return null;
-    }
-}
-
-interface FileSelectionListProperties {
-    fileNames: string[],
-    selected: string,
-    selectedUpdated: (name: string) => void
-}
-
-function FileSelectionList({ fileNames, selected, selectedUpdated }: FileSelectionListProperties) {
-    if (fileNames.length > 0) {
-        return (
-            <div>
-                <p>Choose your main file:</p>
-                <ul>{fileNames.map(name =>
-                    <li>
-                        <input 
-                            type="radio"
-                            name="main-file"
-                            value={name}
-                            checked={selected === name}
-                            onChange={() => selectedUpdated(name)} />
-                        {name}
-                    </li>
-                )}</ul>
-            </div>
-        )
-    } else {
-        return null;
-    }
 }
