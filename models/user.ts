@@ -51,6 +51,7 @@ UserSchema.pre<IUser>('save', function(next) {
 		if (err) {
 			return next(err);
 		}
+		console.log(user.password, hash)
 		user.password = hash;
 		next();
 	});

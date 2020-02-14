@@ -1,4 +1,4 @@
-enum roleEnum {
+enum globalRoleEnum {
 	'students',
 	'teacher',
 	'admin',
@@ -7,4 +7,4 @@ enum roleEnum {
 	'None'
 }
 
-export default roleEnum;
+export default globalRoleEnum;

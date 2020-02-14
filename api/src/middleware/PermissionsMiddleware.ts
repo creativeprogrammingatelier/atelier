@@ -8,6 +8,9 @@ import CommentMiddleware from './CommentMiddleware';
 import {IComment} from '../../../models/comment';
 import UsersMiddleware from './UsersMiddleware';
 
+/**
+* @TODO this does in not the required behaviour
+*/
 export default class PermissionsMiddleware {
 
 	private static checkFileAccessPermission(file: IFile, user: IUser): boolean {

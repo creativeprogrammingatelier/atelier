@@ -11,16 +11,20 @@ import {Constants} from '../lib/constants';
 import {Request, Response} from 'express';
 import {User, IUser} from '../../../models/user';
 
-
+/**
+* @TODO insert withauth at the start of routers to ensure authentication and unify it.
+*/
 export default class AuthMiddleWare {
 	/**
 	 * Checks to see whether requset is authenticated correctly
 	 * @param {*} request
 	 * @param {*} result
 	 * @param {*} next Callback
+
+	 * onSuccess will receive the information encoded in the token found.
 	 */
 	static withAuth(request: Request, result: Response, onSuccess: Function): void {
-		const token = request.headers.authorization;
+		const token = request.headers && request.headers.authorization;
 		if (!token) {
 			result.status(401).send('Unauthorized: No token provided');
 		} else {
@@ -29,23 +33,15 @@ export default class AuthMiddleWare {
 					console.error(error);
 					result.status(401).send('Unauthorized: Invalid token');
 				} else {
-					onSuccess();
+					onSuccess(decoded);
 				}
 			});
 		}
 	}
 
-	static getAllStudents(onSuccess: Function, onFailure: Function) {
-		User.find({
-			role: 'student'
-		}, (error: Error, result: IUser[]) => {
-			if (!error) {
-				onSuccess(result);
-			} else {
-				onFailure(error);
-			}
-		});
-	}
+	/**
+	* check permissions for pages on a global level
+	*/
 	static checkRole(request: Request, role: String, onSuccess: Function, onFailure: Function) {
 		UsersMiddleware.getUser(request, (user: IUser) => {
 			if (user.role.toLowerCase() == role.toLowerCase()) {
@@ -56,6 +52,9 @@ export default class AuthMiddleWare {
 		}, onFailure);
 	}
 
+	/**
+	* check permissions for pages on a global level
+	*/
 	static checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure: Function) {
 		for (const role of roles) {
 			UsersMiddleware.getUser(request, (user: IUser) => {
