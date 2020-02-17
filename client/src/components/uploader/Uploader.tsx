@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import { AxiosError } from 'axios';
 
 import FileHelper from '../../../helpers/FileHelper';
 import { DirectoryViewer } from './DirectoryViewer';
@@ -38,7 +39,7 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
     const [validationErrors, updateValidationErrors] = useState({ invalidFolderName: false });
     const anyValidationErrors = () => Object.values(validationErrors).reduce((x, y) => x || y);
 
-    const [errors, updateErrors] = useState({ upload: false });
+    const [errors, updateErrors] = useState({ upload: false as boolean | number });
 
     let fileInputRef = null as HTMLInputElement | null;
 
@@ -48,17 +49,14 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
     const folderUploadSupported = (() => {
         const input = document.createElement("input");
         input.type = "file";
-        return "webkitdirectory" in input;
+        return false;//"webkitdirectory" in input;
     })();
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         if (!anyValidationErrors()) {
             updateUploading(true);
-            for (const file of files) { 
-                // TODO Upload as a single project, instead of per file
-                FileHelper.uploadFile(file, handleUploadComplete, handleUploadError);
-            }
+            FileHelper.uploadFolder(folderName, files, handleUploadComplete, handleUploadError);
         }
     };
 
@@ -72,10 +70,10 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
         onUploadComplete();
     }
 
-    // TODO Fix type, based on return from upload
-    function handleUploadError(error: any) {
-        console.log(`Error uploading file: ${error}`);
-        updateErrors(prev => ({ ...prev, upload: true }));
+    function handleUploadError(error: AxiosError) {
+        console.log(`Error uploading folder: ${error}`);
+        updateErrors(prev => ({ ...prev, upload: (error.response?.status || true) }));
+        updateUploading(false);
     }
 
     function handleFilesSelected(event: React.ChangeEvent<HTMLInputElement>) {
@@ -120,7 +118,7 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
                     required  />
                 <ul>
                     {validationErrors.invalidFolderName && <li>Project should contain a file called {folderName}.pde.</li>}
-                    {errors.upload && <li>Something went wrong while uploading. Please try again.</li>}
+                    {errors.upload && <li>Something went wrong while uploading{errors.upload !== true && `, got status ${errors.upload}`}. Please try again.</li>}
                 </ul>
                 {folderUploadSupported
                 ? <DirectoryViewer filePaths={files.map(f => f.webkitRelativePath)} />

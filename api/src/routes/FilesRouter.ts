@@ -6,9 +6,26 @@
 
 import multer from 'multer';
 
+type FileUploadRequest = Request & { fileLocation?: string };
+
 var express = require('express');
 var upload = multer({
-	dest: 'uploads/'
+    preservePath: true,
+    storage: multer.diskStorage({
+        destination: (req: FileUploadRequest, file, callback) => {
+            if (req.fileLocation === undefined) {
+                req.fileLocation = randomBytes(16).toString('hex');
+            }
+            const folder = path.join("uploads", req.fileLocation,  
+                path.dirname(file.originalname) !== "." 
+                ? path.dirname(file.originalname)
+                : req.body["project"]);
+            fs.mkdir(folder, { recursive: true }, () => callback(null, folder));
+        },
+        filename: (_, file, callback) => {
+            callback(null, path.basename(file.originalname));
+        }
+    })
 });
 
 var router = express.Router();
@@ -21,27 +38,29 @@ import {IUser} from '../../../models/user';
 import {IFile} from '../../../models/file';
 import path from 'path';
 import PermissionsMiddleware from '../middleware/PermissionsMiddleware';
-import fs, {PathLike} from 'fs';
+import fs, {PathLike, MakeDirectoryOptions} from 'fs';
 import RoutesHelper from '../helpers/RoutesHelper';
-/**
- * Upload file end point, uses multer to read file
- * @TODO refactor
- */
+import { randomBytes } from 'crypto';
 
-router.put('/', AuthMiddleware.withAuth, upload.single('file'),
-	(request: Request, result: Response) => {
-		let file = request.file;
-		UserMiddleware.getUser(request,
-			(user: IUser) => {
-				FilesMiddleware.createFile(file.originalname, file.path, user,
-					() => result.status(200).send('File Uploaded'),
-					(error: Error) => {
-						console.error(error);
-						result.status(500).send('Error Uploading File');
-					});
-			},
-			(error: Error) => result.status(500).send('Error Uploading File'));
-	});
+/** Upload a list of files that are part of a single project
+ */   
+router.put('/', AuthMiddleware.withAuth, upload.array('files'), 
+    (request: FileUploadRequest, result: Response) => {
+        const files = request.files as Express.Multer.File[];
+        UserMiddleware.getUser(request,
+            (user: IUser) => {
+                // TODO: Use actual project structure to store this
+                for (const file of files) {
+                    FilesMiddleware.createFile(file.filename, file.path, user,
+                        () => {},
+                        (err: Error) => console.log(err));
+                }
+            },
+            (_: Error) => result.status(500).send("Error Uploading Folder"));
+        // TODO: Create Zip file of project and only keep the .pde files
+        result.status(200).send();
+    })
+
 /**
  * End point to fetch all files belonging to the user making the request
  * @TODO implement a selected number of files to fetch possible pagination
