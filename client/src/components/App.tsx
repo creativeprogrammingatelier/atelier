@@ -21,6 +21,7 @@ import {Frame} from './general/Frame';
 import '../styles/app.scss';
 import '../styles/base.scss';
 import {RoutingTest} from './general/RoutingTest';
+import {AuthenticatedRoute} from './AuthenticatedRoute';
 
 
 /**
@@ -92,7 +93,7 @@ class App extends React.Component<AppProps, AppState> {
 			< Switch>
 				<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
 				<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
-				<Route path='/test/:token/select/:user' component={RoutingTest}/>
+				<AuthenticatedRoute path='/test/:token/select/:user' component={RoutingTest} roles={['student', 'teacher']}/>
 				<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
 				<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
 				<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
