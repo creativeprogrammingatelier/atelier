@@ -17,6 +17,8 @@ export function AuthenticatedRoute<T>({path, component, roles}: AuthenticatedRou
 			AuthHelper.checkRoles(roles).then((response: {status: number}) => {
 				setAuthenticated(response.status === 204);
 			});
+		} else {
+			setAuthenticated(true);
 		}
 	}, []);
 

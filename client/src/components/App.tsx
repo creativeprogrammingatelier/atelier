@@ -10,17 +10,16 @@ import Logout from './Logout';
 import Register from './Register';
 import AuthHelper from '../../helpers/AuthHelper';
 import roleEnum from '../../../enums/roleEnum';
+import {AuthenticatedRoute} from './AuthenticatedRoute';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {CommentThread} from './commentthread/CommentThread';
 import {SearchOverview} from './search/SearchOverview';
 import {CourseOverview} from './course/CourseOverview';
 import { UserOverview } from './user/UserOverview';
 import {Homepage} from './Homepage';
-import {Frame} from './general/Frame';
 
 import '../styles/app.scss';
 import '../styles/base.scss';
-import {AuthenticatedRoute} from './AuthenticatedRoute';
 
 
 /**
@@ -103,7 +102,7 @@ class App extends React.Component<AppProps, AppState> {
 				<AuthenticatedRoute path='/submissions/:submissionId/share' component={SubmissionOverview}/>
 				<AuthenticatedRoute path='/submissions/:submissionId' component={SubmissionOverview}/>
 				<AuthenticatedRoute path='/user/:userId/search' component={SearchOverview} roles={['student', 'test/user/search']}/>
-				<AuthenticatedRoute path='/user/:userId' component={UserOverview} roles={['student', 'test/user']}/>
+				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserOverview} roles={['student', 'test/course/user']}/>
 				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview} roles={['student', 'test/course/search']}/>
 				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview} roles={['student', 'test/course']}/>
