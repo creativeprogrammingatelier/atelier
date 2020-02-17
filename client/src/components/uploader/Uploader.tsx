@@ -44,12 +44,12 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
     let fileInputRef = null as HTMLInputElement | null;
 
     // Directory upload is non-standard, so it is very possible that it doesn't work.
-    // Modern Chromium, EdgeHTML and Firefox, but, despite the name, Safari is supposed
+    // Modern Chromium, EdgeHTML and Firefox work, but, despite the name, Safari is supposed
     // to have troubles with this, although I've not tested that.
     const folderUploadSupported = (() => {
         const input = document.createElement("input");
         input.type = "file";
-        return false;//"webkitdirectory" in input;
+        return "webkitdirectory" in input;
     })();
 
     function handleSubmit(event: React.FormEvent) {
