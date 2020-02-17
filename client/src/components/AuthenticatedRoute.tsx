@@ -9,23 +9,18 @@ interface AuthenticatedRouteProperties<T> {
 	component: React.ComponentType<RouteComponentProps<T>> | React.ComponentType<T>,
 	roles?: string[]
 }
-export function AuthenticatedRoute<T>({path, component, roles, ...props}: AuthenticatedRouteProperties<T>) {
-	const [authenticated, setAuthenticated] = useState(false);
-	const [ready, setReady] = useState(false);
+export function AuthenticatedRoute<T>({path, component, roles}: AuthenticatedRouteProperties<T>) {
+	const [authenticated, setAuthenticated] = useState();
 
 	useEffect(() => {
 		if (roles !== undefined) {
-			setAuthenticated(false);
 			AuthHelper.checkRoles(roles).then((response: {status: number}) => {
-				if (response.status === 204) {
-					setAuthenticated(true);
-					setReady(true);
-				}
+				setAuthenticated(response.status === 204);
 			});
 		}
-	}, [roles]);
+	}, []);
 
-	if (ready) {
+	if (authenticated !== undefined) {
 		if ((authenticated || roles === undefined) && AuthHelper.loggedIn()) {
 			return <Route path={path} component={component}/>
 		}
