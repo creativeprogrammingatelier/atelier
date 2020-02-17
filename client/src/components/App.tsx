@@ -10,17 +10,16 @@ import Logout from './Logout';
 import Register from './Register';
 import AuthHelper from '../../helpers/AuthHelper';
 import roleEnum from '../../../enums/roleEnum';
+import {AuthenticatedRoute} from './AuthenticatedRoute';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {CommentThread} from './commentthread/CommentThread';
 import {SearchOverview} from './search/SearchOverview';
 import {CourseOverview} from './course/CourseOverview';
 import { UserOverview } from './user/UserOverview';
 import {Homepage} from './Homepage';
-import {Frame} from './frame/Frame';
 
 import '../styles/app.scss';
 import '../styles/base.scss';
-import {AuthenticatedRoute} from './AuthenticatedRoute';
 
 
 /**
@@ -89,7 +88,7 @@ class App extends React.Component<AppProps, AppState> {
 
 	render() {
 		return (
-			<Switch>
+			< Switch>
 				<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
 				<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
 				<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
