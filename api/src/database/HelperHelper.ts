@@ -1,5 +1,4 @@
 import * as pg from "pg"
-// const ON_DEATH = require("death")
 console.log("helper startup")
 
 export const pool = new pg.Pool({
@@ -10,6 +9,3 @@ export const pool = new pg.Pool({
 	port: 5432,
 	max: 1
 });
-
-
-// while(1){console.log("haha")}

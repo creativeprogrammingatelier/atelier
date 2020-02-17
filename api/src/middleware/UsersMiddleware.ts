@@ -2,113 +2,68 @@ import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import {Constants} from '../lib/constants';
 import {Request, Response} from 'express';
-import {User, UserSchema} from '../../../models/user';
+import {User} from '../../../models/user2';
 import FilesMiddleware from './FilesMiddleware';
 import AuthMiddleWare from './AuthMiddleware';
-
+import UsersHelper from '../database/UsersHelper'
 /**
  * Files middleware provides helper methods for interacting with comments in the DB
  * @Author Andrew Heath
  */
 export default class UsersMiddleware {
-	static getAllStudents(onSuccess: Function, onFailure: Function) {
-		User.find({
-			role: 'student'
-		}, '-password', (error, result) => {
-			if (!error) {
-				onSuccess(result);
-			} else {
-				onFailure(error);
-			}
-		});
-	}
 
+	//@DEPRECATED
+	static getAllStudents(onSuccess: Function, onFailure: Function) {
+		UsersHelper.getAllStudents(onSuccess,onFailure)
+	}
+	//@DEPRECATED
 	static getAllUsers(onSuccess: Function, onFailure: Function) {
-		User.find({}, '-password', (error, result) => {
-			if (!error) {
-				onSuccess(result);
-			} else {
-				onFailure(error);
-			}
-		});
+		UsersHelper.getAllUsers(onSuccess,onFailure)
 	}
 	/**
 	 * Get the user object corresponding to the request
 	 * @param {*} request
 	 * @param {*} next callback
 	 */
-	static getUser(request: Request, onSuccess: Function, onFailure: Function) {
+	 static getUser(request: Request, onSuccess: Function, onFailure: Function) {
 		const token = (request.headers && request.headers.authorization) ? request.headers.authorization : undefined;
-		if (token != undefined) {
+		if (token !== undefined) {
 			jwt.verify(token, Constants.AUTHSECRETKEY, (error: Error, decoded: any) => {
 				if (error) {
 					onFailure(error);
 				} else {
-					let email = decoded.email;
-					User.findOne({
-						email
-					}, '-password', (error, user) => {
-						if (user) {
-							onSuccess(user, request);
-						} else {
-							onFailure(error);
-						}
-					}).catch((error) => {
-						console.error(error);
-						onFailure(error);
-					});
+					const userid = decoded.userid;
+					UsersHelper.getUserByID(userid, (res : User[]) =>{
+						onSuccess(res, request)
+					}, onFailure);
 				}
 			});
 		} else {
 			onFailure();
 		}
 	}
-
 	static createUser(request: Request, onSuccess: Function, onFailure: Function) {
+		// @TODO: extend registration page for name?
 		const {
 			email,
 			password,
-			role
+			role = "user",
+			name = email.split('@', 1)[0].replace('.', ' ')
 		} = request.body;
-		const newUser = new User({
-			email,
-			password,
-			role
-		});
-		newUser.save((error: Error) => {
-			if (error) {
-				onFailure(error);
-			} else {
-				onSuccess(this.issueToken(email));
-			}
-		});
+		const record = {email, password,role,name}
+		UsersHelper.createUser(record, (res : {userid:string}) => {
+			onSuccess(this.issueToken(res.userid))
+		}, onFailure)
 	}
 
-	static updateUser(user: any, onSuccess: Function, onFailure: Function) {
-		user.password = User.hashPassword(user.password);
-		User.updateOne(
-			{email: user.email},
-			user
-			, (error: Error) => {
-				if (error) {
-					onFailure(error);
-				} else {
-					onSuccess();
-				}
-			}
-		);
+	//@DEPRECATED
+	static updateUser(user: User, onSuccess: Function, onFailure: Function) {
+		UsersHelper.updateUser(user, onSuccess, onFailure)
 	}
 
-	static deleteUser(userId: String, onSuccess: Function, onFailure: Function) {
-		User.deleteOne({
-			_id: userId
-		}, (error: Error) => {
-			if (error) {
-				onFailure(error);
-			} else {
-				onSuccess();
-			}
-		});
+	//@DEPRECATED
+	static deleteUser(userID: string, onSuccess: Function, onFailure: Function) {
+		UsersHelper.deleteUser(userID, onSuccess, onFailure)
 	}
 
 	static loginUser(request: Request, onSuccess: Function, onUnauthorised: Function, onFailure: Function) {
@@ -116,27 +71,16 @@ export default class UsersMiddleware {
 			email,
 			password
 		} = request.body;
-		User.findOne({
-			email: email
-		}, (error, user) => {
-			if (error) {
-				onFailure(error);
-			} else if (!user) {
-				onUnauthorised();
-			} else {
-				if (user.comparePassword(password)) {
-					onSuccess(this.issueToken(email));
-				} else {
-					onUnauthorised();
-				}
-			}
-		});
-
+		UsersHelper.loginUser(
+			{email, password}
+			, (userid : string) => onSuccess(this.issueToken(userid))
+			, onUnauthorised
+			, onFailure)
 	}
 
-	private static issueToken(email: String): String {
+	private static issueToken(email: string): string {
 		const payload = {email};
-		const token: String = jwt.sign(payload, Constants.AUTHSECRETKEY, {
+		const token: string = jwt.sign(payload, Constants.AUTHSECRETKEY, {
 			expiresIn: '1h'
 		});
 		return token;

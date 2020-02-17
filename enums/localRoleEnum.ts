@@ -10,24 +10,27 @@ enum localPermissions {
 }
 
 const P = localPermissions
-enum localRoleEnum {
-	student = P.viewPublicComment 
-			^ P.writePublicComment 
-			^ P.allowMention 
-			^ P.submitAssignment,
-
-	TA 		= P.viewPublicComment 
-			^ P.writePublicComment 
-			^ P.viewPrivateComment 
-			^ P.writePrivateComment
-			^ P.allowMention,
-
-	teacher = P.viewPublicComment 
-			^ P.writePublicComment 
-			^ P.viewPrivateComment 
-			^ P.writePrivateComment
-			^ P.allowMention
-			^ P.createAssignment,
+export enum localRoles {
+	student = "student",
+	TA = "TA",
+	teacher = "teacher"
 }
+// export enum defaultRolePermissions {
+// 	student = P.viewPublicComment 
+// 			^ P.writePublicComment 
+// 			^ P.allowMention 
+// 			^ P.submitAssignment,
 
-export default localRoleEnum
+// 	TA 		= P.viewPublicComment 
+// 			^ P.writePublicComment 
+// 			^ P.viewPrivateComment 
+// 			^ P.writePrivateComment
+// 			^ P.allowMention,
+
+// 	teacher = P.viewPublicComment 
+// 			^ P.writePublicComment 
+// 			^ P.viewPrivateComment 
+// 			^ P.writePrivateComment
+// 			^ P.allowMention
+// 			^ P.createAssignment,
+// }
