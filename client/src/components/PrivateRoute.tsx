@@ -50,9 +50,7 @@ class PrivateRoute extends Route<PrivateRouteProps> {
 			return (
 				<Route
 					render={() =>
-
 						<span>{React.createElement(this.props.component, urlParameters)} </span>
-
 					}
 				/>
 			);
