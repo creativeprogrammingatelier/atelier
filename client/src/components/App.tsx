@@ -20,6 +20,7 @@ import {Frame} from './general/Frame';
 
 import '../styles/app.scss';
 import '../styles/base.scss';
+import {RoutingTest} from './general/RoutingTest';
 
 
 /**
@@ -89,19 +90,20 @@ class App extends React.Component<AppProps, AppState> {
 	render() {
 		return (
 			< Switch>
-		<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
-		<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
-		<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
-		<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
-		<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
-		<PrivateRoute path='/logout' component={Logout}/>
-		<PrivateRoute exact path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/commentThread' component={CommentThread} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/search' component={SearchOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/courseOverview' component={CourseOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/user' component={UserOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/' component={Homepage} roles={['student', 'teacher']} />
-		<Redirect exact from="/" to="/roleview"/>
+				<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
+				<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
+				<Route path='/test/:token/select/:user' component={RoutingTest}/>
+				<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
+				<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
+				<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
+				<PrivateRoute path='/logout' component={Logout}/>
+				<PrivateRoute exact path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
+				<PrivateRoute exact path='/commentThread' component={CommentThread} roles={['student', 'teacher']} />
+				<PrivateRoute exact path='/search' component={SearchOverview} roles={['student', 'teacher']} />
+				<PrivateRoute exact path='/courseOverview' component={CourseOverview} roles={['student', 'teacher']} />
+				<PrivateRoute exact path='/user' component={UserOverview} roles={['student', 'teacher']} />
+				<PrivateRoute exact path='/' component={Homepage} roles={['student', 'teacher']} />
+				<Redirect exact from="/" to="/roleview"/>
 			</Switch>
 		);
 	}
