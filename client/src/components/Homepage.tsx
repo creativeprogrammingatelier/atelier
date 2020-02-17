@@ -8,14 +8,14 @@ export function Homepage() {
 		<Frame title="Homepage" user="John Doe" sidebar={true} search={false}>
 			<p>Some introduction of sorts?</p>
 			<div>
-				<PanelButton display="Pearls of Computer Science" location="/courseOverview" icon=""/>
-				<PanelButton display="Software Systems" location="/courseOverview" icon=""/>
-				<PanelButton display="Network Systems" location="/courseOverview" icon=""/>
-				<PanelButton display="Data and Information" location="/courseOverview" icon=""/>
-				<PanelButton display="Computer Systems" location="/courseOverview" icon=""/>
-				<PanelButton display="Intelligent Interaction Design" location="/courseOverview" icon=""/>
-				<PanelButton display="Discrete Structures & Efficient Algorithms" location="/courseOverview" icon=""/>
-				<PanelButton display="Programming Paradigms" location="/courseOverview" icon=""/>
+				<PanelButton display="Pearls of Computer Science" location="/course/1" icon=""/>
+				<PanelButton display="Software Systems" location="/course/2" icon=""/>
+				<PanelButton display="Network Systems" location="/course/3" icon=""/>
+				<PanelButton display="Data and Information" location="/course/4" icon=""/>
+				<PanelButton display="Computer Systems" location="/course/5" icon=""/>
+				<PanelButton display="Intelligent Interaction Design" location="/course/6" icon=""/>
+				<PanelButton display="Discrete Structures & Efficient Algorithms" location="/course/7" icon=""/>
+				<PanelButton display="Programming Paradigms" location="/course/8" icon=""/>
 			</div>
 		</Frame>
 	)
