@@ -17,11 +17,11 @@ export const submissionData = {
     }]
 };
 
-export const submissionRendering : DataTableRowMapping<Submission>[] = [
+export const submissionRendering : Array<DataTableRowMapping<Submission>> = [
     [
         'User',
         ({name} : Submission) => name,
-        ({userID} : Submission) => { return '/user?userID=' + userID}],
+        ({userID} : Submission) => '/user/' + userID],
     ['Submission', ({submissionName} : Submission) => submissionName],
     ['Date', ({date} : Submission) => date]
 ];

@@ -5,6 +5,7 @@ import {HeaderButton} from './HeaderButton';
 interface HeaderProperties {
 	title?: string,
 	transparent?: boolean,
+	fixed?: boolean,
 	leftButton?: {
 		name: string,
 		icon: JSX.Element,
@@ -16,13 +17,14 @@ interface HeaderProperties {
 		click: React.MouseEventHandler
 	}
 }
-export function Header({ title, transparent, leftButton, rightButton}: HeaderProperties) {
+export function Header({ title, transparent, fixed, leftButton, rightButton}: HeaderProperties) {
 	return (
 		<div className="fluid-container">
-			<Navbar className={"row no-gutters" + (transparent ? " bg-transparent" : "")}>
-				<div className="col-2 text-left">{leftButton && <HeaderButton name={leftButton.name} icon={leftButton.icon} onClick={leftButton.click}/>}</div>
-				<div className="col-8 text-center">{title && <h1 className="h3">{title}</h1>}</div>
-				<div className="col-2 text-right">{rightButton && <HeaderButton  name={rightButton.name} icon={rightButton.icon} onClick={rightButton.click}/>}</div>
+			<Navbar className={"row no-gutters" + (transparent && " bg-transparent") + (fixed && " position-fixed")}>
+				{(leftButton || rightButton) && <div className="col-2 text-left">{leftButton && <HeaderButton name={leftButton.name} icon={leftButton.icon} onClick={leftButton.click}/>}</div>}
+				{(leftButton || rightButton) && <div className="col-8 text-center">{title && <h3>{title}</h3>}</div>}
+				{(leftButton || rightButton) && <div className="col-2 text-right">{rightButton && <HeaderButton  name={rightButton.name} icon={rightButton.icon} onClick={rightButton.click}/>}</div>}
+				{!(leftButton || rightButton) && <div className="col-12 text-center"><h3>{title}</h3></div>}
 			</Navbar>
 		</div>
 	);
