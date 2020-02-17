@@ -74,8 +74,7 @@ export function UserOverview({ userId }: UserOverviewProperties) {
         return <p>Waiting</p> // TODO: Make nicer
     }
     return (
-        <Frame title={user.name} user={user.name} sidebar={true} search={true}>
-            <Header title={loading === LoadingState.Loaded ? user!.name : "Atelier"}/>
+        <Frame title={user.name} user={{id:user.id, name:user.name}} sidebar search={"/user/"+user.id+"/search"}>
             <DataTable
                 title="To be reviewed"
                 data={submissions}

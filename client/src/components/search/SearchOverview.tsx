@@ -48,7 +48,7 @@ export function SearchOverview() {
     });
 
     return (
-        <Frame title="Search" user="John Doe" sidebar={true} search={false}>
+        <Frame title="Search" user={{id:"1", name:"John Doe"}} sidebar>
             <h1>Search Overview Page</h1>
             <SearchBar
                 handleSearch={(value) => handleSearch(value, setResults)}

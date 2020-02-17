@@ -7,9 +7,12 @@ import {Content} from './Content';
 interface FrameProperties {
 	children?: JSX.Element | JSX.Element[],
 	title: string,
-	user: string,
+	user: {
+		id: string,
+		name: string
+	}
 	sidebar: boolean,
-	search: boolean,
+	search?: string,
 }
 export function Frame({children, title, user, sidebar, search}: FrameProperties) {
 	const [sidebarPosition, setSidebarPosition] = useState('-100vw');
@@ -21,10 +24,13 @@ export function Frame({children, title, user, sidebar, search}: FrameProperties)
 	function sidebarClose() {
 		setSidebarPosition(() => '-100vw');
 	}
+	function searchClick() {
+		window.location.href = search ? search : "#";
+	}
 
 	return (
 		<div>
-			<Header title={title} leftButton={sidebar ? {name:'Sidebar', icon:<FiMenu size={40} color="#FFFFFF"/>, click:sidebarOpen} : undefined} rightButton={search ? {name:'Search', icon:<FiSearch size={40} color="#FFFFFF"/>, click:sidebarClose} : undefined}/>
+			<Header title={title} leftButton={sidebar ? {name:'Sidebar', icon:<FiMenu size={40} color="#FFFFFF"/>, click:sidebarOpen} : undefined} rightButton={search ? {name:'Search', icon:<FiSearch size={40} color="#FFFFFF"/>, click:searchClick} : undefined}/>
 			<Sidebar user={user} position={sidebarPosition} close={sidebarClose}/>
 			<Content>{children}</Content>
 		</div>

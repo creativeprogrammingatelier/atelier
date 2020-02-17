@@ -1,11 +1,10 @@
 import React from 'react';
 import {PanelButton} from './general/PanelButton'
 import {Frame} from './frame/Frame';
-import {Button} from 'react-bootstrap';
 
 export function Homepage() {
 	return (
-		<Frame title="Homepage" user="John Doe" sidebar={true} search={false}>
+		<Frame title="Homepage" user={{id:"1", name:"John Doe"}} sidebar>
 			<p>Some introduction of sorts?</p>
 			<div>
 				<PanelButton display="Pearls of Computer Science" location="/course/1" icon=""/>

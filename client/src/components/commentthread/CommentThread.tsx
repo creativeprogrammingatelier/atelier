@@ -18,7 +18,7 @@ export function CommentThread({ threadId }: CommentThreadProperties) {
     const [loading, updateLoading] = useState(LoadingState.Unloaded);
     const [comments, updateComments] = useState([] as Models.Comment[]);
     const [topic, updateTopic] = useState("");
-    const [snippet, updateSnippet] = useState(null as (Models.Snippet | null));
+    const [snippet, updateSnippet] = useState(undefined as (Models.Snippet | undefined));
 
     useEffect(() => {
         updateLoading(LoadingState.Loading);

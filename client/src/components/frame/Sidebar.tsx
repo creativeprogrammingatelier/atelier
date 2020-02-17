@@ -5,7 +5,10 @@ import {Logo} from './Logo';
 import {Link} from './Link';
 
 interface SidebarProperties {
-	user: string,
+	user: {
+		id: string,
+		name: string
+	},
 	position: string,
 	close: React.MouseEventHandler
 }
@@ -15,9 +18,8 @@ export function Sidebar({user, position, close}: SidebarProperties) {
 			<Header transparent={true} leftButton={{name:'Close', icon:<FiX size={40} color="#FFFFFF"/>, click:close}}/>
 			<div className="sidebarContent">
 				<Logo/>
-				<Link location="#">{user}</Link>
+				<Link location={"/user/"+user.id}>{user.name}</Link>
 				<Link location="/">My Courses</Link>
-				<Link location="/user">My Submissions</Link>
 				<Link location="/search">Search</Link>
 				<Link location="/logout">Logout</Link>
 			</div>

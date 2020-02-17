@@ -25,7 +25,7 @@ export function SubmissionOverview() {
     }
 
     return (
-        <Frame title="Submission" user="John Doe" sidebar={true} search={true}>
+        <Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={"/submission/../search"}>
             <TabBar onClick={handleTabChange}/>
             <hr/>
             {currentTab}

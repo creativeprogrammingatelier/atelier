@@ -11,7 +11,7 @@ const submissions = {
 
 export function CourseOverview() {
     return (
-        <Frame title="Course" user="John Doe" sidebar={true} search={true}>
+        <Frame title="Course" user={{id:"0", name:"John Doe"}} sidebar search={"/course/../search"}>
             <h1>Course Overview</h1>
             <DataTable
                 title={submissions.title}
