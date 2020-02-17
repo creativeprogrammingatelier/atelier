@@ -24,7 +24,7 @@ export function Frame({children, title, user, sidebar, search}: FrameProperties)
 
 	return (
 		<div>
-			<Header title={title} leftButton={sidebar ? {name:'Sidebar', icon:<FiMenu size={40}/>, click:sidebarOpen} : undefined} rightButton={search ? {name:'Search', icon:<FiSearch size={40}/>, click:sidebarClose} : undefined}/>
+			<Header title={title} leftButton={sidebar ? {name:'Sidebar', icon:<FiMenu size={40} color="#FFFFFF"/>, click:sidebarOpen} : undefined} rightButton={search ? {name:'Search', icon:<FiSearch size={40} color="#FFFFFF"/>, click:sidebarClose} : undefined}/>
 			<Sidebar user={user} position={sidebarPosition} close={sidebarClose}/>
 			<Content>{children}</Content>
 		</div>
