@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import * as Models from '../../placeholdermodels';
 import { LoadingState } from '../../placeholdermodels';
 
-import { Header } from '../general/Header';
+import { Header } from '../frame/Header';
 import { DataTable } from '../general/DataTable';
 import { Model } from 'mongoose';
+import {Frame} from '../frame/Frame';
 
 interface UserOverviewProperties {
     userId: string
@@ -13,7 +14,7 @@ interface UserOverviewProperties {
 
 export function UserOverview({ userId }: UserOverviewProperties) {
     const [loading, updateLoading] = useState(LoadingState.Unloaded);
-    const [user, updateUser] = useState(null as Models.User | null);
+    const [user, updateUser] = useState(undefined as Models.User | undefined);
     const [submissions, updateSubmissions] = useState([] as Models.Submission[]);
     const [commentThreads, updateCommentThreads] = useState([] as Models.CommentThread[]);
 
@@ -55,7 +56,7 @@ export function UserOverview({ userId }: UserOverviewProperties) {
               ],
               visibilityLevel: 5 },
             { topic: "Another comment",
-              snippet: null,
+              snippet: undefined,
               comments: [
                   { text: "Just some comment on this code", 
                     author: "Pieter Post",
@@ -69,9 +70,11 @@ export function UserOverview({ userId }: UserOverviewProperties) {
         updateLoading(LoadingState.Loaded);
     }, []);
 
+    if (user === undefined) {
+        return <p>Waiting</p> // TODO: Make nicer
+    }
     return (
-        <div>
-            <Header title={loading === LoadingState.Loaded ? user!.name : "Atelier"}/>
+        <Frame title={user.name} user={{id:user.id, name:user.name}} sidebar search={"/user/"+user.id+"/search"}>
             <DataTable
                 title="To be reviewed"
                 data={submissions}
@@ -94,6 +97,6 @@ export function UserOverview({ userId }: UserOverviewProperties) {
                     ["Last author", x => x.comments.slice(-1)[0].author, _ => "/user"],
                     ["Last reply", x => x.comments.slice(-1)[0].text]
                 ]} />
-        </div>
+        </Frame>
     );
 }

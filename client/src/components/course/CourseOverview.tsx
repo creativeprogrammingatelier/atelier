@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {DataTable, DataTableProperties} from "../general/DataTable";
 import {Submission, submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
-
-
+import {Frame} from '../frame/Frame';
+import {DataList} from '../general/DataList';
 
 export function CourseOverview() {
     const [submissions, setSubmissions] = useState(null as unknown as DataTableProperties<Submission>);
@@ -20,8 +20,9 @@ export function CourseOverview() {
     }, []);
 
     return (
-        <div>
+        <Frame title="Course" user={{id:"0", name:"John Doe"}} sidebar search={"/course/../search"}>
             <h1>Course Overview</h1>
+
             {submissions ?
                 <DataTable
                     title={submissions.title}
@@ -31,6 +32,19 @@ export function CourseOverview() {
                     :
                 <p>***Generic loading circle***</p>
                 }
-        </div>
+            {/*<DataTable*/}
+            {/*    title={submissions.title}*/}
+            {/*    data={submissions.data}*/}
+            {/*    table={submissions.table}*/}
+            {/*/>*/}
+            <DataList header="Submissions" list={[
+                {
+                    title: "John Doe",
+                    text: "Uploaded helpitbroke.zip",
+                    time: "42 minutes ago",
+                    tags: [{name:"help", color:"red"}, {name:"me", color:"red"}, {name:"now", color:"red"}]
+                }
+            ]}/>
+        </Frame>
     )
 }

@@ -31,6 +31,8 @@ class PrivateRoute extends Route<PrivateRouteProps> {
 			this.setState({
 				roleAuthorised: false
 			});
+			console.log("Old role authentication");
+			console.log(this.props.roles);
 			AuthHelper.checkRoles(this.props.roles).then((response: any) => {
 				if (response.status == 204) {
 					this.setState({

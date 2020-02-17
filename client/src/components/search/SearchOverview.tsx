@@ -6,6 +6,7 @@ import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpe
 import {codeData, codeRendering} from "../../helpers/CodeHelpers";
 import {SearchData} from "../../helpers/SearchHelpers";
 import {commentData, commentRendering} from "../../helpers/CommentHelper";
+import {Frame} from '../frame/Frame';
 
 /**
  * Method to handle a search.
@@ -41,7 +42,7 @@ export function SearchOverview() {
     const [results, setResults] = useState(null as unknown as SearchData);
 
     return (
-        <div>
+        <Frame title="Search" user={{id:"1", name:"John Doe"}} sidebar>
             <h1>Search Overview Page</h1>
             <SearchBar
                 handleSearch={(value) => handleSearch(value, setResults)}
@@ -71,6 +72,6 @@ export function SearchOverview() {
                         table={results.comments.table} />
                 </div>
             }
-        </div>
+        </Frame>
     )
 }

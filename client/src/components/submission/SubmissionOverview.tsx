@@ -6,6 +6,7 @@ import {ShareTab} from './ShareTab';
 import {TabBar} from './TabBar';
 import * as queryString from "querystring";
 import {ProjectTab} from "./ProjectTab";
+import {Frame} from '../frame/Frame';
 
 export function SubmissionOverview(props : any) {
     // Check url parameters such as ?tab=Comments
@@ -44,11 +45,11 @@ export function SubmissionOverview(props : any) {
     }
 
     return (
-        <div>
+        <Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={"/submission/../search"}>
             <TabBar onClick={handleTabChange}/>
             <hr/>
             {currentTab}
-        </div>
+        </Frame>
     )
 }
 

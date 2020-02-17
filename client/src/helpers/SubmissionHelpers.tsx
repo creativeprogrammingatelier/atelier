@@ -28,17 +28,12 @@ export const submissionData = [{
  *
  * User and submission entries link to /user and /submissionOverview.
  */
-export const submissionRendering : DataTableRowMapping<Submission>[] = [
+export const submissionRendering : Array<DataTableRowMapping<Submission>> = [
     [
         'User',
         ({name} : Submission) => name,
-        ({userID} : Submission) => { return '/user?userID=' + userID}
-    ],
-    [
-        'Submission',
-        ({submissionName} : Submission) => submissionName,
-        ({submissionID} : Submission) => '/submissionOverview?tab=Project'
-    ],
+        ({userID} : Submission) => '/user/' + userID],
+    ['Submission', ({submissionName} : Submission) => submissionName],
     ['Date', ({date} : Submission) => date]
 ];
 
