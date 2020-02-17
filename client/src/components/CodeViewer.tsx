@@ -9,8 +9,8 @@ import {IFile} from '../../../models/file';
 import {FileComment} from "./submission/CodeTab";
 
 type CodeViewerProps = {
-	commentLineNumber: number;
-	commentCharacterNumber : number;
+	cursorLineNumber: number;
+	cursorCharacterNumber : number;
 	file: IFile;
 	updateCursorLocation: Function;
 	comments? : FileComment[];
@@ -20,10 +20,15 @@ type CodeViewerState = {
 	file: IFile,
 	formattedCode: string,
 	updateCursorLocation: Function,
-	commentLineNumber: number,
-	commentCharacterNumber : number,
-	cursorLeft : number,
-	cursorTop : number
+	cursorLineNumber: number,
+	cursorCharacterNumber : number,
+
+	selecting : boolean,
+	selection : string
+	commentLineStart : number,
+	commentCharacterStart : number,
+	commentLineEnd : number,
+	commentCharacterEnd : number
 }
 
 class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
@@ -36,10 +41,15 @@ class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
 			file: props.file,
 			updateCursorLocation: props.updateCursorLocation,
 			formattedCode: props.file.body,
-			commentLineNumber: props.commentLineNumber,
-			commentCharacterNumber : props.commentCharacterNumber,
-			cursorLeft : 0,
-			cursorTop : 100
+			cursorLineNumber: props.cursorLineNumber,
+			cursorCharacterNumber : props.cursorCharacterNumber,
+
+			selecting : false,
+			selection : "",
+			commentLineStart : 0,
+			commentCharacterStart : 0,
+			commentLineEnd : 0,
+			commentCharacterEnd : 0
 		};
 	}
 
@@ -56,55 +66,83 @@ class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
 	}
 
 	codeMirrorUpdate() {
+		console.log("update");
 		let textEditorNullable: HTMLElement | null = document.getElementById('text-editor');
 		if (textEditorNullable != null && textEditorNullable instanceof HTMLTextAreaElement) {
 			let textEditor: HTMLTextAreaElement = textEditorNullable;
 
+			// Handle initialization
 			(this.codeMirror != null) ?
 				this.codeMirror.setValue(this.state.formattedCode)
 				:
 				this.codeMirror = CodeMirror.fromTextArea(textEditor, {mode: 'text/x-java', lineNumbers: true, styleActiveLine: true, theme: 'oceanic-next', value: this.state.formattedCode});
 
 			this.codeMirror.setSize('100%', '100%');
+
+			// Handle mouse activity
 			this.codeMirror.on('cursorActivity', (instanceCodeMirror: CodeMirror.Editor) => {
-				this.checkSelectedText();
 				if (this.movedByMouse) {
 					this.setStateSelectedLine();
 				}
+				this.updateSelection();
+				console.log("reached, selected: " + this.state.selection + "\n::::" + this.codeMirror.getSelection());
 			});
 			this.codeMirror.on('mousedown', (instanceCodeMirror: CodeMirror.Editor) => {
 				this.movedByMouse = true;
 			});
 
+			// Mark comments
 			if (this.props.comments != undefined) {
 				for (const {startLine, startCharacter, endLine, endCharacter} of this.props.comments) {
-					// TODO add custom class for different depths. No way to distinguish overlapping comments at the moment
 					// code mirror starts lines at 0, while comments are stored starting at 1
-					this.codeMirror.markText({line: startLine - 1, ch: startCharacter}, {line: endLine - 1, ch: endCharacter}, {className : "text-danger"});
+					this.codeMirror.markText({line: startLine - 1, ch: startCharacter}, {line: endLine - 1, ch: endCharacter}, {css : "background-color: #abcdef7f; "});
 				}
 			}
 		}
 	}
 
+	/**
+	 * Set cursor location on screen
+	 */
 	selectLine() {
+		console.log("setting cursor: " + this.state.cursorLineNumber + " " + this.state.cursorCharacterNumber);
 		this.movedByMouse = false;
-		this.codeMirror.setCursor({line : this.state.commentLineNumber, ch : this.state.commentCharacterNumber});
+		this.codeMirror.setCursor({line : this.state.cursorLineNumber, ch : this.state.cursorCharacterNumber});
 	}
 
-	checkSelectedText() {
-		const selected : string | undefined = this.codeMirror.getSelection();
-		if (selected != "") {
-			/*const coords = this.codeMirror.cursorCoords(true);
-			this.setState({
-				cursorLeft : coords.left,
-				cursorTop : coords.top
-			});*/
-			//console.log(this.codeMirror.cursorCoords(true));
+	/**
+	 * Handle and store updates in the selection
+	 */
+	updateSelection() {
+
+		const selection = this.codeMirror.listSelections();
+		console.log("updating selection: " + this.codeMirror.listSelections()[0].anchor.line + "-" + this.codeMirror.listSelections()[0].head.line + "\n::" + this.codeMirror.getSelection());
+		if (selection.length == 0) return;
+
+		let start, end;
+		if (selection[0].anchor.line < selection[0].head.line
+			|| (selection[0].anchor.line == selection[0].head.line && selection[0].anchor.ch < selection[0].anchor.ch)) {
+			start = selection[0].anchor;
+			end = selection[0].head;
+		}  else {
+			start = selection[0].head;
+			end = selection[0].anchor;
 		}
 
-		console.log("selected: " + selected);
+		this.setState({
+			selection : this.codeMirror.getSelection(),
+			commentLineStart : start.line,
+			commentCharacterStart : start.ch,
+			commentLineEnd : end.line,
+			commentCharacterEnd : end.ch
+		});
+
+		console.log(`${this.state.commentLineStart}:${this.state.commentCharacterStart}-${this.state.commentLineEnd}:${this.state.commentCharacterEnd}`);
 	}
 
+	/**
+	 * Handle clicks on comments
+	 */
 	checkCommentClick() {
 		const line = this.codeMirror.getCursor().line + 1; // editor lines start at 1
 		const character = this.codeMirror.getCursor().ch;
@@ -130,20 +168,18 @@ class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
 		}
 	}
 
+	/**
+	 * Handle changes to line and character. Passes them to parent components using updateCursorLocation()
+	 */
 	setStateSelectedLine() {
-		//let doc: any = this.codeMirror.getDoc();
-		//let anchor = doc.sel.ranges[0].anchor.line;
-		//let head = doc.sel.ranges[0].head.line;
-		//let lineNumber = (anchor > head) ? head : anchor;
-
 		const characterNumber = this.codeMirror.getCursor().ch;
 		const lineNumber = this.codeMirror.getCursor().line;
 
 		// Update current cursor position on click
 		this.state.updateCursorLocation(lineNumber, characterNumber);
 		this.setState({
-			commentCharacterNumber : characterNumber,
-			commentLineNumber : lineNumber
+			cursorCharacterNumber : characterNumber,
+			cursorLineNumber : lineNumber
 		});
 
 		// Check whether a comment was clicked
@@ -154,15 +190,53 @@ class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
 	static getDerivedStateFromProps(nextProps: CodeViewerProps, prevState: CodeViewerState) {
 		return {
 			file: nextProps.file,
-			commentLineNumber: nextProps.commentLineNumber,
+			commentLineNumber: nextProps.cursorLineNumber,
 			formattedCode: nextProps.file.body
 		};
 	}
+
+	/**
+	 * Toggle between selecting (for comment) and not
+	 * @param select, whether currently in select mode or not
+	 */
+	handleSelect(select : boolean) {
+		this.setState({
+			selecting : select
+		});
+	}
+
+	/**
+	 * Add a comment. Reads line/character numbers and the selection.
+	 */
+	addComment() {
+		const comment = this.state.selection;
+
+		const startLine = this.state.commentLineStart;
+		const endLine = this.state.commentLineEnd;
+		const startCharacter = this.state.commentCharacterStart;
+		const endCharacter = this.state.commentCharacterEnd;
+
+		console.log(`Created comment ${startLine}:${startCharacter} - ${endLine}:${endCharacter}: ${comment}`);
+		// TODO database query
+	}
+
 
 	render() {
 		return (
 			<div>
 				<textarea id="text-editor" autoComplete='off' value={this.state.formattedCode}/>
+				{
+					this.state.selecting ?
+						<div className="selectionButtons">
+							<button id='cancelComment' onClick={() => this.handleSelect(false)}>Cancel Selection</button>
+							<button id='addComment' onClick={() => this.addComment()}>Add Comment</button>
+							<input type='text' placeholder='select code' value={this.state.selection} />
+						</div>
+						:
+						<div className="selectionButtons">
+							<button id='createComment' onClick={() => this.handleSelect(true)}>Add Comment</button>
+						</div>
+				}
 
 			</div>
 		);
@@ -170,10 +244,3 @@ class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
 }
 
 export default CodeViewer;
-
-/*
-<div
-					style={{position: "absolute", left: this.state.cursorLeft + 'px', top: this.state.cursorTop + 'px'}}>
-					Comment Text
-				</div>
- */

@@ -1,8 +1,7 @@
 import React, {useState} from 'react';
-import {Code} from "../../helpers/CodeHelpers";
 import {IFile} from "../../../../models/file";
 import CodeViewer from "../CodeViewer";
-import {CommentEssential} from "../../helpers/CommentHelper";
+import CodeViewer2 from "../CodeViewer2";
 
 interface CodeProperties {
     fileName : string,
@@ -96,15 +95,25 @@ export function CodeTab({file, fileName, comments} : CodeProperties) {
                             </textarea>
                     </div>
             }
-            <CodeViewer {...{
-                file : formatedFile,
-                commentLineNumber : lineNumber,
-                commentCharacterNumber : characterNumber,
-                updateCursorLocation: setCursorLocation,
-                comments : fileComments
-            }}/>
+            <CodeViewer2 {
+                ...{
+                    file : formatedFile,
+                    comments : fileComments
+                }
+            }
+                />
 
 
         </div>
     )
 }
+
+/*
+<CodeViewer {...{
+                file : formatedFile,
+                cursorLineNumber : lineNumber,
+                cursorCharacterNumber : characterNumber,
+                updateCursorLocation: setCursorLocation,
+                comments : fileComments
+            }}/>
+ */
