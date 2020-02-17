@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {SearchBar} from './SearchBar';
 import {DataTable, DataTableProperties} from "../general/DataTable";
 import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
+import {Frame} from '../frame/Frame';
 
 function handleSearch(value : string, setResults : Function) {
     console.log("searching for " + value);
@@ -47,7 +48,7 @@ export function SearchOverview() {
     });
 
     return (
-        <div>
+        <Frame title="Search" user="John Doe" sidebar={true} search={false}>
             <h1>Search Overview Page</h1>
             <SearchBar
                 handleSearch={(value) => handleSearch(value, setResults)}
@@ -71,6 +72,6 @@ export function SearchOverview() {
                 title={results.comments.title}
                 data={results.comments.data}
                 table={results.comments.table} />
-        </div>
+        </Frame>
     )
 }

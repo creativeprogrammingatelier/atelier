@@ -4,6 +4,7 @@ import {CodeTab} from './CodeTab';
 import {CommentTab} from './CommentTab';
 import {ShareTab} from './ShareTab';
 import {TabBar} from './TabBar';
+import {Frame} from '../frame/Frame';
 
 export function SubmissionOverview() {
     const [tab, setTab] = useState('Code');
@@ -24,11 +25,11 @@ export function SubmissionOverview() {
     }
 
     return (
-        <div>
+        <Frame title="Submission" user="John Doe" sidebar={true} search={true}>
             <TabBar onClick={handleTabChange}/>
             <hr/>
             {currentTab}
-        </div>
+        </Frame>
     )
 }
 
