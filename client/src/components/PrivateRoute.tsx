@@ -1,8 +1,6 @@
 import * as React from 'react';
 import {Route, Switch, Redirect, RouteProps} from 'react-router-dom';
-import {Component} from 'react';
 import AuthHelper from '../../helpers/AuthHelper';
-import roleEnum from '../../../enums/roleEnum';
 
 type PrivateRouteProps = RouteProps & {
 	roles?: string[],
@@ -46,13 +44,15 @@ class PrivateRoute extends Route<PrivateRouteProps> {
 	};
 
 	render() {
+		const urlParameters : any = {
+			location : this.props.location
+		};
+
 		if (this.props.roles == undefined && AuthHelper.loggedIn()) {
 			return (
 				<Route
 					render={() =>
-
-						<span>{React.createElement(this.props.component)} </span>
-
+						<span>{React.createElement(this.props.component, urlParameters)} </span>
 					}
 				/>
 			);
@@ -61,7 +61,7 @@ class PrivateRoute extends Route<PrivateRouteProps> {
 			return (
 				<Route
 					render={() =>
-						<span>{React.createElement(this.props.component)} </span>
+						<span>{React.createElement(this.props.component, urlParameters)} </span>
 
 					}
 				/>
