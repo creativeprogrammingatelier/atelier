@@ -86,7 +86,7 @@ tbody {
 		color: $colorOffWhite;
 
 		.panelBottom {
-			box-shadow: 0 -5px 10px 0 rgba(71,71,71,0.15);
+			box-shadow: $shadowUp;
 		}
 	}
 }
@@ -113,17 +113,35 @@ tbody {
 .toast-header {
 	background-color: $colorOffWhite;
 	border: none;
-	box-shadow: 0 5px 10px 0 rgba(71,71,71,0.15);
+	box-shadow: $shadowDown;
 }
 .toast-body {
 	padding: 0.5rem;
 }
 .dataBlock {
+	a {
+		color: unset;
+	}
+	a:hover {
+		text-decoration: none;
+	}
 	.toast {
 		max-width: unset;
 		box-shadow: none;
 	}
 }
+.dataBlock:hover {
+	box-shadow: $shadowAround;
+}
 .dataBlock:not(:last-child) {
 	margin-bottom: 0.5rem;
+}
+.badge {
+	vertical-align: inherit;
+	font-size: 85%;
+	font-weight: 500;
+	border-radius: 2px;
+}
+.badge:not(:last-child) {
+	margin-right: 0.25rem;
 }
