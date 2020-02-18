@@ -1,6 +1,6 @@
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
-import {Constants} from '../lib/constants';
+import { AUTHSECRETKEY } from '../lib/constants';
 import {Request, Response} from 'express';
 import {User, UserSchema} from '../../../models/user';
 import FilesMiddleware from './FilesMiddleware';
@@ -40,7 +40,7 @@ export default class UsersMiddleware {
 	static getUser(request: Request, onSuccess: Function, onFailure: Function) {
 		const token = (request.headers && request.headers.authorization) ? request.headers.authorization : undefined;
 		if (token != undefined) {
-			jwt.verify(token, Constants.AUTHSECRETKEY, (error: Error, decoded: any) => {
+			jwt.verify(token, AUTHSECRETKEY, (error: Error, decoded: any) => {
 				if (error) {
 					onFailure(error);
 				} else {
@@ -136,7 +136,7 @@ export default class UsersMiddleware {
 
 	static issueToken(email: String): String {
 		const payload = {email};
-		const token: String = jwt.sign(payload, Constants.AUTHSECRETKEY, {
+		const token: String = jwt.sign(payload, AUTHSECRETKEY, {
 			expiresIn: '1h'
 		});
 		return token;
