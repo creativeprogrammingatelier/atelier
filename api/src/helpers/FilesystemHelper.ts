@@ -5,7 +5,8 @@ import fs from 'fs';
 import archiver, { ArchiverError } from 'archiver';
 import { randomBytes } from 'crypto';
 
-import { UPLOADS_PATH, CODEFILE_EXTENSIONS } from '../lib/constants';
+import { UPLOADS_PATH } from '../lib/constants';
+import { CODEFILE_EXTENSIONS } from '../../../helpers/Constants';
 
 /** A version of `express.Request` that keeps the location where files are stored. */
 export type FileUploadRequest = Request & { fileLocation?: string };
@@ -72,7 +73,7 @@ export const archiveProject = (reqFileLocation: string, projectName: string) =>
     });
 
 /** Asynchronously delete a file */
-export const deleteFile = (filePath: fs.PathLike) => 
+export const deleteFile = (filePath: fs.PathLike): Promise<void> => 
     new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) => 
         fs.unlink(filePath, err => err ? reject(err) : resolve())
     );
