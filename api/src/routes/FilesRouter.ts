@@ -6,6 +6,8 @@
 
 import multer from 'multer';
 
+const UPLOADS_PATH = "uploads";
+
 type FileUploadRequest = Request & { fileLocation?: string };
 
 var express = require('express');
@@ -16,7 +18,7 @@ var upload = multer({
             if (req.fileLocation === undefined) {
                 req.fileLocation = randomBytes(16).toString('hex');
             }
-            const folder = path.join("uploads", req.fileLocation,  
+            const folder = path.join(UPLOADS_PATH, req.fileLocation,  
                 path.dirname(file.originalname) !== "." 
                 ? path.dirname(file.originalname)
                 : req.body["project"]);
@@ -38,7 +40,8 @@ import {IUser} from '../../../models/user';
 import {IFile} from '../../../models/file';
 import path from 'path';
 import PermissionsMiddleware from '../middleware/PermissionsMiddleware';
-import fs, {PathLike, MakeDirectoryOptions} from 'fs';
+import fs from 'fs';
+import archiver from 'archiver';
 import RoutesHelper from '../helpers/RoutesHelper';
 import { randomBytes } from 'crypto';
 
@@ -46,18 +49,49 @@ import { randomBytes } from 'crypto';
  */   
 router.put('/', AuthMiddleware.withAuth, upload.array('files'), 
     (request: FileUploadRequest, result: Response) => {
+        // TODO: Fix error handling in here, it's terrible
         const files = request.files as Express.Multer.File[];
+
+        const archive = archiver('zip', { zlib: { level: 7 } });
+        const filesPath = path.join(UPLOADS_PATH, request.fileLocation!, request.body["project"]);
+        const output = fs.createWriteStream(filesPath + ".zip");
+
+        output.on('close', () => {
+            for (const file of files.filter(f => path.extname(f.filename) !== ".pde")) {
+                fs.unlink(file.path, () => { console.log(`Deleted ${file.filename}`)});
+            }
+        });
+
+        archive.on('warning', err => {
+            if (err.code === 'ENOENT') {
+                console.log(err);
+            } else {
+                console.error(err);
+            }
+        });
+        archive.on('error', err => {
+            console.error(err);
+        });
+
+        archive.pipe(output);
+        archive.directory(filesPath, false);
+        archive.finalize();
+
         UserMiddleware.getUser(request,
             (user: IUser) => {
                 // TODO: Use actual project structure to store this
-                for (const file of files) {
+                FilesMiddleware.createFile(request.body["project"] + ".zip", filesPath + ".zip", user,
+                    () => {},
+                    (err: Error) => console.log(err));
+
+                for (const file of files.filter(f => path.extname(f.filename) === ".pde")) {
                     FilesMiddleware.createFile(file.filename, file.path, user,
                         () => {},
                         (err: Error) => console.log(err));
                 }
             },
             (_: Error) => result.status(500).send("Error Uploading Folder"));
-        // TODO: Create Zip file of project and only keep the .pde files
+        
         result.status(200).send();
     })
 
