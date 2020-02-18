@@ -42,12 +42,12 @@ export default class AuthMiddleWare {
 	/**
 	* check permissions for pages on a global level
 	*/
-	static checkRole(request: Request, role: String, onSuccess: Function, onFailure: Function) {
+	static checkRole(request: Request, role: String, onSuccess: Function, onFailure : (error : Error) => void) {
 		UsersMiddleware.getUser(request, (user: IUser) => {
 			if (user.role.toLowerCase() == role.toLowerCase()) {
 				onSuccess();
 			} else {
-				onFailure('Unauthorized: Incorrect role');
+				onFailure(new Error('Unauthorized: Incorrect role'));
 			}
 		}, onFailure);
 	}
@@ -55,7 +55,7 @@ export default class AuthMiddleWare {
 	/**
 	* check permissions for pages on a global level
 	*/
-	static checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure: Function) {
+	static checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure : (error : Error) => void) {
 		for (const role of roles) {
 			UsersMiddleware.getUser(request, (user: IUser) => {
 				if (user.role.toLowerCase() == role.toLowerCase()) {
@@ -65,7 +65,7 @@ export default class AuthMiddleWare {
 		}
 	}
 
-	static getRole(request: Request, onSuccess: Function, onFailure: Function) {
+	static getRole(request: Request, onSuccess: Function, onFailure : (error : Error) => void) {
 		UsersMiddleware.getUser(request, (user: IUser) => {
 			onSuccess(user.role.toLowerCase());
 		}, onFailure);

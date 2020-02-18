@@ -1,4 +1,4 @@
-export interface IPermission {
+export interface Permission {
 	courseRoleID?: string;
 	permission?: number;
 }

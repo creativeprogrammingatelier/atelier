@@ -1,8 +1,17 @@
+import {submissionStatus} from '../enums/submissionStatusEnum'
 
 export interface Submission {
 	submissionid?: string;
-	userID?: string;
+	userid?: string;
 	name?: string;
-	date?: string;
-	state?: string;
+	date?: Date;
+	state?: submissionStatus;
+}
+
+export interface DBSubmission {
+	submissionid: string;
+	userid: string;
+	name: string;
+	date: Date;
+	state: string;
 }

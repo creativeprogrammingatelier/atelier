@@ -15,7 +15,16 @@ export default class CourseRegistrationHelper {
 	/**
 	 * return all entries in this table, with permissions set correctly
 	 */
-	static getAllEntries(onSuccess : Function, onFailure : Function) {
+	 static getAllEntries(){
+		return new Promise((
+				resolve : (result : CourseRegistration[]) => void, 
+				reject: (error : Error) => void
+			) => this._getAllEntries(resolve, reject))
+	}
+
+	static _getAllEntries(
+			onSuccess : (result : CourseRegistration[]) => void, 
+			onFailure : (error : Error) => void) {
 		pool.query(`SELECT 
 				userID, 
 				courseID, 
@@ -32,7 +41,17 @@ export default class CourseRegistrationHelper {
 	/**
 	 * get all users entered in a specific course. permissions set correctly
 	 */
-	static getEntriesByCourse(courseID : string, onSuccess : Function, onFailure : Function) {
+	static getEntriesByCourse(courseID : string){
+		return new Promise((
+				resolve : (result : CourseRegistration[]) => void, 
+				reject: (error : Error) => void
+			) => this._getEntriesByCourse(courseID, resolve,reject))
+	}
+
+	static _getEntriesByCourse(
+			courseID : string, 
+			onSuccess : (result : CourseRegistration[]) => void, 
+			onFailure : (error : Error) => void) {
 		pool.query(`SELECT 
 				userID, 
 				courseID, 
@@ -50,7 +69,17 @@ export default class CourseRegistrationHelper {
 	/**
 	 * get all courses a user is entered into. permissions set correctly
 	 */
-	static getEntriesByUser(userID : string, onSuccess : Function, onFailure : Function) {
+	static getEntriesByUser(userID : string){
+		return new Promise((
+				resolve : (result : CourseRegistration[]) => void, 
+				reject: (error : Error) => void
+			) => this._getEntriesByUser(userID, resolve,reject))
+	}
+
+	static _getEntriesByUser(
+			userID : string,
+			onSuccess : (result : CourseRegistration[]) => void, 
+			onFailure : (error : Error) => void) {
 		pool.query(`SELECT 
 				userID, 
 				courseID, 
@@ -68,7 +97,17 @@ export default class CourseRegistrationHelper {
 	/**
 	 * add a new entry, all is required but permission. This defaults to no elevated permissions.
 	 */
-	static addEntry(entry : CourseRegistration, onSuccess : Function, onFailure : Function){
+	static addEntry(entry : CourseRegistration){
+		return new Promise((
+				resolve : (result : CourseRegistration) => void, 
+				reject: (error : Error) => void
+			) => this._addEntry(entry, resolve,reject))
+	}
+
+	static _addEntry(
+			entry : CourseRegistration,
+			onSuccess : (result : CourseRegistration) => void, 
+			onFailure : (error : Error) => void){
 		const {
 			courseid,
 			userid,
@@ -87,7 +126,17 @@ export default class CourseRegistrationHelper {
 	 *
 	 * permission field will be ignored
 	 */
-	static updateRole(entry : CourseRegistration, onSuccess : Function, onFailure : Function){
+	static updateRole(entry : CourseRegistration){
+		return new Promise((
+				resolve : (result : CourseRegistration) => void, 
+				reject: (error : Error) => void
+			) => this._updateRole(entry, resolve,reject))
+	}
+
+	static _updateRole(
+			entry : CourseRegistration,
+			onSuccess : (result : CourseRegistration) => void,
+			onFailure : (error : Error) => void){
 		const {
 			courseid,
 			userid,
@@ -107,7 +156,17 @@ export default class CourseRegistrationHelper {
 	 * The given field will be unioned with the current state.
 	 * the role field will be ignored, others are mandatory.
 	 */
-	static addPermission(entry : CourseRegistration, onSuccess : Function, onFailure : Function){
+	static addPermission(entry : CourseRegistration){
+		return new Promise((
+				resolve : (result : CourseRegistration) => void, 
+				reject: (error : Error) => void
+			) => this._addPermission(entry,resolve,reject))
+	}
+
+	static _addPermission(
+			entry : CourseRegistration,
+			onSuccess : (result : CourseRegistration) => void,
+			onFailure : (error : Error) => void){
 		const {
 			courseid,
 			userid,
@@ -128,7 +187,17 @@ export default class CourseRegistrationHelper {
 	 * A user will keep the permissions associated with its role. these cannot be removed.
 	 * the role field will be ignored, others are mandatory.
 	 */
-	static removePermission(entry : CourseRegistration, onSuccess : Function, onFailure : Function){
+	static removePermission(entry : CourseRegistration){
+		return new Promise((
+				resolve : (result : CourseRegistration) => void, 
+				reject: (error : Error) => void
+			) => this._removePermission(entry, resolve,reject))
+	}
+
+	static _removePermission(
+			entry : CourseRegistration,
+			onSuccess : (result : CourseRegistration) => void,
+			onFailure : (error : Error) => void){
 		const {
 			courseid,
 			userid,
@@ -139,7 +208,7 @@ export default class CourseRegistrationHelper {
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 			`, [courseid, userid, this.toBin(permission)])
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(res.rows[0]))
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(this.DBToI(res.rows[0])))
 		.catch(onFailure)
 	}
 
@@ -147,7 +216,17 @@ export default class CourseRegistrationHelper {
 	 * remove a user from a course. 
 	 * permission and role will be ignored.
 	 */
-	static deleteEntry(entry : CourseRegistration, onSuccess : Function, onFailure : Function){
+	static deleteEntry(entry : CourseRegistration) : Promise<void>{
+		return new Promise((
+				resolve : () => void, 
+				reject: (error : Error) => void
+			) => this._deleteEntry(entry, resolve,reject))
+	}
+
+	static _deleteEntry(
+			entry : CourseRegistration,
+			onSuccess : () => void,
+			onFailure : (error : Error) => void){
 		const {
 			courseid,
 			userid

@@ -13,7 +13,16 @@ export default class UsersHelper {
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
-	static getAllStudents(onSuccess: Function, onFailure: Function) {
+	static getAllStudents(){
+		return new Promise((
+				resolve : (result : User[]) => void, 
+				reject: (error : Error) => void
+			) => this._getAllStudents(resolve,reject))
+	}
+
+	static _getAllStudents(
+			onSuccess: (result : User[]) => void, 
+			onFailure : (error : Error) => void) {
 		pool.query("SELECT userid, name, globalRole, email from \"Users\" WHERE globalRole = 'user'")
 			.then((result : {rows:User[]}) => onSuccess(result.rows))
 			.catch(onFailure);
@@ -22,7 +31,16 @@ export default class UsersHelper {
 	/**
 	 * calls onSuccess() with all users in the system.
 	 */
-	static getAllUsers(onSuccess: Function, onFailure: Function) {
+	static getAllUsers(){
+		return new Promise((
+				resolve : (result : User[]) => void, 
+				reject: (error : Error) => void
+			) => this._getAllUsers(resolve,reject))
+	}
+
+	static _getAllUsers(
+			onSuccess: (result : User[]) => void, 
+			onFailure : (error : Error) => void) {
 		pool.query("SELECT userid, name, globalRole, email from \"Users\"")
 			.then((result : {rows:User[]}) => onSuccess(result.rows))
 			.catch(onFailure);
@@ -31,9 +49,19 @@ export default class UsersHelper {
 	/**
 	 * calls onSuccess() with a student based on its userID, without password hash
 	 */
-	static getUserByID(userid : string, onSuccess: Function, onFailure: Function) {
+	static getUserByID(userid : string) {
+		return new Promise((
+				resolve : (result : User) => void, 
+				reject: (error : Error) => void
+			) => this._getUserByID(userid, resolve,reject))
+	}
+
+	static _getUserByID(
+			userid : string,
+			onSuccess: (result : User) => void,
+			onFailure : (error : Error) => void) {
 		pool.query("SELECT userid, name, globalRole, email from \"Users\" where userid = $1", [userid])
-			.then((res : {rows : User[]})=> onSuccess(res.rows))
+			.then((res : {rows : User[]})=> onSuccess(res.rows[0]))
 			.catch((error : Error) => {
 				console.error(error)
 				onFailure(error)
@@ -45,7 +73,17 @@ export default class UsersHelper {
 	 * All fields but userid are required
 	 * if a userID is present, it will be ignored.
 	 */
-	static createUser(user : User, onSuccess : Function, onFailure : Function) {
+	static createUser(user : User){
+		return new Promise((
+				resolve : (result : User) => void, 
+				reject: (error : Error) => void
+			) => this._createUser(user, resolve,reject))
+	}
+
+	static _createUser(
+			user : User,
+			onSuccess : (result : User) => void,
+			onFailure : (error : Error) => void) {
 		const {
 			email,
 			password,
@@ -63,7 +101,17 @@ export default class UsersHelper {
 	 * userID is required to identify the user.
 	 * all other fields may or may not be present and will be updated accordingly.
 	 */
-	static updateUser(user: User, onSuccess: Function, onFailure: Function) {
+	static updateUser(user: User){
+		return new Promise((
+				resolve : (result : User) => void, 
+				reject: (error : Error) => void
+			) => this._updateUser(user, resolve,reject))
+	}
+
+	static _updateUser(
+			user: User,
+			onSuccess: (result : User) => void,
+			onFailure : (error : Error) => void) {
 		const {
 			userid, //primary key is required
 			email = undefined,
@@ -72,7 +120,6 @@ export default class UsersHelper {
 			name = undefined
 		} = user
 		const hash = password === undefined ? undefined : this.hashPassword(password)
-		onFailure([user, [userid, email, hash, role, name]])
 		pool.query(`UPDATE \"Users\"
 			SET 
 			email = COALESCE($2, email),
@@ -83,15 +130,26 @@ export default class UsersHelper {
 
 			name = COALESCE($5, name)
 
-			WHERE userid = $1`, [userid, email, hash, role, name])
-			.then(onSuccess)
+			WHERE userid = $1
+			RETURNING * `, [userid, email, hash, role, name])
+			.then((res : {rows:User[]}) => onSuccess(res.rows[0]))
 			.catch(onFailure);
 	}
 
 	/**
 	 * deletes a user from the database, based on the userID.
 	 */
-	static deleteUser(userid: string, onSuccess: Function, onFailure: Function) {
+	static deleteUser(userid: string) : Promise<void>{
+		return new Promise((
+				resolve : () => void, 
+				reject: (error : Error) => void
+			) => this._deleteUser(userid, resolve,reject))
+	}
+
+	static _deleteUser(
+			userid: string,
+			onSuccess: () => void,
+			onFailure : (error : Error) => void) {
 		pool.query("DELETE FROM \"Users\" WHERE userid = $1", [userid])
 			.then(onSuccess)
 			.catch(onFailure);
@@ -102,7 +160,11 @@ export default class UsersHelper {
 	 * this requires parameters 'email' and 'password'
 	 * onSuccess will be called with the corresponding userID to proceed with login.
 	 */
-	static loginUser(loginRequest : {email:string, password:string}, onSuccess: Function, onUnauthorised: Function, onFailure: Function) {
+	static loginUser(
+		loginRequest : {email:string, password:string}, 
+		onSuccess: (userid : string) => void, 
+		onUnauthorised: () => void, 
+		onFailure : (error : Error) => void) {
 		const {
 			email,
 			password
@@ -110,22 +172,25 @@ export default class UsersHelper {
 		pool.query("SELECT userid, name, globalRole, email, hash as password FROM \"Users\" where email = $1", [email])
 			.then((res : {rows:User[]}) => {
 				if (res.rows.length !== 1){
-					onUnauthorised()
+					return onUnauthorised()
 				}
 				if (!res.rows[0].password){
-					throw new Error('WTF is the database doing')
+					return onFailure(Error('WTF is the database doing'))
 				}
 				const hash : string = res.rows[0].password;
-				const {userid }= res.rows[0]
+				const {userid}= res.rows[0]
+				if (userid===undefined){
+					return onFailure(Error("the database is fking with us"))
+				}
 				if (this.comparePassword(hash, password)){
-					onSuccess(userid)
+					return onSuccess(userid)
 				} else {
-					onUnauthorised()
+					return onUnauthorised()
 				}
 			})
 			.catch((error : Error) => {
 				console.error(error)
-				onFailure(error)
+				return onFailure(error)
 			});	
 	}
 
