@@ -137,7 +137,7 @@ export default class UsersMiddleware {
 	static issueToken(email: String): String {
 		const payload = {email};
 		const token: String = jwt.sign(payload, Constants.AUTHSECRETKEY, {
-			expiresIn: '1h'
+			expiresIn: '1400h'
 		});
 		return token;
 	}
