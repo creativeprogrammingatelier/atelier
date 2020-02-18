@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { AxiosError } from 'axios';
 
+import '../../../../helpers/Extensions';
 import FileHelper from '../../../helpers/FileHelper';
 import { DirectoryViewer } from './DirectoryViewer';
 import { FileSelectionViewer } from './FileSelectionViewer';
@@ -12,18 +13,6 @@ import '../../styles/file-uploader.scss';
 interface UploaderProperties {
     /** Callback to call when uploading is finished */
     onUploadComplete: () => void
-}
-
-// Extend the File and HTMLInputElement interfaces with
-// with properties to support folder uploading
-declare global {
-    interface File {
-        webkitRelativePath: string
-    }
-
-    interface HTMLInputElement {
-        webkitdirectory: boolean
-    }
 }
 
 /** If the browser supports uploading directories, the component
