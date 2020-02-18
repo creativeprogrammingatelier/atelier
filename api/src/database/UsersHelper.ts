@@ -17,7 +17,7 @@ export default class UsersHelper {
 		return new Promise((
 				resolve : (result : User[]) => void, 
 				reject: (error : Error) => void
-			) => this._getAllStudents(resolve,reject))
+			) => UsersHelper._getAllStudents(resolve,reject))
 	}
 
 	static _getAllStudents(
@@ -35,7 +35,7 @@ export default class UsersHelper {
 		return new Promise((
 				resolve : (result : User[]) => void, 
 				reject: (error : Error) => void
-			) => this._getAllUsers(resolve,reject))
+			) => UsersHelper._getAllUsers(resolve,reject))
 	}
 
 	static _getAllUsers(
@@ -53,7 +53,7 @@ export default class UsersHelper {
 		return new Promise((
 				resolve : (result : User) => void, 
 				reject: (error : Error) => void
-			) => this._getUserByID(userid, resolve,reject))
+			) => UsersHelper._getUserByID(userid, resolve,reject))
 	}
 
 	static _getUserByID(
@@ -77,7 +77,7 @@ export default class UsersHelper {
 		return new Promise((
 				resolve : (result : User) => void, 
 				reject: (error : Error) => void
-			) => this._createUser(user, resolve,reject))
+			) => UsersHelper._createUser(user, resolve,reject))
 	}
 
 	static _createUser(
@@ -105,7 +105,7 @@ export default class UsersHelper {
 		return new Promise((
 				resolve : (result : User) => void, 
 				reject: (error : Error) => void
-			) => this._updateUser(user, resolve,reject))
+			) => UsersHelper._updateUser(user, resolve,reject))
 	}
 
 	static _updateUser(
@@ -119,7 +119,7 @@ export default class UsersHelper {
 			role = undefined,
 			name = undefined
 		} = user
-		const hash = password === undefined ? undefined : this.hashPassword(password)
+		const hash = password === undefined ? undefined : UsersHelper.hashPassword(password)
 		pool.query(`UPDATE \"Users\"
 			SET 
 			email = COALESCE($2, email),
@@ -143,7 +143,7 @@ export default class UsersHelper {
 		return new Promise((
 				resolve : () => void, 
 				reject: (error : Error) => void
-			) => this._deleteUser(userid, resolve,reject))
+			) => UsersHelper._deleteUser(userid, resolve,reject))
 	}
 
 	static _deleteUser(
@@ -182,7 +182,7 @@ export default class UsersHelper {
 				if (userid===undefined){
 					return onFailure(Error("the database is fking with us"))
 				}
-				if (this.comparePassword(hash, password)){
+				if (UsersHelper.comparePassword(hash, password)){
 					return onSuccess(userid)
 				} else {
 					return onUnauthorised()

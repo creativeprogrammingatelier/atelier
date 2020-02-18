@@ -9,44 +9,39 @@ import RolePermissionHelper from './RolePermissionsHelper'
  */
 const pool = HH.pool
 export default class SubmissionHelper {
-	
-	static getAllSubmissions() {
-		return new Promise((
-				resolve : (result : Submission[]) => void, 
-				reject: (error : Error) => void
-			) => this._getAllSubmissions(resolve, reject))
+	/**
+	 * return all submissions in the database
+	 * if limit is specified and >= 0, that number of occurences will be send back.
+	 */
+	static getAllSubmissions(limit? : number) {
+		return SubmissionHelper.getRecents({}, limit !== undefined && limit >=0?limit:undefined)
 	}
-	static _getAllSubmissions(
-			onSuccess : (result : Submission[]) => void,
-			onFailure : (error : Error) => void) {
-		this._getRecents({}, undefined, onSuccess, onFailure)
+	/*
+	 * get all submissions of a user.
+	 * if limit is specified and >= 0, that number of occurences will be send back.
+	*/
+	static getUserSubmissions(userID : string, limit? : number){
+		return SubmissionHelper.getRecents({userid:userID}, limit !== undefined && limit >=0?limit:undefined)
 	}
 
+	/**
+	 * return a submission in the database
+	 * undefined if specified id does not exist
+	 */
 	static getSubmissionById(submissionID : string){
 		return new Promise((
-				resolve : (result : Submission[]) => void, 
+				resolve : (result : Submission) => void, 
 				reject: (error : Error) => void
-			) => this._getSubmissionById(submissionID, resolve, reject))
+			) => SubmissionHelper._getSubmissionById(submissionID, SubmissionHelper.sendOne(resolve), reject))
 	}
+
 	static _getSubmissionById(
 			submissionID : string, 
 			onSuccess : (result : Submission[]) => void,
 			onFailure : (error : Error) => void) {
-		this._getRecents({submissionid: submissionID}, undefined, onSuccess, onFailure)
+		SubmissionHelper._getRecents({submissionid: submissionID}, 1, onSuccess, onFailure)
 	}
 
-	static getUserSubmissions(userID : string){
-		return new Promise((
-				resolve : (result : Submission[]) => void, 
-				reject: (error : Error) => void
-			) => this._getUserSubmissions(userID, resolve, reject))
-	}
-	static _getUserSubmissions(
-			userID : string, 
-			onSuccess : (result : Submission[]) => void,
-			onFailure : (error : Error) => void) {
-		this._getRecents({userid:userID}, undefined, onSuccess, onFailure)
-	}
 
 	/*
 	 * Give a submission object, all fields can be null
@@ -62,7 +57,7 @@ export default class SubmissionHelper {
 		return new Promise((
 				resolve : (result : Submission[]) => void, 
 				reject: (error : Error) => void
-			) => this._getRecents(submission, limit, resolve, reject))
+			) => SubmissionHelper._getRecents(submission, limit, resolve, reject))
 	}
 	static _getRecents(
 			submission : Submission,
@@ -79,69 +74,71 @@ export default class SubmissionHelper {
 		pool.query(`SELECT * 
 			FROM \"Submissions\" 
 			WHERE 
-					($1 IS NULL OR submissionID=$1)
-				AND ($2 IS NULL OR userID=$2)
-				AND ($3 IS NULL OR name=$3)
-				AND ($4 IS NULL OR date <= $4)
-				AND ($5 IS NULL OR state=$5)
+					($1::uuid IS NULL OR submissionID=$1)
+				AND ($2::uuid IS NULL OR userID=$2)
+				AND ($3::text IS NULL OR name=$3)
+				AND ($4::timestamp IS NULL OR date <= $4)
+				AND ($5::text IS NULL OR state=$5)
 			ORDER BY date DESC
 			LIMIT $6`,[submissionid, userid, name, date, state, limit])
-		.then((res : {rows : DBSubmission[]}) => onSuccess(res.rows.map(this.DBToI)))
+		.then((res : {rows : DBSubmission[]}) => onSuccess(res.rows.map(SubmissionHelper.DBToI)))
 		.catch(onFailure)
 	}
 
 	/**
 	 * add a new submission to the database.
 	 *
-	 * Even though discouraged, submissionid can be given.
-	 * The same holds true for date and state
+	 * Even though not required, date and state can be given
 	 * When not given, each of these columns will default to their standard value
 	 */
 	static addSubmission(submission : Submission){
 		return new Promise((
 				resolve : (result : Submission) => void, 
 				reject: (error : Error) => void
-			) => this._addSubmission(submission, resolve, reject))
+			) => SubmissionHelper._addSubmission(submission, resolve, reject))
 	}
 	static _addSubmission(
 			submission : Submission, 
 			onSuccess : (result : Submission) => void,
 			onFailure : (error : Error) => void) {
 		const {
-			submissionid = "DEFAULT",
 			userid,
 			name,
-			date = "DEFAULT",
-			state = "DEFAULT"
+			date = new Date(),
+			state = submissionStatus.new
 		} = submission
-		pool.query("INSERT INTO \"Submissions\" VALUES ($1,$2,$3,$4,$5) RETURNING *"
-			, [submissionid, userid, name, date, state])
-		.then((res : {rows : DBSubmission[]}) => onSuccess(this.DBToI(res.rows[0])))
+		pool.query("INSERT INTO \"Submissions\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING *"
+			, [userid, name, date, state])
+		.then((res : {rows : DBSubmission[]}) => onSuccess(SubmissionHelper.DBToI(res.rows[0])))
 		.catch(onFailure)
 	}
 
-	static deleteSubmission(submission : Submission){
+	/* delete an submission from the database.
+	 *
+	 */
+	static deleteSubmission(submissionID : string) : Promise<void>{
 		return new Promise((
 				resolve : () => void, 
 				reject: (error : Error) => void
-			) => this._deleteSubmission(submission, resolve, reject))
+			) => SubmissionHelper._deleteSubmission(submissionID, resolve, reject))
 	}
 	static _deleteSubmission(
-			submission : Submission, 
+			submissionid : string, 
 			onSuccess : () => void, 
 			onFailure : (error : Error) => void){
-		const {
-			submissionid
-		} = submission
 		pool.query("DELETE FROM \"Submissions\" WHERE submissionID=$1",[submissionid])
 		.then(onSuccess)
 		.catch(onFailure)
 	}
+	/*
+	 * update a submission submissionid is required, all others are optional.
+	 * params not given will be left unchanged.
+	 */
 	static updateSubmission(submission : Submission){
 		return new Promise((
 				resolve : (result : Submission) => void, 
 				reject: (error : Error) => void
-			) => this._updateSubmission(submission, resolve, reject))
+			) => SubmissionHelper._updateSubmission(submission, resolve, reject))
 	}
 	static _updateSubmission(
 			submission : Submission, 
@@ -154,7 +151,7 @@ export default class SubmissionHelper {
 			date = undefined,
 			state = undefined
 		} = submission
-		pool.query(`UPDATE \"Submission\" SET
+		pool.query(`UPDATE \"Submissions\" SET
 			userid = COALESCE($2, userid),
 			name = COALESCE($3, name),
 			date = COALESCE($4, date),
@@ -162,13 +159,23 @@ export default class SubmissionHelper {
 			WHERE submissionID=$1
 			RETURNING *`
 			, [submissionid, userid, name, date, state])
-		.then((res : {rows:DBSubmission[]}) => onSuccess(this.DBToI(res.rows[0])))
+		.then((res : {rows:DBSubmission[]}) => onSuccess(SubmissionHelper.DBToI(res.rows[0])))
 		.catch(onFailure)
+	}
+
+	/**
+	 * receive a function F.
+	 * F requires a single item.
+	 * send back a new function that sends the first item of a list to F.
+	 * 
+	 */
+	private static sendOne(onSuccess : (result : Submission) => void) {
+		return (result : Submission[]) => onSuccess(result[0])
 	}
 
 
 	private static DBToI(db : DBSubmission) : Submission{
-		if (this.checkEnum(db.state)){
+		if (SubmissionHelper.checkEnum(db.state)){
 			return {...db, state: submissionStatus[db.state]}
 		}
 		throw new Error('non-existent enum type from db: '+db.state)

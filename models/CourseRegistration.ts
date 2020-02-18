@@ -9,6 +9,6 @@ export interface CourseRegistration {
 export interface DBCourseRegistration {
 	courseid : string,
 	userid : string,
-	role : string,
+	courserole : string,
 	permission : number
 }

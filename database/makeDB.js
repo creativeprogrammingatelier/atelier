@@ -80,7 +80,7 @@ CREATE TABLE "Submissions" (
      state          text NOT NULL DEFAULT 'new'
 );
 INSERT INTO "Submissions" VALUES
-	(DEFAULT, (SELECT userID from "Users" LIMIT 1), 'my_first_submission', DEFAULT, DEFAULT);
+	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'my_first_submission', DEFAULT, DEFAULT);
 
 
 CREATE TABLE "Files" (

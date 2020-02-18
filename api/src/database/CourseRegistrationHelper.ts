@@ -19,7 +19,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : (result : CourseRegistration[]) => void, 
 				reject: (error : Error) => void
-			) => this._getAllEntries(resolve, reject))
+			) => CourseRegistrationHelper._getAllEntries(resolve, reject))
 	}
 
 	static _getAllEntries(
@@ -34,7 +34,7 @@ export default class CourseRegistrationHelper {
 							 WHERE courseRoleID=courseRole
 							) AS permission
 			FROM "CourseRegistration"`)
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(res.rows.map(this.DBToI)))
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(res.rows.map(CourseRegistrationHelper.DBToI)))
 		.catch(onFailure)
 	}
 
@@ -45,7 +45,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : (result : CourseRegistration[]) => void, 
 				reject: (error : Error) => void
-			) => this._getEntriesByCourse(courseID, resolve,reject))
+			) => CourseRegistrationHelper._getEntriesByCourse(courseID, resolve,reject))
 	}
 
 	static _getEntriesByCourse(
@@ -62,7 +62,7 @@ export default class CourseRegistrationHelper {
 							) AS permission
 			FROM "CourseRegistration"
 			WHERE courseID=$1`, [courseID])
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(res.rows.map(this.DBToI)))
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(res.rows.map(CourseRegistrationHelper.DBToI)))
 		.catch(onFailure)
 	}
 
@@ -73,7 +73,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : (result : CourseRegistration[]) => void, 
 				reject: (error : Error) => void
-			) => this._getEntriesByUser(userID, resolve,reject))
+			) => CourseRegistrationHelper._getEntriesByUser(userID, resolve,reject))
 	}
 
 	static _getEntriesByUser(
@@ -90,7 +90,7 @@ export default class CourseRegistrationHelper {
 							) AS permission
 			FROM "CourseRegistration" 
 			WHERE userID=$1`, [userID])
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(res.rows.map(this.DBToI)))
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(res.rows.map(CourseRegistrationHelper.DBToI)))
 		.catch(onFailure)
 	}
 
@@ -101,7 +101,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : (result : CourseRegistration) => void, 
 				reject: (error : Error) => void
-			) => this._addEntry(entry, resolve,reject))
+			) => CourseRegistrationHelper._addEntry(entry, resolve,reject))
 	}
 
 	static _addEntry(
@@ -116,8 +116,8 @@ export default class CourseRegistrationHelper {
 		} = entry
 		pool.query(`INSERT INTO \"CourseRegistration\" 
 			VALUES ($1,$2,$3,$4) 
-			RETURNING *`, [courseid, userid, role, this.toBin(permission)])
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(this.DBToI(res.rows[0])))
+			RETURNING *`, [courseid, userid, role, CourseRegistrationHelper.toBin(permission)])
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(CourseRegistrationHelper.DBToI(res.rows[0])))
 		.catch(onFailure)
 	}
 
@@ -130,7 +130,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : (result : CourseRegistration) => void, 
 				reject: (error : Error) => void
-			) => this._updateRole(entry, resolve,reject))
+			) => CourseRegistrationHelper._updateRole(entry, resolve,reject))
 	}
 
 	static _updateRole(
@@ -147,7 +147,7 @@ export default class CourseRegistrationHelper {
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 			`, [courseid, userid, role])
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(this.DBToI(res.rows[0])))
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(CourseRegistrationHelper.DBToI(res.rows[0])))
 		.catch(onFailure)
 	}
 
@@ -160,7 +160,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : (result : CourseRegistration) => void, 
 				reject: (error : Error) => void
-			) => this._addPermission(entry,resolve,reject))
+			) => CourseRegistrationHelper._addPermission(entry,resolve,reject))
 	}
 
 	static _addPermission(
@@ -176,8 +176,8 @@ export default class CourseRegistrationHelper {
 			permission=permission | $3
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
-			`, [courseid, userid, this.toBin(permission)])
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(this.DBToI(res.rows[0])))
+			`, [courseid, userid, CourseRegistrationHelper.toBin(permission)])
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(CourseRegistrationHelper.DBToI(res.rows[0])))
 		.catch(onFailure)
 	}
 
@@ -191,7 +191,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : (result : CourseRegistration) => void, 
 				reject: (error : Error) => void
-			) => this._removePermission(entry, resolve,reject))
+			) => CourseRegistrationHelper._removePermission(entry, resolve,reject))
 	}
 
 	static _removePermission(
@@ -207,8 +207,8 @@ export default class CourseRegistrationHelper {
 			permission=permission & ~($3::bit(40))
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
-			`, [courseid, userid, this.toBin(permission)])
-		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(this.DBToI(res.rows[0])))
+			`, [courseid, userid, CourseRegistrationHelper.toBin(permission)])
+		.then((res : {rows:DBCourseRegistration[]}) => onSuccess(CourseRegistrationHelper.DBToI(res.rows[0])))
 		.catch(onFailure)
 	}
 
@@ -220,7 +220,7 @@ export default class CourseRegistrationHelper {
 		return new Promise((
 				resolve : () => void, 
 				reject: (error : Error) => void
-			) => this._deleteEntry(entry, resolve,reject))
+			) => CourseRegistrationHelper._deleteEntry(entry, resolve,reject))
 	}
 
 	static _deleteEntry(
@@ -239,10 +239,10 @@ export default class CourseRegistrationHelper {
 	}
 
 	private static DBToI(entry : DBCourseRegistration) : CourseRegistration{
-		if (this.checkEnum(entry.role)){
-			return {...entry, role:localRoles[entry.role]}
+		if (CourseRegistrationHelper.checkEnum(entry.courserole)){
+			return {...entry, role:localRoles[entry.courserole]}
 		}
-		throw new Error('non-existent enum type from db: '+entry.role)
+		throw new Error('non-existent enum type from db: '+entry.courserole)
 	}
 	private static checkEnum(role : string) : role is keyof typeof localRoles { 
 		return role in localRoles

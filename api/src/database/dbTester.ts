@@ -106,17 +106,20 @@ function submissionHelper(){
 	SH.getAllSubmissions().then(logger('getAllSubmissions')).catch(error('getAllSubmissions'))
 	SH.getSubmissionById(uuid).then(logger('getSubmissionById')).catch(error('getSubmissionById'))
 	SH.getUserSubmissions(uuid).then(logger('getUserSubmissions')).catch(error('getUserSubmissions'))
-
-	const sub = {submissionid: undefined, name: "myProject", userid:uuid, date:undefined, state: submissionStatus.closed}
+	const sub = {submissionid: undefined, name: "myProject", userid:uuid, date:undefined, state: submissionStatus.new}
+	const sub2 = {submissionid: undefined, name: "mySecondProject", userid:uuid, date:undefined, state: submissionStatus.closed}
 	SH.addSubmission(sub).then((res:{submissionid?: string}) => {
-		const id = res.submissionid ? res.submissionid : ""
-		// SH.updateSubmission()
+		if (res.submissionid===undefined) throw new Error("no submissionid")
+		const id = res.submissionid
+		SH.updateSubmission({...sub2, submissionid:id}).then(()=>
+			SH.deleteSubmission(id).then(logger("deleteSubmission")).catch(error("deleteSubmission"))
+			).catch(error("updateSubmission"))
 	}).catch( error("addSubmission"))
 	
 
 }
-usersHelper()
-setTimeout(coursesHelper,1000)
-setTimeout(rolesHelper, 2000)
-setTimeout(courseRegistrationHelper, 4000)
-setTimeout(submissionHelper, 5000)
+setTimeout(usersHelper, 0)
+setTimeout(coursesHelper,100)
+setTimeout(rolesHelper, 200)
+setTimeout(courseRegistrationHelper, 300)
+setTimeout(submissionHelper, 400)
