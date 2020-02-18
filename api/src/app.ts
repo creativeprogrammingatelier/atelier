@@ -19,6 +19,7 @@ let authRouter = require('./routes/AuthRouter');
 let filesRouter = require('./routes/FilesRouter');
 let commentRouter = require('./routes/CommentsRouter');
 let indexRouter = require('./routes/IndexRouter');
+let courseRouter = require('./database/CourseRouter');
 
 
 let app = express();
@@ -48,6 +49,7 @@ app.use(express.static(path.join(__dirname, '../../client/')));
  * Setting routes
  * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all
  */
+app.use('/api/course', courseRouter);
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/files', filesRouter);

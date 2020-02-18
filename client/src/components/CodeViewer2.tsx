@@ -124,7 +124,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
     highlightComments() {
         // @Cas colors and opacity that are being looped through
         let colorIndex = 0;
-        let colors = ['#DCDCDC', '#D3D3D3', '#C0C0C0', '#A9A9A9', '#808080'];
+        let colors = ['#DCDCDC'];//, '#D3D3D3', '#C0C0C0', '#A9A9A9', '#808080'];
         let opacity = '7f';
 
         if (this.state.comments != undefined) {
