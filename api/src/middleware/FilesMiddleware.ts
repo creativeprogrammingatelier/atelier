@@ -4,9 +4,11 @@ import UserModel, {IUser} from '../../../models/user';
 import path from 'path';
 import CommentMiddleware from './CommentMiddleware';
 import {IComment} from '../../../models/comment';
+import { deleteFile } from '../helpers/FilesystemHelper';
 
 /**
  * Files middleware provides helper methods for interacting with Files in the DB
+ * TODO: Restructure, this is not middleware
  * @Author Andrew Heath
  */
 export default class FilesMiddleware {
@@ -59,35 +61,6 @@ export default class FilesMiddleware {
 			onSuccess(data);
 		});
 	}
-	/*
-	 * Reads file from disk
-	 * @param {*} filePath location of file
-	 * @param {*} next callback
-	 */
-	static readFileFromDisk(file: IFile, onSuccess: Function, onFailure: Function) {
-		fs.readFile(path.join(file.path), {
-			encoding: 'utf-8'
-		}, (error: any, data: string) => {
-			if (error) {
-				console.error(error);
-				onFailure(error);
-			} else {
-				file.body = data;
-				onSuccess(file);
-			}
-		});
-	}
-	private static deleteFromDisk(file: IFile, onSuccess: Function, onFailure: Function) {
-		fs.unlink(file.path.toString(),
-			(error: any) => {
-				if (error) {
-					onFailure();
-				} else {
-					onSuccess();
-				}
-			}
-		);
-	}
 
 	/**
 	 * Deletes file from the database
@@ -97,15 +70,11 @@ export default class FilesMiddleware {
 	static deleteFile(fileid: String, onSuccess: Function, onFailure: Function) {
 		this.getFile(fileid,
 			(file: IFile) => {
-				this.deleteFromDisk(file,
-					() => FileModel.deleteOne({
-						_id: fileid
-					}, (error: Error) => {
-						(error) ? onFailure(error) : onSuccess();
-					})
-					, onFailure);
-
-			}, onFailure);
+                deleteFile(file.path)
+                .then(() => FileModel.deleteOne({ _id: fileid }, err => err ? onFailure(err) : onSuccess()))
+                .catch(onFailure as any)
+            },
+			onFailure);
 	}
 
 	static deleteUserFiles(userId: String, onSuccess: Function, onFailure: Function) {

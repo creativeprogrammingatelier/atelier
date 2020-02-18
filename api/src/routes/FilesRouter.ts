@@ -1,86 +1,38 @@
-/**
- * Routes for request relating to Files
- *
- * @Author Andrew Heath
- */
-
+import express, { Response, Request } from 'express';
 import multer from 'multer';
+import path from 'path';
 
-const UPLOADS_PATH = "uploads";
-
-type FileUploadRequest = Request & { fileLocation?: string };
-
-var express = require('express');
-var upload = multer({
-    preservePath: true,
-    storage: multer.diskStorage({
-        destination: (req: FileUploadRequest, file, callback) => {
-            if (req.fileLocation === undefined) {
-                req.fileLocation = randomBytes(16).toString('hex');
-            }
-            const folder = path.join(UPLOADS_PATH, req.fileLocation,  
-                path.dirname(file.originalname) !== "." 
-                ? path.dirname(file.originalname)
-                : req.body["project"]);
-            fs.mkdir(folder, { recursive: true }, () => callback(null, folder));
-        },
-        filename: (_, file, callback) => {
-            callback(null, path.basename(file.originalname));
-        }
-    })
-});
-
-var router = express.Router();
-
+import { projectStorageEngine, FileUploadRequest, readFileAsString, archiveProject, deleteNonCodeFiles } from '../helpers/FilesystemHelper';
+import RoutesHelper from '../helpers/RoutesHelper';
 import AuthMiddleware from '../middleware/AuthMiddleware';
 import UserMiddleware from '../middleware/UsersMiddleware';
 import FilesMiddleware from '../middleware/FilesMiddleware';
-import {Response, Request} from 'express';
-import {IUser} from '../../../models/user';
-import {IFile} from '../../../models/file';
-import path from 'path';
 import PermissionsMiddleware from '../middleware/PermissionsMiddleware';
-import fs from 'fs';
-import archiver from 'archiver';
-import RoutesHelper from '../helpers/RoutesHelper';
-import { randomBytes } from 'crypto';
+
+import { IUser } from '../../../models/user';
+import { IFile } from '../../../models/file';
+
+const upload = multer({
+    preservePath: true,
+    storage: projectStorageEngine
+});
+
+export const router = express.Router();
 
 /** Upload a list of files that are part of a single project
  */   
 router.put('/', AuthMiddleware.withAuth, upload.array('files'), 
-    (request: FileUploadRequest, result: Response) => {
+    async (request: FileUploadRequest, result: Response) => {
         // TODO: Fix error handling in here, it's terrible
         const files = request.files as Express.Multer.File[];
 
-        const archive = archiver('zip', { zlib: { level: 7 } });
-        const filesPath = path.join(UPLOADS_PATH, request.fileLocation!, request.body["project"]);
-        const output = fs.createWriteStream(filesPath + ".zip");
-
-        output.on('close', () => {
-            for (const file of files.filter(f => path.extname(f.filename) !== ".pde")) {
-                fs.unlink(file.path, () => { console.log(`Deleted ${file.filename}`)});
-            }
-        });
-
-        archive.on('warning', err => {
-            if (err.code === 'ENOENT') {
-                console.log(err);
-            } else {
-                console.error(err);
-            }
-        });
-        archive.on('error', err => {
-            console.error(err);
-        });
-
-        archive.pipe(output);
-        archive.directory(filesPath, false);
-        archive.finalize();
+        const zipFile = await archiveProject(request.fileLocation!, request.body["project"]);
+        await deleteNonCodeFiles(files);
 
         UserMiddleware.getUser(request,
             (user: IUser) => {
                 // TODO: Use actual project structure to store this
-                FilesMiddleware.createFile(request.body["project"] + ".zip", filesPath + ".zip", user,
+                FilesMiddleware.createFile(path.basename(zipFile), zipFile, user,
                     () => {},
                     (err: Error) => console.log(err));
 
@@ -108,12 +60,12 @@ router.get('/', AuthMiddleware.withAuth, (request: Request, result: Response) =>
 router.get('/:fileId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request: Request, response: Response) => {
 	const fileId = RoutesHelper.getValueFromParams('fileId', request, response);
 	FilesMiddleware.getFile(fileId, (file: IFile) => {
-		FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any) => {
-			let fileWithBody = {id: file.id, name: file.name, body: fileFromDisk.body};
-			response.status(200).send(fileWithBody);
-		}, (error: Error) => {
-			console.error(error), response.status(500).send();
-		});
+        readFileAsString(file.path)
+            .then(data => response.status(200).send({id: file.id, name: file.name, body: data}))
+            .catch((error: Error) => {
+                console.error(error); 
+                response.status(500).send();
+		    });
 	}, (error: Error) => {
 		console.error(error), response.status(500).send();
 	});
@@ -142,15 +94,12 @@ router.get('/:studentId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFi
 	const fileId: string = RoutesHelper.getValueFromParams('fileId', request, response);
 	FilesMiddleware.getFile(fileId,
 		(file: IFile) => {
-			FilesMiddleware.readFileFromDisk(file,
-				(fileWithData: IFile) => {
-					response.status(200).json(fileWithData);
-				},
-				(error: Error) => {
+			readFileAsString(file.path)
+				.then(data => response.status(200).json({...file, body: data}))
+				.catch((error: Error) => {
 					console.error(error);
 					response.status(500).send('error');
-				}
-			);
+				});
 		},
 		(error: Error) => {
 			console.error(error);
@@ -167,9 +116,9 @@ router.get('/:fileId/download', AuthMiddleware.withAuth, PermissionsMiddleware.c
 	const fileId: string = RoutesHelper.getValueFromParams('fileId', request, response);
 	FilesMiddleware.getFile(fileId,
 		(file: IFile) => {
-			FilesMiddleware.readFileFromDisk(file,
-				(fileWithData: IFile) => response.status(200).json(fileWithData),
-				(error: Error) => {
+			readFileAsString(file.path)
+				.then(data => response.status(200).json({...file, body: data}))
+				.catch((error: Error) => {
 					console.error(error);
 					response.sendStatus(500);
 				});
@@ -179,4 +128,3 @@ router.get('/:fileId/download', AuthMiddleware.withAuth, PermissionsMiddleware.c
 		}
 	);
 });
-module.exports = router;
