@@ -28,38 +28,6 @@ export function CodeTab({file, fileName, comments} : CodeProperties) {
         body : 'textasdfadsfasdf\nmadsfasdfasdfore text\nmadsfadsfadfore text\neadfadsfxit()\nadsfadfasdfadfadfa\nadsfadsfadfadfasd'
     };
 
-    function commentClick(commentID : number) {
-        console.log("clicked comment: " + commentID);
-    }
-
-    const fileComments : FileComment[] = [
-        {
-            startLine : 1,
-            startCharacter : 0,
-            endLine : 1,
-            endCharacter : 3,
-            onClick : () => commentClick(1),
-            commentID : 1
-        },
-        {
-            startLine : 3,
-            startCharacter : 0,
-            endLine : 4,
-            endCharacter : 3,
-            onClick : () => commentClick(2),
-            commentID : 2
-        },
-        {
-            startLine : 1,
-            startCharacter : 5,
-            endLine : 1,
-            endCharacter : 30,
-            onClick : () => commentClick(3),
-            commentID : 3
-        }
-    ];
-
-
     // @ts-ignore
     const formatedFile : IFile = {
         ...testFile,
@@ -77,28 +45,9 @@ export function CodeTab({file, fileName, comments} : CodeProperties) {
     return (
         <div>
             <h1>Code Tab</h1>
-            {
-                (fileName == undefined || fileName == "") ?
-                    <p>Select a file in project tab</p> :
-                    <div>
-                        <h2>{fileName}</h2>
-                        <textarea>
-                                branch('feature/viewCode')
-                                checkout('feature/viewCode')
-                                writeCode()
-                                add('.')
-                                commit('implemented feature view code')
-                                push()
-                                checkout()
-                                merge('feature/viewCode')
-                                push()
-                            </textarea>
-                    </div>
-            }
             <CodeViewer2 {
                 ...{
-                    file : formatedFile,
-                    comments : fileComments
+                    file : formatedFile
                 }
             }
                 />

@@ -1,10 +1,9 @@
-import React, {Component, Ref, TextareaHTMLAttributes, useImperativeHandle, DOMElement} from 'react';
+import React, {Component, Ref, TextareaHTMLAttributes, useImperativeHandle, DOMElement, useEffect} from 'react';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/oceanic-next.css';
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
-//import CodeMirror from //'codemirror';
 import {Controlled as CodeMirror} from 'react-codemirror2';
 import {IFile} from '../../../models/file';
 import {FileComment} from "./submission/CodeTab";
@@ -20,14 +19,44 @@ type CodeViewer2State = {
     selecting : boolean,
     commentSelection : string,
 
+    comments : FileComment[],
+
     commentStartLine : number,
     commentStartCharacter : number,
     commentEndLine : number,
     commentEndCharacter : number
 }
 
+const fileComments : FileComment[] = [
+    {
+        startLine : 1,
+        startCharacter : 0,
+        endLine : 1,
+        endCharacter : 3,
+        onClick : () => console.log("clicked comment 1"),
+        commentID : 1
+    },
+    {
+        startLine : 3,
+        startCharacter : 0,
+        endLine : 4,
+        endCharacter : 3,
+        onClick : () => console.log("clicked comment 2"),
+        commentID : 2
+    },
+    {
+        startLine : 1,
+        startCharacter : 5,
+        endLine : 1,
+        endCharacter : 30,
+        onClick : () => console.log("clicked comment 3"),
+        commentID : 3
+    }
+];
+
 class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
     codeMirror!: CodeMirror.Editor;
+
 
     constructor(props : CodeViewer2Props) {
         super(props);
@@ -36,6 +65,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
             formattedCode : props.file.body,
             selecting : false,
             commentSelection : "",
+
+            comments : [],
 
             commentStartLine : 0,
             commentStartCharacter : 0,
@@ -46,31 +77,49 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
         // Bind methods that are called from onClick methods
         this.onSelection = this.onSelection.bind(this);
         this.onClick = this.onClick.bind(this);
-        //this.setCommentRanges = this.setCommentRanges.bind(this);
         this.setSelecting = this.setSelecting.bind(this);
         this.addComment = this.addComment.bind(this);
+    }
+
+    componentDidUpdate(prevProps: Readonly<CodeViewer2Props>, prevState: Readonly<CodeViewer2State>, snapshot?: any): void {
+        if (this.state.comments !== prevState.comments) {
+            this.highlightComments();
+        }
     }
 
     /**
      * Initialization when editor is created.
      */
     initialize() {
-        this.highlightComments();
         this.codeMirror.setSize('100%', '100%');
+
+        // Retrieve comments
+        // TODO get comments from the database
+        this.setState({
+           comments : fileComments
+        });
+
+        this.highlightComments();
     }
 
-    // TODO different colors: loop 5 or so
     /**
      * Highlights comments passed to the code viewer.
      */
     highlightComments() {
-        if (this.props.comments != undefined) {
-            for (const {startLine, startCharacter, endLine, endCharacter} of this.props.comments) {
+        // @Cas colors and opacity that are being looped through
+        let colorIndex = 0;
+        let colors = ['#DCDCDC', '#D3D3D3', '#C0C0C0', '#A9A9A9', '#808080'];
+        let opacity = '7f';
+
+        if (this.state.comments != undefined) {
+            console.log("highlighting: " + this.state.comments.length + " comments");
+            for (const {startLine, startCharacter, endLine, endCharacter} of this.state.comments) {
                 this.codeMirror.markText(
                     {line : startLine - 1, ch: startCharacter},
                     {line : endLine - 1, ch : endCharacter},
-                    {css: "background-color: #abcdef7f;"}
+                    {css: `background-color: ${colors[colorIndex] + opacity};`}
                 );
+                colorIndex = (colorIndex + 1) % colors.length;
             }
         }
     }
@@ -130,15 +179,15 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
      */
     onClick(editor : Editor, event : any) {
         if (!this.state.selecting) {
-            const line = this.codeMirror.getCursor().line;
-            const character = this.codeMirror.getCursor().ch;
+            setTimeout(() => {
+                const line = editor.getCursor().line;
+                const character = editor.getCursor().ch;
 
-            // Check if comment was clicked. Line increased by 1 for editor.
-            this.clickComment(line + 1, character);
+                // Check if comment was clicked. Line increased by 1 for editor.
+                this.clickComment(line + 1, character);
+            }, 10);
         }
-
     }
-
 
     /**
      * Handle click in the code canvas. Pass line and character of the cursor click.
@@ -149,7 +198,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
      * @param character, character location in the line of the click
      */
     clickComment(line : number, character : number) {
-        const comments : FileComment[] | undefined = this.props.comments;
+        console.log("clicked " + line + ":" + character);
+        const comments : FileComment[] | undefined = this.state.comments;
         if (comments == undefined) return;
 
         // Find earliest comment that was clicked
@@ -183,14 +233,28 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
      * Create a comment
      */
     addComment() {
-       console.log("adding a comment");
+        let fileComments = this.state.comments;
+
+        const commentID : number = Math.random();
+        fileComments.push({
+           startLine : this.state.commentStartLine + 1,
+           startCharacter : this.state.commentStartCharacter,
+           endLine : this.state.commentEndLine + 1,
+           endCharacter : this.state.commentEndCharacter,
+           onClick : () => console.log("clicked comment " + commentID),
+           commentID : commentID
+        });
 
 
-       this.setState({
+        this.setState({
+           comments : fileComments,
            selecting : false
-       })
+        });
+
+        this.highlightComments();
+
+
         // TODO call database
-        // TODO add in view
     }
 
     render() {
@@ -201,7 +265,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                     options = {{
                         // .pde is not supported : https://codemirror.net/mode/
                         // TODO implement pde language support?
-                        mode : 'xml',
+                        mode : 'java',
                         // @Cas pick a theme
                         theme : 'material',
                         lineNumbers : true
@@ -235,7 +299,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                             <button id='createComment' onClick={() => this.setSelecting(true)}>Add comment</button>
                         </div>
                 }
-
             </div>
         )
     }

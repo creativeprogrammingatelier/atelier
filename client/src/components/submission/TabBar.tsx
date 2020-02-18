@@ -5,22 +5,22 @@ export function TabBar(props : any) {
     return (
         <div>
             <TabButton
-                value= "Project"
+                value= ""
                 name = "Project"
                 onClick = {props.onClick}
             />
             <TabButton
-                value = "Code"
+                value = "code"
                 name = "Code"
                 onClick = {props.onClick}
             />
             <TabButton
-                value = "Comments"
+                value = "comments"
                 name = "Comments"
                 onClick = {props.onClick}
             />
             <TabButton
-                value = "Share"
+                value = "share"
                 name = "Share"
                 onClick = {props.onClick}
             />
