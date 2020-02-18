@@ -8,56 +8,54 @@ import {ProjectTab} from "./ProjectTab";
 import {Frame} from '../frame/Frame';
 
 interface SubmissionOverviewProps {
-    match: any,
-    history: any
+	match: any,
+	history: any
 }
 
-function getTab(a : string | undefined) {
-    console.log("Finding what tab we're rendering");
-    console.log(a);
-    if (a == undefined || a == "") return 'project';
-    return a.toLowerCase();
+function getTab(token: string | undefined) {
+	console.log("Finding what tab we're rendering");
+	console.log(token);
+	if (token === undefined || token === "") return 'project';
+	return token.toLowerCase();
 }
 
 export function SubmissionOverview({match, history} : SubmissionOverviewProps) {
-    // Get tab from match object
-    const [tab, setTab] = useState(getTab(match.params['tab']));
-    // Keep track of code being viewed
-    const [file, setFile] = useState(getTab(match.params['fileId']));
+	const [tab, setTab] = useState(getTab(match.params['tab'])); // Get tab from match object
+	const [file, setFile] = useState(getTab(match.params['fileId'])); // Keep track of code being viewed
 
-    // Handle events to the tab buttons here
-    function handleTabChange(event : any) {
-        const {value} = event.target;
+	// Handle events to the tab buttons here
+	function handleTabChange(event : any) {
+		const {value} = event.target;
 
-        const tab = getTab(value);
-        setTab(tab);
+		const tab = getTab(value);
+		setTab(tab);
 
-        history.push(`/submission/1/${value}`);
-    }
+		history.push(`/submission/1/${value}`);
+	}
 
-    function changeFile(file : string) {
-        setFile(file);
-        setTab('code');
-    }
+	function changeFile(file : string) {
+		setFile(file);
+		setTab('code');
+	}
 
-    // Display certain tab
-    let currentTab = <div><h1>Tab not found!</h1></div>;
-    if (tab == 'code') {
-        currentTab =  <CodeTab fileName={file}/>
-    } else if (tab == 'comments') {
-        currentTab =  <CommentTab />
-    } else if (tab == 'share') {
-        currentTab = <ShareTab />
-    } else if (tab == 'project') {
-        currentTab = <ProjectTab setFile = {changeFile}/>
-    }
+	// Display certain tab
+	let currentTab = <div><h1>Tab not found!</h1></div>;
+	if (tab == 'code') {
+		currentTab =  <CodeTab fileName={file}/>
+	} else if (tab == 'comments') {
+		currentTab =  <CommentTab />
+	} else if (tab == 'share') {
+		currentTab = <ShareTab />
+	} else if (tab == 'project') {
+		currentTab = <ProjectTab setFile = {changeFile}/>
+	}
 
-    return (
-        <Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={"/submission/../search"}>
-            <TabBar onClick={handleTabChange}/>
-            <hr/>
-            {currentTab}
-        </Frame>
-    )
+	return (
+		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={"/submission/../search"}>
+			<TabBar onClick={handleTabChange}/>
+			<hr/>
+			{currentTab}
+		</Frame>
+	)
 }
 
