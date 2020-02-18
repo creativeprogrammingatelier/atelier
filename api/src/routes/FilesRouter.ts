@@ -12,9 +12,14 @@ import PermissionsMiddleware from '../middleware/PermissionsMiddleware';
 import { IUser } from '../../../models/user';
 import { IFile } from '../../../models/file';
 
+import { MAX_FILE_SIZE } from '../../../helpers/Constants';
+
 const upload = multer({
     preservePath: true,
-    storage: projectStorageEngine
+    storage: projectStorageEngine,
+    limits: {
+        fileSize: MAX_FILE_SIZE
+    }
 });
 
 export const router = express.Router();
