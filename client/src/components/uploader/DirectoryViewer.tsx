@@ -37,12 +37,7 @@ export function DirectoryViewer({ filePaths }: DirectoryViewerProperties) {
         </li>;
 
     if (tree.children.length > 0) {
-        return (
-            <div>
-                <p>These files will be uploaded:</p>
-                <ul>{renderNode(tree.children[0])}</ul>
-            </div>
-        );
+        return <ul>{renderNode(tree.children[0])}</ul>;
     } else {
         return null;
     }

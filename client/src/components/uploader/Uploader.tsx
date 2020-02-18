@@ -7,6 +7,7 @@ import '../../../../helpers/Extensions';
 import FileHelper from '../../../helpers/FileHelper';
 import { DirectoryViewer } from './DirectoryViewer';
 import { FileSelectionViewer } from './FileSelectionViewer';
+import { defaultValidation, validateProjectClient } from '../../../../helpers/ProjectValidationHelper';
 
 import '../../styles/file-uploader.scss';
 
@@ -25,8 +26,8 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
     const [files, updateFiles] = useState([] as File[]);
     const [uploading, updateUploading] = useState(false);
 
-    const [validationErrors, updateValidationErrors] = useState({ invalidFolderName: false });
-    const anyValidationErrors = () => Object.values(validationErrors).reduce((x, y) => x || y);
+    const [validation, updateValidation] = useState(defaultValidation<File>([]));
+    const uploadPrevented = () => validation.containsNoCodeFiles || validation.invalidProjectName;
 
     const [errors, updateErrors] = useState({ upload: false as boolean | number });
 
@@ -43,9 +44,9 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        if (!anyValidationErrors()) {
+        if (!uploadPrevented()) {
             updateUploading(true);
-            FileHelper.uploadFolder(folderName, files, handleUploadComplete, handleUploadError);
+            FileHelper.uploadFolder(folderName, validation.acceptableFiles, handleUploadComplete, handleUploadError);
         }
     };
 
@@ -71,8 +72,8 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
         }
     };
 
-    // Update the folder name and do validation when files are selected
     useEffect(() => {
+        // Update the folder name
         let folderName = "";
         if (files.length > 0) {
             if (folderUploadSupported) {
@@ -83,12 +84,11 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
         }
         updateFolderName(folderName);
 
-
-        if (files.length > 0 && folderUploadSupported) {
-            updateValidationErrors(prev => ({
-                ...prev,
-                invalidFolderName: !files.some(f => f.webkitRelativePath === `${folderName}/${folderName}.pde`)
-            }));
+        // Project validation
+        if (files.length > 0) {
+            updateValidation(validateProjectClient(folderName, files));
+        } else {
+            updateValidation(prev => ({ ...prev, acceptableFiles: [] }))
         }
     }, [files]);
 
@@ -106,20 +106,26 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
                     accept=".pde" 
                     required  />
                 <ul>
-                    {validationErrors.invalidFolderName && <li>Project should contain a file called {folderName}.pde.</li>}
+                    {validation.invalidProjectName && <li>Project should contain a file called {folderName}.pde.</li>}
+                    {validation.containsNoCodeFiles && <li>Project should contain at least one code file.</li>}
                     {errors.upload && <li>Something went wrong while uploading{errors.upload !== true && `, got status ${errors.upload}`}. Please try again.</li>}
                 </ul>
                 {folderUploadSupported
-                ? <DirectoryViewer filePaths={files.map(f => f.webkitRelativePath)} />
+                ? <div>
+                    <p>These files will be uploaded:</p>
+                    <DirectoryViewer filePaths={validation.acceptableFiles.map(f => f.webkitRelativePath)} />
+                    <p>These files won't be uploaded, for example because they are too large:</p>
+                    <DirectoryViewer filePaths={files.filter(f => !validation.acceptableFiles.includes(f)).map(f => f.webkitRelativePath)} />
+                  </div>
                 : <FileSelectionViewer 
-                    fileNames={files.map(f => f.name)} 
+                    fileNames={validation.acceptableFiles.map(f => f.name)} 
                     selected={folderName + ".pde"} 
                     selectedUpdated={name => updateFolderName(name.replace(".pde", ""))} />}
                 {uploading 
                 ? <span>*Insert spinner* Uploading</span>
                 : <button
                     className="form-control" 
-                    disabled={anyValidationErrors() || files.length < 1} 
+                    disabled={uploadPrevented() || files.length < 1} 
                     type="submit" 
                     value="Submit">
                         <FontAwesomeIcon icon={faUpload} />

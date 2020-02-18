@@ -13,6 +13,7 @@ import { IUser } from '../../../models/user';
 import { IFile } from '../../../models/file';
 
 import { MAX_FILE_SIZE } from '../../../helpers/Constants';
+import { validateProjectServer } from '../../../helpers/ProjectValidationHelper';
 
 const upload = multer({
     preservePath: true,
@@ -30,6 +31,13 @@ router.put('/', AuthMiddleware.withAuth, upload.array('files'),
     async (request: FileUploadRequest, result: Response) => {
         // TODO: Fix error handling in here, it's terrible
         const files = request.files as Express.Multer.File[];
+
+        const validation = validateProjectServer(request.body["project"], files);
+        if (validation.containsNoCodeFiles 
+            || validation.invalidProjectName 
+            || validation.acceptableFiles.length === files.length) {
+                result.status(400).json(validation);
+        }
 
         const zipFile = await archiveProject(request.fileLocation!, request.body["project"]);
         await deleteNonCodeFiles(files);
