@@ -3,6 +3,7 @@ import {DataBlock, DataTag} from './DataBlock';
 import {Header} from '../frame/Header';
 
 interface DataListEntryProperties {
+	transport?: string,
 	title: string,
 	text?: string,
 	time: Date,
@@ -24,7 +25,7 @@ export function DataList({header, list}: DataListProperties) {
 	return <div>
 		<Header title={header}/>
 		<div className="pt-2">
-			{list.map((block) => <DataBlock title={block.title} text={block.text} time={{start:block.time, offset:currentTime}} tags={block.tags}/>)}
+			{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time, offset:currentTime}} tags={block.tags}/>)}
 		</div>
 	</div>
 }
