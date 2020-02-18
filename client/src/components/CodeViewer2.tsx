@@ -1,4 +1,4 @@
-import React, {Component, Ref, TextareaHTMLAttributes, useImperativeHandle, DOMElement, useEffect} from 'react';
+import React from 'react';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/oceanic-next.css';
 import 'codemirror/mode/clike/clike.js';
@@ -8,6 +8,7 @@ import {Controlled as CodeMirror} from 'react-codemirror2';
 import {IFile} from '../../../models/file';
 import {FileComment} from "./submission/CodeTab";
 import {Editor} from "codemirror";
+import {WriteComment} from "./commentthread/WriteComment";
 
 type CodeViewer2Props = {
     file : IFile,
@@ -99,7 +100,22 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
            comments : fileComments
         });
 
+        // Highlight comments
         this.highlightComments();
+
+        // Give line numbers id's
+        this.setLineIds();
+    }
+
+    /**
+     * Add Id's to line in the code to allow #lineNumber in the url
+     */
+    setLineIds() {
+        const codeLines = document.getElementsByClassName("CodeMirror-code")[0].childNodes;
+        let lineNumber = 1;
+        for (const codeLine of codeLines) {
+            (codeLine as Element).id = `${lineNumber++}`;
+        }
     }
 
     /**
@@ -198,7 +214,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
      * @param character, character location in the line of the click
      */
     clickComment(line : number, character : number) {
-        console.log("clicked " + line + ":" + character);
         const comments : FileComment[] | undefined = this.state.comments;
         if (comments == undefined) return;
 
@@ -232,7 +247,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
     /**
      * Create a comment
      */
-    addComment() {
+    addComment(comment : string) {
         let fileComments = this.state.comments;
 
         const commentID : number = Math.random();
@@ -244,6 +259,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
            onClick : () => console.log("clicked comment " + commentID),
            commentID : commentID
         });
+
+        console.log(`made comment ${comment}`);
 
 
         this.setState({
@@ -284,15 +301,16 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                     }}
                     onSelection={this.onSelection}
                     onMouseDown={this.onClick}
+                    onTouchStart={this.onClick}
                     onChange={(editor, data, value) => {}}
                 />
                 {
                     this.state.selecting ?
                         <div>
                             <button id='cancelComment' onClick={() => this.setSelecting(false)}>Cancel</button>
-                            <button id='addComment' onClick={() => this.addComment()}>Confirm</button>
                             <h4>Code Snippet</h4>
                             <p>{this.state.commentSelection}</p>
+                            <WriteComment newCommentCallback={(text : string) => this.addComment(text)}/>
                         </div>
                         :
                         <div>
