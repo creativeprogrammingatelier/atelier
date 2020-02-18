@@ -8,8 +8,8 @@ export interface DataTag {
 	dark?: boolean,
 }
 interface DataTime {
-	start: Date,
-	offset: Date
+	start: string,
+	offset: string
 }
 interface DataBlockProperties {
 	transport?: string,

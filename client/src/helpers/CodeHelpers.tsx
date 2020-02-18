@@ -1,5 +1,7 @@
 import React from 'react';
 import {DataTableRowMapping} from "../components/general/DataTable";
+import {FileResponse} from "./DatabaseResponseInterface";
+import {submissionRendering} from "./SubmissionHelpers";
 
 /**
  * Example of what the database query could return.
@@ -26,29 +28,15 @@ export const codeData = [{
  *
  * User and code entries link to /user and /submissionOverview
  */
-export const codeRendering : DataTableRowMapping<Code>[] = [
+export const codeRendering : DataTableRowMapping<FileResponse>[] = [
     [
         'User',
-        ({userName} : Code) => userName,
-        ({userID} : Code) => {return '/user?userID=' + userID}
+        ({userName} : FileResponse) => userName,
+        ({userId} : FileResponse) => {return `/user/${userId}`}
     ],
     [
         'Code',
-        ({code} : Code) => code,
-        ({submissionID}) => '/submissionOverview?tab=Code&file=somefile.java'
+        ({snippet} : FileResponse) => snippet,
+        ({submissionId, fileId}) => `/submission/${submissionId}/code/${fileId}`
     ]
 ];
-
-/**
- * Interface for Code.
- * Code: the code in string format
- * SubmissionID: submission to which the code belongs
- * UserID: user by whom the code was written
- * UserName: username of the user
- */
-export interface Code {
-    code : string,
-    submissionID : number,
-    userID : number,
-    userName : string
-}
