@@ -4,43 +4,50 @@ import {CodeTab} from './CodeTab';
 import {CommentTab} from './CommentTab';
 import {ShareTab} from './ShareTab';
 import {TabBar} from './TabBar';
-import * as queryString from "querystring";
 import {ProjectTab} from "./ProjectTab";
 import {Frame} from '../frame/Frame';
 
-export function SubmissionOverview(props : any) {
-    // Check url parameters such as ?tab=Comments
-    const params = queryString.parse(props.location.search.slice(1));
-    const tabParameter : string = params['tab'] as string;
-    const fileParameter : string = params['file'] as string;
+interface SubmissionOverviewProps {
+    match : any,
+    history : any
+}
 
-    // Keep track of the current tab (project/code/comment/share)
-    const [tab, setTab] = useState(tabParameter == undefined ? 'Project' : tabParameter);
+function getTab(a : string | undefined) {
+    if (a == undefined || a == "") return 'project';
+    return a.toLowerCase();
+}
+
+export function SubmissionOverview({match, history} : SubmissionOverviewProps) {
+    // Get tab from match object
+    const [tab, setTab] = useState(getTab(match.params['tab']));
+
     // Keep track of code being viewed
-    const [file, setFile] = useState(fileParameter == undefined ? '' : fileParameter);
+    const [file, setFile] = useState(undefined as unknown as string);
 
     // Handle events to the tab buttons here
     function handleTabChange(event : any) {
         const {value} = event.target;
-        setTab(value);
-        console.log('Switching to ' + value + ' tab');
-        event.preventDefault();
+
+        const tab = getTab(value);
+        setTab(tab);
+
+        history.push(`/submission/1/${value}`);
     }
 
     function changeFile(file : string) {
         setFile(file);
-        setTab('Code');
+        setTab('code');
     }
 
     // Display certain tab
     let currentTab = <div><h1>Tab not found!</h1></div>;
-    if (tab == 'Code') {
+    if (tab == 'code') {
         currentTab =  <CodeTab fileName={file}/>
-    } else if (tab == 'Comments') {
+    } else if (tab == 'comments') {
         currentTab =  <CommentTab />
-    } else if (tab == 'Share') {
+    } else if (tab == 'share') {
         currentTab = <ShareTab />
-    } else if (tab == 'Project') {
+    } else if (tab == 'project') {
         currentTab = <ProjectTab setFile = {changeFile}/>
     }
 
