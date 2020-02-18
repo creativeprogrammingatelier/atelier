@@ -1,10 +1,10 @@
 import React from 'react';
 
 interface HeaderButtonProperties {
-	name?: string,
 	icon?: JSX.Element,
-	onClick?: React.MouseEventHandler
+	onClick?: React.MouseEventHandler,
+	right?: boolean
 }
-export function HeaderButton({name, icon, onClick}: HeaderButtonProperties) {
-	return <div onClick={onClick}>{icon}</div>
+export function HeaderButton({icon, onClick, right}: HeaderButtonProperties) {
+	return <div className={right ? "float-right" : ""} onClick={onClick}>{icon}</div>
 }

@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {DataTable} from "../general/DataTable";
-import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
 import {Frame} from '../frame/Frame';
 import {DataList} from '../general/DataList';
 import {Loading} from "../general/Loading";

@@ -30,6 +30,16 @@ tbody {
 	top: 0;
 	z-index: 1040;
 }
+.nav {
+	background-color: $secondaryColor;
+}
+.nav-pills .nav-link {
+	border-radius: 0;
+}
+.nav-pills .nav-link.active {
+	background-color: $primaryColor;
+}
+
 .sidebar {
 	top: 0;
 	height: 100vh;
@@ -48,12 +58,23 @@ tbody {
 	font-family: $fontTitle;
 	color: $colorWhite;
 }
+.link {
+	padding: 1rem 0.5rem 0.5rem;
+
+	a {
+		color: #FFFFFF !important;
+	}
+}
+.link + .link {
+	border-top: 1px solid $colorWhite;
+}
 .content {
 	margin-top: $headerHeight;
 }
 .contentPage {
 	padding: 1rem 2rem !important;
 }
+
 .panel {
 	width: 20rem;
 	max-width: 100%;
@@ -86,19 +107,28 @@ tbody {
 		color: $colorOffWhite;
 
 		.panelBottom {
-			box-shadow: 0 -5px 10px 0 rgba(71,71,71,0.15);
+			box-shadow: $shadowUp;
 		}
 	}
 }
-.link {
-	padding: 1rem 0.5rem 0.5rem;
 
+.dataBlock {
 	a {
-		color: #FFFFFF !important;
+		color: unset;
+	}
+	a:hover {
+		text-decoration: none;
+	}
+	.toast {
+		max-width: unset;
+		box-shadow: none;
 	}
 }
-.link + .link {
-	border-top: 1px solid $colorWhite;
+.dataBlock:hover {
+	box-shadow: $shadowAround;
+}
+.dataBlock:not(:last-child) {
+	margin-bottom: 0.5rem;
 }
 .toast {
 	backdrop-filter: none;
@@ -113,17 +143,18 @@ tbody {
 .toast-header {
 	background-color: $colorOffWhite;
 	border: none;
-	box-shadow: 0 5px 10px 0 rgba(71,71,71,0.15);
+	box-shadow: $shadowDown;
 }
 .toast-body {
 	padding: 0.5rem;
 }
-.dataBlock {
-	.toast {
-		max-width: unset;
-		box-shadow: none;
-	}
+
+.badge {
+	vertical-align: inherit;
+	font-size: 85%;
+	font-weight: 500;
+	border-radius: 2px;
 }
-.dataBlock:not(:last-child) {
-	margin-bottom: 0.5rem;
+.badge:not(:last-child) {
+	margin-right: 0.25rem;
 }

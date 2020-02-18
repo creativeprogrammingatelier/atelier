@@ -3,6 +3,7 @@ import {DataBlock, DataTag} from './DataBlock';
 import {Header} from '../frame/Header';
 
 interface DataListEntryProperties {
+	transport?: string,
 	title: string,
 	text?: string,
 	time: Date,
