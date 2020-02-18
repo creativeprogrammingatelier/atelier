@@ -1,4 +1,4 @@
-import React, {Component, Ref, TextareaHTMLAttributes, useImperativeHandle, DOMElement, useEffect} from 'react';
+import React from 'react';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/oceanic-next.css';
 import 'codemirror/mode/clike/clike.js';
@@ -301,6 +301,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                     }}
                     onSelection={this.onSelection}
                     onMouseDown={this.onClick}
+                    onTouchStart={this.onClick}
                     onChange={(editor, data, value) => {}}
                 />
                 {
