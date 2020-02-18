@@ -20,9 +20,8 @@ function getTab(a : string | undefined) {
 export function SubmissionOverview({match, history} : SubmissionOverviewProps) {
     // Get tab from match object
     const [tab, setTab] = useState(getTab(match.params['tab']));
-
-    // Keep track of code being viewed
-    const [file, setFile] = useState(undefined as unknown as string);
+    // Get file from match object
+    const [file, setFile] = useState(getTab(match.params['fileId']));
 
     // Handle events to the tab buttons here
     function handleTabChange(event : any) {
