@@ -7,8 +7,8 @@ export interface DataTag {
 	color: string
 }
 interface DataTime {
-	start: Date,
-	offset: Date
+	start: string,
+	offset: string
 }
 interface DataBlockProperties {
 	title: string,

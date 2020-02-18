@@ -19,7 +19,14 @@ let authRouter = require('./routes/AuthRouter');
 let filesRouter = require('./routes/FilesRouter');
 let commentRouter = require('./routes/CommentsRouter');
 let indexRouter = require('./routes/IndexRouter');
+
+// API routes
 let courseRouter = require('./database/CourseRouter');
+let coursesRouter = require('./database/CoursesRouter');
+let fileRouter = require('./database/FileRouter');
+let searchRouter = require('./database/SearchRouter');
+let submissionRouter = require('./database/SubmissionRouter');
+let userRouter = require('./database/UserRouter');
 
 
 let app = express();
@@ -50,6 +57,12 @@ app.use(express.static(path.join(__dirname, '../../client/')));
  * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all
  */
 app.use('/api/course', courseRouter);
+app.use('/api/courses', coursesRouter);
+app.use('/api/file', fileRouter);
+app.use('/api/search', searchRouter);
+app.use('/api/submission', submissionRouter);
+app.use('/api/user', userRouter);
+
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/files', filesRouter);

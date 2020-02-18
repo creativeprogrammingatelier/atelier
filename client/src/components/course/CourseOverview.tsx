@@ -1,47 +1,48 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {DataTable} from "../general/DataTable";
 import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
 import {Frame} from '../frame/Frame';
 import {DataList} from '../general/DataList';
+import {Loading} from "../general/Loading";
+import {EssentialSubmissionResponse} from "../../helpers/DatabaseResponseInterface";
 
-const submissions = {
-	title: 'Course Submissions',
-	data: submissionData.submissions,
-	table: submissionRendering
-};
+interface CourseOverviewProps {
+	courseId : number
+}
 
-export function CourseOverview() {
+export function CourseOverview({courseId} : CourseOverviewProps) {
+	const [loading, setLoading] = useState(true);
+	const [submissions, setSubmissions] = useState(null as unknown as EssentialSubmissionResponse[]);
+
+	useEffect(() => {
+		fetch(`/api/course/${courseId}/submissions`)
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data);
+				setSubmissions(data.submissions);
+				setLoading(false);
+			});
+	}, []);
+
 	return (
 		<Frame title="Course" user={{id:"0", name:"John Doe"}} sidebar search={"/course/../search"}>
 			<h1>Course Overview</h1>
-			{/*<DataTable*/}
-			{/*    title={submissions.title}*/}
-			{/*    data={submissions.data}*/}
-			{/*    table={submissions.table}*/}
-			{/*/>*/}
-			<DataList header="Submissions" list={[
-				{
-					title: "John Doe",
-					text: "Uploaded helpitbroke.zip",
-					time: new Date(),
-					// time: new Date(2020, 2, 18, 9),
-					tags: [{name:"help", color:"red"}, {name:"me", color:"red"}, {name:"now", color:"red"}]
-				},
-				{
-					title: "Jane Doe",
-					text: "Uploaded project 'ImDaBest'",
-					// time: new Date(),
-					time: new Date(2020, 1, 17, 15),
-					tags: [{name:"fuck", color:"green"}, {name:"yeah", color:"green"}]
-				},
-				{
-					title: "Mary Doe",
-					text: "Uploaded project 'ImmaDropOutNow'",
-					// time: new Date(),
-					time: new Date(2020, 0, 9, 15),
-					tags: [{name:"fuck", color:"orange"}, {name:"off", color:"orange"}]
-				}
-			]}/>
+			{
+				loading ?
+					<Loading />
+					:
+					<DataList
+						header="Submissions"
+						list = {submissions.map(submission => {
+							return {
+								title : submission.user,
+								text : submission.name,
+								time : new Date(submission.time),
+								tags : submission.tags
+							}
+						})}
+					/>
+			}
 		</Frame>
 	)
 }
