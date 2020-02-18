@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {CodeTab} from './CodeTab';
 import {CommentTab} from './CommentTab';
 import {ShareTab} from './ShareTab';
-import {TabBar} from './TabBar';
+import {TabBar} from '../general/TabBar';
 import {ProjectTab} from "./ProjectTab";
 import {Frame} from '../frame/Frame';
 import {FiCode, FiFolder, FiMessageSquare, FiShare2} from 'react-icons/all';
