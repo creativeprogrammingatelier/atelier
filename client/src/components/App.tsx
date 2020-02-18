@@ -9,17 +9,25 @@ import Nav from './Nav';
 import Logout from './Logout';
 import Register from './Register';
 import AuthHelper from '../../helpers/AuthHelper';
-import '../styles/app.scss';
 import roleEnum from '../../../enums/roleEnum';
+import {AuthenticatedRoute} from './AuthenticatedRoute';
+import {SubmissionOverview} from './submission/SubmissionOverview';
+import {CommentThread} from './commentthread/CommentThread';
+import {SearchOverview} from './search/SearchOverview';
+import {CourseOverview} from './course/CourseOverview';
+import { UserOverview } from './user/UserOverview';
+import {Homepage} from './Homepage';
+
+import '../styles/app.scss';
+import '../styles/base.scss';
+
 
 /**
  *
  */
 const EMAILLOCALSTORAGEKEY = 'email';
 type AppState = {loggedIn: boolean, email: string, role: roleEnum};
-
 type AppProps = {};
-
 
 class App extends React.Component<AppProps, AppState> {
 
@@ -44,7 +52,16 @@ class App extends React.Component<AppProps, AppState> {
 			email: email
 		});
 		localStorage.setItem(EMAILLOCALSTORAGEKEY, email);
-		this.getAndSetRole();
+        this.getAndSetRole();
+
+        const successTimeOut =  55*60*60*1000;
+        function refreshToken() {
+            AuthHelper.refresh(
+                () => setTimeout(refreshToken, successTimeOut),
+                () => setTimeout(refreshToken, 1*60*60*1000)
+            )
+        }
+        setTimeout(refreshToken, successTimeOut);
 	}
 
 	handleLogout() {
@@ -71,23 +88,25 @@ class App extends React.Component<AppProps, AppState> {
 
 	render() {
 		return (
-			<div className="container">
-				<Nav loggedIn={this.state.loggedIn} role={this.state.role} email={this.state.email} onLogout={this.handleLogout}/>
-				<div className="wrapper">
-					<div className="container-fluid">
-						< Switch>
-							<Redirect exact from="/" to="/roleview"/>
-							<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
-							<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
-							<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
-							<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
-							<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
-							<PrivateRoute path='/logout' component={Logout}/>
-						</Switch>
-					</div>
-				</div>
-			</div>
-
+			< Switch>
+				<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
+				<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
+				<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
+				<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
+				<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
+				<PrivateRoute path='/logout' component={Logout}/>
+				<AuthenticatedRoute path='/submission/:submissionId/search' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId/:tab/:fileId' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId/:tab' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/user/:userId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
+				<AuthenticatedRoute path='/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/' component={Homepage}/>
+			</Switch>
 		);
 	}
 }

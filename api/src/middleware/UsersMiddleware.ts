@@ -79,10 +79,10 @@ export default class UsersMiddleware {
 			, onFailure)
 	}
 
-	private static issueToken(email: string): string {
+	static issueToken(email: string): string {
 		const payload = {email};
 		const token: string = jwt.sign(payload, Constants.AUTHSECRETKEY, {
-			expiresIn: '1h'
+			expiresIn: '1400h'
 		});
 		return token;
 	}

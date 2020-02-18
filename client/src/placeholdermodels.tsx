@@ -16,7 +16,7 @@ export interface CommentThread {
     /** An optional code snippet relating the comment to a piece of code;
      *  may be changed to include linking comments to other things as well 
      */
-    snippet: Snippet | null,
+    snippet: Snippet | undefined,
     /** List of comments made in this thread */
     comments: Comment[],
     /** Which types of users will be able to see these comments, e.g. only
@@ -54,4 +54,19 @@ export interface Snippet {
      *  in the snippet as a (start, end exclusive) pair
      */
     fileLines: [number, number]
+}
+
+// User
+///////
+export interface User {
+    id: string,
+    name: string
+}
+
+// Submission
+/////////////
+export interface Submission {
+    id: string, 
+    name: string, 
+    date: Date
 }
