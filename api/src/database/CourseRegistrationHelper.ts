@@ -1,16 +1,15 @@
-const HH = require("./HelperHelper")
+const HH = require("./HelperHelper");
 
-import {CourseRegistration, DBCourseRegistration, convert} from '../../../models/CourseRegistration';
-import {localRole, checkEnum} from '../../../enums/localRoleEnum'
+import {CourseRegistration, convert} from '../../../models/CourseRegistration';
 import RolePermissionHelper from './RolePermissionsHelper'
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
  */
-const {pool, extract, map, one} = HH
+const {pool, extract, map, one} = HH;
 export default class CourseRegistrationHelper {
 
-	static toBin = RolePermissionHelper.toBin
+	static toBin = RolePermissionHelper.toBin;
 
 	/**
 	 * return all entries in this table, with permissions set correctly
@@ -73,7 +72,7 @@ export default class CourseRegistrationHelper {
 			userID,
 			role,
 			permission = 0
-		} = entry
+		} = entry;
 		return pool.query(`INSERT INTO \"CourseRegistration\" 
 			VALUES ($1,$2,$3,$4) 
 			RETURNING *`, [courseID, userID, role, CourseRegistrationHelper.toBin(permission)])
@@ -90,7 +89,7 @@ export default class CourseRegistrationHelper {
 			courseID,
 			userID,
 			role
-		} = entry
+		} = entry;
 		return pool.query(`UPDATE \"CourseRegistration\" SET 
 			courseRole=COALESCE($3, courseRole)
 			WHERE courseID=$1 AND userID=$2
@@ -109,7 +108,7 @@ export default class CourseRegistrationHelper {
 			courseID,
 			userID,
 			permission
-		} = entry
+		} = entry;
 		return pool.query(`UPDATE \"CourseRegistration\" SET 
 			permission=permission | $3
 			WHERE courseID=$1 AND userID=$2
@@ -129,7 +128,7 @@ export default class CourseRegistrationHelper {
 			courseID,
 			userID,
 			permission
-		} = entry
+		} = entry;
 		return pool.query(`UPDATE \"CourseRegistration\" SET 
 			permission=permission & ~($3::bit(40))
 			WHERE courseID=$1 AND userID=$2
@@ -146,7 +145,7 @@ export default class CourseRegistrationHelper {
 		const {
 			courseID,
 			userID
-		} = entry
+		} = entry;
 		return pool.query("DELETE FROM \"CourseRegistration\" WHERE courseID=$1 AND userID=$2 RETURNING *", [courseID, userID])
 		.then(extract).then(map(convert)).then(one)
 	}

@@ -5,7 +5,7 @@ import {File, DBFile, convert} from '../../../models/File';
  * fileID, submissionID, pathname, type
  * @Author Rens Leendertz
  */
-const {pool, extract, map, one} = HH
+const {pool, extract, map, one} = HH;
 export default class FileHelper {
 	static getAllFiles(){
 		return FileHelper.getFilteredFiles({})
@@ -25,7 +25,7 @@ export default class FileHelper {
 			submissionID = undefined,
 			pathname = undefined,
 			type = undefined
-		} = file
+		} = file;
 		return pool.query(`SELECT * FROM \"Files\" 
 			WHERE
 				($1::uuid IS NULL OR fileID=$1)
@@ -41,7 +41,7 @@ export default class FileHelper {
 			submissionID,
 			pathname,
 			type
-		} = file
+		} = file;
 		return pool.query("INSERT INTO \"Files\" VALUES (DEFAULT, $1,$2,$3) RETURNING *", [submissionID, pathname, type])
 		.then(extract).then(map(convert)).then(one)
 	}
@@ -52,7 +52,7 @@ export default class FileHelper {
 			submissionID = undefined,
 			pathname = undefined,
 			type = undefined
-		} = file
+		} = file;
 		return pool.query(`UPDATE \"Files\" SET 
 			submissionID = COALESCE($2, submissionID),
 			pathname = COALESCE($3, pathname),
