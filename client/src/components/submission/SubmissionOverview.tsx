@@ -34,6 +34,9 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 		setTab("code");
 	}
 
+	const host = "http://" + window.location.hostname;
+	const submissionPath = `submission/${match.params['submissionId']}`;
+
 	// Display certain tab
 	let currentTab = <div><h1>Tab not found!</h1></div>;
 	if (tab === "code") {
@@ -41,13 +44,10 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 	} else if (tab === "comments") {
 		currentTab =  <CommentTab />
 	} else if (tab === "share") {
-		currentTab = <ShareTab url = "localhost:5000/submission/1"/>
+		currentTab = <ShareTab url = {`${host}/${submissionPath}`}/>
 	} else if (tab === "project") {
 		currentTab = <ProjectTab setFile = {changeFile}/>
 	}
-
-	const submissionId = "1";
-	const submissionPath = "/submission/"+submissionId;
 
 	return (
 		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={"/submission/../search"}>

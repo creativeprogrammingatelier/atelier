@@ -68,3 +68,13 @@ export interface SearchResponse {
     files : FileResponse[],
     comments : CommentResponse[]
 }
+
+export interface CommentEssential {
+    commentName : string,
+    lastMessage : {
+        text : string,
+        author : string,
+        time : string
+    }
+    snippet : string
+}
