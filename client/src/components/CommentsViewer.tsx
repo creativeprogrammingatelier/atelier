@@ -8,11 +8,12 @@ import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import CommentCreator from './CommentCreator';
 //@ts-ignore
 import io from 'socket.io-client';
-import CodeViewer from './CodeViewer';
+import { Comment } from '../../../models/comment';
+import {File} from '../../../models/File';
 
 
-type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: IFile}
-type CommentsViewerState = {file: IFile, currentLineNumber: number, comments: IComment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function}
+type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: File}
+type CommentsViewerState = {file: File, currentLineNumber: number, comments: Comment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function}
 
 
 class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerState> {
@@ -42,8 +43,8 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 	componentDidMount = () => {
 		const socket = io();
 		//@ts-ignore
-		socket.on(this.props.file.id, (data: any) => {
-			let newComments: IComment[] | undefined = this.state.comments;
+		socket.on(this.props.file.fileID, (data: any) => {
+			let newComments: Comment[] | undefined = this.state.comments;
 			if (data.type === 'put') {
 				newComments.push(data.comment);
 				let sortedComments = newComments.sort(CommentsViewer.sortComments);
@@ -53,7 +54,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 			} else {
 				newComments = CommentsViewer.removeComment(newComments, data.comment);
 				if (newComments != undefined) {
-					let newCommentsDefined: IComment[] = newComments;
+					let newCommentsDefined: Comment[] = newComments;
 					let sortedComments = newCommentsDefined.sort(CommentsViewer.sortComments);
 					this.setState({
 						comments: sortedComments
@@ -63,19 +64,19 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 		});
 	};
 
-	static removeComment(comments: IComment[], commentToRemove: IComment) {
+	static removeComment(comments: Comment[], commentToRemove: Comment) {
 		for (let index = 0; index < comments.length; index++) {
 			const comment = comments[index];
-			if (comment._id === commentToRemove._id) {
+			if (comment.commentID === commentToRemove.commentID) {
 				comments.splice(index, 1);
 				return comments;
 			}
 		}
 	}
 
-	static sortComments(a: IComment, b: IComment) {
-		let aDate = new Date(a.created);
-		let bDate = new Date(b.created);
+	static sortComments(a: Comment, b: Comment) {
+		let aDate = new Date(a.date!);
+		let bDate = new Date(b.date!);
 
 		if (aDate < bDate) {
 			return 1;
@@ -94,7 +95,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 	};
 
 	fetchComments = (hideCommentCreator?: boolean) => {
-		CommentHelper.getFileComments(this.state.file.id, (comments: IComment[]) => {
+		CommentHelper.getFileComments(this.state.file.fileID!, (comments: Comment[]) => {
 				let sortedComments = comments.sort(CommentsViewer.sortComments);
 				this.setState({
 					comments: sortedComments,
@@ -121,7 +122,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 		if (this.state.comments != null) {
 			for (const comment of this.state.comments) {
 				comments.push(
-					<li className="list-group-item" key={comment._id}><CommentView updateCurrentLineNumber={this.state.updateCurrentLineNumber} comment={comment} deleteComment={this.deleteComment}/>
+					<li className="list-group-item" key={comment.commentID}><CommentView updateCurrentLineNumber={this.state.updateCurrentLineNumber} comment={comment} deleteComment={this.deleteComment}/>
 					</li>
 				);
 			}
@@ -137,7 +138,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
                 })}><FontAwesomeIcon icon={faPlus}/> New Comment</span>
 				<div>
 					{(this.state.commentCreatorToggle ?
-						<CommentCreator currentLineNumber={this.state.currentLineNumber} onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.id}/> : null)}
+						<CommentCreator currentLineNumber={this.state.currentLineNumber} onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.fileID!}/> : null)}
 				</div>
 				<ul className="list-group">
 					{this.populate()}
