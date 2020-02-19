@@ -12,6 +12,7 @@ export function Homepage() {
 		fetch('/api/courses/')
 			.then((response) => response.json())
 			.then((data) => {
+				console.log(data);
 				setCourses(data.courses);
 				setLoading(false);
 			});
