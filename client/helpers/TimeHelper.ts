@@ -1,6 +1,9 @@
 export class TimeHelper {
-	static howLongAgo(start: Date, offset: Date) {
-		const difference = new Date(offset.getTime() - start.getTime());
+	static howLongAgo(start: string, offset: string) {
+		const startDate = new Date(start);
+		const offsetDate = new Date(offset);
+
+		const difference = new Date(offsetDate.getTime() - startDate.getTime());
 
 		const times = [
 			{
