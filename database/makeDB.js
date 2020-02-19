@@ -1,19 +1,26 @@
 const pg = require('pg');
 
 const pool = new pg.Pool({
+	user: 'assistantassistant',
 	host: '127.0.0.1',
-	database: 'template1',
-	port: '5432'
+	database: 'assistantassistant',
+	password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
+	port: 5432,
+	max: 1
 });
 //This script can only be run locally, 
 // to use this with a remote server, change the host. user and password will be required in all other instances of pool.
 // user: 'assistantassistant',
 // password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
-pool.query(`
-CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";
+
+/*
 
 DROP USER IF EXISTS assistantassistant;
 CREATE ROLE assistantassistant;
+ */
+pool.query(`
+CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";
+
 ALTER ROLE assistantassistant WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'md594b9257ac7635f4597e055106a53fddd';
 
 DROP TABLE IF EXISTS 

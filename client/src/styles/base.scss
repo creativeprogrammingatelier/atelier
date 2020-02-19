@@ -1,6 +1,9 @@
 @import "./variabes.scss";
 @import '~bootstrap/scss/bootstrap.scss';
 
+html, body {
+	background-color: $backgroundColor;
+}
 thead {
 	padding: 1rem;
 	color: $colorWhite;
@@ -47,6 +50,7 @@ tbody {
 	position: fixed !important;
 	background-color: $secondaryColor;
 	z-index: 1050;
+	box-shadow: $shadowLarge; // TODO: Only for mobile
 }
 .sidebarContent {
 	width: 100%;
@@ -72,7 +76,7 @@ tbody {
 	margin-top: $headerHeight;
 }
 .contentPage {
-	padding: 1rem 2rem !important;
+	padding: 1rem 1.5rem !important;
 }
 
 .panel {
@@ -157,4 +161,43 @@ tbody {
 }
 .badge:not(:last-child) {
 	margin-right: 0.25rem;
+}
+
+.qrCode {
+	max-height:50vh;
+}
+
+.input-group {
+	background-color: $colorOffWhite;
+}
+.form-control-plaintext {
+	padding: 0.25rem;
+	color: $colorOffBlack;
+	border: 0;
+}
+.form-control-plaintext:focus {
+	outline: 0;
+}
+
+.btn {
+	border: 0;
+	border-radius: 0;
+	transition: none;
+}
+.btn:hover, .btn:active {
+	box-shadow: $shadowAround;
+}
+.btn-primary {
+	color: $colorWhite;
+	background-color: $primaryColor;
+}
+.btn-primary:hover, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
+	color: $colorOffWhite;
+	background-color: $primaryColor;
+}
+.btn-primary:hover {
+	background-color: $secondaryColor;
+}
+.btn-primary:not(:disabled):not(.disabled):active:focus {
+	box-shadow: initial;
 }

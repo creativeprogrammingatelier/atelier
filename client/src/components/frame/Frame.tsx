@@ -15,14 +15,14 @@ interface FrameProperties {
 	search?: string,
 }
 export function Frame({children, title, user, sidebar, search}: FrameProperties) {
-	const [sidebarPosition, setSidebarPosition] = useState('-100vw');
+	const [sidebarPosition, setSidebarPosition] = useState('-150vw');
 
 	function sidebarOpen() {
 		console.log("Opening sidebar");
 		setSidebarPosition(() => '0vw');
 	}
 	function sidebarClose() {
-		setSidebarPosition(() => '-100vw');
+		setSidebarPosition(() => '-150vw');
 	}
 	function searchClick() {
 		window.location.href = search ? search : "#";

@@ -11,10 +11,8 @@ import io from 'socket.io-client';
 import { Comment } from '../../../models/comment';
 import {File} from '../../../models/File';
 
-
 type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: File}
 type CommentsViewerState = {file: File, currentLineNumber: number, comments: Comment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function}
-
 
 class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerState> {
 	private readonly commentRefreshFrequency = 1000;
