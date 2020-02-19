@@ -4,7 +4,7 @@ import RPH	from "./RolePermissionsHelper"
 import CRH	from './CourseRegistrationHelper'
 import SH	from './submissionHelper'
 import FH	from './FileHelper'
-import SH 	from './SnippetHelper'
+import SPH 	from './SnippetHelper'
 
 import {courseState} 		from '../../../enums/courseStateEnum'
 import {localRole} 		from '../../../enums/localRoleEnum'
@@ -127,6 +127,8 @@ function submissionHelper(){
 }
 
 function fileHelper(){
+	console.log("\n\nFILEHELPER\n\n")
+	
 	promise(FH.getAllFiles(), 'getAllFiles')
 	promise(FH.getFilesBySubmission(uuid), 'getFilesBySubmission')
 	promise(FH.getFileByID(uuid), 'getFileByID')
@@ -144,18 +146,18 @@ function fileHelper(){
 }
 
 function snippetHelper(){
-	promise(SH.getAllSnippets(), 'getAllSnippets')
-	promise(SH.getSnippetsBySubmission(uuid), 'getSnippetsBySubmission')
-	promise(SH.getSnippetsByID(uuid), 'getSubmissionById')
+	promise(SPH.getAllSnippets(), 'getAllSnippets')
+	promise(SPH.getSnippetsBySubmission(uuid), 'getSnippetsBySubmission')
+	promise(SPH.getSnippetsByID(uuid), 'getSubmissionById')
 
 	const snip1 = {snippetID: undefined, lineStart:0, lineEnd:3, charStart:2, charEnd:0, fileID:uuid}
 	const snip2 = {snippetID: undefined, lineStart:1, lineEnd:5, charStart:12, charEnd:12, fileID:uuid}
-	SH.addSnippet(snip).then((res : Snippet) => {
+	SPH.addSnippet(snip).then((res : Snippet) => {
 		console.log('addSnippet', res)
 		snip2.snippetID = res.snippetID
-		SH.updateSnippet(snip2).then((res2 : Snippet)=>{
+		SPH.updateSnippet(snip2).then((res2 : Snippet)=>{
 			console.log("updateSnippet", res2)
-			promise(SH.deleteSnippet(res2.snippetID), "deleteSnippet")
+			promise(SPH.deleteSnippet(res2.snippetID), "deleteSnippet")
 		}).catch("updateSnippet")
 	}).catch("addSnippet")
 }
