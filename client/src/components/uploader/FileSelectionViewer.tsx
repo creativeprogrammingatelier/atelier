@@ -13,21 +13,18 @@ interface FileSelectionViewerProperties {
  */
 export function FileSelectionViewer({ fileNames, selected, selectedUpdated }: FileSelectionViewerProperties) {
     if (fileNames.length > 0) {
-        return (
-            <div>
-                <p>Choose your main file:</p>
-                <ul>{fileNames.map(name =>
-                    <li>
-                        <input 
-                            type="radio"
-                            name="main-file"
-                            value={name}
-                            checked={selected === name}
-                            onChange={() => selectedUpdated(name)} />
-                        {name}
-                    </li>
-                )}</ul>
-            </div>
+        return (           
+            <ul>{fileNames.map(name =>
+                <li>
+                    <input 
+                        type="radio"
+                        name="main-file"
+                        value={name}
+                        checked={selected === name}
+                        onChange={() => selectedUpdated(name)} />
+                    {name}
+                </li>
+            )}</ul>
         )
     } else {
         return null;

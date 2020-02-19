@@ -10,6 +10,7 @@ import { FileSelectionViewer } from './FileSelectionViewer';
 import { defaultValidation, validateProjectClient } from '../../../../helpers/ProjectValidationHelper';
 
 import '../../styles/file-uploader.scss';
+import { MAX_PROJECT_SIZE } from '../../../../helpers/Constants';
 
 interface UploaderProperties {
     /** Callback to call when uploading is finished */
@@ -23,7 +24,8 @@ interface UploaderProperties {
  */
 export function Uploader({ onUploadComplete }: UploaderProperties) {
     const [folderName, updateFolderName] = useState("");
-    const [files, updateFiles] = useState([] as File[]);
+    const [selectedFiles, updateSelectedFiles] = useState([] as File[]);
+    const [uploadableFiles, updateUploadableFiles] = useState([] as File[]);
     const [uploading, updateUploading] = useState(false);
 
     const [validation, updateValidation] = useState(defaultValidation<File>([]));
@@ -56,7 +58,7 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
         if (fileInputRef) {
             fileInputRef.value = "";
         }
-        updateFiles([]);
+        updateSelectedFiles([]);
         onUploadComplete();
     }
 
@@ -68,29 +70,48 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
 
     function handleFilesSelected(event: React.ChangeEvent<HTMLInputElement>) {
         if (event.target.files) {
-            updateFiles(Array.from(event.target.files));
+            updateSelectedFiles(Array.from(event.target.files));
         }
     };
 
     useEffect(() => {
         // Update the folder name
         let folderName = "";
-        if (files.length > 0) {
+        if (selectedFiles.length > 0) {
             if (folderUploadSupported) {
-                folderName = files[0].webkitRelativePath.split('/')[0];
+                folderName = selectedFiles[0].webkitRelativePath.split('/')[0];
             } else {
-                folderName = files[0].name.replace(".pde", "");
+                folderName = selectedFiles[0].name.replace(".pde", "");
             }
         }
         updateFolderName(folderName);
 
         // Project validation
-        if (files.length > 0) {
-            updateValidation(validateProjectClient(folderName, files));
+        if (selectedFiles.length > 0) {
+            updateValidation(validateProjectClient(folderName, selectedFiles));
         } else {
             updateValidation(prev => ({ ...prev, acceptableFiles: [] }))
         }
-    }, [files]);
+    }, [selectedFiles]);
+
+    useEffect(() => {
+        if (validation.projectTooLarge) {
+            let uploadable: File[] = [];
+            let totalSize = 0;
+            for (const file of validation.acceptableFiles.sort((a, b) => a.size - b.size)) {
+                console.log(file);
+                if (totalSize + file.size < MAX_PROJECT_SIZE) {
+                    totalSize += file.size;
+                    uploadable = uploadable.concat(file);
+                } else {
+                    break;
+                }
+            }
+            updateUploadableFiles(uploadable);
+        } else {
+            updateUploadableFiles(validation.acceptableFiles);
+        }
+    }, [validation])
 
     return (
         <div>
@@ -110,22 +131,32 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
                     {validation.containsNoCodeFiles && <li>Project should contain at least one code file.</li>}
                     {errors.upload && <li>Something went wrong while uploading{errors.upload !== true && `, got status ${errors.upload}`}. Please try again.</li>}
                 </ul>
-                {folderUploadSupported
-                ? <div>
-                    <p>These files will be uploaded:</p>
-                    <DirectoryViewer filePaths={validation.acceptableFiles.map(f => f.webkitRelativePath)} />
-                    <p>These files won't be uploaded, for example because they are too large:</p>
-                    <DirectoryViewer filePaths={files.filter(f => !validation.acceptableFiles.includes(f)).map(f => f.webkitRelativePath)} />
-                  </div>
-                : <FileSelectionViewer 
-                    fileNames={validation.acceptableFiles.map(f => f.name)} 
-                    selected={folderName + ".pde"} 
-                    selectedUpdated={name => updateFolderName(name.replace(".pde", ""))} />}
+                {selectedFiles.length > 0 &&
+                    <div>
+                        {folderUploadSupported
+                            ? <div>
+                                <p>These files will be uploaded:</p>
+                                <DirectoryViewer filePaths={uploadableFiles.map(f => f.webkitRelativePath)} />
+                            </div>
+                            : <div>
+                                <p>These files will be uploaded, please select your main project file:</p>
+                                <FileSelectionViewer 
+                                    fileNames={uploadableFiles.map(f => f.name)} 
+                                    selected={folderName + ".pde"} 
+                                    selectedUpdated={name => updateFolderName(name.replace(".pde", ""))} />
+                            </div>}
+                        {uploadableFiles.length < selectedFiles.length &&
+                            <div>
+                                <p>These files won't be uploaded, because they are too large
+                                    { validation.projectTooLarge && " or the project as a whole would be too large" }:</p>
+                                <DirectoryViewer filePaths={selectedFiles.filter(f => !uploadableFiles.includes(f)).map(f => f.webkitRelativePath)} />
+                            </div>}
+                    </div>}
                 {uploading 
                 ? <span>*Insert spinner* Uploading</span>
                 : <button
                     className="form-control" 
-                    disabled={uploadPrevented() || files.length < 1} 
+                    disabled={uploadPrevented() || selectedFiles.length < 1} 
                     type="submit" 
                     value="Submit">
                         <FontAwesomeIcon icon={faUpload} />

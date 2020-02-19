@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE } from '../helpers/Constants';
+import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE, MAX_PROJECT_SIZE } from '../helpers/Constants';
 
 // Interfaces
 /////////////
@@ -10,6 +10,8 @@ export interface ProjectValidation<T extends Fileish<T>> {
     containsNoCodeFiles: boolean,
     /** The project has no file with the name of the project */
     invalidProjectName: boolean,
+    /** The project as a whole (all files combined) is too large */
+    projectTooLarge: boolean,
     /** List of filenames that are too large, or false if there are none */
     acceptableFiles: T[]
 }
@@ -19,6 +21,7 @@ export function defaultValidation<T extends Fileish<T>>(files: T[]): ProjectVali
     return {
         containsNoCodeFiles: false,
         invalidProjectName: false,
+        projectTooLarge: false,
         acceptableFiles: files
     };
 }
@@ -43,6 +46,10 @@ function invalidProjectName<T>(projectName: string, files: Array<ProjectFile<T>>
     return !files.some(f => f.pathInProject === `${projectName}/${projectName}.pde`);
 }
 
+function projectTooLarge<T>(files: Array<ProjectFile<T>>) {
+    return files.reduce((sum, next) => sum + next.size, 0) >= MAX_PROJECT_SIZE;
+}
+
 function acceptableFiles<T>(files: Array<ProjectFile<T>>) {
     return files.filter(f => f.size < MAX_FILE_SIZE);
 }
@@ -55,6 +62,7 @@ function validateProjectInternal<T extends Fileish<T>>(projectName: string, file
     return {
         containsNoCodeFiles: containsNoCodeFiles(acceptable),
         invalidProjectName: invalidProjectName(projectName, acceptable),
+        projectTooLarge: projectTooLarge(acceptable),
         acceptableFiles: acceptable.map(f => f.original)
     }
 }
