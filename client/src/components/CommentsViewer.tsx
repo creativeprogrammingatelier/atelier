@@ -8,7 +8,6 @@ import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import CommentCreator from './CommentCreator';
 //@ts-ignore
 import io from 'socket.io-client';
-import CodeViewer from './CodeViewer';
 import { Comment } from '../../../models/comment';
 import {File} from '../../../models/File';
 

@@ -96,21 +96,20 @@ export default class UsersHelper {
 			email,
 			password
 		} = loginRequest;
-		pool.query("SELECT userID, name, globalRole, email, hash as password FROM \"Users\" where email = $1", [email])
-			.then((res : {rows:User[]}) => {
+		pool.query("SELECT userID, name, globalRole, email, hash FROM \"Users\" where email = $1", [email])
+			.then((res : {rows:DBUser[]}) => {
 				if (res.rows.length !== 1){
 					return onUnauthorised()
 				}
-				if (!res.rows[0].password){
+				if (!res.rows[0].hash){
 					return onFailure(Error('WTF is the database doing'))
 				}
-				const hash : string = res.rows[0].password;
-				const {userID}= res.rows[0]
-				if (userID===undefined){
+				const {hash, userid}= res.rows[0]
+				if (userid===undefined){
 					return onFailure(Error("the database is fking with us"))
 				}
 				if (UsersHelper.comparePassword(hash, password)){
-					return onSuccess(userID)
+					return onSuccess(userid)
 				} else {
 					return onUnauthorised()
 				}
