@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
+import {FiCode, FiFolder, FiMessageSquare, FiShare2} from 'react-icons/all';
 
+import {Frame} from '../frame/Frame';
+import {TabBar} from '../general/TabBar';
 import {CodeTab} from './CodeTab';
 import {CommentTab} from './CommentTab';
 import {ShareTab} from './ShareTab';
-import {TabBar} from '../general/TabBar';
-import {ProjectTab} from "./ProjectTab";
-import {Frame} from '../frame/Frame';
-import {FiCode, FiFolder, FiMessageSquare, FiShare2} from 'react-icons/all';
+import {ProjectTab} from './ProjectTab';
 
 interface SubmissionOverviewProps {
 	match: {
@@ -26,8 +26,6 @@ function getParameter(token: string | undefined) {
 }
 
 export function SubmissionOverview({match} : SubmissionOverviewProps) {
-	console.log(match);
-	console.log(window.location);
 	const [tab, setTab] = useState(getParameter(match.params.tab)); // Get tab from match object
 	const [file, setFile] = useState(getParameter(match.params.fileId)); // Keep track of code being viewed
 
