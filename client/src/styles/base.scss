@@ -2,7 +2,7 @@
 @import '~bootstrap/scss/bootstrap.scss';
 
 html, body {
-	background-color: $colorOffWhite;
+	background-color: $backgroundColor;
 }
 thead {
 	padding: 1rem;
@@ -168,7 +168,7 @@ tbody {
 }
 
 .input-group {
-	background-color: $colorWhite;
+	background-color: $colorOffWhite;
 }
 .form-control-plaintext {
 	padding: 0.25rem;
