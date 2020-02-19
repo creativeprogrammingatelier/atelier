@@ -47,7 +47,7 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 	const submissionPath = "/submission/"+submissionId;
 
 	return (
-		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={"/submission/../search"}>
+		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={+submissionPath+"/search"}>
 			<TabBar
 				tabs={[{
 					id: "project",

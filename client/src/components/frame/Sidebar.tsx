@@ -14,7 +14,7 @@ interface SidebarProperties {
 }
 export function Sidebar({user, position, close}: SidebarProperties) {
 	return (
-		<div className="sidebar col-8 col-sm-6 col-md-4 col-lg-3 col-xl-2" style={{left: position}}>
+		<div className="sidebar col-10 col-sm-8 col-md-5 col-lg-3 col-xl-2" style={{left: position}}>
 			<Header transparent fixed leftButton={{icon:<FiX size={40} color="#FFFFFF"/>, click:close}}/>
 			<div className="sidebarContent">
 				<Logo/>

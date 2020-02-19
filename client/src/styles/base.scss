@@ -1,6 +1,9 @@
 @import "./variabes.scss";
 @import '~bootstrap/scss/bootstrap.scss';
 
+html, body {
+	background-color: $colorOffWhite;
+}
 thead {
 	padding: 1rem;
 	color: $colorWhite;
@@ -47,6 +50,7 @@ tbody {
 	position: fixed !important;
 	background-color: $secondaryColor;
 	z-index: 1050;
+	box-shadow: $shadowLarge; // TODO: Only for mobile
 }
 .sidebarContent {
 	width: 100%;
@@ -72,7 +76,7 @@ tbody {
 	margin-top: $headerHeight;
 }
 .contentPage {
-	padding: 1rem 2rem !important;
+	padding: 1rem 1.5rem !important;
 }
 
 .panel {
@@ -157,4 +161,15 @@ tbody {
 }
 .badge:not(:last-child) {
 	margin-right: 0.25rem;
+}
+
+.qrCode {
+	max-height:50vh;
+}
+
+.input-group {
+	background-color: $colorWhite;
+}
+.form-control-plaintext {
+	padding: 0.25rem;
 }
