@@ -1,47 +1,65 @@
-/**
- * Routes for request relating to Files
- *
- * @Author Andrew Heath
- */
-
+import express, { Response, Request } from 'express';
 import multer from 'multer';
+import path from 'path';
 
-var express = require('express');
-var upload = multer({
-	dest: 'uploads/'
-});
-
-var router = express.Router();
-
+import { projectStorageEngine, FileUploadRequest, readFileAsString, archiveProject, deleteNonCodeFiles } from '../helpers/FilesystemHelper';
+import RoutesHelper from '../helpers/RoutesHelper';
 import AuthMiddleware from '../middleware/AuthMiddleware';
 import UserMiddleware from '../middleware/UsersMiddleware';
 import FilesMiddleware from '../middleware/FilesMiddleware';
-import {Response, Request} from 'express';
-import {IUser} from '../../../models/user';
-import {IFile} from '../../../models/file';
-import path from 'path';
 import PermissionsMiddleware from '../middleware/PermissionsMiddleware';
-import fs, {PathLike} from 'fs';
-import RoutesHelper from '../helpers/RoutesHelper';
-/**
- * Upload file end point, uses multer to read file
- * @TODO refactor
- */
 
-router.put('/', AuthMiddleware.withAuth, upload.single('file'),
-	(request: Request, result: Response) => {
-		let file = request.file;
-		UserMiddleware.getUser(request,
-			(user: IUser) => {
-				FilesMiddleware.createFile(file.originalname, file.path, user,
-					() => result.status(200).send('File Uploaded'),
-					(error: Error) => {
-						console.error(error);
-						result.status(500).send('Error Uploading File');
-					});
-			},
-			(error: Error) => result.status(500).send('Error Uploading File'));
-	});
+import { IUser } from '../../../models/user';
+import { IFile } from '../../../models/file';
+
+import { MAX_FILE_SIZE } from '../../../helpers/Constants';
+import { validateProjectServer } from '../../../helpers/ProjectValidationHelper';
+
+const upload = multer({
+    preservePath: true,
+    storage: projectStorageEngine,
+    limits: {
+        fileSize: MAX_FILE_SIZE
+    }
+});
+
+export const router = express.Router();
+
+/** Upload a list of files that are part of a single project
+ */   
+router.put('/', AuthMiddleware.withAuth, upload.array('files'), 
+    async (request: FileUploadRequest, result: Response) => {
+        // TODO: Fix error handling in here, it's terrible
+        const files = request.files as Express.Multer.File[];
+
+        const validation = validateProjectServer(request.body["project"], files);
+        if (validation.containsNoCodeFiles 
+            || validation.invalidProjectName 
+            || validation.acceptableFiles.length === files.length) {
+                result.status(400).json(validation);
+        }
+
+        const zipFile = await archiveProject(request.fileLocation!, request.body["project"]);
+        await deleteNonCodeFiles(files);
+
+        UserMiddleware.getUser(request,
+            (user: IUser) => {
+                // TODO: Use actual project structure to store this
+                FilesMiddleware.createFile(path.basename(zipFile), zipFile, user,
+                    () => {},
+                    (err: Error) => console.log(err));
+
+                for (const file of files.filter(f => path.extname(f.filename) === ".pde")) {
+                    FilesMiddleware.createFile(file.filename, file.path, user,
+                        () => {},
+                        (err: Error) => console.log(err));
+                }
+            },
+            (_: Error) => result.status(500).send("Error Uploading Folder"));
+        
+        result.status(200).send();
+    })
+
 /**
  * End point to fetch all files belonging to the user making the request
  * @TODO implement a selected number of files to fetch possible pagination
@@ -55,12 +73,12 @@ router.get('/', AuthMiddleware.withAuth, (request: Request, result: Response) =>
 router.get('/:fileId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFileWithId, (request: Request, response: Response) => {
 	const fileId = RoutesHelper.getValueFromParams('fileId', request, response);
 	FilesMiddleware.getFile(fileId, (file: IFile) => {
-		FilesMiddleware.readFileFromDisk(file, (fileFromDisk: any) => {
-			let fileWithBody = {id: file.id, name: file.name, body: fileFromDisk.body};
-			response.status(200).send(fileWithBody);
-		}, (error: Error) => {
-			console.error(error), response.status(500).send();
-		});
+        readFileAsString(file.path)
+            .then(data => response.status(200).send({id: file.id, name: file.name, body: data}))
+            .catch((error: Error) => {
+                console.error(error); 
+                response.status(500).send();
+		    });
 	}, (error: Error) => {
 		console.error(error), response.status(500).send();
 	});
@@ -89,15 +107,12 @@ router.get('/:studentId', AuthMiddleware.withAuth, PermissionsMiddleware.checkFi
 	const fileId: string = RoutesHelper.getValueFromParams('fileId', request, response);
 	FilesMiddleware.getFile(fileId,
 		(file: IFile) => {
-			FilesMiddleware.readFileFromDisk(file,
-				(fileWithData: IFile) => {
-					response.status(200).json(fileWithData);
-				},
-				(error: Error) => {
+			readFileAsString(file.path)
+				.then(data => response.status(200).json({...file, body: data}))
+				.catch((error: Error) => {
 					console.error(error);
 					response.status(500).send('error');
-				}
-			);
+				});
 		},
 		(error: Error) => {
 			console.error(error);
@@ -114,9 +129,9 @@ router.get('/:fileId/download', AuthMiddleware.withAuth, PermissionsMiddleware.c
 	const fileId: string = RoutesHelper.getValueFromParams('fileId', request, response);
 	FilesMiddleware.getFile(fileId,
 		(file: IFile) => {
-			FilesMiddleware.readFileFromDisk(file,
-				(fileWithData: IFile) => response.status(200).json(fileWithData),
-				(error: Error) => {
+			readFileAsString(file.path)
+				.then(data => response.status(200).json({...file, body: data}))
+				.catch((error: Error) => {
 					console.error(error);
 					response.sendStatus(500);
 				});
@@ -126,4 +141,3 @@ router.get('/:fileId/download', AuthMiddleware.withAuth, PermissionsMiddleware.c
 		}
 	);
 });
-module.exports = router;

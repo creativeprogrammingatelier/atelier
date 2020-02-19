@@ -1,37 +1,28 @@
-/**
- * Modeling the course object
- * Author: Andrew Heath
- * Date created: 15/08/19
- */
-/**
- * Dependecies
- */
-import mongoose, {Schema, Document} from 'mongoose';
+import {courseState, checkEnum} from "../enums/courseStateEnum"
 
-
-export interface ICourse extends Document {
-	name: string,
-	students: string[],
-	coordinator: string
-
+export interface Course {
+	courseID?:string,
+	name?: string,
+	creatorID?: number,
+	state?: courseState
 }
-const CourseSchema = new mongoose.Schema({
 
-	name: {
-		type: String,
-		required: true
-	},
-	coordinator: {
-		type: Schema.Types.ObjectId,
-		ref: 'User'
-	},
-	students: {
-		type: [Schema.Types.ObjectId],
-		required: false,
-		ref: 'User'
+export interface DBCourse {
+	courseid:string,
+	name: string,
+	creatorid: number,
+	state:string
+}
+
+
+export function convert(db : DBCourse) : Course {
+	if (!checkEnum(db.state)){
+		throw new Error('non-existent enum type from db: '+db.state)
 	}
-
-});
-
-
-export default mongoose.model<ICourse>('Course', CourseSchema);
+	return {
+		courseID:db.courseid,
+		name:db.name,
+		creatorID:db.creatorid,
+		state:courseState[db.state]
+	}
+}

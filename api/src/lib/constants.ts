@@ -1,8 +1,9 @@
 import path from 'path';
+import fs from 'fs';
 
-const keyFilePath = path.join(__dirname, '../../keys/jwtRS256.key');
+// Private helpers
+const keyFilePath = path.join(__dirname, "../../keys/jwtRS256.key");
 
-export const Constants: Readonly<{AUTHSECRETKEY: string}> = Object.freeze({
-	AUTHSECRETKEY: require('fs').readFileSync(keyFilePath, 'utf8')
-});
-
+// Public constants
+export const UPLOADS_PATH = "uploads";
+export const AUTHSECRETKEY = fs.readFileSync(keyFilePath, "utf8");

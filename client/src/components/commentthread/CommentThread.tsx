@@ -9,7 +9,7 @@ import { Snippet } from './Snippet';
 import { WriteComment } from './WriteComment';
 
 interface CommentThreadProperties { 
-    /** The id for the CommentThread in the database */
+    /** The id for the CommentThread in the databaseRoutes */
     threadId: string
     // Maybe also find a way to include the topic, so it can be shown immediately
 }
