@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 // API routes
+import { authRouter } from './routes/AuthRouter';
 import { courseRouter } from './routes/CourseRouter';
 import { coursesRouter } from './routes/CoursesRouter';
 import { fileRouter } from './routes/FileRouter';
@@ -38,6 +39,7 @@ socket.on('connect', (socket: Socket) => {
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, '../../client/')));
+app.use('/api/auth', authRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/courses', coursesRouter);
 app.use('/api/file', fileRouter);

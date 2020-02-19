@@ -1,5 +1,5 @@
 import AuthHelper from './AuthHelper';
-import {IComment} from '../../models/comment';
+import {Comment} from '../../models/comment';
 
 /**
  * Helpers for request for files
@@ -10,7 +10,7 @@ export default class CommentHelper {
 		AuthHelper.fetch(`/comments/file/${fileId}`, {
 			method: 'GET'
 		}).then((response) => {
-			response.json().then((json: IComment[]) => {
+			response.json().then((json: Comment[]) => {
 				onSuccess(json);
 			});
 		}).catch((error) => {

@@ -5,19 +5,18 @@ import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import CodeMirror from 'codemirror';
-import {IFile} from '../../../models/File';
 import {FileComment} from "./submission/CodeTab";
 
 type CodeViewerProps = {
 	cursorLineNumber: number;
 	cursorCharacterNumber : number;
-	file: IFile;
+	file: any;
 	updateCursorLocation: Function;
 	comments? : FileComment[];
 };
 
 type CodeViewerState = {
-	file: IFile,
+	file: any,
 	formattedCode: string,
 	updateCursorLocation: Function,
 	cursorLineNumber: number,

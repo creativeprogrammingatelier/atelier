@@ -9,7 +9,7 @@ export default class AuthHelper {
 
 
 	static checkRole(role: string) {
-		return this.fetch(`/auth/role`, {
+		return this.fetch(`/api/auth/role`, {
 			method: 'POST',
 			body: JSON.stringify({
 				role
@@ -17,7 +17,7 @@ export default class AuthHelper {
 		});
 	}
 	static checkRoles(roles: string[]) {
-		return this.fetch(`/auth/roles`, {
+		return this.fetch(`/api/auth/roles`, {
 			method: 'POST',
 			body: JSON.stringify({
 				roles
@@ -26,7 +26,7 @@ export default class AuthHelper {
 	}
 
 	static getRole() {
-		return this.fetch(`/auth/role`, {
+		return this.fetch(`/api/auth/role`, {
 			method: 'GET'
 		});
 	}
@@ -39,7 +39,7 @@ export default class AuthHelper {
 	}
 
 	static register(email: string, password: string, role: string, onSuccess: Function, onFailure: Function) {
-		this.fetch('/auth/register', {
+		this.fetch('/api/auth/register', {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
@@ -60,7 +60,7 @@ export default class AuthHelper {
 
 	static login(email: string, password: string, onSuccess: Function, onFailure: Function) {
 		// Get a token from api server using the fetch api
-		this.fetch(`/auth/login`, {
+		this.fetch(`/api/auth/login`, {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
@@ -75,18 +75,6 @@ export default class AuthHelper {
 			console.log(e), onFailure();
 		});
     };
-    
-    static refresh(onSuccess: Function, onFailure: Function) {
-        this.fetch(`/auth/refresh`, {})
-        .then(res => res.json())
-        .then(json => {
-            this.setToken(json.token);
-            onSuccess();
-        }).catch(e => {
-            console.log(e);
-            onFailure(e);
-        })
-    }
 
 	static loggedIn(): boolean {
 		const token = AuthHelper.getToken(); // Getting token from localstorage

@@ -1,7 +1,6 @@
 import AuthHelper from './AuthHelper';
 import axios, { AxiosAdapter, AxiosError } from 'axios';
 import fileDownload from 'js-file-download';
-import {IFile} from '../../models/File';
 
 /**
  * Helpers for request for files
@@ -38,7 +37,7 @@ export default class FileHelper {
 		AuthHelper.fetch(`/files/${fileId}`, {
 			method: 'GET'
 		}).then((response) => {
-			response.json().then((json: IFile) => {
+			response.json().then((json: File) => {
 				console.log(json);
 				onSuccess(json);
 			});
@@ -52,7 +51,7 @@ export default class FileHelper {
 		AuthHelper.fetch(`/files/${fileId}/download`, {
 			method: 'GET'
 		}).then((response: Response) => {
-			response.json().then((json: IFile) => {
+			response.json().then((json: any) => {
 				fileDownload(json.body, json.name);
 			});
 		}).catch(function(error) {
@@ -61,7 +60,7 @@ export default class FileHelper {
 
 	};
 
-	static deleteFile = (fileId: Number, onSuccess: Function, onFailure: Function) => {
+	static deleteFile = (fileId: string, onSuccess: Function, onFailure: Function) => {
 		const config = {
 			headers: {
 				'content-type': 'multipart/form-data',
