@@ -147,17 +147,17 @@ function fileHelper(){
 
 function snippetHelper(){
 	promise(SPH.getAllSnippets(), 'getAllSnippets')
-	promise(SPH.getSnippetsBySubmission(uuid), 'getSnippetsBySubmission')
-	promise(SPH.getSnippetsByID(uuid), 'getSubmissionById')
+	promise(SPH.getSnippetsByFile(uuid), 'getSnippetsByFile')
+	promise(SPH.getSnippetByID(uuid), 'getSubmissionById')
 
-	const snip1 = {snippetID: undefined, lineStart:0, lineEnd:3, charStart:2, charEnd:0, fileID:uuid}
-	const snip2 = {snippetID: undefined, lineStart:1, lineEnd:5, charStart:12, charEnd:12, fileID:uuid}
-	SPH.addSnippet(snip).then((res : Snippet) => {
+	const snip1 = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, fileID:uuid}
+	const snip2 = {snippetID:"",lineStart:1, lineEnd:5, charStart:12, charEnd:12, fileID:uuid}
+	SPH.addSnippet(snip1).then((res : Snippet) => {
 		console.log('addSnippet', res)
-		snip2.snippetID = res.snippetID
+		snip2.snippetID = res.snippetID!
 		SPH.updateSnippet(snip2).then((res2 : Snippet)=>{
 			console.log("updateSnippet", res2)
-			promise(SPH.deleteSnippet(res2.snippetID), "deleteSnippet")
+			promise(SPH.deleteSnippet(res2.snippetID!), "deleteSnippet")
 		}).catch("updateSnippet")
 	}).catch("addSnippet")
 }

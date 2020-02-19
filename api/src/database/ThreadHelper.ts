@@ -1,6 +1,6 @@
 const HH = require("./HelperHelper")
 
-import {Submission, DBSubmission, convert} from '../../../models/Submission';
+import {Thread, DBThread, convert} from '../../../models/Thread';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 import RolePermissionHelper from './RolePermissionsHelper'
 /**
@@ -10,4 +10,8 @@ import RolePermissionHelper from './RolePermissionsHelper'
 const {pool, extract, one, map}= HH
 
 export default class ThreadHelper {
+
+	static addThread(thread : Thread) {
+		return pool.query(`INSERT INTO \"Thread\"`)
+	}
 }

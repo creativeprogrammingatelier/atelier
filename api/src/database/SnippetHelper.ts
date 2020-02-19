@@ -49,7 +49,7 @@ export default class SnippetHelper {
 			charEnd,
 			fileID
 		} = snippet
-		return pool.query("INSERT INTO \"Snippets\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING *", [lineStart, lineEnd, charStart, charEnd,fileID])
+		return pool.query("INSERT INTO \"Snippets\" VALUES (DEFAULT, $1, $2, $3, $4, $5) RETURNING *", [lineStart, lineEnd, charStart, charEnd,fileID])
 		.then(extract).then(map(convert)).then(one)
 	}
 
@@ -67,14 +67,14 @@ export default class SnippetHelper {
 			lineEnd = COALESCE($3, lineEnd),
 			charStart = COALESCE($4, charStart),
 			charEnd = COALESCE($5, charEnd),
-			fileID = COALESCE($6, fileID),
+			fileID = COALESCE($6, fileID)
 			WHERE snippetID=$1
 			RETURNING *`, [snippetID, lineStart, lineEnd, charStart, charEnd, fileID])
 		.then(extract).then(map(convert)).then(one)
 	}
 
 	static deleteSnippet(snippetID : string){
-		return pool.query("DELETE FROM \"Snippets\" WHERE snippetID = $1", [snippetID])
+		return pool.query("DELETE FROM \"Snippets\" WHERE snippetID = $1 RETURNING *", [snippetID])
 		.then(extract).then(map(convert)).then(one)
 		
 	}
