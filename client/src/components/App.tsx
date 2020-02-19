@@ -53,15 +53,6 @@ class App extends React.Component<AppProps, AppState> {
 		});
 		localStorage.setItem(EMAILLOCALSTORAGEKEY, email);
         this.getAndSetRole();
-
-        const successTimeOut =  55*60*60*1000;
-        function refreshToken() {
-            AuthHelper.refresh(
-                () => setTimeout(refreshToken, successTimeOut),
-                () => setTimeout(refreshToken, 1*60*60*1000)
-            )
-        }
-        setTimeout(refreshToken, successTimeOut);
 	}
 
 	handleLogout() {

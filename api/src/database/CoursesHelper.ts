@@ -1,12 +1,11 @@
 const HH = require("./HelperHelper")
 
-import {Course, DBCourse, convert} from '../../../models/course';
-import {courseState, checkEnum} from '../../../enums/courseStateEnum';
+import {Course, convert} from '../../../models/Course';
 
 /**
  * @Author Rens Leendertz
  */
-const {pool, one, map, extract} = HH
+const {pool, one, map, extract} = HH;
 
 export default class CoursesHelper {
 	
@@ -33,7 +32,7 @@ export default class CoursesHelper {
 			name,
 			state,
 			creatorID = undefined
-		} = course
+		} = course;
 		return pool.query("INSERT INTO \"Courses\" VALUES (DEFAULT, $1, $2, $3) RETURNING *", [name, state, creatorID])
 		.then(extract).then(map(convert)).then(one)
 	}
@@ -55,7 +54,7 @@ export default class CoursesHelper {
 			name = undefined,
 			state = undefined,
 			creatorID = undefined
-		} = course
+		} = course;
 		return pool.query(`UPDATE \"Courses\" SET 
 			name=COALESCE($2, name),
 			state=COALESCE($3,state),

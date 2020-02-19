@@ -6,9 +6,6 @@
  *  - commentThread[] commentThreadId, comment[],
  */
 
-import {Response, Request} from 'express';
+import express, { Response, Request } from 'express';
 
-let express = require('express');
-let router = express.Router();
-
-module.exports = router;
+export const submissionRouter = express.Router();

@@ -1,7 +1,7 @@
 import decode from 'jwt-decode';
 import AuthHelper from './AuthHelper';
 import axios from 'axios';
-import {IUser} from '../../models/user';
+import {User} from '../../models/User';
 
 /**
  * Helpers for request for files
@@ -12,7 +12,7 @@ export default class UserHelper {
 		AuthHelper.fetch(`users/students`, {
 			method: 'GET'
 		}).then((response) => {
-			response.json().then((json: IUser[]) => {
+			response.json().then((json: User[]) => {
 				onSuccess(json);
 			});
 		}).catch(function(error) {
@@ -25,7 +25,7 @@ export default class UserHelper {
 		AuthHelper.fetch(`users`, {
 			method: 'GET'
 		}).then((response) => {
-			response.json().then((json: IUser[]) => {
+			response.json().then((json: User[]) => {
 				onSuccess(json);
 			});
 		}).catch(function(error) {

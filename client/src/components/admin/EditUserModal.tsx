@@ -1,10 +1,10 @@
 import React, {MouseEvent} from 'react';
-import {IUser} from '../../../../models/user';
+import {User} from '../../../../models/User';
 import {FormGroup, Button, FormControl, Modal, ModalProps, FormLabel, Form} from 'react-bootstrap';
 import UserHelper from '../../../helpers/UserHelper';
 import {FiUserX, FiTrash2} from 'react-icons/fi';
 
-type EditUserModalProps = ModalProps & {user?: IUser}
+type EditUserModalProps = ModalProps & {user?: User}
 type EditUserModalState = {password: any, role: string, updated: boolean}
 class EditUserModal extends React.Component<EditUserModalProps, EditUserModalState> {
 
@@ -12,18 +12,18 @@ class EditUserModal extends React.Component<EditUserModalProps, EditUserModalSta
 	constructor(props: EditUserModalProps) {
 		super(props);
 		this.state = {
-			role: (this.props.user) ? this.props.user.role : '',
+			role: (this.props.user) ? this.props.user.role! : '',
 			password: 'newPassword123',
 			updated: false
 		};
 	}
 
-	deleteUser = (e: MouseEvent, user: IUser) => {
+	deleteUser = (e: MouseEvent, user: User) => {
 		e.preventDefault();
-		UserHelper.deleteUser(user._id, () => (this.props && this.props.onHide) ? this.props.onHide() : null, () => console.log('delete failed'));
+		UserHelper.deleteUser(user.userID, () => (this.props && this.props.onHide) ? this.props.onHide() : null, () => console.log('delete failed'));
 	};
 
-	updateUser = (e: MouseEvent, user: IUser) => {
+	updateUser = (e: MouseEvent, user: User) => {
 		e.preventDefault();
 		if (this.props.user) {
 			UserHelper.updateUser({

@@ -12,7 +12,6 @@ import {submissionStatus}	from '../../../enums/submissionStatusEnum'
 import {Course}				from '../../../models/Course'
 import {CourseRegistration}	from '../../../models/CourseRegistration'
 import {File}				from '../../../models/File'
-// console.log = ()=>{}
 const uuid = "00000000-0000-0000-0000-000000000000"
 
 function logger(pre: string) {

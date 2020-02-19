@@ -1,31 +1,23 @@
 /**
- * Base Routes File
+ * Base Routes File 
  * Author: Andrew Heath
  * Date Created: 13/08/19
  */
+import express, { Request, Response } from 'express';
+import path from 'path';
 
-/**
- * Dependencies
- */
-var express = require('express');
-var router = express.Router();
-const path = require('path');
-
-import {Response} from 'express';
+export const indexRouter = express.Router();
 
 /**
  * Serves default index
  */
-router.get('/', function(request: Request, result: Response, next: Function) {
-	result.render('index');
+indexRouter.get('/', (request: Request, result: Response, next: Function) => {
+  result.render('index');
 });
 
 /**
- * Serves the react bundle
+ * Serves the react bundle 
  */
-router.get('*', function(request: Request, result: Response, next: Function) {
-	result.sendFile(path.resolve(__dirname + '../../../../client/index.html'));
+indexRouter.get('*', (request: Request, result: Response, next: Function) => {
+  result.sendFile(path.resolve(__dirname + '../../../../client/index.html'));
 });
-
-
-module.exports = router;

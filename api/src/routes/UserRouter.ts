@@ -5,10 +5,9 @@
  *  - list of user submissions
  */
 
-import {Response, Request} from 'express';
+import express, { Response, Request } from 'express';
 
-let express = require('express');
-let router = express.Router();
+export const userRouter = express.Router();
 
 const userResponse = {
     user : {
@@ -88,9 +87,7 @@ const userResponse = {
 };
 
 
-router.get('/:userId/submissions',
+userRouter.get('/:userId/submissions',
     (request: Request, result: Response) => {
         result.send(userResponse);
     });
-
-module.exports = router;

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {IUser} from '../../../../models/user';
+import {User} from '../../../../models/User';
 import {FiUserPlus, FiFilter} from 'react-icons/fi';
 
 type AdminControlProps = {}
-type AdminControlState = {users: IUser[]}
+type AdminControlState = {users: User[]}
 
 class AdminControl extends React.Component<AdminControlProps, AdminControlState> {
 

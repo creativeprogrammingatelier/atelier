@@ -2,8 +2,8 @@ import * as React from 'react';
 import UserHelper from '../../../helpers/UserHelper';
 import FileViewer from '../FileViewer';
 import FileHelper from '../../../helpers/FileHelper';
-import {IUser} from '../../../../models/user';
-import {IFile} from '../../../../models/file';
+import {User} from '../../../../models/User';
+import {File} from '../../../../models/File';
 import axios from 'axios';
 import AuthHelper from '../../../helpers/AuthHelper';
 import AdminControl from './AdminControl';
@@ -12,7 +12,7 @@ import {Button} from 'react-bootstrap';
 import Octicon, {Pencil} from '@primer/octicons-react';
 
 type AdminViewProps = {}
-type AdminViewState = {users: IUser[], viewedUser?: IUser, deleteUserModalOpen: boolean, editUserModalOpen: boolean}
+type AdminViewState = {users: User[], viewedUser?: User, deleteUserModalOpen: boolean, editUserModalOpen: boolean}
 
 class AdminView extends React.Component<AdminViewProps, AdminViewState> {
 
@@ -43,7 +43,7 @@ class AdminView extends React.Component<AdminViewProps, AdminViewState> {
 		}
 		return userRows;
 	}
-	openEditModal = (user: IUser) => {
+	openEditModal = (user: User) => {
 		this.setState({
 			editUserModalOpen: true,
 			viewedUser: user

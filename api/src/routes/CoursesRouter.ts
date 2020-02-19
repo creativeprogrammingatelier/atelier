@@ -2,11 +2,10 @@
  * Api routes relating to courses of a user
  */
 
-import {Response, Request} from 'express';
-import {CourseResponse} from "../../../client/src/helpers/DatabaseResponseInterface";
+import express, { Response, Request } from 'express';
+import { CourseResponse } from "../../../client/src/helpers/DatabaseResponseInterface";
 
-let express = require('express');
-let router = express.Router();
+export const coursesRouter = express.Router();
 
 const courseListResponse = {
     courses: [
@@ -65,9 +64,7 @@ const courseListResponse = {
  * /api/course/
  * @return, list of courses
  */
-router.get('/',
+coursesRouter.get('/',
     (request : Request, result : Response) => {
         result.send(courseListResponse);
     });
-
-module.exports = router;

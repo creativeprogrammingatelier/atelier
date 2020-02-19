@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import {Submission} from "./SubmissionHelpers";
 import {DataTableRowMapping} from "../components/general/DataTable";
 import {Code} from "./CodeHelpers";
@@ -20,4 +20,4 @@ export interface SearchData {
         data : Comment[],
         table : DataTableRowMapping<Comment>[]
     }
-}
+}*/

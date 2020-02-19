@@ -9,12 +9,10 @@
  *  - code results
  */
 
-import {Response, Request} from 'express';
-import {SearchResponse} from "../../../client/src/helpers/DatabaseResponseInterface";
+import express, { Response, Request } from 'express';
+import { SearchResponse } from "../../../client/src/helpers/DatabaseResponseInterface";
 
-let express = require('express');
-let router = express.Router();
-
+export const searchRouter = express.Router();
 
 const searchResponse : SearchResponse = {
     submissions : [{
@@ -78,12 +76,10 @@ const searchResponse : SearchResponse = {
     }]
 };
 
-router.get('/',
+searchRouter.get('/',
     (request : Request, result : Response) => {
         const search = request.params['q'];
         console.log('search parameter: ' + search);
 
         result.send(searchResponse);
     });
-
-module.exports = router;
