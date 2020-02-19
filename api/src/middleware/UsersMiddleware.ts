@@ -2,7 +2,7 @@ import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import { AUTHSECRETKEY } from '../lib/constants';
 import {Request, Response} from 'express';
-import {User} from '../../../models/user2';
+import {User} from '../../../models/User';
 import FilesMiddleware from './FilesMiddleware';
 import AuthMiddleWare from './AuthMiddleware';
 import UsersHelper from '../database/UsersHelper'
