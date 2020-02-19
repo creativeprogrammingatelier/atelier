@@ -1,30 +1,20 @@
 const HH = require("./HelperHelper")
 
-import {localRoles} from '../../../enums/localRoleEnum'
-import {Permission} from '../../../models/permission'
+import {localRole, checkEnum} from '../../../enums/localRoleEnum'
+import {RolePermission, DBRolePermission, convert} from '../../../models/RolePermission'
 /**
  * interface for interacting with rolepermissions
  * @Author Rens Leendertz
  */
-const pool = HH.pool
+const {pool, extract, map, one} = HH
 
 export default class RolePermissionsHelper {
 	/**
 	 * get all roles currently stored in the database, given to onSuccess as a list of Permission
 	 */
-	 static getAllRoles(){
-		return new Promise((
-				resolve : (result : Permission[]) => void, 
-				reject: (error : Error) => void
-			) => RolePermissionsHelper._getAllRoles(resolve, reject))
-	}
-
-	static _getAllRoles(
-			onSuccess : (result : Permission[]) => void,
-			onFailure : (error : Error) => void){
-		pool.query("SELECT * FROM \"CourseRolePermissions\"")
-		.then((res:{rows:Permission[]}) => onSuccess(res.rows))//.map((x: Permission) => {role: x.courseRoleID, permission: x.permission})))
-		.catch(onFailure)
+	static getAllRoles(){
+		return pool.query("SELECT * FROM \"CourseRolePermissions\"")
+		.then(extract).then(map(convert))
 	}
 
 	/**
@@ -32,59 +22,24 @@ export default class RolePermissionsHelper {
 	 * given to onSuccess as an Permission
 	 */
 	static getRolePermissions(role : string){
-		return new Promise((
-				resolve : (result : Permission) => void, 
-				reject: (error : Error) => void
-			) => RolePermissionsHelper._getRolePermissions(role, resolve,reject))
-	}
-
-	static _getRolePermissions(
-			role : string,
-			onSuccess : (result : Permission) => void,
-			onFailure : (error : Error) => void){
-		pool.query("SELECT permission FROM \"CourseRolePermissions\" WHERE courseRoleID=$1",[role])
-		.then((res : {rows : Permission[]}) => onSuccess(res.rows[0]))
-		.catch(onFailure)
+		return pool.query("SELECT * FROM \"CourseRolePermissions\" WHERE courseRoleID=$1",[role])
+		.then(extract).then(map(convert)).then(one)
 	}
 
 	/**
 	 * Add a new role to the database
 	 */
 	static addNewLocalRole(name : string, permissions : number){
-		return new Promise((
-				resolve : (result : Permission) => void, 
-				reject: (error : Error) => void
-			) => RolePermissionsHelper._addNewLocalRole(name, permissions, resolve,reject))
-	}
-
-	static _addNewLocalRole(
-			name : string,
-			permissions : number,
-			onSuccess : (result : Permission) => void,
-			onFailure : (error : Error) => void){
-		pool.query("INSERT INTO \"CourseRolePermissions\" VALUES ($1,$2) RETURNING *", [name, RolePermissionsHelper.toBin(permissions)])
-		.then((res : {rows : Permission[]}) => onSuccess(res.rows[0]))
-		.catch(onFailure)
+		return pool.query("INSERT INTO \"CourseRolePermissions\" VALUES ($1,$2) RETURNING *", [name, RolePermissionsHelper.toBin(permissions)])
+		.then(extract).then(map(convert)).then(one)
 	}
 	/**
 	 * set the the permissions for a role in the database.
 	 * all old permissions will NOT be retained.
 	 */
 	static setPermissionOnRole(name : string, permissions : number){
-		return new Promise((
-				resolve : (result : Permission) => void, 
-				reject: (error : Error) => void
-			) => RolePermissionsHelper._setPermissionOnRole(name, permissions, resolve,reject))
-	}
-
-	static _setPermissionOnRole(
-			name : string,
-			permissions : number,
-			onSuccess : (result : Permission) => void,
-			onFailure : (error : Error) => void){
-		pool.query("UPDATE \"CourseRolePermissions\" SET permission = $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permissions)])
-		.then((res : {rows : Permission[]}) => onSuccess(res.rows[0]))
-		.catch(onFailure)
+		return pool.query("UPDATE \"CourseRolePermissions\" SET permission = $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permissions)])
+		.then(extract).then(map(convert)).then(one)
 	}
 	/**
 	 * Add some permissions to a role in the database
@@ -93,20 +48,8 @@ export default class RolePermissionsHelper {
 	 * No permissions will be removed
 	 */
 	static addPermissionToRole(name : string, permission : number){
-		return new Promise((
-				resolve : (result : Permission) => void, 
-				reject: (error : Error) => void
-			) => RolePermissionsHelper._addPermissionToRole(name, permission, resolve,reject))
-	}
-
-	static _addPermissionToRole(
-			name : string,
-			permission : number,
-			onSuccess : (result : Permission) => void,
-			onFailure : (error : Error) => void){
-		pool.query("UPDATE \"CourseRolePermissions\" SET permission=permission | $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
-		.then((res : {rows : Permission[]}) => onSuccess(res.rows[0]))
-		.catch(onFailure)
+		return pool.query("UPDATE \"CourseRolePermissions\" SET permission=permission | $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
+		.then(extract).then(map(convert)).then(one)
 	}
 
 	/**
@@ -116,20 +59,8 @@ export default class RolePermissionsHelper {
 	 * No permissions will be added
 	 */
 	static removePermissionFromRole(name : string, permission : number){
-		return new Promise((
-				resolve : (result : Permission) => void, 
-				reject: (error : Error) => void
-			) => RolePermissionsHelper._removePermissionFromRole(name, permission, resolve,reject))
-	}
-
-	static _removePermissionFromRole(
-			name : string,
-			permission : number,
-			onSuccess : (result : Permission) => void,
-			onFailure : (error : Error) => void){
-		pool.query("UPDATE \"CourseRolePermissions\" SET permission=permission & (~($2::bit(40))) WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
-		.then((res : {rows : Permission[]}) => onSuccess(res.rows[0]))
-		.catch(onFailure)
+		return pool.query("UPDATE \"CourseRolePermissions\" SET permission=permission & (~($2::bit(40))) WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
+		.then(extract).then(map(convert)).then(one)
 	}
 
 	/**
@@ -137,20 +68,9 @@ export default class RolePermissionsHelper {
 	 * This may fail due to foreign key constraints if there are still users with this role in a course.
 	 * make sure to change those permissions first.
 	 */
-	static deleteLocalRole(name : string) : Promise<void>{
-		return new Promise((
-				resolve : () => void, 
-				reject: (error : Error) => void
-			) => RolePermissionsHelper._deleteLocalRole(name, resolve, reject))
-	}
-
-	static _deleteLocalRole(
-			name : string,
-			onSuccess : () => void,
-			onFailure : (error : Error) => void) {
-		pool.query("DELETE FROM \"CourseRolePermissions\" WHERE courseRoleID=$1",[name])
-		.then(onSuccess)
-		.catch(onFailure)
+	static deleteLocalRole(name : string) {
+		return pool.query("DELETE FROM \"CourseRolePermissions\" WHERE courseRoleID=$1 RETURNING *",[name])
+		.then(extract).then(map(convert)).then(one)
 	}
 	static toBin(n : number | undefined){
 		if (n === undefined) return undefined

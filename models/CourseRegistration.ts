@@ -1,9 +1,9 @@
-import {localRoles} from "../enums/localRoleEnum"
+import {localRole, checkEnum} from "../enums/localRoleEnum"
 
 export interface CourseRegistration {
-	courseid? : string,
-	userid? : string,
-	role? : localRoles,
+	courseID? : string,
+	userID? : string,
+	role? : localRole,
 	permission? : number
 }
 export interface DBCourseRegistration {
@@ -11,4 +11,15 @@ export interface DBCourseRegistration {
 	userid : string,
 	courserole : string,
 	permission : number
+}
+export function convert(db :DBCourseRegistration) : CourseRegistration {
+	if (!checkEnum(db.courserole)){
+		throw new Error("courserole from database does not match enum on server: "+db.courserole)
+	}
+	return {
+		courseID: db.courseid,
+		userID: db.userid,
+		role: localRole[db.courserole],
+		permission: db.permission
+	}
 }

@@ -95,10 +95,10 @@ INSERT INTO "Files" VALUES
 
 CREATE TABLE "Snippets" (
      snippetID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-     startLine         integer NOT NULL,
-     endLine           integer NOT NULL,
-     startChar         integer,
-     endChar           integer,
+     lineStart         integer NOT NULL,
+     lineEnd           integer NOT NULL,
+     charStart         integer,
+     charEnd           integer,
      fileID            uuid REFERENCES "Files"(fileID)
 );
 INSERT INTO "Snippets" VALUES
