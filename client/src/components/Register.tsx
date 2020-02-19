@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import AuthHelper from '../../helpers/AuthHelper';
 import {withRouter, Redirect, Link} from 'react-router-dom';
-import {IUser} from '../../../models/User';
+import {User} from '../../../models/User';
 import {Form} from 'react-bootstrap';
 
 class Register extends Component {
 
-	state: {email: string, password: string, passwordConfirmation: string, role: string, user: IUser | null, response: string, redirectToReferrer: boolean};
+	state: {email: string, password: string, passwordConfirmation: string, role: string, user: User | null, response: string, redirectToReferrer: boolean};
 	props: any;
 	constructor(props: any) {
 		super(props);

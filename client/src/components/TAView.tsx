@@ -2,11 +2,11 @@ import * as React from 'react';
 import UserHelper from '../../helpers/UserHelper';
 import FileViewer from './FileViewer';
 import FileHelper from '../../helpers/FileHelper';
-import {IUser} from '../../../models/User';
-import {IFile} from '../../../models/File';
+import {User} from '../../../models/User';
+import {File} from '../../../models/File';
 
 class TAView extends React.Component {
-	state: {students: any[], currentStudent: IUser | null};
+	state: {students: any[], currentStudent: User | null};
 
 	constructor(props: any) {
 		super(props);
@@ -18,7 +18,7 @@ class TAView extends React.Component {
 	}
 
 	getStudents() {
-		UserHelper.getStudents((students: IUser[]) => this.setState({students: students}), (error: Error) => console.log(error));
+		UserHelper.getStudents((students: User[]) => this.setState({students: students}), (error: Error) => console.log(error));
 	}
 
 	populateTable() {
@@ -50,7 +50,7 @@ class TAView extends React.Component {
 
 	}
 	viewStudentFiles(element: React.MouseEvent<HTMLButtonElement, MouseEvent>, studentId: String) {
-		FileHelper.getUsersFiles(studentId, (result: IFile[]) => {
+		FileHelper.getUsersFiles(studentId, (result: File[]) => {
 			let students: any[] = this.state.students;
 			let currentStudent;
 			for (const student of students) {

@@ -5,13 +5,14 @@ import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import {Controlled as CodeMirror} from 'react-codemirror2';
-import {IFile} from '../../../models/File';
+import {File} from '../../../models/File';
 import {FileComment} from "./submission/CodeTab";
 import {Editor} from "codemirror";
 import {WriteComment} from "./commentthread/WriteComment";
 
 type CodeViewer2Props = {
-    file : IFile,
+    file : File,
+    fileBody : string,
     comments? : FileComment[]
 }
 
@@ -63,7 +64,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
         super(props);
 
         this.state = {
-            formattedCode : props.file.body,
+            formattedCode : props.fileBody,
             selecting : false,
             commentSelection : "",
 

@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 import AuthHelper from '../../helpers/AuthHelper';
 import {withRouter, Redirect, Link} from 'react-router-dom';
 import '../styles/login.scss';
-import {IUser} from '../../../models/User';
+import {User} from '../../../models/User';
 import {Form, Button} from 'react-bootstrap';
 
 class Login extends Component {
-	state: {email: string, password: string, user: IUser | null, response: string, redirectToReferrer: boolean};
+	state: {email: string, password: string, user: User | null, response: string, redirectToReferrer: boolean};
 	props: any;
 	constructor(props: any) {
 		super(props);
