@@ -12,7 +12,8 @@ interface SubmissionOverviewProps {
 	match: {
 		params: {
 			tab: string,
-			fileId: string
+			fileId: string,
+			submissionId : string
 		}
 	}
 }
@@ -23,6 +24,8 @@ function getParameter(token: string | undefined) {
 }
 
 export function SubmissionOverview({match} : SubmissionOverviewProps) {
+	console.log(match.params);
+
 	const [tab, setTab] = useState(getParameter(match.params.tab)); // Get tab from match object
 	const [file, setFile] = useState(getParameter(match.params.fileId)); // Keep track of code being viewed
 

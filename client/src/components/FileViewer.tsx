@@ -87,7 +87,7 @@ class FileViewer extends React.Component<{files: IFile[], update: Function}> {
 					<div className="row">
 						<div className="col-sm-8">
 							{(this.state.viewedFile != null) ?
-								<CodeViewer {...{file: this.state.viewedFile, commentLineNumber: this.state.currentLineNumber, updateLineNumber: this.updateCurrentLineNumber}} /> : null}
+								<CodeViewer {...{file: this.state.viewedFile, cursorLineNumber: this.state.currentLineNumber, cursorCharacterNumber : 0, updateCursorLocation: this.updateCurrentLineNumber}} /> : null}
 						</div>
 						<div className="col-sm-4">
 							{(this.state.viewedFile != null) ?
