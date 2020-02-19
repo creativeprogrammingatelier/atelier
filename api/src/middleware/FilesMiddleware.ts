@@ -90,7 +90,7 @@ export default class FilesMiddleware {
 	}
 
 	/**
-	 * Deletes file from the database
+	 * Deletes file from the databaseRoutes
 	 * @param {*} fileid
 	 * @TODO Refactor
 	 */

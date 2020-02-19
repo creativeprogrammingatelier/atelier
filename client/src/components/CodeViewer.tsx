@@ -217,7 +217,7 @@ class CodeViewer extends React.Component<CodeViewerProps, CodeViewerState> {
 		const endCharacter = this.state.commentCharacterEnd;
 
 		console.log(`Created comment ${startLine}:${startCharacter} - ${endLine}:${endCharacter}: ${comment}`);
-		// TODO database query
+		// TODO databaseRoutes query
 	}
 
 
