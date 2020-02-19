@@ -7,7 +7,7 @@
 
 import jwt from 'jsonwebtoken';
 import UsersMiddleware from './UsersMiddleware';
-import {Constants} from '../lib/constants';
+import { AUTHSECRETKEY } from '../lib/constants';
 import {Request, Response} from 'express';
 import {User, IUser} from '../../../models/user';
 
@@ -28,7 +28,7 @@ export default class AuthMiddleWare {
 		if (!token) {
 			result.status(401).send('Unauthorized: No token provided');
 		} else {
-			jwt.verify(token, Constants.AUTHSECRETKEY, function(error: Error, decoded: Object) {
+			jwt.verify(token, AUTHSECRETKEY, function(error: Error, decoded: Object) {
 				if (error) {
 					console.error(error);
 					result.status(401).send('Unauthorized: Invalid token');

@@ -16,7 +16,7 @@ let logger = require('morgan');
 const mongoose = require('mongoose');
 let usersRouter = require('./routes/UsersRouter');
 let authRouter = require('./routes/AuthRouter');
-let filesRouter = require('./routes/FilesRouter');
+import { router as filesRouter } from './routes/FilesRouter';
 let commentRouter = require('./routes/CommentsRouter');
 let indexRouter = require('./routes/IndexRouter');
 
