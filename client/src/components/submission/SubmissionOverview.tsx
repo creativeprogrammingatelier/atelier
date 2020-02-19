@@ -38,7 +38,7 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 	} else if (tab === "comments") {
 		currentTab =  <CommentTab />
 	} else if (tab === "share") {
-		currentTab = <ShareTab />
+		currentTab = <ShareTab url = "localhost:5000/submission/1"/>
 	} else if (tab === "project") {
 		currentTab = <ProjectTab setFile = {changeFile}/>
 	}
