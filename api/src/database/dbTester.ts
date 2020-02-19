@@ -5,10 +5,13 @@ import CRH	from './CourseRegistrationHelper'
 import SH	from './submissionHelper'
 import FH	from './FileHelper'
 import SPH 	from './SnippetHelper'
+import TH 	from './ThreadHelper'
+import C 	from './CommentsHelper'
 
 import {courseState} 		from '../../../enums/courseStateEnum'
-import {localRole} 		from '../../../enums/localRoleEnum'
+import {localRole} 			from '../../../enums/localRoleEnum'
 import {submissionStatus}	from '../../../enums/submissionStatusEnum'
+import {threadState}		from '../../../enums/threadStateEnum'
 
 import {Course}				from '../../../models/Course'
 import {CourseRegistration}	from '../../../models/CourseRegistration'
@@ -146,6 +149,7 @@ function fileHelper(){
 }
 
 function snippetHelper(){
+	console.log("\n\nSNIPPETHELPER\n\n")
 	promise(SPH.getAllSnippets(), 'getAllSnippets')
 	promise(SPH.getSnippetsByFile(uuid), 'getSnippetsByFile')
 	promise(SPH.getSnippetByID(uuid), 'getSubmissionById')
@@ -162,6 +166,32 @@ function snippetHelper(){
 	}).catch("addSnippet")
 }
 
+async function ThreadHelper(){
+	console.log("\n\nTHREADHELPER\n\n")
+	promise(TH.getAllThreads(), "getAllThreads")
+	promise(TH.getThreadsLimit(1), "getThreadsLimit")
+	promise(TH.getThreadByID(uuid), "getThredByID")
+	promise(TH.getThreadsBySubmission(uuid), "getThreadsBySubmission")
+	promise(TH.getThreadsByFile(uuid), "getThreadsByFile")
+	const T1 = await TH.addThread({submissionID:uuid, fileID:uuid, snippetID: uuid, visibilityState:threadState.public})
+	console.log("addThread",T1)
+	const T2 = {commentThreadID:T1.commentThreadID, visibilityState:threadState.private}
+	promise(TH.updateThread(T2), "updateThread")
+	promise(TH.deleteThread(T1.commentThreadID!), "deleteThread")
+}
+
+async function commentHelper(){
+	console.log("\n\nCOMMENTHELPER\n\n")
+	promise(C.getAllComments(), "getAllComments")
+	promise(C.getCommentByID(uuid), "getCommentByID")
+	promise(C.getCommentsByThread(uuid), "getCommentsBySubmission")
+	const C1 = await C.addComment({commentThreadID:uuid, userID:uuid, body:"this is a comment i just made!"})
+	console.log("addComment", C1)
+	promise(C.updateComment({commentID:C1.commentID, body: "this is an edited comment"}), "updateComment")
+	promise(C.deleteComment(C1.commentID), "deleteComment")
+}
+
+
 setTimeout(usersHelper, 0)
 setTimeout(coursesHelper,100)
 setTimeout(rolesHelper, 200)
@@ -169,3 +199,5 @@ setTimeout(courseRegistrationHelper, 300)
 setTimeout(submissionHelper, 400)
 setTimeout(fileHelper, 500)
 setTimeout(snippetHelper, 600)
+setTimeout(ThreadHelper, 700)
+setTimeout(commentHelper, 800)

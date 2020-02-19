@@ -53,6 +53,7 @@ export default class SubmissionHelper {
 			date = undefined,
 			state = undefined
 		} = submission
+		if (limit && limit<0) limit=undefined
 		return pool.query(`SELECT * 
 			FROM \"Submissions\" 
 			WHERE 

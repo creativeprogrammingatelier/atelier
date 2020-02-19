@@ -1,6 +1,6 @@
 export enum threadState{
 	public = 'public',
-	closed = 'closed'
+	private = 'private'
 }
 export function checkEnum(str: string) : str is keyof typeof threadState {
 	return str in threadState

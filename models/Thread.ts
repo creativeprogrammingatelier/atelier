@@ -1,11 +1,11 @@
 import {threadState, checkEnum} from '../enums/threadStateEnum'
 
 export interface Thread {
-	commentThreadID: string,
-	submissionID: string,
-	fileID: string,
-	snippetID: string,
-	visibilityState: threadState
+	commentThreadID?: string,
+	submissionID?: string,
+	fileID?: string,
+	snippetID?: string,
+	visibilityState?: threadState
 }
 export interface DBThread {
 	commentthreadid: string,
