@@ -3,6 +3,10 @@ import {User} from '../../../models/User';
 import {Request, Response} from 'express';
 import e = require('express');
 import UserMiddleware from './UsersMiddleware';
+<<<<<<< HEAD
+=======
+import {IComment} from '../../../models/comment';
+>>>>>>> e2fd951485f1a7c96644511d99f6da8ea85524d6
 import UsersMiddleware from './UsersMiddleware';
 
 /**
@@ -112,4 +116,5 @@ export default class PermissionsMiddleware {
 			}
 		);
 	}*/
+
 }

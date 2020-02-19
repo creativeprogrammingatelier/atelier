@@ -31,7 +31,7 @@ const courseSubmissions = {
 /**
  * /api/course/:courseId/submissions
  */
-router.get('/:courseId/submissions',
+courseRouter.get('/:courseId/submissions',
     (request: Request, result: Response) => {
         result.send(courseSubmissions);
     });

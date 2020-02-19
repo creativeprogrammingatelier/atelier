@@ -64,7 +64,7 @@ const courseListResponse = {
  * /api/course/
  * @return, list of courses
  */
-router.get('/',
+coursesRouter.get('/',
     (request : Request, result : Response) => {
         result.send(courseListResponse);
     });
