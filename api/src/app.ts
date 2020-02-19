@@ -13,7 +13,7 @@ import {Socket} from 'socket.io';
 let createError = require('http-errors');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 let usersRouter = require('./routes/UsersRouter');
 let authRouter = require('./routes/AuthRouter');
 let filesRouter = require('./routes/FilesRouter');
@@ -89,20 +89,20 @@ app.use(function(err: any, req: Request, res: Response, next: Function) {
 /**
  * @TODO refactor
  */
-const mongo_uri = 'mongodb://localhost/react-auth';
+// const mongo_uri = 'mongodb://localhost/react-auth';
 
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-mongoose.set('useUnifiedTopology', true);
+// mongoose.set('useNewUrlParser', true);
+// mongoose.set('useFindAndModify', false);
+// mongoose.set('useCreateIndex', true);
+// mongoose.set('useUnifiedTopology', true);
 
-mongoose.connect(mongo_uri, function(err: Error) {
-	if (err) {
-		throw err;
+// mongoose.connect(mongo_uri, function(err: Error) {
+// 	if (err) {
+// 		throw err;
 
-	} else {
-		console.log(`Successfully connected to ${mongo_uri}`);
-	}
-});
+// 	} else {
+// 		console.log(`Successfully connected to ${mongo_uri}`);
+// 	}
+// });
 
 module.exports = app;
