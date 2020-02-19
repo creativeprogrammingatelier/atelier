@@ -1,53 +1,40 @@
 /**
- * Api routes relating to course information
-*/
+ * Api routes relating to a course
+ */
 
 import {Response, Request} from 'express';
 
 let express = require('express');
 let router = express.Router();
 
-const courseListResponse = {
-    courses: [
+const courseSubmissions = {
+    submissions: [
         {
-            courseid : 1,
-            name : 'Pearls of Computer Science'
+            user: "John Doe",
+            name: "Uploaded helpitbroke.zip",
+            time: new Date().toLocaleString(),
+            tags: [{name : "help", color : "red"}, {name : "me", color : "red"}, {name : "now", color : "red"}]},
+        {
+            user: "John Doe",
+            name: "Uploaded Project 'ImDaBest'",
+            time: new Date(2020, 1, 17, 15).toLocaleString(),
+            tags: [{name : "fuck", color : "green"}, {name : "yeah", color : "green"}]
         },
         {
-            courseid : 2,
-            name : 'Software Systems'
-        },
-        {
-            courseid : 3,
-            name : 'Network Systems'
-        },
-        {
-            courseid : 4,
-            name : 'Data and Information'
-        },
-        {
-            courseid : 5,
-            name : 'Computer Systems'
-        },
-        {
-            courseid : 6,
-            name : 'Intelligent Interaction Design'
-        },
-        {
-            courseid : 7,
-            name : 'Discrete Structures & Efficient Algorithms'
-        },
-        {
-            courseid : 8,
-            name : 'Programming Paradigms'
+            user: "Mary Doe",
+            name: "Uploaded project 'ImmaDropOutNow",
+            time: new Date(2020, 0, 9 , 15).toLocaleString(),
+            tags: [{name : "fuck", color : "orange"}, {name : "off", color : "orange"}]
         }
     ]
 };
 
-
-router.get('/:courseId',
-    (request : Request, result : Response) => {
-        result.send(courseListResponse);
-});
+/**
+ * /api/course/:courseId/submissions
+ */
+router.get('/:courseId/submissions',
+    (request: Request, result: Response) => {
+        result.send(courseSubmissions);
+    });
 
 module.exports = router;

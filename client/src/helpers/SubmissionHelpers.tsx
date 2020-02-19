@@ -1,5 +1,6 @@
 import React from 'react';
 import {DataTableProperties, DataTableRowMapping} from "../components/general/DataTable";
+import {SubmissionResponse} from "./DatabaseResponseInterface";
 
 /**
  * Example of what the database query could return.
@@ -28,27 +29,15 @@ export const submissionData = [{
  *
  * User and submission entries link to /user and /submissionOverview.
  */
-export const submissionRendering : Array<DataTableRowMapping<Submission>> = [
+export const submissionRendering : Array<DataTableRowMapping<SubmissionResponse>> = [
     [
         'User',
-        ({name} : Submission) => name,
-        ({userID} : Submission) => '/user/' + userID],
-    ['Submission', ({submissionName} : Submission) => submissionName],
-    ['Date', ({date} : Submission) => date]
+        ({user} : SubmissionResponse) => user,
+        ({userId} : SubmissionResponse) => `/user/${userId}`],
+    [
+        'Submission',
+        ({name, submissionId} : SubmissionResponse) => name,
+        ({submissionId} : SubmissionResponse) => `/submission/${submissionId}`
+    ],
+    ['Date', ({date} : SubmissionResponse) => new Date(date).toLocaleString()]
 ];
-
-/**
- * Interface for Submission
- * Name:
- * UserID : user by who the submission was created
- * SubmissionID: submission identifier
- * SubmissionName: name of the submission
- * Date: date of submission
- */
-export interface Submission {
-    name : string,
-    userID : number,
-    submissionID : number,
-    submissionName : string,
-    date : string
-}
