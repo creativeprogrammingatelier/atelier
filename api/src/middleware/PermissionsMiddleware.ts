@@ -1,4 +1,4 @@
-import {IFile} from '../../../models/File';
+//import {IFile} from '../../../models/File';
 import {User} from '../../../models/User';
 import {Request, Response} from 'express';
 import UsersMiddleware from './UsersMiddleware';
@@ -8,12 +8,12 @@ import UsersMiddleware from './UsersMiddleware';
 */
 export default class PermissionsMiddleware {
 
-	private static checkFileAccessPermission(file: IFile, user: User): boolean {
+	/*private static checkFileAccessPermission(file: IFile, user: User): boolean {
 		if (file && file.owner && user.userID && user.userID == file.owner || user.role == 'teacher') {
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 	private static checkCommentAccessPermission(comment: any, user: User): boolean {
 		if (comment && (user.email == comment.author.email || user.role == 'teacher')) {
