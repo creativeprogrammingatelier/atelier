@@ -7,7 +7,6 @@ import {faSave} from '@fortawesome/free-solid-svg-icons';
 import Axios from 'axios';
 import CommentHelper from '../../helpers/CommentHelper';
 import '../styles/comment-creator.scss';
-import {IComment} from '../../../models/comment';
 
 
 type CommentCreatorProps = {currentLineNumber: number, onSuccess: Function, fileId: String};
