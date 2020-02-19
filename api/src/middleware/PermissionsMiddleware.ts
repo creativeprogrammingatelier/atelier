@@ -1,5 +1,5 @@
 import {IFile} from '../../../models/file';
-import {IUser} from '../../../models/user';
+import {User} from '../../../models/user';
 import {Request, Response} from 'express';
 import e = require('express');
 import FilesMiddleware from './FilesMiddleware';
@@ -13,14 +13,14 @@ import UsersMiddleware from './UsersMiddleware';
 */
 export default class PermissionsMiddleware {
 
-	private static checkFileAccessPermission(file: IFile, user: IUser): boolean {
-		if (file && file.owner && user.id && user.id == file.owner || user.role == 'teacher') {
+	private static checkFileAccessPermission(file: IFile, user: User): boolean {
+		if (file && file.owner && user.userID && user.userID == file.owner || user.role == 'teacher') {
 			return true;
 		}
 		return false;
 	}
 
-	private static checkCommentAccessPermission(comment: any, user: IUser): boolean {
+	private static checkCommentAccessPermission(comment: any, user: User): boolean {
 		if (comment && (user.email == comment.author.email || user.role == 'teacher')) {
 			return true;
 		}
@@ -46,7 +46,7 @@ export default class PermissionsMiddleware {
 		FilesMiddleware.getFile(fileId,
 			(file: IFile) => {
 				UserMiddleware.getUser(request,
-					(user: IUser, request: Request) => {
+					(user: User, request: Request) => {
 						if (PermissionsMiddleware.checkFileAccessPermission(file, user)) {
 							onAuthorised();
 						} else {
@@ -65,9 +65,9 @@ export default class PermissionsMiddleware {
 	}
 
 	static isTa(request: Request, result: Response, onSuccess: Function) {
-		UsersMiddleware.getUser(request, (user: IUser) => {
+		UsersMiddleware.getUser(request, (user: User) => {
 			const teacherString = 'teacher';
-			if (user.role.toLowerCase() == teacherString) {
+			if (user.role!.toLowerCase() == teacherString) {
 				onSuccess();
 			} else {
 				result.status(401).send();
@@ -76,9 +76,9 @@ export default class PermissionsMiddleware {
 	}
 
 	static isAdmin(request: Request, result: Response, onSuccess: Function) {
-		UsersMiddleware.getUser(request, (user: IUser) => {
+		UsersMiddleware.getUser(request, (user: User) => {
 			const adminString = 'admin';
-			if (user.role.toLowerCase() == adminString) {
+			if (user.role!.toLowerCase() == adminString) {
 				onSuccess();
 			} else {
 				result.status(401).send();
@@ -96,7 +96,7 @@ export default class PermissionsMiddleware {
 		CommentMiddleware.getComment(commentId,
 			(comment: IComment) => {
 				UserMiddleware.getUser(request,
-					(user: IUser, request: Request) => {
+					(user: User, request: Request) => {
 						if (PermissionsMiddleware.checkCommentAccessPermission(comment, user)) {
 							onAuthorised();
 						} else {

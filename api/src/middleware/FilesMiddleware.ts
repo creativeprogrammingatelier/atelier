@@ -1,10 +1,6 @@
 import FileModel, {IFile} from '../../../models/file';
-import fs, {PathLike} from 'fs';
-import UserModel, {IUser} from '../../../models/user';
-import path from 'path';
-import CommentMiddleware from './CommentMiddleware';
-import {IComment} from '../../../models/comment';
 import { deleteFile } from '../helpers/FilesystemHelper';
+import {User} from "../../../models/user";
 
 /**
  * Files middleware provides helper methods for interacting with Files in the DB
@@ -91,7 +87,7 @@ export default class FilesMiddleware {
 	}
 
 
-	static createFile(fileName: String, path: String, user: IUser, onSuccess: Function, onFailure: Function) {
+	static createFile(fileName: String, path: String, user: User, onSuccess: Function, onFailure: Function) {
 		const newFile = new FileModel({
 			path: path,
 			owner: user,

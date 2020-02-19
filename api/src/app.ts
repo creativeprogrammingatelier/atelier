@@ -14,11 +14,10 @@ let createError = require('http-errors');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 const mongoose = require('mongoose');
-let usersRouter = require('./routes/UsersRouter');
-let authRouter = require('./routes/AuthRouter');
-import { router as filesRouter } from './routes/FilesRouter';
-let commentRouter = require('./routes/CommentsRouter');
-let indexRouter = require('./routes/IndexRouter');
+// let usersRouter = require('./routes/UsersRouter');
+// let authRouter = require('./routes/AuthRouter');
+// let commentRouter = require('./routes/CommentsRouter');
+// let indexRouter = require('./routes/IndexRouter');
 
 // API routes
 let courseRouter = require('./databaseRoutes/CourseRouter');
@@ -63,11 +62,11 @@ app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);
 
-app.use('/auth', authRouter);
-app.use('/users', usersRouter);
-app.use('/files', filesRouter);
-app.use('/comments', commentRouter);
-app.use('/', indexRouter);
+//app.use('/auth', authRouter);
+// app.use('/users', usersRouter);
+// app.use('/files', filesRouter);
+// app.use('/comments', commentRouter);
+// app.use('/', indexRouter);
 
 
 /**
