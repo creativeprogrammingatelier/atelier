@@ -5,7 +5,7 @@ import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import CodeMirror from 'codemirror';
-import {IFile} from '../../../models/file';
+import {IFile} from '../../../models/File';
 import {FileComment} from "./submission/CodeTab";
 
 type CodeViewerProps = {

@@ -1,11 +1,8 @@
-import {IFile} from '../../../models/file';
-import {User} from '../../../models/user';
+import {IFile} from '../../../models/File';
+import {User} from '../../../models/User';
 import {Request, Response} from 'express';
 import e = require('express');
-import FilesMiddleware from './FilesMiddleware';
 import UserMiddleware from './UsersMiddleware';
-import CommentMiddleware from './CommentMiddleware';
-import {IComment} from '../../../models/comment';
 import UsersMiddleware from './UsersMiddleware';
 
 /**
@@ -36,7 +33,7 @@ export default class PermissionsMiddleware {
 	 * @param onUnauthorised
 	 * @param onFailure
 	 */
-	static checkFileWithId(request: Request, response: Response, onAuthorised: Function) {
+	/*static checkFileWithId(request: Request, response: Response, onAuthorised: Function) {
 		const fileId: String | null = (request.params.fileId) ? request.params.fileId : (request.body.fileId) ? request.body.fileId : null;
 		if (fileId === null) {
 			console.error('File Id not provided');
@@ -62,7 +59,7 @@ export default class PermissionsMiddleware {
 				console.error(error), response.status(500).send();
 			}
 		);
-	}
+	}*/
 
 	static isTa(request: Request, result: Response, onSuccess: Function) {
 		UsersMiddleware.getUser(request, (user: User) => {
@@ -86,7 +83,7 @@ export default class PermissionsMiddleware {
 		}, () => result.status(401).send());
 	}
 
-	static checkComment(request: Request, response: Response, onAuthorised: Function) {
+	/*static checkComment(request: Request, response: Response, onAuthorised: Function) {
 		const commentId: String | null = (request.params.commentId) ? request.params.commentId : (request.body.commentId) ? request.body.commentId : null;
 		if (commentId === null) {
 			console.error('File id not provided');
@@ -114,5 +111,5 @@ export default class PermissionsMiddleware {
 				response.status(500).send();
 			}
 		);
-	}
+	}*/
 }

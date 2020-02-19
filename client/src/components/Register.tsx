@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import AuthHelper from '../../helpers/AuthHelper';
 import {withRouter, Redirect, Link} from 'react-router-dom';
-import {IUser} from '../../../models/user';
+import {IUser} from '../../../models/User';
 import {Form} from 'react-bootstrap';
 
 class Register extends Component {
