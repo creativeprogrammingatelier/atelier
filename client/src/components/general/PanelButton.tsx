@@ -1,5 +1,6 @@
 import React from 'react';
 import {FiChevronsRight} from 'react-icons/all';
+import {Link} from 'react-router-dom';
 
 interface CourseButtonProperties {
 	display: string,
@@ -8,13 +9,13 @@ interface CourseButtonProperties {
 }
 export function PanelButton({display, location, icon}: CourseButtonProperties) {
 	return <div className="panel">
-		<a href={location}>
+		<Link to={location}>
 			<div className="panelText">
 				<h3>{display}</h3>
 			</div>
 			<div className="panelBottom text-right">
 				<FiChevronsRight size={32}/>
 			</div>
-		</a>
+		</Link>
 	</div>
 }

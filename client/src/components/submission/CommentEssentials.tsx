@@ -1,5 +1,6 @@
 import React from 'react';
 import {CommentEssential} from "../../helpers/DatabaseResponseInterface";
+import {Link} from 'react-router-dom';
 //import {CommentEssential} from "../../helpers/CommentHelper";
 
 export function CommentEssentials({commentName,lastMessage, snippet} : CommentEssential) {
@@ -14,7 +15,7 @@ export function CommentEssentials({commentName,lastMessage, snippet} : CommentEs
                 <li>Time: {lastMessage.time}</li>
                 <li>[CSS is putting me on the same line]</li>
             </ul>
-            <a href='/commentThread'>View comment thread</a>
+            <Link to='/commentThread'>View comment thread</Link>
         </div>
     )
 }

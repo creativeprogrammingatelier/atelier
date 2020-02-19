@@ -2,7 +2,7 @@ import React from 'react';
 import {FiX} from 'react-icons/fi';
 import {Header} from './Header';
 import {Logo} from './Logo';
-import {Link} from './Link';
+import {SidebarEntry} from './SidebarEntry';
 
 interface SidebarProperties {
 	user: {
@@ -18,10 +18,10 @@ export function Sidebar({user, position, close}: SidebarProperties) {
 			<Header transparent fixed leftButton={{icon:<FiX size={40} color="#FFFFFF"/>, click:close}}/>
 			<div className="sidebarContent">
 				<Logo/>
-				<Link location={"/user/"+user.id}>{user.name}</Link>
-				<Link location="/">My Courses</Link>
-				<Link location="/search">Search</Link>
-				<Link location="/logout">Logout</Link>
+				<SidebarEntry location={"/user/"+user.id}>{user.name}</SidebarEntry>
+				<SidebarEntry location="/">My Courses</SidebarEntry>
+				<SidebarEntry location="/search">Search</SidebarEntry>
+				<SidebarEntry location="/logout">Logout</SidebarEntry>
 			</div>
 		</div>
 	);
