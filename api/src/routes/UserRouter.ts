@@ -87,7 +87,7 @@ const userResponse = {
 };
 
 
-router.get('/:userId/submissions',
+userRouter.get('/:userId/submissions',
     (request: Request, result: Response) => {
         result.send(userResponse);
     });

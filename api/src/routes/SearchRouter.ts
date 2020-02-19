@@ -76,7 +76,7 @@ const searchResponse : SearchResponse = {
     }]
 };
 
-router.get('/',
+searchRouter.get('/',
     (request : Request, result : Response) => {
         const search = request.params['q'];
         console.log('search parameter: ' + search);
