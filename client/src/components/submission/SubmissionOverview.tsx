@@ -11,6 +11,7 @@ import {FiCode, FiFolder, FiMessageSquare, FiShare2} from 'react-icons/all';
 interface SubmissionOverviewProps {
 	match: {
 		params: {
+			submissionId: string,
 			tab: string,
 			fileId: string
 		}
@@ -18,11 +19,15 @@ interface SubmissionOverviewProps {
 }
 
 function getParameter(token: string | undefined) {
-	if (token === undefined || token === "") return "project";
+	if (token === undefined || token === "") {
+		return "project";
+	}
 	return token.toLowerCase();
 }
 
 export function SubmissionOverview({match} : SubmissionOverviewProps) {
+	console.log(match);
+	console.log(window.location);
 	const [tab, setTab] = useState(getParameter(match.params.tab)); // Get tab from match object
 	const [file, setFile] = useState(getParameter(match.params.fileId)); // Keep track of code being viewed
 
@@ -31,6 +36,10 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 		setTab("code");
 	}
 
+	const submissionId = getParameter(match.params.submissionId);
+	const submissionPath = "/submission/"+submissionId;
+	const submissionURL = window.location.origin + submissionPath;
+
 	// Display certain tab
 	let currentTab = <div><h1>Tab not found!</h1></div>;
 	if (tab === "code") {
@@ -38,13 +47,10 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 	} else if (tab === "comments") {
 		currentTab =  <CommentTab />
 	} else if (tab === "share") {
-		currentTab = <ShareTab />
+		currentTab = <ShareTab url={submissionURL}/>
 	} else if (tab === "project") {
 		currentTab = <ProjectTab setFile = {changeFile}/>
 	}
-
-	const submissionId = "1";
-	const submissionPath = "/submission/"+submissionId;
 
 	return (
 		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={+submissionPath+"/search"}>

@@ -3,25 +3,29 @@ import {QRCode} from '../general/QrCode';
 import {Button, FormControl, InputGroup} from 'react-bootstrap';
 import {FiClipboard} from 'react-icons/all';
 
-declare global {
-	interface Navigator {
-		share: (options: {
-			url: string,
-			text: string,
-			title: string
-		}) => Promise<{}>
-	}
+interface ShareProperties {
+	url: string
 }
+export function ShareTab({url}: ShareProperties) {
+	function selectURL(event: React.FocusEvent<HTMLInputElement>) {
+		event.target.select();
+	}
+	function copyURL(url: string) {
+		const textField = document.createElement('textarea');
+		textField.innerText = url;
+		document.body.appendChild(textField);
+		textField.select();
+		document.execCommand('copy');
+		textField.remove();
+	}
 
-export function ShareTab() {
-	const url = 'localhost:5000/submission=?';
 	return (
 		<div className='QRCode'>
 			<h1>Share me</h1>
 			<InputGroup className="mb-3">
-				<FormControl plaintext readOnly defaultValue={url}/>
+				<FormControl plaintext readOnly defaultValue={url} onFocus={selectURL}/>
 				<InputGroup.Append>
-					<Button>Copy <FiClipboard/></Button>
+					<Button onClick={() => copyURL(url)}>Copy <FiClipboard/></Button>
 				</InputGroup.Append>
 			</InputGroup>
 			<QRCode
