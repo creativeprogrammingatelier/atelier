@@ -80,7 +80,7 @@ CREATE TABLE "Submissions" (
      state          text NOT NULL DEFAULT 'new'
 );
 INSERT INTO "Submissions" VALUES
-	(DEFAULT, (SELECT userID from "Users" LIMIT 1), 'my_first_submission', DEFAULT, DEFAULT);
+	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'my_first_submission', DEFAULT, DEFAULT);
 
 
 CREATE TABLE "Files" (
@@ -95,10 +95,10 @@ INSERT INTO "Files" VALUES
 
 CREATE TABLE "Snippets" (
      snippetID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-     startLine         integer NOT NULL,
-     endLine           integer NOT NULL,
-     startChar         integer,
-     endChar           integer,
+     lineStart         integer NOT NULL,
+     lineEnd           integer NOT NULL,
+     charStart         integer,
+     charEnd           integer,
      fileID            uuid REFERENCES "Files"(fileID)
 );
 INSERT INTO "Snippets" VALUES

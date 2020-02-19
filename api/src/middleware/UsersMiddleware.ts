@@ -32,8 +32,8 @@ export default class UsersMiddleware {
 				if (error) {
 					onFailure(error);
 				} else {
-					const userid = decoded.userid;
-					UsersHelper.getUserByID(userid).then((res : User) =>{
+					const userID = decoded.userID;
+					UsersHelper.getUserByID(userID).then((res : User) =>{
 						onSuccess(res, request)
 					}).catch(onFailure);
 				}
@@ -51,9 +51,9 @@ export default class UsersMiddleware {
 			name = email.split('@', 1)[0].replace('.', ' ')
 		} = request.body;
 		const record = {email, password,role,name}
-		UsersHelper.createUser(record).then(({userid} : User) => {
-			if (userid === undefined) return onFailure(new Error("the database is fking"))
-			onSuccess(this.issueToken(userid))
+		UsersHelper.createUser(record).then(({userID} : User) => {
+			if (userID === undefined) return onFailure(new Error("the database is fking"))
+			onSuccess(this.issueToken(userID))
 		}).catch(onFailure)
 	}
 
@@ -74,13 +74,13 @@ export default class UsersMiddleware {
 		} = request.body;
 		UsersHelper.loginUser(
 			{email, password}
-			, (userid : string) => onSuccess(this.issueToken(userid))
+			, (userID : string) => onSuccess(this.issueToken(userID))
 			, onUnauthorised
 			, onFailure)
 	}
 
-	static issueToken(email: string): string {
-		const payload = {email};
+	static issueToken(userID: string): string {
+		const payload = {userID};
 		const token: string = jwt.sign(payload, Constants.AUTHSECRETKEY, {
 			expiresIn: '1400h'
 		});

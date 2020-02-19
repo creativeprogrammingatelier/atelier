@@ -1,9 +1,9 @@
-import {courseState} from "../enums/courseStateEnum"
+import {courseState, checkEnum} from "../enums/courseStateEnum"
 
 export interface Course {
-	courseid?:string,
+	courseID?:string,
 	name?: string,
-	creatorid?: number,
+	creatorID?: number,
 	state?: courseState
 }
 
@@ -12,4 +12,17 @@ export interface DBCourse {
 	name: string,
 	creatorid: number,
 	state:string
+}
+
+
+export function convert(db : DBCourse) : Course {
+	if (!checkEnum(db.state)){
+		throw new Error('non-existent enum type from db: '+db.state)
+	}
+	return {
+		courseID:db.courseid,
+		name:db.name,
+		creatorID:db.creatorid,
+		state:courseState[db.state]
+	}
 }
