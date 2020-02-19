@@ -3,7 +3,7 @@ console.log("helper startup")
 
 export const pool = new pg.Pool({
 	user: 'assistantassistant',
-	host: 'eonive.com',
+	host: 'localhost',
 	database: 'assistantassistant',
 	password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
 	port: 5432,
