@@ -1,6 +1,7 @@
 import React from 'react';
 import {QRCode} from '../general/QrCode';
 import {Button, FormControl, InputGroup} from 'react-bootstrap';
+import {FiClipboard} from 'react-icons/all';
 
 declare global {
 	interface Navigator {
@@ -20,14 +21,9 @@ export function ShareTab() {
 			<InputGroup className="mb-3">
 				<FormControl plaintext readOnly defaultValue={url}/>
 				<InputGroup.Append>
-					<Button variant="outline-secondary">Button</Button>
+					<Button>Copy <FiClipboard/></Button>
 				</InputGroup.Append>
 			</InputGroup>
-			{navigator.share ? navigator.share({
-				title: 'WebShare API Demo',
-				url: 'https://codepen.io/ayoisaiah/pen/YbNazJ',
-                text: "Shut up"
-			}) : undefined}
 			<QRCode
 				url={url}
 			/>
