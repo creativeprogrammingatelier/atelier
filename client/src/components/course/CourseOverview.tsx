@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {Frame} from '../frame/Frame';
 import {DataList} from '../general/DataList';
-import {Loading} from "../general/Loading";
-import {EssentialSubmissionResponse} from "../../helpers/DatabaseResponseInterface";
+import {Loading} from '../general/Loading';
+import {EssentialSubmissionResponse} from '../../helpers/DatabaseResponseInterface';
 
 interface CourseOverviewProps {
-	courseId : number
+	courseId: number
 }
 
-export function CourseOverview({courseId} : CourseOverviewProps) {
+export function CourseOverview({courseId}: CourseOverviewProps) {
 	const [loading, setLoading] = useState(true);
 	const [submissions, setSubmissions] = useState(null as unknown as EssentialSubmissionResponse[]);
 
@@ -23,24 +23,24 @@ export function CourseOverview({courseId} : CourseOverviewProps) {
 	}, []);
 
 	return (
-		<Frame title="Course" user={{id:"0", name:"John Doe"}} sidebar search={"/course/../search"}>
+		<Frame title="Course" user={{id: "0", name: "John Doe"}} sidebar search={"/course/../search"}>
 			<h1>Course Overview</h1>
-			{
-				loading ?
-					<Loading />
-					:
-					<DataList
-						header="Submissions"
-						list = {submissions.map(submission => {
-							return {
-								title : submission.user,
-								text : submission.name,
-								time : new Date(submission.time),
-								tags : submission.tags
-							}
-						})}
-					/>
+			{loading ?
+				<Loading/>
+				:
+				<DataList
+					header="Submissions"
+					list={submissions.map(submission => {
+						return {
+							transport: "/submission/1",
+							title: submission.user,
+							text: submission.name,
+							time: new Date(submission.time),
+							tags: submission.tags
+						};
+					})}
+				/>
 			}
 		</Frame>
-	)
+	);
 }

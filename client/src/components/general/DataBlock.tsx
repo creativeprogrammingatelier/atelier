@@ -1,6 +1,7 @@
 import React from 'react';
 import {Badge, Toast, ToastBody, ToastHeader} from 'react-bootstrap';
 import {TimeHelper} from '../../../helpers/TimeHelper';
+import {Link} from 'react-router-dom';
 
 export interface DataTag {
 	name: string,
@@ -20,7 +21,7 @@ interface DataBlockProperties {
 }
 export function DataBlock({transport, title, text, time, tags}: DataBlockProperties) {
 	return <div className="dataBlock">
-		<a href={transport}>
+		<Link to={transport ? transport : ""}>
 			<Toast>
 				<ToastHeader closeButton={false}>
 					<strong className="mr-auto">
@@ -33,6 +34,6 @@ export function DataBlock({transport, title, text, time, tags}: DataBlockPropert
 					{text}
 				</ToastBody>
 			</Toast>
-		</a>
+		</Link>
 	</div>
 }

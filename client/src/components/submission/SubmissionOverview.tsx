@@ -1,31 +1,31 @@
 import React, {useState} from 'react';
+import {FiCode, FiFolder, FiMessageSquare, FiShare2} from 'react-icons/all';
 
+import {Frame} from '../frame/Frame';
+import {TabBar} from '../general/TabBar';
 import {CodeTab} from './CodeTab';
 import {CommentTab} from './CommentTab';
 import {ShareTab} from './ShareTab';
-import {TabBar} from './TabBar';
-import {ProjectTab} from "./ProjectTab";
-import {Frame} from '../frame/Frame';
-import {FiCode, FiFolder, FiMessageSquare, FiShare2} from 'react-icons/all';
+import {ProjectTab} from './ProjectTab';
 
 interface SubmissionOverviewProps {
 	match: {
 		params: {
+			submissionId: string,
 			tab: string,
-			fileId: string,
-			submissionId : string
+			fileId: string
 		}
 	}
 }
 
 function getParameter(token: string | undefined) {
-	if (token === undefined || token === "") return "project";
+	if (token === undefined || token === "") {
+		return "project";
+	}
 	return token.toLowerCase();
 }
 
 export function SubmissionOverview({match} : SubmissionOverviewProps) {
-	console.log(match.params);
-
 	const [tab, setTab] = useState(getParameter(match.params.tab)); // Get tab from match object
 	const [file, setFile] = useState(getParameter(match.params.fileId)); // Keep track of code being viewed
 
@@ -34,8 +34,9 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 		setTab("code");
 	}
 
-	const host = "http://" + window.location.hostname;
-	const submissionPath = `submission/${match.params['submissionId']}`;
+	const submissionId = getParameter(match.params.submissionId);
+	const submissionPath = "/submission/"+submissionId;
+	const submissionURL = window.location.origin + submissionPath;
 
 	// Display certain tab
 	let currentTab = <div><h1>Tab not found!</h1></div>;
@@ -44,13 +45,13 @@ export function SubmissionOverview({match} : SubmissionOverviewProps) {
 	} else if (tab === "comments") {
 		currentTab =  <CommentTab />
 	} else if (tab === "share") {
-		currentTab = <ShareTab url = {`${host}/${submissionPath}`}/>
+		currentTab = <ShareTab url={submissionURL}/>
 	} else if (tab === "project") {
 		currentTab = <ProjectTab setFile = {changeFile}/>
 	}
 
 	return (
-		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={"/submission/../search"}>
+		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={+submissionPath+"/search"}>
 			<TabBar
 				tabs={[{
 					id: "project",

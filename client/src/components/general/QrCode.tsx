@@ -1,14 +1,21 @@
 import React from 'react';
-const QrCode = require('qrcode.react');
+import QRLibrary from 'qrcode.react';
 
-interface QRCodeProps {
-    url : string
+interface QRCodeProperties {
+	url: string
 }
-
-export function QRCode({url} : QRCodeProps) {
-    return (
-        <QrCode
-            value={url}
-        />
-    )
+export function QRCode({url}: QRCodeProperties) {
+	return (
+		<QRLibrary
+			value={url}
+			renderAs="svg"
+			width="unset"
+			height="unset"
+			className="qrCode"
+			bgColor="#FFFFFF00"
+			// Dark theme
+			// bgColor="#FFFFFF"
+			// fgColor="#00000000"
+		/>
+	);
 }

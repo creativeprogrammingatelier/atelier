@@ -13,13 +13,13 @@ const courseSubmissions = {
         {
             user: "John Doe",
             name: "Uploaded helpitbroke.zip",
-            time: new Date().toLocaleString(),
-            tags: [{name : "help", color : "red"}, {name : "me", color : "red"}, {name : "now", color : "red"}]},
+            time: new Date(),
+            tags: [{name : "help", color : "red", dark: true}, {name : "me", color : "red", dark: true}, {name : "now", color : "red", dark: true}]},
         {
             user: "John Doe",
             name: "Uploaded Project 'ImDaBest'",
             time: new Date(2020, 1, 17, 15).toLocaleString(),
-            tags: [{name : "fuck", color : "green"}, {name : "yeah", color : "green"}]
+            tags: [{name : "fuck", color : "green", dark: true}, {name : "yeah", color : "green", dark: true}]
         },
         {
             user: "Mary Doe",
