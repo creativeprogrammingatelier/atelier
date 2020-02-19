@@ -1,8 +1,7 @@
 import {Request} from 'express';
 import {Socket} from 'socket.io';
-// import {Comment} from '../../../models/Comment';
-// TODO
-type Comment = any;
+
+type Comment = any
 
 export default class SocketMiddleware {
 

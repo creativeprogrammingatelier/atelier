@@ -10,7 +10,7 @@ import CommentCreator from './CommentCreator';
 import io from 'socket.io-client';
 import CodeViewer from './CodeViewer';
 import {IComment} from '../../../models/comment';
-import {IFile} from '../../../models/file';
+import {IFile} from '../../../models/File';
 
 
 type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: IFile}

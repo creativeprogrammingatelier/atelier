@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {IFile} from "../../../../models/file";
+import {IFile} from "../../../../models/File";
 import CodeViewer2 from "../CodeViewer2";
 
 interface CodeProperties {

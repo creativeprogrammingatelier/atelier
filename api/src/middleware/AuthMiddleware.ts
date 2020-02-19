@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import UsersMiddleware from './UsersMiddleware';
 import { AUTHSECRETKEY } from '../lib/constants';
 import {Request, Response} from 'express';
-import {User} from '../../../models/user';
+import {User} from '../../../models/User';
 
 /**
 * @TODO insert withauth at the start of routers to ensure authentication and unify it.

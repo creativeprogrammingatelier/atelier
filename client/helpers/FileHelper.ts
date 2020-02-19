@@ -1,7 +1,7 @@
 import AuthHelper from './AuthHelper';
 import axios, { AxiosAdapter, AxiosError } from 'axios';
 import fileDownload from 'js-file-download';
-import {IFile} from '../../models/file';
+import {IFile} from '../../models/File';
 
 /**
  * Helpers for request for files
