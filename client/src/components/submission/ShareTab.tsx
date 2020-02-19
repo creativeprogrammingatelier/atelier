@@ -1,8 +1,11 @@
 import React from 'react';
 import {QRCode} from "../general/QrCode";
 
-export function ShareTab() {
-    const url = 'localhost:5000/submission=?';
+interface ShareTabProps {
+    url : string
+}
+
+export function ShareTab({url} : ShareTabProps) {
     return (
         <div className='QRCode'>
             <h1>Share Tab</h1>
