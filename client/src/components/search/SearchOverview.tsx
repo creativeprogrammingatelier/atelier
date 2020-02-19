@@ -4,11 +4,34 @@ import {SearchBar} from './SearchBar';
 import {DataTable} from "../general/DataTable";
 import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
 import {codeData, codeRendering} from "../../helpers/CodeHelpers";
-import {SearchData} from "../../helpers/SearchHelpers";
 import {commentData, commentRendering} from "../../helpers/CommentHelper";
 import {Frame} from '../frame/Frame';
 import {Loading} from "../general/Loading";
+import {
+    CommentResponse,
+    FileResponse,
+    SearchResponse,
+    SubmissionResponse
+} from "../../helpers/DatabaseResponseInterface";
 
+
+interface SearchData {
+    submissions : {
+        title : string,
+        data : SubmissionResponse[],
+        table : any
+    },
+    codes : {
+        title : string,
+        data : FileResponse[],
+        table : any
+    },
+    comments : {
+        title : string,
+        data : CommentResponse[],
+        table : any
+    }
+}
 /**
  * Method to handle a search.
  * @param value: value of the search field

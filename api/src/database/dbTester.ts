@@ -14,7 +14,9 @@ import {Course}				from '../../../models/Course'
 import {CourseRegistration}	from '../../../models/CourseRegistration'
 import {File}				from '../../../models/File'
 import {Snippet}			from '../../../models/Snippet'
+
 // console.log = ()=>{}
+
 const uuid = "00000000-0000-0000-0000-000000000000"
 
 function logger(pre: string) {
@@ -142,8 +144,20 @@ function fileHelper(){
 }
 
 function snippetHelper(){
-	promise(SH.getAllSnippets(), 'getAllSnippets')))
-	promise(SH.getSnippetsBySubmission(), 'getSnippetsBySubmission')
+	promise(SH.getAllSnippets(), 'getAllSnippets')
+	promise(SH.getSnippetsBySubmission(uuid), 'getSnippetsBySubmission')
+	promise(SH.getSnippetsByID(uuid), 'getSubmissionById')
+
+	const snip1 = {snippetID: undefined, lineStart:0, lineEnd:3, charStart:2, charEnd:0, fileID:uuid}
+	const snip2 = {snippetID: undefined, lineStart:1, lineEnd:5, charStart:12, charEnd:12, fileID:uuid}
+	SH.addSnippet(snip).then((res : Snippet) => {
+		console.log('addSnippet', res)
+		snip2.snippetID = res.snippetID
+		SH.updateSnippet(snip2).then((res2 : Snippet)=>{
+			console.log("updateSnippet", res2)
+			promise(SH.deleteSnippet(res2.snippetID), "deleteSnippet")
+		}).catch("updateSnippet")
+	}).catch("addSnippet")
 }
 
 setTimeout(usersHelper, 0)

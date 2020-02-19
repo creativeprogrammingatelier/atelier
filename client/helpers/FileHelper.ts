@@ -1,5 +1,5 @@
 import AuthHelper from './AuthHelper';
-import axios from 'axios';
+import axios, { AxiosAdapter, AxiosError } from 'axios';
 import fileDownload from 'js-file-download';
 import {IFile} from '../../models/file';
 
@@ -93,6 +93,23 @@ export default class FileHelper {
 		}).catch(function(error) {
 			onFailure();
 		});
-	};
+    };
+    
+    static uploadFolder = (project: string, files: File[], onSuccess: () => void, onFailure: (error: AxiosError) => void) => {
+        const formData = new FormData();
+        formData.append('project', project);
+        for (const file of files) {
+            formData.append('files', file);
+        }
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': AuthHelper.getToken()
+            }
+        };
+        axios.put('/files/', formData, config)
+            .then(_ => onSuccess())
+            .catch((err: AxiosError) => onFailure(err));
+    }
 
 }
