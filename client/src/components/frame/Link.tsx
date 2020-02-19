@@ -6,6 +6,6 @@ interface LinkProperties {
 }
 export function Link({children, location}: LinkProperties) {
 	return <div className="link">
-		<a href={location}>{children}</a>
+		<a href={location}><h4>{children}</h4></a>
 	</div>
 }

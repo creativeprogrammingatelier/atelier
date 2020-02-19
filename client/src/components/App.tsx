@@ -10,13 +10,13 @@ import Logout from './Logout';
 import Register from './Register';
 import AuthHelper from '../../helpers/AuthHelper';
 import roleEnum from '../../../enums/roleEnum';
+import {AuthenticatedRoute} from './AuthenticatedRoute';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {CommentThread} from './commentthread/CommentThread';
 import {SearchOverview} from './search/SearchOverview';
 import {CourseOverview} from './course/CourseOverview';
 import { UserOverview } from './user/UserOverview';
 import {Homepage} from './Homepage';
-import {Frame} from './general/Frame';
 
 import '../styles/app.scss';
 import '../styles/base.scss';
@@ -89,19 +89,23 @@ class App extends React.Component<AppProps, AppState> {
 	render() {
 		return (
 			< Switch>
-		<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
-		<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
-		<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
-		<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
-		<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
-		<PrivateRoute path='/logout' component={Logout}/>
-		<PrivateRoute exact path='/submissionOverview' component={SubmissionOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/commentThread' component={CommentThread} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/search' component={SearchOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/courseOverview' component={CourseOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/user' component={UserOverview} roles={['student', 'teacher']} />
-		<PrivateRoute exact path='/' component={Homepage} roles={['student', 'teacher']} />
-		<Redirect exact from="/" to="/roleview"/>
+				<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>
+				<Route path='/login' render={(props) => <Login {...props} onLogin={this.handleLogin}/>}/>
+				<PrivateRoute exact path='/ta' component={TAView} roles={['teacher']}/>
+				<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
+				<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
+				<PrivateRoute path='/logout' component={Logout}/>
+				<AuthenticatedRoute path='/submission/:submissionId/search' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId/:tab/:fileId' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId/:tab' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/user/:userId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
+				<AuthenticatedRoute path='/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/' component={Homepage}/>
 			</Switch>
 		);
 	}

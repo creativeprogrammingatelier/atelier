@@ -1,24 +1,19 @@
 import React from 'react';
-import {TabButton} from "./TabButton";
+import {TabButton} from './TabButton';
+import {Nav} from 'react-bootstrap';
 
-export function TabBar(props : any) {
-    return (
-        <div>
-            <TabButton
-                value = "Code"
-                name = "Code"
-                onClick = {props.onClick}
-            />
-            <TabButton
-                value = "Comments"
-                name = "Comments"
-                onClick = {props.onClick}
-            />
-            <TabButton
-                value = "Share"
-                name = "Share"
-                onClick = {props.onClick}
-            />
-        </div>
-    )
+interface TabProperties {
+	id: string,
+	icon: JSX.Element,
+	text: string,
+	location: string
+}
+interface TabBarProperties {
+	tabs: TabProperties[],
+	active: string
+}
+export function TabBar({active, tabs}: TabBarProperties) {
+	return <Nav fill justify variant="pills" className="fixed-bottom">
+			{tabs.map((tab) => <TabButton icon={tab.icon} text={tab.text} location={tab.location} active={tab.id === active}/>)}
+		</Nav>
 }

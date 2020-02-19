@@ -2,7 +2,6 @@ api/node_modules/
 client/node_modules/
 dist/
 /uploads/
-api/package-lock.json
 /processing-examples
 node_modules
 npm-debug.log
@@ -47,6 +46,9 @@ Notes-andrew.md
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
+
+# Just everything .idea
+.idea/*
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,

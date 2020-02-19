@@ -1,76 +1,89 @@
 import React, {useState} from 'react';
 
 import {SearchBar} from './SearchBar';
-import {DataTable, DataTableProperties} from "../general/DataTable";
+import {DataTable} from "../general/DataTable";
 import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
+import {codeData, codeRendering} from "../../helpers/CodeHelpers";
+import {SearchData} from "../../helpers/SearchHelpers";
+import {commentData, commentRendering} from "../../helpers/CommentHelper";
+import {Frame} from '../frame/Frame';
+import {Loading} from "../general/Loading";
 
-function handleSearch(value : string, setResults : Function) {
+/**
+ * Method to handle a search.
+ * @param value: value of the search field
+ * @param setResults: method to set the results of the tables for code, comments and submissions.
+ * @param setLoading: method to set loading variable for visual feedback
+ */
+function handleSearch(value : string, setResults : Function, setLoading : Function) {
     console.log("searching for " + value);
-
-    // TODO: search
-    setResults({
-        submissions : {
-            title : 'Submissions',
-            data : submissionData.submissions,
-            table : submissionRendering
-        },
-        codes : {
-            title : 'Code',
-            data : [],
-            table : []
-        },
-        comments : {
-            title : 'Comments',
-            data : [],
-            table : []
-        }
-    });
+    setLoading(true);
+    fetch(`/api/search?q=${value}`)
+        .then(response => response.json())
+        .then(data => {
+            setResults({
+               submissions : {
+                   title : 'Submissions',
+                   data : data.submissions,
+                   table : submissionRendering
+               },
+               codes : {
+                   title : 'Code',
+                   data : data.files,
+                   table : codeRendering
+               },
+               comments : {
+                   title : 'Comments',
+                   data : data.comments,
+                   table : commentRendering
+               }
+            });
+            setLoading(false);
+        });
 }
 
 export function SearchOverview() {
-    const [results, setResults] = useState({
-        submissions : {
-            title : 'Submissions',
-            data : [],
-            table : []
-        },
-        codes : {
-            title : 'Code',
-            data : [],
-            table : []
-        },
-        comments : {
-            title : 'Comments',
-            data : [],
-            table : []
-        }
-    });
+    const [results, setResults] = useState(null as unknown as SearchData);
+    const [loading, setLoading] = useState(false);
 
     return (
-        <div>
+        <Frame title="Search" user={{id:"1", name:"John Doe"}} sidebar>
             <h1>Search Overview Page</h1>
             <SearchBar
-                handleSearch={(value) => handleSearch(value, setResults)}
+                handleSearch={(value) => handleSearch(value, setResults, setLoading)}
             />
 
-            <DataTable
-                title={results.submissions.title}
-                data={results.submissions.data}
-                table={results.submissions.table} />
+            {
+                results != null ?
+                    <div>
+                        {loading ?
+                            <Loading/>
+                            :
+                            <div>
+                                <DataTable
+                                    title={results.submissions.title}
+                                    data={results.submissions.data}
+                                    table={results.submissions.table}/>
 
-            <hr />
+                                <hr/>
 
-            <DataTable
-                title={results.codes.title}
-                data={results.codes.data}
-                table={results.codes.table} />
+                                <DataTable
+                                    title={results.codes.title}
+                                    data={results.codes.data}
+                                    table={results.codes.table}/>
 
-            <hr />
+                                <hr/>
 
-            <DataTable
-                title={results.comments.title}
-                data={results.comments.data}
-                table={results.comments.table} />
-        </div>
+                                <DataTable
+                                    title={results.comments.title}
+                                    data={results.comments.data}
+                                    table={results.comments.table}/>
+                            </div>
+                        }
+                    </div>
+                    :
+                    <div></div>
+            }
+        </Frame>
     )
 }

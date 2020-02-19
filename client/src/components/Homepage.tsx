@@ -1,19 +1,40 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {PanelButton} from './general/PanelButton'
-import {Frame} from './general/Frame';
+import {Frame} from './frame/Frame';
+import {CourseResponse} from "../helpers/DatabaseResponseInterface";
+import {Loading} from "./general/Loading";
 
 export function Homepage() {
+	const [loading, setLoading] = useState(true);
+	const [courses, setCourses] = useState(null as unknown as CourseResponse[]);
+
+	useEffect(() => {
+		fetch('/api/courses/')
+			.then((response) => response.json())
+			.then((data) => {
+				setCourses(data.courses);
+				setLoading(false);
+			});
+	}, []);
+
 	return (
-		<Frame title="Homepage" user="John Doe" sidebar={true} search={false}>
+		<Frame title="Homepage" user={{id:"1", name:"John Doe"}} sidebar>
 			<p>Some introduction of sorts?</p>
-			<PanelButton display="Pearls of Computer Science" icon=""/>
-			<PanelButton display="Software Systems" icon=""/>
-			<PanelButton display="Network Systems" icon=""/>
-			<PanelButton display="Data and Information" icon=""/>
-			<PanelButton display="Computer Systems" icon=""/>
-			<PanelButton display="Intelligent Interaction Design" icon=""/>
-			<PanelButton display="Discrete Structures & Efficient Algorithms" icon=""/>
-			<PanelButton display="Programming Paradigms" icon=""/>
+			{
+				(courses && !loading) ?
+					<div>
+						{
+							courses.map((course) => {
+								return (
+									<PanelButton display={course.name} location={`/course/${course.courseId}`} icon=''/>
+								)
+							})
+						}
+					</div>
+					:
+					<Loading />
+			}
+
 		</Frame>
 	)
 }

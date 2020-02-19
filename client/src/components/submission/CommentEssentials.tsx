@@ -1,14 +1,5 @@
 import React from 'react';
-
-interface CommentEssential {
-        commentName : string,
-        lastMessage : {
-            text : string,
-            author : string,
-            time : string
-        },
-        snippet : string
-}
+import {CommentEssential} from "../../helpers/CommentHelper";
 
 export function CommentEssentials({commentName,lastMessage, snippet} : CommentEssential) {
     return (

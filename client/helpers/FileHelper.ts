@@ -34,10 +34,12 @@ export default class FileHelper {
 
 
 	static getFile = (fileId: string, onSuccess: Function, onFailure: Function) => {
+		console.log(`/files/${fileId}`);
 		AuthHelper.fetch(`/files/${fileId}`, {
 			method: 'GET'
 		}).then((response) => {
 			response.json().then((json: IFile) => {
+				console.log(json);
 				onSuccess(json);
 			});
 		}).catch(function(error) {
