@@ -1,6 +1,6 @@
 const HH = require("./HelperHelper")
 
-import {Course, DBCourse, convert} from '../../../models/course';
+import {Course, DBCourse, convert} from '../../../models/Course';
 import {courseState, checkEnum} from '../../../enums/courseStateEnum';
 
 /**

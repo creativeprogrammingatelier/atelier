@@ -1,7 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import FileViewer from './FileViewer';
-import FileUploader from './FileUploader';
+import { Uploader } from './uploader/Uploader';
 import AuthHelper from '../../helpers/AuthHelper';
 import FileHelper from '../../helpers/FileHelper';
 import {IFile} from '../../../models/file';
@@ -47,7 +47,7 @@ class StudentView extends React.Component {
 				<div className="row ">
 					<div className="col-sm-5 offset-sm-4">
 						<br/>
-						<FileUploader  {...{update: this.getAllFiles}} />
+						<Uploader onUploadComplete={this.getAllFiles} />
 					</div>
 					<div className="col-sm-12 ">
 						<br/>

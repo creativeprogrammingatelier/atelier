@@ -1,6 +1,6 @@
 const HH = require("./HelperHelper")
 
-import {User, DBUser, convert} from '../../../models/user2';
+import {User, DBUser, convert} from '../../../models/User';
 import bcrypt from 'bcrypt';
 
 /**
