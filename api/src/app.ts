@@ -21,12 +21,12 @@ let commentRouter = require('./routes/CommentsRouter');
 let indexRouter = require('./routes/IndexRouter');
 
 // API routes
-let courseRouter = require('./database/CourseRouter');
-let coursesRouter = require('./database/CoursesRouter');
-let fileRouter = require('./database/FileRouter');
-let searchRouter = require('./database/SearchRouter');
-let submissionRouter = require('./database/SubmissionRouter');
-let userRouter = require('./database/UserRouter');
+let courseRouter = require('./databaseRoutes/CourseRouter');
+let coursesRouter = require('./databaseRoutes/CoursesRouter');
+let fileRouter = require('./databaseRoutes/FileRouter');
+let searchRouter = require('./databaseRoutes/SearchRouter');
+let submissionRouter = require('./databaseRoutes/SubmissionRouter');
+let userRouter = require('./databaseRoutes/UserRouter');
 
 
 let app = express();

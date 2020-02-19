@@ -4,8 +4,8 @@ import {FileResponse} from "./DatabaseResponseInterface";
 import {submissionRendering} from "./SubmissionHelpers";
 
 /**
- * Example of what the database query could return.
- * Provides a list of Code objects. Use this variable if the database is no yet
+ * Example of what the databaseRoutes query could return.
+ * Provides a list of Code objects. Use this variable if the databaseRoutes is no yet
  * functional, or to display generic code values.
  */
 export const codeData = [{

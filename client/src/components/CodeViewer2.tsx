@@ -95,7 +95,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
         this.codeMirror.setSize('100%', '100%');
 
         // Retrieve comments
-        // TODO get comments from the database
+        // TODO get comments from the databaseRoutes
         this.setState({
            comments : fileComments
         });
@@ -271,7 +271,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
         this.highlightComments();
 
 
-        // TODO call database
+        // TODO call databaseRoutes
     }
 
     render() {

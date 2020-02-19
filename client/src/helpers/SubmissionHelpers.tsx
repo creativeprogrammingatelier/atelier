@@ -3,8 +3,8 @@ import {DataTableProperties, DataTableRowMapping} from "../components/general/Da
 import {SubmissionResponse} from "./DatabaseResponseInterface";
 
 /**
- * Example of what the database query could return.
- * Provides a list of Submission objects. Use this variable if the database is not yet
+ * Example of what the databaseRoutes query could return.
+ * Provides a list of Submission objects. Use this variable if the databaseRoutes is not yet
  * functional, or to display generic submission values.
  */
 export const submissionData = [{
