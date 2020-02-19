@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import UsersMiddleware from './UsersMiddleware';
 import { AUTHSECRETKEY } from '../lib/constants';
 import {Request, Response} from 'express';
-import {User, IUser} from '../../../models/user';
+import {User} from '../../../models/user';
 
 /**
 * @TODO insert withauth at the start of routers to ensure authentication and unify it.
@@ -43,8 +43,8 @@ export default class AuthMiddleWare {
 	* check permissions for pages on a global level
 	*/
 	static checkRole(request: Request, role: String, onSuccess: Function, onFailure : (error : Error) => void) {
-		UsersMiddleware.getUser(request, (user: IUser) => {
-			if (user.role.toLowerCase() == role.toLowerCase()) {
+		UsersMiddleware.getUser(request, (user: User) => {
+			if (user.role!.toLowerCase() == role.toLowerCase()) {
 				onSuccess();
 			} else {
 				onFailure(new Error('Unauthorized: Incorrect role'));
@@ -57,8 +57,8 @@ export default class AuthMiddleWare {
 	*/
 	static checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure : (error : Error) => void) {
 		for (const role of roles) {
-			UsersMiddleware.getUser(request, (user: IUser) => {
-				if (user.role.toLowerCase() == role.toLowerCase()) {
+			UsersMiddleware.getUser(request, (user: User) => {
+				if (user.role!.toLowerCase() == role.toLowerCase()) {
 					onSuccess();
 				}
 			}, onFailure);
@@ -66,8 +66,8 @@ export default class AuthMiddleWare {
 	}
 
 	static getRole(request: Request, onSuccess: Function, onFailure : (error : Error) => void) {
-		UsersMiddleware.getUser(request, (user: IUser) => {
-			onSuccess(user.role.toLowerCase());
+		UsersMiddleware.getUser(request, (user: User) => {
+			onSuccess(user.role!.toLowerCase());
 		}, onFailure);
 	}
 }

@@ -2,10 +2,9 @@
  * Api routes relating to a course
  */
 
-import {Response, Request} from 'express';
+import express, { Response, Request } from 'express';
 
-let express = require('express');
-let router = express.Router();
+export const courseRouter = express.Router();
 
 const courseSubmissions = {
     submissions: [
@@ -36,5 +35,3 @@ router.get('/:courseId/submissions',
     (request: Request, result: Response) => {
         result.send(courseSubmissions);
     });
-
-module.exports = router;
