@@ -1,4 +1,30 @@
-/**
+export interface User {
+	userID?: string;
+	name?: string;
+	email?: string;
+	role?: string;
+	password?: string;
+}
+
+export interface DBUser {
+	userid: string;
+	name: string;
+	email: string;
+	role: string;
+	hash?: string;
+}
+
+export function convert(db : DBUser) : User{
+	return {
+		userID:db.userid,
+		name:db.name,
+		email:db.email,
+		role:db.role
+	}
+}
+
+
+/** @DEPRECATED
  * Modeling the user object
  * Author: Andrew Heath
  * Date created: 13/08/19
