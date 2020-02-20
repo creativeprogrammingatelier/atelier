@@ -8,7 +8,7 @@ import {Controlled as CodeMirror} from 'react-codemirror2';
 import {File} from '../../../models/File';
 import {FileComment} from "./submission/CodeTab";
 import {Editor} from "codemirror";
-import {WriteComment} from "./commentthread/WriteComment";
+import {WriteComment} from "./submission/comment/WriteComment";
 
 type CodeViewer2Props = {
     file : File,

@@ -33,13 +33,16 @@ export function FileOverview({match:{params:{submissionId, fileId, tab}}}: FileO
 	if (activeTab === "code") {
 		activeTabElement =  <CodeTab fileName={fileId}/>
 	} else if (activeTab === "comments") {
-		activeTabElement =  <CommentTab />
+		activeTabElement =  <CommentTab threads={["1", "2"]}/>
 	} else if (activeTab === "share") {
 		activeTabElement = <ShareTab url={fileURL}/>
 	}
 
 	return (
 		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={filePath+"/search"}>
+			<div className="contentTab">
+				{activeTabElement}
+			</div>
 			<TabBar
 				tabs={[{
 					id: "code",
@@ -59,7 +62,6 @@ export function FileOverview({match:{params:{submissionId, fileId, tab}}}: FileO
 				}]}
 				active={activeTab}
 			/>
-			{activeTabElement}
 		</Frame>
 	)
 }

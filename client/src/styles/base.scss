@@ -17,6 +17,16 @@ tbody {
 		background-color: $colorOffWhite;
 	}
 }
+textarea {
+	width: 100%;
+	vertical-align: top;
+	background-color: transparent;
+	border: none;
+	resize: none;
+}
+textarea:focus, textarea:active {
+	outline: none;
+}
 
 .navbar {
 	width: 100%;
@@ -27,6 +37,7 @@ tbody {
 	h1, h2, h3, h4, h5, h6 {
 		margin: 0 !important;
 		line-height: $headerHeight !important;
+		white-space: nowrap;
 		color: $colorWhite;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -79,7 +90,10 @@ tbody {
 	margin-top: $headerHeight;
 }
 .contentPage {
-	padding: 1rem 1.5rem !important;
+	padding: 1rem 1.5rem 0 !important;
+}
+.contentTab {
+	padding-bottom: calc(28px + 1rem);
 }
 
 .panel {
@@ -132,14 +146,14 @@ tbody {
 	}
 }
 .dataItem:hover, .dataBlock:hover {
-	box-shadow: $shadowSmall;
+	box-shadow: $shadowMedium;
 }
 .dataItem:not(:last-child), .dataBlock:not(:last-child) {
 	margin-bottom: 0.5rem;
 }
 .toast {
 	backdrop-filter: none;
-	background-color: $colorOffWhite;
+	background-color: $colorWhite;
 	border: none;
 	border-left: 0.5rem solid $primaryColor;
 	border-radius: 0;
@@ -148,7 +162,7 @@ tbody {
 	margin-bottom: 0.5rem;
 }
 .toast-header {
-	background-color: $colorOffWhite;
+	background-color: $colorWhite;
 	border: none;
 	box-shadow: $shadowSmallDown;
 }
@@ -187,14 +201,14 @@ tbody {
 	border-radius: 0;
 	transition: none;
 }
-.btn:hover, .btn:active {
+.btn:hover, .btn:focus, .btn:active {
 	box-shadow: $shadowMedium;
 }
 .btn-primary {
 	color: $colorWhite;
 	background-color: $primaryColor;
 }
-.btn-primary:hover, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
 	color: $colorOffWhite;
 	background-color: $primaryColor;
 }
@@ -203,4 +217,25 @@ tbody {
 }
 .btn-primary:not(:disabled):not(.disabled):active:focus {
 	box-shadow: initial;
+}
+.buttonBar {
+	background-color: $primaryColor;
+}
+.buttonBarRound {
+	.btn {
+		border-radius: 50%;
+	}
+}
+
+.comment {
+	box-shadow: $shadowSmallDown;
+}
+.commentThread {
+	margin-bottom: 1rem;
+	background-color: $colorWhite;
+	border-left: 10px solid $primaryColor;
+
+	h3 {
+		box-shadow: $shadowSmallDown;
+	}
 }

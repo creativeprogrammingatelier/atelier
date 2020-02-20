@@ -13,7 +13,7 @@ import roleEnum from '../../../enums/roleEnum';
 import {AuthenticatedRoute} from './AuthenticatedRoute';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {FileOverview} from './submission/FileOverview';
-import {CommentThread} from './commentthread/CommentThread';
+import {CommentThread} from './submission/comment/CommentThread';
 import {SearchOverview} from './search/SearchOverview';
 import {CourseOverview} from './course/CourseOverview';
 import {UserOverview } from './user/UserOverview';
