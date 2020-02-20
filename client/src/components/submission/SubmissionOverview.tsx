@@ -7,71 +7,63 @@ import {CodeTab} from './CodeTab';
 import {CommentTab} from './CommentTab';
 import {ShareTab} from './ShareTab';
 import {ProjectTab} from './ProjectTab';
+import {Button} from 'react-bootstrap';
+import {Link} from 'react-router-dom';
+import {Header} from '../frame/Header';
+import {DataList} from '../general/DataList';
 
 interface SubmissionOverviewProps {
 	match: {
 		params: {
-			submissionId: string,
-			tab: string,
-			fileId: string
+			submissionId: string
 		}
 	}
 }
 
-export function SubmissionOverview({match:{params:{submissionId, tab, fileId}}} : SubmissionOverviewProps) {
-	const [activeTab, setActiveTab] = useState(tab); // Get tab from match object
-	const [file, setFile] = useState(fileId); // Keep track of code being viewed
-
-	useEffect(() => {
-		setActiveTab(tab);
-	}, [tab]);
-	function changeFile(file : string) {
-		setFile(file);
-		setActiveTab("code");
-	}
+export function SubmissionOverview({match:{params:{submissionId}}} : SubmissionOverviewProps) {
 
 	const submissionPath = "/submission/"+submissionId;
 	const submissionURL = window.location.origin + submissionPath;
 
-	// Display certain tab
-	let activeTabElement = <div><h1>Tab not found!</h1></div>;
-	if (activeTab === "code") {
-		activeTabElement =  <CodeTab fileName={file}/>
-	} else if (activeTab === "comments") {
-		activeTabElement =  <CommentTab />
-	} else if (activeTab === "share") {
-		activeTabElement = <ShareTab url={submissionURL}/>
-	} else if (activeTab === undefined) {
-		activeTabElement = <ProjectTab setFile = {changeFile}/>
-	}
-
 	return (
 		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={+submissionPath+"/search"}>
-			<TabBar
-				tabs={[{
-					id: undefined,
-					icon: <FiFolder size={28} color="#FFFFFF"/>,
-					text: "Files",
-					location: submissionPath
+			<h1>A Project</h1>
+			<p>Submitted by John Doe</p>
+			<p>Just now</p>
+			<Button><Link to={submissionPath+"/share"}>Share</Link></Button>
+			<DataList header="Files" list={[
+				{
+					title: "FileName1",
+					text: "File preview?",
+					time: new Date()
 				}, {
-					id: "code",
-					icon: <FiCode size={28} color="#FFFFFF"/>,
-					text: "Code",
-					location: submissionPath+"/code"
+					title: "FileName2",
+					text: "File preview?",
+					time: new Date()
+				}
+			]}/>
+			<DataList header="Comments" list={[
+				{
+					title: "John Doe",
+					text: "It broke",
+					time: new Date()
 				}, {
-					id: "comments",
-					icon: <FiMessageSquare size={28} color="#FFFFFF"/>,
-					text: "Comments",
-					location: submissionPath+"/comments"
+					title: "Jane Doe",
+					text: "Yep, still broke",
+					time: new Date()
 				}, {
-					id: "share",
-					icon: <FiShare2 size={28} color="#FFFFFF"/>,
-					text: "Share",
-					location: submissionPath+"/share"
-				}]}
-				active={activeTab}
-			/>
-			{activeTabElement}
+					title: "Mary Doe",
+					text: "No? It fixed itself?",
+					time: new Date()
+				}
+			]}/>
+			<DataList header="Recent" list={[
+				{
+					title: "John Doe",
+					text: "FileName1: Dont use underscores",
+					time: new Date()
+				}
+			]}/>
 		</Frame>
 	)
 }
