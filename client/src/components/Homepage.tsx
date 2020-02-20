@@ -11,9 +11,9 @@ export function Homepage() {
 	useEffect(() => {
 		fetch('/api/courses/')
 			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-				setCourses(data.courses);
+			.then((courses) => {
+				console.log(courses);
+				setCourses(courses);
 				setLoading(false);
 			});
 	}, []);
