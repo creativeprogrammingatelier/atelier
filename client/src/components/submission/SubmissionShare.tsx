@@ -12,8 +12,9 @@ interface SubmissionShareProperties {
 export function SubmissionShare({match: {params: {submissionId}}}: SubmissionShareProperties) {
 	const submissionPath = "/submission/"+submissionId;
 	const submissionURL = window.location.origin + submissionPath;
+	const projectName = "MyFirstProject";
 
-	return <Frame title={submissionId} user={{id:"1", name:"John Doe"}} sidebar={true}>
+	return <Frame title={projectName} user={{id:"1", name:"John Doe"}} sidebar>
 		<ShareTab fileName="Share me" url={submissionURL}/>
 	</Frame>
 }
