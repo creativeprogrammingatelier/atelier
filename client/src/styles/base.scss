@@ -114,7 +114,7 @@ tbody {
 		color: $colorOffWhite;
 
 		.panelBottom {
-			box-shadow: $shadowUp;
+			box-shadow: $shadowSmallUp;
 		}
 	}
 }
@@ -132,7 +132,7 @@ tbody {
 	}
 }
 .dataItem:hover, .dataBlock:hover {
-	box-shadow: $shadowAround;
+	box-shadow: $shadowSmall;
 }
 .dataItem:not(:last-child), .dataBlock:not(:last-child) {
 	margin-bottom: 0.5rem;
@@ -150,7 +150,7 @@ tbody {
 .toast-header {
 	background-color: $colorOffWhite;
 	border: none;
-	box-shadow: $shadowDown;
+	box-shadow: $shadowSmallDown;
 }
 .toast-body {
 	padding: 0.5rem;
@@ -188,7 +188,7 @@ tbody {
 	transition: none;
 }
 .btn:hover, .btn:active {
-	box-shadow: $shadowAround;
+	box-shadow: $shadowMedium;
 }
 .btn-primary {
 	color: $colorWhite;
