@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Frame} from '../frame/Frame';
-import {DataList} from '../general/DataList';
+import {DataBlockList} from '../general/DataBlockList';
 import {Loading} from '../general/Loading';
 import {EssentialSubmissionResponse} from '../../helpers/DatabaseResponseInterface';
 
@@ -28,7 +28,7 @@ export function CourseOverview({courseId}: CourseOverviewProps) {
 			{loading ?
 				<Loading/>
 				:
-				<DataList
+				<DataBlockList
 					header="Submissions"
 					list={submissions.map(submission => {
 						return {

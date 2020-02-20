@@ -1,19 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import {DataBlock, DataTag} from './DataBlock';
+import {DataBlock} from './DataBlock';
 import {Header} from '../frame/Header';
+import {DataTagProperties} from "./DataTag";
 
 interface DataListEntryProperties {
 	transport?: string,
 	title: string,
-	text?: string,
+	text: string,
 	time: Date,
-	tags?: DataTag[]
+	tags?: DataTagProperties[]
 }
 interface DataListProperties {
 	header: string,
 	list: DataListEntryProperties[]
 }
-export function DataList({header, list}: DataListProperties) {
+export function DataBlockList({header, list}: DataListProperties) {
 	const [currentTime, setCurrentTime] = useState(new Date());
 
 	useEffect(() => {
@@ -24,7 +25,7 @@ export function DataList({header, list}: DataListProperties) {
 
 	return <div>
 		<Header title={header}/>
-		<div className="pt-2">
+		<div className="py-2">
 			{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time.toDateString(), offset:currentTime.toDateString()}} tags={block.tags}/>)}
 		</div>
 	</div>

@@ -4,6 +4,9 @@
 html, body {
 	background-color: $backgroundColor;
 }
+a {
+	color: $colorWhite;
+}
 thead {
 	padding: 1rem;
 	color: $colorWhite;
@@ -116,7 +119,7 @@ tbody {
 	}
 }
 
-.dataBlock {
+.dataItem, .dataBlock {
 	a {
 		color: unset;
 	}
@@ -128,10 +131,10 @@ tbody {
 		box-shadow: none;
 	}
 }
-.dataBlock:hover {
+.dataItem:hover, .dataBlock:hover {
 	box-shadow: $shadowAround;
 }
-.dataBlock:not(:last-child) {
+.dataItem:not(:last-child), .dataBlock:not(:last-child) {
 	margin-bottom: 0.5rem;
 }
 .toast {
