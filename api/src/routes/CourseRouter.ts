@@ -54,7 +54,7 @@ courseRouter.post('/',
     (request : Request, result : Response) => {
         const name : string = request.body.name;
         const state : courseState = request.body.state;
-        const creatorID : number = request.body.number;
+        const creatorID : number = request.body.creatorID;
 
         CoursesHelper.addCourse({ name, state, creatorID  })
             .then((course : Course) => {

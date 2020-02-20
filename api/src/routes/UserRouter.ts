@@ -92,13 +92,16 @@ const userResponse = {
  * @param limit? : limit to submissions in the body
  * @return submissions of a user
  */
-userRouter.get('/:userId/submissions',
+userRouter.get('/:userID/submissions',
     (request: Request, result: Response) => {
-        const userID : string = request.params.userId;
-        const limit : number = request.body.limit;
+        const userID : string = request.params.userID;
+        console.log(userID);
+        const limit : number | undefined = request.body.limit;
+        console.log(limit);
 
         SubmissionHelper.getUserSubmissions(userID, limit)
-            .then((data : Submission[]) => {
+            .then((data : any) => {
+                console.log(data);
                 result.send(data);
             })
             .catch((error : any) => result.status(500).send({error : error}));

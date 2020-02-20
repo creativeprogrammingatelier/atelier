@@ -3,11 +3,14 @@ import {PanelButton} from './general/PanelButton'
 import {Frame} from './frame/Frame';
 import {CourseResponse} from "../helpers/DatabaseResponseInterface";
 import {Loading} from "./general/Loading";
+import {AddCourse} from "./course/AddCourse";
+import {Course} from "../../../models/course";
 
 export function Homepage() {
 	const [loading, setLoading] = useState(true);
-	const [courses, setCourses] = useState(null as unknown as CourseResponse[]);
+	const [courses, setCourses] = useState(null as unknown as Course[]);
 
+	// Retrieve courses
 	useEffect(() => {
 		fetch('/api/courses/')
 			.then((response) => response.json())
@@ -18,6 +21,13 @@ export function Homepage() {
 			});
 	}, []);
 
+	function updateCourse(course : Course) {
+		setCourses(courses => [
+			...courses,
+			course
+		])
+	}
+
 	return (
 		<Frame title="Homepage" user={{id:"1", name:"John Doe"}} sidebar>
 			<p>Some introduction of sorts?</p>
@@ -25,9 +35,12 @@ export function Homepage() {
 				(courses && !loading) ?
 					<div>
 						{
-							courses.map((course) => {
+							courses.map((course: Course) => {
 								return (
-									<PanelButton display={course.name} location={`/course/${course.courseId}`} icon=''/>
+									<PanelButton
+										display={course.name == undefined ? "" : course.name}
+										location={`/course/${course.courseID}`}
+										icon=''/>
 								)
 							})
 						}
@@ -35,6 +48,7 @@ export function Homepage() {
 					:
 					<Loading />
 			}
+			<AddCourse handleResponse = {updateCourse} />
 
 		</Frame>
 	)

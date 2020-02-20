@@ -8,24 +8,24 @@ import {
 } from "../../helpers/DatabaseResponseInterface";
 import {Loading} from "../general/Loading";
 
-interface UserOverviewProperties {
-    userId: string
-}
 
-export function UserOverview({ userId }: UserOverviewProperties) {
+export function UserOverview() {
     const [loading, setLoading] = useState(true);
     const [submissions, setSubmissions] = useState(null as unknown as SubmissionResponse[]);
     const [user, setUser] = useState(null as unknown as UserResponse);
     const [comments, setComments] = useState(null as unknown as CommentThreadResponse[]);
 
+    const userID = "00000000-0000-0000-0000-000000000000";
+    // TODO pass token here as well to the API?
+
     useEffect(() => {
-       fetch(`/api/user/${userId}/submissions`)
+       fetch(`/api/user/${userID}/submissions`)
            .then(response => response.json())
            .then(data => {
                console.log(data);
-              setSubmissions(data.submissions);
-              setUser(data.user);
-              setComments(data.commentThreads);
+              //setSubmissions(data.submissions);
+              //setUser(data.user);
+              //setComments(data.commentThreads);
               setLoading(false);
            });
     }, []);
