@@ -14,6 +14,6 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
 	const submissionURL = window.location.origin + submissionPath;
 
 	return <Frame title={submissionId} user={{id:"1", name:"John Doe"}} sidebar={true}>
-		<ShareTab url={submissionURL}/>
+		<ShareTab fileName="Share me" url={submissionURL}/>
 	</Frame>
 }

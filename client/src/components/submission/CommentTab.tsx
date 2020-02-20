@@ -37,11 +37,13 @@ const comments = {
 };
 
 interface CommentTabProperties {
+	fileName: string,
 	threads: string[]
 }
-export function CommentTab({threads}: CommentTabProperties) {
+export function CommentTab({fileName, threads}: CommentTabProperties) {
 	return (
 		<div>
+			<h1>{fileName}</h1>
 			{threads.map((thread) => <CommentThread threadId={thread}/>)}
 		</div>
 	);

@@ -27,19 +27,21 @@ export function FileOverview({match:{params:{submissionId, fileId, tab}}}: FileO
 
 	const filePath = "/submission/"+submissionId+"/"+fileId;
 	const fileURL = window.location.origin + filePath;
+	const fileName = "FileName1";
+	const projectName = "MyFirstProject";
 
 	// Display certain tab
 	let activeTabElement = <div><h1>Tab not found!</h1></div>;
 	if (activeTab === "code") {
-		activeTabElement =  <CodeTab fileName={fileId}/>
+		activeTabElement = <CodeTab fileName={fileName}/>
 	} else if (activeTab === "comments") {
-		activeTabElement =  <CommentTab threads={["1", "2"]}/>
+		activeTabElement = <CommentTab fileName={fileName} threads={["1", "2"]}/>
 	} else if (activeTab === "share") {
-		activeTabElement = <ShareTab url={fileURL}/>
+		activeTabElement = <ShareTab fileName={fileName} url={fileURL}/>
 	}
 
 	return (
-		<Frame title="Submission" user={{id:"1", name:"John Doe"}} sidebar search={filePath+"/search"}>
+		<Frame title={projectName} user={{id:"1", name:"John Doe"}} sidebar search={filePath+"/search"}>
 			<div className="contentTab">
 				{activeTabElement}
 			</div>
