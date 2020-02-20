@@ -18,6 +18,8 @@ import { indexRouter } from './routes/IndexRouter';
 import { searchRouter } from './routes/SearchRouter';
 import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
+import { commentThreadRouter} from './routes/CommentThreadRouter'
+import {commentRouter} from "./routes/CommentRouter";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -40,6 +42,8 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, '../../client/')));
 app.use('/api/auth', authRouter);
+app.use('/api/comment', commentRouter);
+app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/courses', coursesRouter);
 app.use('/api/file', fileRouter);

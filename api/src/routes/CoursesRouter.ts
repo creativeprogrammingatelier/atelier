@@ -68,7 +68,20 @@ const courseListResponse = {
  */
 coursesRouter.get('/',
     async (request : Request, result : Response) => {
-        const courses = await CoursesHelper.getAllCourses();
+        CoursesHelper.getAllCourses()
+            .then((courses : Course[]) => courses.map((course : Course) => {
+                return {
+                   courseId : course.courseID,
+                   name : course.name,
+                   state : course.state,
+                   creator : course.creatorID
+                }
+            }))
+            .then(data => result.send(data))
+            .catch((error => result.status(500).send({error : error})));
+
+        /*const courses = await CoursesHelper.getAllCourses();
+
         const json = courses.map((course: Course) => {
            return {
                courseId : course.courseID,
@@ -77,5 +90,5 @@ coursesRouter.get('/',
                creator : course.creatorID
            }
         });
-        result.send(json);
+        result.send(json);*/
     });

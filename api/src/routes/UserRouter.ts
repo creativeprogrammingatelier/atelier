@@ -1,11 +1,10 @@
 /**
  * Api routes relating to user information
- *
- * /api/user/userid/submissions
- *  - list of user submissions
  */
 
 import express, { Response, Request } from 'express';
+import SubmissionHelper from "../database/SubmissionHelper";
+import {Submission} from "../../../models/Submission";
 
 export const userRouter = express.Router();
 
@@ -86,8 +85,21 @@ const userResponse = {
     }]
 };
 
-
+/** Get submissions of a user
+ * @type get
+ * @url: /api/:userID/submissions
+ * @param userID : id of the user
+ * @param limit? : limit to submissions in the body
+ * @return submissions of a user
+ */
 userRouter.get('/:userId/submissions',
     (request: Request, result: Response) => {
-        result.send(userResponse);
-    });
+        const userID : string = request.params.userId;
+        const limit : number = request.body.limit;
+
+        SubmissionHelper.getUserSubmissions(userID, limit)
+            .then((data : Submission[]) => {
+                result.send(data);
+            })
+            .catch((error : any) => result.status(500).send({error : error}));
+});

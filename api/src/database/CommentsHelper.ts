@@ -42,9 +42,9 @@ export default class CommentHelper {
 	static addComment(comment : Comment){
 		const {
 			commentThreadID, 
-			userID, 
-			date=new Date(), 
-			body
+			userID,
+			body,
+			date=new Date()
 		} = comment
 		return pool.query("INSERT INTO \"Comments\" VALUES (DEFAULT, $1,$2,$3,$4) RETURNING *", [commentThreadID,userID,date,body])
 		.then(extract).then(map(convert)).then(one)
