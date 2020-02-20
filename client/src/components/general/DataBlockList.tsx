@@ -26,7 +26,7 @@ export function DataBlockList({header, list}: DataListProperties) {
 	return <div>
 		<Header title={header}/>
 		<div className="py-2">
-			{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time.toDateString(), offset:currentTime.toDateString()}} tags={block.tags}/>)}
+			{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time, offset:currentTime}} tags={block.tags}/>)}
 		</div>
 	</div>
 }

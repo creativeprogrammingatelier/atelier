@@ -5,8 +5,8 @@ import {Link} from "react-router-dom";
 import {DataTag, DataTagProperties} from "./DataTag";
 
 interface DataTime {
-	start: string,
-	offset: string
+	start: Date,
+	offset: Date
 }
 interface DataBlockProperties {
 	transport?: string,
