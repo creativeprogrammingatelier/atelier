@@ -1,20 +1,20 @@
 const HH = require("./HelperHelper")
 
 import {localRole, checkEnum} from '../../../enums/localRoleEnum'
-import {RolePermission, DBRolePermission, convert} from '../../../models/RolePermission'
+import {RolePermission, DBRolePermission, convertRolePermission} from '../../../models/RolePermission'
 /**
  * interface for interacting with rolepermissions
  * @Author Rens Leendertz
  */
-const {pool, extract, map, one} = HH
+const {query, extract, map, one} = HH
 
 export default class RolePermissionsHelper {
 	/**
 	 * get all roles currently stored in the database, given to onSuccess as a list of Permission
 	 */
 	static getAllRoles(){
-		return pool.query("SELECT * FROM \"CourseRolePermissions\"")
-		.then(extract).then(map(convert))
+		return query("SELECT * FROM \"CourseRolePermissions\"")
+		.then(extract).then(map(convertRolePermission))
 	}
 
 	/**
@@ -22,24 +22,24 @@ export default class RolePermissionsHelper {
 	 * given to onSuccess as an Permission
 	 */
 	static getRolePermissions(role : string){
-		return pool.query("SELECT * FROM \"CourseRolePermissions\" WHERE courseRoleID=$1",[role])
-		.then(extract).then(map(convert)).then(one)
+		return query("SELECT * FROM \"CourseRolePermissions\" WHERE courseRoleID=$1",[role])
+		.then(extract).then(map(convertRolePermission)).then(one)
 	}
 
 	/**
 	 * Add a new role to the database
 	 */
 	static addNewLocalRole(name : string, permissions : number){
-		return pool.query("INSERT INTO \"CourseRolePermissions\" VALUES ($1,$2) RETURNING *", [name, RolePermissionsHelper.toBin(permissions)])
-		.then(extract).then(map(convert)).then(one)
+		return query("INSERT INTO \"CourseRolePermissions\" VALUES ($1,$2) RETURNING *", [name, RolePermissionsHelper.toBin(permissions)])
+		.then(extract).then(map(convertRolePermission)).then(one)
 	}
 	/**
 	 * set the the permissions for a role in the database.
 	 * all old permissions will NOT be retained.
 	 */
 	static setPermissionOnRole(name : string, permissions : number){
-		return pool.query("UPDATE \"CourseRolePermissions\" SET permission = $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permissions)])
-		.then(extract).then(map(convert)).then(one)
+		return query("UPDATE \"CourseRolePermissions\" SET permission = $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permissions)])
+		.then(extract).then(map(convertRolePermission)).then(one)
 	}
 	/**
 	 * Add some permissions to a role in the database
@@ -48,8 +48,8 @@ export default class RolePermissionsHelper {
 	 * No permissions will be removed
 	 */
 	static addPermissionToRole(name : string, permission : number){
-		return pool.query("UPDATE \"CourseRolePermissions\" SET permission=permission | $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
-		.then(extract).then(map(convert)).then(one)
+		return query("UPDATE \"CourseRolePermissions\" SET permission=permission | $2 WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
+		.then(extract).then(map(convertRolePermission)).then(one)
 	}
 
 	/**
@@ -59,8 +59,8 @@ export default class RolePermissionsHelper {
 	 * No permissions will be added
 	 */
 	static removePermissionFromRole(name : string, permission : number){
-		return pool.query("UPDATE \"CourseRolePermissions\" SET permission=permission & (~($2::bit(40))) WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
-		.then(extract).then(map(convert)).then(one)
+		return query("UPDATE \"CourseRolePermissions\" SET permission=permission & (~($2::bit(40))) WHERE courseRoleID=$1 RETURNING *",[name, RolePermissionsHelper.toBin(permission)])
+		.then(extract).then(map(convertRolePermission)).then(one)
 	}
 
 	/**
@@ -69,8 +69,8 @@ export default class RolePermissionsHelper {
 	 * make sure to change those permissions first.
 	 */
 	static deleteLocalRole(name : string) {
-		return pool.query("DELETE FROM \"CourseRolePermissions\" WHERE courseRoleID=$1 RETURNING *",[name])
-		.then(extract).then(map(convert)).then(one)
+		return query("DELETE FROM \"CourseRolePermissions\" WHERE courseRoleID=$1 RETURNING *",[name])
+		.then(extract).then(map(convertRolePermission)).then(one)
 	}
 	static toBin(n : number | undefined){
 		if (n === undefined) return undefined

@@ -14,7 +14,7 @@ export interface DBUser {
 	hash?: string;
 }
 
-export function convert(db : DBUser) : User{
+export function convertUser(db : DBUser) : User{
 	return {
 		userID:db.userid,
 		name:db.name,

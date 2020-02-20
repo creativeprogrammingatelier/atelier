@@ -1,36 +1,36 @@
-const HH = require("./HelperHelper")
+import * as HH from "./HelperHelper";
 
-import {Thread, DBThread, convert} from '../../../models/Thread';
+import {Thread, DBThread, convertThread} from '../../../models/Thread';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 import RolePermissionHelper from './RolePermissionsHelper'
 /**
  * commentThreadID, submissionID, fileID, snippetID, visibilityState
  * @Author Rens Leendertz
  */
-const {pool, extract, one, map}= HH
+const {query, extract, one, map}= HH
 
 export default class ThreadHelper {
-	static getAllThreads(){
+	static getAllThreads() : Promise<Thread[]> {
 		return ThreadHelper.getThreadsLimit(undefined)
 	}
 
-	static getThreadsLimit(limit : number | undefined){
+	static getThreadsLimit(limit : number | undefined) : Promise<Thread[]>{
 		return ThreadHelper.filterThread({}, limit)
 	}
 
-	static getThreadByID(commentThreadID : string){
+	static getThreadByID(commentThreadID : string) : Promise<Thread> {
 		return ThreadHelper.filterThread({commentThreadID}, 1).then(one)
 	}
 
-	static getThreadsBySubmission(submissionID : string){
+	static getThreadsBySubmission(submissionID : string) : Promise<Thread[]> {
 		return ThreadHelper.filterThread({submissionID}, undefined)
 	}
 
-	static getThreadsByFile(fileID : string){
+	static getThreadsByFile(fileID : string) : Promise<Thread[]> {
 		return ThreadHelper.filterThread({fileID}, undefined)
 	}
 
-	static filterThread(thread : Thread, limit : number | undefined) {
+	static filterThread(thread : Thread, limit : number | undefined) : Promise<Thread[]> {
 		const {
 			commentThreadID = undefined, 
 			submissionID = undefined, 
@@ -46,7 +46,7 @@ export default class ThreadHelper {
 
 		if (limit && limit < 0) limit = undefined
 
-		return pool.query(`SELECT * FROM \"CommentThread\" 
+		return query(`SELECT * FROM \"CommentThread\" 
 			WHERE
 				((NOT $2::bool) OR commentThreadID = $1)
 			AND ((NOT $4::bool) OR submissionID = $3)
@@ -61,10 +61,10 @@ export default class ThreadHelper {
 					visibilityState, visibilityStatePresent,
 					limit
 				])
-		.then(extract).then(map(convert))
+		.then(extract).then(map(convertThread))
 	}
 
-	static addThread(thread : Thread) {
+	static addThread(thread : Thread) : Promise<Thread> {
 		const {
 			// commentThreadID, 
 			submissionID, 
@@ -72,8 +72,8 @@ export default class ThreadHelper {
 			snippetID, 
 			visibilityState
 		} = thread
-		return pool.query(`INSERT INTO \"CommentThread\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING *`, [submissionID, fileID, snippetID, visibilityState])
-		.then(extract).then(map(convert)).then(one)
+		return query(`INSERT INTO \"CommentThread\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING *`, [submissionID, fileID, snippetID, visibilityState])
+		.then(extract).then(map(convertThread)).then(one)
 	}
 	static updateThread(thread : Thread) {
 		const {
@@ -83,17 +83,17 @@ export default class ThreadHelper {
 			snippetID = undefined, 
 			visibilityState = undefined
 		} = thread
-		return pool.query(`UPDATE \"CommentThread\" SET
+		return query(`UPDATE \"CommentThread\" SET
 			submissionID = COALESCE($2, submissionID),
 			fileID = COALESCE($3, fileID),
 			snippetID = COALESCE($4, snippetID),
 			visibilityState = COALESCE($5, visibilityState)
 			WHERE commentThreadID = $1
 			RETURNING *`, [commentThreadID, submissionID, fileID, snippetID, visibilityState])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertThread)).then(one)
 	}
 	static deleteThread(commentThreadID : string) {
-		return pool.query(`DELETE FROM \"CommentThread\" WHERE commentThreadID = $1 RETURNING *`, [commentThreadID])
-		.then(extract).then(map(convert)).then(one)
+		return query<DBThread, [string]>(`DELETE FROM \"CommentThread\" WHERE commentThreadID = $1 RETURNING *`, [commentThreadID])
+		.then(extract).then(map(convertThread)).then(one)
 	}
 }

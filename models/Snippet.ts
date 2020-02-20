@@ -16,7 +16,7 @@ export interface DBSnippet {
 	fileid: string
 }
 const keys = ['snippetid', 'linestart', 'lineend', 'charstart', 'charend', 'fileid']
-export function convert(db : DBSnippet) : Snippet {
+export function convertSnippet(db : DBSnippet) : Snippet {
 	const ret = {
 		snippetID: db.snippetid,
 		lineStart: db.linestart,
