@@ -1,37 +1,37 @@
-const HH = require("./HelperHelper")
+import * as HH  from "./HelperHelper"
 
-import {User, DBUser, convert} from '../../../models/User';
+import {User, DBUser, convertUser} from '../../../models/User';
 import bcrypt from 'bcrypt';
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
  * @Author Rens Leendertz
  */
-const {pool, map, extract, one} = HH
+const {query, map, extract, one} = HH
 
 export default class UsersHelper {
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
 	static getAllStudents() {
-		return pool.query("SELECT userID, name, globalRole, email from \"Users\" WHERE globalRole = 'user'")
-			.then(extract).then(map(convert))
+		return query("SELECT userID, name, globalRole, email from \"Users\" WHERE globalRole = 'user'")
+			.then(extract).then(map(convertUser))
 	}
 
 	/**
 	 * calls onSuccess() with all users in the system.
 	 */
 	static getAllUsers() {
-		return pool.query("SELECT userID, name, globalRole, email from \"Users\"")
-			.then(extract).then(map(convert))
+		return query("SELECT userID, name, globalRole, email from \"Users\"")
+			.then(extract).then(map(convertUser))
 	}
 
 	/**
 	 * calls onSuccess() with a student based on its userID, without password hash
 	 */
 	static getUserByID(userID : string) {
-		return pool.query("SELECT userID, name, globalRole, email from \"Users\" where userID = $1", [userID])
-			.then(extract).then(map(convert)).then(one)
+		return query("SELECT userID, name, globalRole, email from \"Users\" where userID = $1", [userID])
+			.then(extract).then(map(convertUser)).then(one)
 	}
 
 	/**
@@ -46,8 +46,8 @@ export default class UsersHelper {
 			role,
 			name
 		} = user;
-		return pool.query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, password])
-			.then(extract).then(map(convert)).then(one)
+		return query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, password])
+			.then(extract).then(map(convertUser)).then(one)
 	}
 	/**
 	 * update a user using the @param user.
@@ -63,7 +63,7 @@ export default class UsersHelper {
 			name = undefined
 		} = user
 		const hash = password === undefined ? undefined : UsersHelper.hashPassword(password)
-		return pool.query(`UPDATE \"Users\"
+		return query(`UPDATE \"Users\"
 			SET 
 			email = COALESCE($2, email),
 			hash = COALESCE($3, hash),
@@ -71,15 +71,15 @@ export default class UsersHelper {
 			name = COALESCE($5, name)
 			WHERE userID = $1
 			RETURNING * `, [userID, email, hash, role, name])
-			.then(extract).then(map(convert)).then(one)
+			.then(extract).then(map(convertUser)).then(one)
 	}
 
 	/**
 	 * deletes a user from the database, based on the userID.
 	 */
 	static deleteUser(userID: string) {
-		return pool.query("DELETE FROM \"Users\" WHERE userID = $1 RETURNING *", [userID])
-			.then(extract).then(map(convert)).then(one)
+		return query("DELETE FROM \"Users\" WHERE userID = $1 RETURNING *", [userID])
+			.then(extract).then(map(convertUser)).then(one)
 	}
 
 	/**
@@ -96,7 +96,7 @@ export default class UsersHelper {
 			email,
 			password
 		} = loginRequest;
-		pool.query("SELECT userID, name, globalRole, email, hash FROM \"Users\" where email = $1", [email])
+		query("SELECT userID, name, globalRole, email, hash FROM \"Users\" where email = $1", [email])
 			.then((res : {rows:DBUser[]}) => {
 				if (res.rows.length !== 1){
 					return onUnauthorised()

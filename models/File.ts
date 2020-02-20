@@ -18,7 +18,7 @@ export interface DBFile {
 	type : string
 }
 
-export function convert(db : DBFile) : File {
+export function convertFile(db : DBFile) : File {
 	return {
 		fileID: db.fileid,
 		submissionID: db.submissionid,

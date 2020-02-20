@@ -14,7 +14,7 @@ export interface DBThread {
 	snippetid: string,
 	visibilitystate: string
 }
-export function convert(db : DBThread) : Thread {
+export function convertThread(db : DBThread) : Thread {
 	if (!(checkEnum(db.visibilitystate))) {
 		throw new Error("enum from database not recognized on server"+db.visibilitystate)
 	}

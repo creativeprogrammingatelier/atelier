@@ -1,12 +1,12 @@
 const HH = require("./HelperHelper");
 
-import {Comment, DBComment, convert} from '../../../models/Comment';
+import {Comment, DBComment, convertComment} from '../../../models/Comment';
 // import RolePermissionHelper from './RolePermissionsHelper'
 /**
  * commentID, commentThreadID, userID, date, body
  * @Author Rens Leendertz
  */
-const {pool, extract, map, one} = HH;
+const {query, extract, map, one} = HH;
 export default class CommentHelper {
 	static getAllComments(limit? :number){
 		return CommentHelper.filterComment({}, limit)
@@ -26,7 +26,7 @@ export default class CommentHelper {
 			body = undefined
 		} = comment
 		if (limit && limit < 0) limit = undefined
-		return pool.query(`SELECT * FROM \"Comments\" 
+		return query(`SELECT * FROM \"Comments\" 
 			WHERE
 				($1::uuid IS NULL OR commentID=$1)
 			AND ($2::uuid IS NULL OR commentThreadID=$2)
@@ -35,7 +35,7 @@ export default class CommentHelper {
 			AND ($5::text IS NULL OR body=$5)
 			LIMIT $6
 			`,[commentID, commentThreadID, userID, date, body, limit])
-		.then(extract).then(map(convert))
+		.then(extract).then(map(convertComment))
 	}
 
 
@@ -46,8 +46,8 @@ export default class CommentHelper {
 			date=new Date(), 
 			body
 		} = comment
-		return pool.query("INSERT INTO \"Comments\" VALUES (DEFAULT, $1,$2,$3,$4) RETURNING *", [commentThreadID,userID,date,body])
-		.then(extract).then(map(convert)).then(one)
+		return query("INSERT INTO \"Comments\" VALUES (DEFAULT, $1,$2,$3,$4) RETURNING *", [commentThreadID,userID,date,body])
+		.then(extract).then(map(convertComment)).then(one)
 	}
 	static updateComment(comment : Comment){
 		const {
@@ -57,17 +57,17 @@ export default class CommentHelper {
 			date = undefined, 
 			body = undefined
 		} = comment
-		return pool.query(`UPDATE \"Comments\" SET 
+		return query(`UPDATE \"Comments\" SET 
 			commentThreadID = COALESCE($2, commentThreadID),
 			userID = COALESCE($3,userID),
 			date = COALESCE($4, date),
 			body = COALESCE($5, body)
 			WHERE commentID =$1
 			RETURNING *`, [commentID, commentThreadID, userID, date, body])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertComment)).then(one)
 	}
 	static deleteComment(commentID : string){
-		return pool.query("DELETE FROM \"Comments\" WHERE commentID=$1 RETURNING *", [commentID])
-		.then(extract).then(map(convert)).then(one)
+		return query("DELETE FROM \"Comments\" WHERE commentID=$1 RETURNING *", [commentID])
+		.then(extract).then(map(convertComment)).then(one)
 	}
 }

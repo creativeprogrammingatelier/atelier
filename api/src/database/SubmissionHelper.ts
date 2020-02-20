@@ -1,13 +1,13 @@
 const HH = require("./HelperHelper")
 
-import {Submission, DBSubmission, convert} from '../../../models/Submission';
+import {Submission, DBSubmission, convertSubmission} from '../../../models/Submission';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 import RolePermissionHelper from './RolePermissionsHelper'
 /**
  * submissionID, userID, name, date, state
  * @Author Rens Leendertz
  */
-const {pool, extract, one, map}= HH
+const {query, extract, one, map}= HH
 
 export default class SubmissionHelper {
 	/**
@@ -34,7 +34,14 @@ export default class SubmissionHelper {
 		return SubmissionHelper.getRecents({submissionID}, 1)
 			.then(one)
 	}
-
+	/**
+	 * 
+	 * @param submission 
+	 * @param limit 
+	 */
+	static getSubmissionsByCourse(courseID : string){
+		return SubmissionHelper.getRecents({courseID}, undefined);
+	}
 	/*
 	 * Give a submission object, all fields can be null
 	 * if a field is given, the results will be filtered on that field.
@@ -48,23 +55,25 @@ export default class SubmissionHelper {
 	static getRecents(submission : Submission, limit : number | undefined){
 		const {
 			submissionID = undefined,
+			courseID = undefined,
 			userID = undefined,
 			name = undefined,
 			date = undefined,
 			state = undefined
 		} = submission
 		if (limit && limit<0) limit=undefined
-		return pool.query(`SELECT * 
+		return query(`SELECT * 
 			FROM \"Submissions\" 
 			WHERE 
 					($1::uuid IS NULL OR submissionID=$1)
-				AND ($2::uuid IS NULL OR userID=$2)
-				AND ($3::text IS NULL OR name=$3)
-				AND ($4::timestamp IS NULL OR date <= $4)
-				AND ($5::text IS NULL OR state=$5)
+				AND ($2::uuid IS NULL OR courseID=$2)
+				AND ($3::uuid IS NULL OR userID=$3)
+				AND ($4::text IS NULL OR name=$4)
+				AND ($5::timestamp IS NULL OR date <= $5)
+				AND ($6::text IS NULL OR state=$6)
 			ORDER BY date DESC
-			LIMIT $6`,[submissionID, userID, name, date, state, limit])
-		.then(extract).then(map(convert))
+			LIMIT $7`,[submissionID, courseID, userID, name, date, state, limit])
+		.then(extract).then(map(convertSubmission))
 	}
 
 	/**
@@ -75,22 +84,23 @@ export default class SubmissionHelper {
 	 */
 	static addSubmission(submission : Submission) {
 		const {
+			courseID,
 			userID,
 			name,
 			date = new Date(),
 			state = submissionStatus.new
 		} = submission
-		return pool.query("INSERT INTO \"Submissions\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING *"
-			, [userID, name, date, state])
-		.then(extract).then(map(convert)).then(one)
+		return query("INSERT INTO \"Submissions\" VALUES (DEFAULT, $1, $2, $3, $4, $5) RETURNING *"
+			, [courseID, userID, name, date, state])
+		.then(extract).then(map(convertSubmission)).then(one)
 	}
 
 	/* delete an submission from the database.
 	 *
 	 */
-	static deleteSubmission(submissionid : string){
-		return pool.query("DELETE FROM \"Submissions\" WHERE submissionID=$1 RETURNING *",[submissionid])
-		.then(extract).then(map(convert)).then(one)
+	static deleteSubmission(submissionID : string){
+		return query("DELETE FROM \"Submissions\" WHERE submissionID=$1 RETURNING *",[submissionID])
+		.then(extract).then(map(convertSubmission)).then(one)
 	}
 	/*
 	 * update a submission submissionid is required, all others are optional.
@@ -99,19 +109,21 @@ export default class SubmissionHelper {
 	static updateSubmission(submission : Submission){
 		const {
 			submissionID,
+			courseID = undefined,
 			userID = undefined,
 			name = undefined,
 			date = undefined,
 			state = undefined
 		} = submission
-		return pool.query(`UPDATE \"Submissions\" SET
-			userid = COALESCE($2, userid),
-			name = COALESCE($3, name),
-			date = COALESCE($4, date),
-			state = COALESCE($5, state)
+		return query(`UPDATE \"Submissions\" SET
+			courseID = COALESCE($2, courseID),
+			userid = COALESCE($3, userid),
+			name = COALESCE($4, name),
+			date = COALESCE($5, date),
+			state = COALESCE($6, state)
 			WHERE submissionID=$1
 			RETURNING *`
-			, [submissionID, userID, name, date, state])
-		.then(extract).then(map(convert)).then(one)
+			, [submissionID, courseID, userID, name, date, state])
+		.then(extract).then(map(convertSubmission)).then(one)
 	}
 }

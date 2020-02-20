@@ -81,13 +81,14 @@ INSERT INTO "CourseRegistration" VALUES
 
 CREATE TABLE "Submissions" (
      submissionID   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     courseID       uuid NOT NULL REFERENCES "Courses"(courseID),
      userID         uuid NOT NULL REFERENCES "Users"(userID),
      name           text NOT NULL CHECK (name <> ''),
      date           timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
      state          text NOT NULL DEFAULT 'new'
 );
 INSERT INTO "Submissions" VALUES
-	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'my_first_submission', DEFAULT, DEFAULT);
+	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'my_first_submission', DEFAULT, DEFAULT);
 
 
 CREATE TABLE "Files" (
@@ -137,5 +138,5 @@ INSERT INTO "Comments" VALUES
 	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a multi\\nline comment!'),
 	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a comment about nothing at all..');
 
-`).then(console.log).catch(console.error);
+`).then(console.debug).catch(console.error).then(pool.end.bind(pool));
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())

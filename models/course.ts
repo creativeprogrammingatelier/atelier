@@ -15,7 +15,7 @@ export interface DBCourse {
 }
 
 
-export function convert(db : DBCourse) : Course {
+export function convertCourse(db : DBCourse) : Course {
 	if (!checkEnum(db.state)){
 		throw new Error('non-existent enum type from db: '+db.state)
 	}

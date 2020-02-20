@@ -1,7 +1,7 @@
 import * as pg from "pg"
 console.log("helper startup")
 
-export const pool = new pg.Pool({
+const pool = new pg.Pool({
 	user: 'assistantassistant',
 	host: 'localhost',
 	database: 'assistantassistant',
@@ -9,6 +9,8 @@ export const pool = new pg.Pool({
 	port: 5432,
 	max: 1
 });
+export const query = pool.query.bind(pool);
+export const end = pool.end.bind(pool);
 
 export function extract<T>(result : {rows:T[]}){
 	return result.rows;
@@ -19,10 +21,10 @@ export function one<T>(result : T[]) {
 export function map<S, T>(fun : (element : S) => T){
 	return (list : S[]) => list.map(fun)
 }
-export function map2(funs : Function[]){
+export function map2(funs : Function[]) {
 	const union = (element : object) => {
-		const reducer = (accumulator : object, fun : Function) => ({...accumulator,...fun(element)})
-		funs.reduce(reducer, {})
+		const reducer = (accumulator : object, fun : Function) : object => ({...accumulator,...fun(element)})
+		return funs.reduce(reducer, {})
 	}
 	return map(union)
 }

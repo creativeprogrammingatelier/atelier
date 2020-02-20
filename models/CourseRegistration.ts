@@ -12,7 +12,7 @@ export interface DBCourseRegistration {
 	courserole : string,
 	permission : number
 }
-export function convert(db :DBCourseRegistration) : CourseRegistration {
+export function convertCourseReg(db :DBCourseRegistration) : CourseRegistration {
 	if (!checkEnum(db.courserole)){
 		throw new Error("courserole from database does not match enum on server: "+db.courserole)
 	}

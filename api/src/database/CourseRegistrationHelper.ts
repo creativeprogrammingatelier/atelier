@@ -1,12 +1,12 @@
 const HH = require("./HelperHelper");
 
-import {CourseRegistration, convert} from '../../../models/CourseRegistration';
+import {CourseRegistration, convertCourseReg} from '../../../models/CourseRegistration';
 import RolePermissionHelper from './RolePermissionsHelper'
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
  */
-const {pool, extract, map, one} = HH;
+const {query, extract, map, one} = HH;
 export default class CourseRegistrationHelper {
 
 	static toBin = RolePermissionHelper.toBin;
@@ -15,7 +15,7 @@ export default class CourseRegistrationHelper {
 	 * return all entries in this table, with permissions set correctly
 	 */
 	 static getAllEntries() {
-		return pool.query(`SELECT 
+		return query(`SELECT 
 				userID, 
 				courseID, 
 				courseRole, 
@@ -24,7 +24,7 @@ export default class CourseRegistrationHelper {
 							 WHERE courseRoleID=courseRole
 							) AS permission
 			FROM "CourseRegistration"`)
-		.then(extract).then(map(convert))
+		.then(extract).then(map(convertCourseReg))
 		
 	}
 
@@ -32,7 +32,7 @@ export default class CourseRegistrationHelper {
 	 * get all users entered in a specific course. permissions set correctly
 	 */
 	static getEntriesByCourse(courseID : string) {
-		return pool.query(`SELECT 
+		return query(`SELECT 
 				userID, 
 				courseID, 
 				courseRole, 
@@ -42,14 +42,14 @@ export default class CourseRegistrationHelper {
 							) AS permission
 			FROM "CourseRegistration"
 			WHERE courseID=$1`, [courseID])
-		.then(extract).then(map(convert))
+		.then(extract).then(map(convertCourseReg))
 	}
 
 	/**
 	 * get all courses a user is entered into. permissions set correctly
 	 */
 	static getEntriesByUser(userID : string) {
-		return pool.query(`SELECT 
+		return query(`SELECT 
 				userID, 
 				courseID, 
 				courseRole, 
@@ -59,7 +59,7 @@ export default class CourseRegistrationHelper {
 							) AS permission
 			FROM "CourseRegistration" 
 			WHERE userID=$1`, [userID])
-		.then(extract).then(map(convert))
+		.then(extract).then(map(convertCourseReg))
 		
 	}
 
@@ -73,10 +73,10 @@ export default class CourseRegistrationHelper {
 			role,
 			permission = 0
 		} = entry;
-		return pool.query(`INSERT INTO \"CourseRegistration\" 
+		return query(`INSERT INTO \"CourseRegistration\" 
 			VALUES ($1,$2,$3,$4) 
 			RETURNING *`, [courseID, userID, role, CourseRegistrationHelper.toBin(permission)])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
 	/**
@@ -90,12 +90,12 @@ export default class CourseRegistrationHelper {
 			userID,
 			role
 		} = entry;
-		return pool.query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE \"CourseRegistration\" SET 
 			courseRole=COALESCE($3, courseRole)
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 			`, [courseID, userID, role])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
 	/**
@@ -109,12 +109,12 @@ export default class CourseRegistrationHelper {
 			userID,
 			permission
 		} = entry;
-		return pool.query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE \"CourseRegistration\" SET 
 			permission=permission | $3
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 			`, [courseID, userID, CourseRegistrationHelper.toBin(permission)])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
 	/**
@@ -129,12 +129,12 @@ export default class CourseRegistrationHelper {
 			userID,
 			permission
 		} = entry;
-		return pool.query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE \"CourseRegistration\" SET 
 			permission=permission & ~($3::bit(40))
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 			`, [courseID, userID, CourseRegistrationHelper.toBin(permission)])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
 	/**
@@ -146,7 +146,7 @@ export default class CourseRegistrationHelper {
 			courseID,
 			userID
 		} = entry;
-		return pool.query("DELETE FROM \"CourseRegistration\" WHERE courseID=$1 AND userID=$2 RETURNING *", [courseID, userID])
-		.then(extract).then(map(convert)).then(one)
+		return query("DELETE FROM \"CourseRegistration\" WHERE courseID=$1 AND userID=$2 RETURNING *", [courseID, userID])
+		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 }

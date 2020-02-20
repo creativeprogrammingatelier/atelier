@@ -1,12 +1,12 @@
 const HH = require("./HelperHelper")
 
-import {Snippet, DBSnippet, convert} from '../../../models/Snippet';
+import {Snippet, DBSnippet, convertSnippet} from '../../../models/Snippet';
 
 /**
  * 
  * @Author Rens Leendertz
  */
-const {pool, extract, map, one} = HH
+const {query, extract, map, one} = HH
 export default class SnippetHelper {
 	static getAllSnippets(){
 		return SnippetHelper.filterSnippet({})
@@ -29,7 +29,7 @@ export default class SnippetHelper {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return pool.query(`SELECT * FROM \"Snippets\" 
+		return query(`SELECT * FROM \"Snippets\" 
 			WHERE
 				($1::uuid IS NULL OR snippetID=$1)
 			AND ($2::integer IS NULL OR lineStart=$2)
@@ -38,7 +38,7 @@ export default class SnippetHelper {
 			AND ($5::integer IS NULL OR charEnd=$5)
 			AND ($6::uuid IS NULL OR fileID=$6)
 			`,[snippetID, lineStart, lineEnd, charStart, charEnd, fileID])
-		.then(extract).then(map(convert))
+		.then(extract).then(map(convertSnippet))
 	}
 
 	static addSnippet(snippet : Snippet){
@@ -49,8 +49,8 @@ export default class SnippetHelper {
 			charEnd,
 			fileID
 		} = snippet
-		return pool.query("INSERT INTO \"Snippets\" VALUES (DEFAULT, $1, $2, $3, $4, $5) RETURNING *", [lineStart, lineEnd, charStart, charEnd,fileID])
-		.then(extract).then(map(convert)).then(one)
+		return query("INSERT INTO \"Snippets\" VALUES (DEFAULT, $1, $2, $3, $4, $5) RETURNING *", [lineStart, lineEnd, charStart, charEnd,fileID])
+		.then(extract).then(map(convertSnippet)).then(one)
 	}
 
 	static updateSnippet(snippet : Snippet){
@@ -62,7 +62,7 @@ export default class SnippetHelper {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return pool.query(`UPDATE \"Snippets\" SET 
+		return query(`UPDATE \"Snippets\" SET 
 			lineStart = COALESCE($2, lineStart),
 			lineEnd = COALESCE($3, lineEnd),
 			charStart = COALESCE($4, charStart),
@@ -70,12 +70,12 @@ export default class SnippetHelper {
 			fileID = COALESCE($6, fileID)
 			WHERE snippetID=$1
 			RETURNING *`, [snippetID, lineStart, lineEnd, charStart, charEnd, fileID])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertSnippet)).then(one)
 	}
 
 	static deleteSnippet(snippetID : string){
-		return pool.query("DELETE FROM \"Snippets\" WHERE snippetID = $1 RETURNING *", [snippetID])
-		.then(extract).then(map(convert)).then(one)
+		return query("DELETE FROM \"Snippets\" WHERE snippetID = $1 RETURNING *", [snippetID])
+		.then(extract).then(map(convertSnippet)).then(one)
 		
 	}
 }
