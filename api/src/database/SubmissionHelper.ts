@@ -53,6 +53,7 @@ export default class SubmissionHelper {
 			date = undefined,
 			state = undefined
 		} = submission
+		if (limit && limit<0) limit=undefined
 		return pool.query(`SELECT * 
 			FROM \"Submissions\" 
 			WHERE 
@@ -88,7 +89,8 @@ export default class SubmissionHelper {
 	 *
 	 */
 	static deleteSubmission(submissionid : string){
-		return pool.query("DELETE FROM \"Submissions\" WHERE submissionID=$1",[submissionid])
+		return pool.query("DELETE FROM \"Submissions\" WHERE submissionID=$1 RETURNING *",[submissionid])
+		.then(extract).then(map(convert)).then(one)
 	}
 	/*
 	 * update a submission submissionid is required, all others are optional.

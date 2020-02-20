@@ -34,6 +34,7 @@ type AppProps = {};
 class App extends React.Component<AppProps, AppState> {
 
 	constructor(props: AppProps) {
+		console.log("app created");
 		super(props);
 		this.state = {
 			loggedIn: false,
@@ -80,6 +81,7 @@ class App extends React.Component<AppProps, AppState> {
 	}
 
 	render() {
+		console.log("rendering app");
 		return (
 			< Switch>
 				<Route path='/register' render={(props) => <Register {...props} onLogin={this.handleLogin}/>}/>

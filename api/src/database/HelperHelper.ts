@@ -19,3 +19,10 @@ export function one<T>(result : T[]) {
 export function map<S, T>(fun : (element : S) => T){
 	return (list : S[]) => list.map(fun)
 }
+export function map2(funs : Function[]){
+	const union = (element : object) => {
+		const reducer = (accumulator : object, fun : Function) => ({...accumulator,...fun(element)})
+		funs.reduce(reducer, {})
+	}
+	return map(union)
+}

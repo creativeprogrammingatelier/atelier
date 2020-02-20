@@ -4,6 +4,8 @@
 
 import express, { Response, Request } from 'express';
 import { CourseResponse } from "../../../client/src/helpers/DatabaseResponseInterface";
+import CoursesHelper from "../database/CoursesHelper";
+import {Course} from "../../../models/course";
 
 export const coursesRouter = express.Router();
 
@@ -66,5 +68,14 @@ const courseListResponse = {
  */
 coursesRouter.get('/',
     (request : Request, result : Response) => {
+        /*const courses = CoursesHelper.getAllCourses()
+            .then((courses : Course[]) => courses.map((course : Course) => {
+                return {
+                    courseId : course.courseID,
+                    name : course.name,
+                    state : course.state,
+                    creator : course.creatorID
+                }
+            }));*/
         result.send(courseListResponse);
     });
