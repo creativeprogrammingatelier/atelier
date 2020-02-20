@@ -13,7 +13,7 @@ export function TabButton({icon, text, location, active}: TabButtonProperties) {
         <Nav.Item>
             <Link to={location} className={"nav-link" + (active ? " active" : "")} replace>
                 {icon}
-                <p className="d-none d-md-inline-block">{text}</p>
+                <p className="d-none d-md-inline-block align-middle m-0 ml-2">{text}</p>
             </Link>
         </Nav.Item>
     )

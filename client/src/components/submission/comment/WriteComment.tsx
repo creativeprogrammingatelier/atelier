@@ -4,11 +4,12 @@ import {FiNavigation} from "react-icons/fi";
 import {MentionSuggestions} from "./MentionSuggestions";
 
 interface WriteCommentProperties {
+	placeholder: string,
 	/** This function will be called when a new comment is created */
 	newCommentCallback: (text: string) => void
 }
 
-export function WriteComment({newCommentCallback}: WriteCommentProperties) {
+export function WriteComment({placeholder, newCommentCallback}: WriteCommentProperties) {
 	const [text, updateText] = useState("");
 	const [caretPosition, updateCaretPosition] = useState(0);
 	const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
@@ -79,7 +80,7 @@ export function WriteComment({newCommentCallback}: WriteCommentProperties) {
 	            className="px-2 py-1"
 				name="text"
 				value={text}
-	            placeholder="Reply"
+	            placeholder={placeholder}
 				onChange={e => updateText(e.target.value)}
 				ref={textarea}/>
 			{/*<button className="btn">*/}

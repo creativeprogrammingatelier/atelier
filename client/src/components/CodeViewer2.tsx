@@ -9,6 +9,7 @@ import {File} from '../../../models/File';
 import {FileComment} from "./submission/CodeTab";
 import {Editor} from "codemirror";
 import {WriteComment} from "./submission/comment/WriteComment";
+import { Button } from 'react-bootstrap';
 
 type CodeViewer2Props = {
     file : File,
@@ -308,14 +309,14 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                 {
                     this.state.selecting ?
                         <div>
-                            <button id='cancelComment' onClick={() => this.setSelecting(false)}>Cancel</button>
+                            <Button id='cancelComment' onClick={() => this.setSelecting(false)}>Cancel</Button>
                             <h4>Code Snippet</h4>
                             <p>{this.state.commentSelection}</p>
-                            <WriteComment newCommentCallback={(text : string) => this.addComment(text)}/>
+                            <WriteComment placeholder="Write a comment" newCommentCallback={(text : string) => this.addComment(text)}/>
                         </div>
                         :
                         <div>
-                            <button id='createComment' onClick={() => this.setSelecting(true)}>Add comment</button>
+                            <Button id='createComment' onClick={() => this.setSelecting(true)}>Add comment</Button>
                         </div>
                 }
             </div>

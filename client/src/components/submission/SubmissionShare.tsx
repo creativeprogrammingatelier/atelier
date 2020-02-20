@@ -1,6 +1,6 @@
 import React from 'react';
 import {Frame} from '../frame/Frame';
-import {ShareTab} from './ShareTab';
+import {Sharing} from "../general/Sharing";
 
 interface SubmissionShareProperties {
 	match: {
@@ -15,6 +15,7 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
 	const projectName = "MyFirstProject";
 
 	return <Frame title={projectName} user={{id:"1", name:"John Doe"}} sidebar>
-		<ShareTab fileName="Share me" url={submissionURL}/>
+		<h1>Share me!</h1>
+		<Sharing url={submissionURL}/>
 	</Frame>
 }

@@ -80,7 +80,7 @@ export function CommentThread({threadId}: CommentThreadProperties) {
 					{snippet && <Snippet snippet={snippet}/>}
 					{opened ? <div>
 							{comments.map(comment => <Comment comment={comment}/>)}
-							<WriteComment newCommentCallback={newComment}/>
+							<WriteComment placeholder="Reply..." newCommentCallback={newComment}/>
 							<ButtonBar align="right">
 								<Button><FiSend size={14} color="#FFFFFF"/></Button>
 								<Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>
