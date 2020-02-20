@@ -14,7 +14,7 @@ export interface DBComment {
     body: string
 }
 
-export function convert(db : DBComment) : Comment {
+export function convertComment(db : DBComment) : Comment {
 	return {
 		commentID: db.commentid,
 		commentThreadID: db.commentthreadid,

@@ -10,7 +10,7 @@ export interface DBRolePermission {
 	courseroleid : string,
 	permission : number
 }
-export function convert(db : DBRolePermission) : RolePermission {
+export function convertRolePermission(db : DBRolePermission) : RolePermission {
 	if (!checkEnum(db.courseroleid)){
 		throw new Error("role stored in database does not match enum on server: "+ db.courseroleid)
 	}

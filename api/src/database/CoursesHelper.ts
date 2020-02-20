@@ -1,11 +1,11 @@
 const HH = require("./HelperHelper")
 
-import {Course, convert} from '../../../models/Course';
+import {Course, convertCourse} from '../../../models/Course';
 
 /**
  * @Author Rens Leendertz
  */
-const {pool, one, map, extract} = HH;
+const {query, one, map, extract} = HH;
 
 export default class CoursesHelper {
 	
@@ -13,16 +13,16 @@ export default class CoursesHelper {
 	 * Many
 	 */
 	static getAllCourses() : Promise<Course[]> {
-		return pool.query("SELECT * FROM \"Courses\"")
-		.then(extract).then(map(convert))
+		return query("SELECT * FROM \"Courses\"")
+		.then(extract).then(map(convertCourse))
 	}
 
 	/**
 	 * One
 	 */
 	static getCourseByID(courseID : string) : Promise<Course>{
-		return pool.query("SELECT * FROM \"Courses\" WHERE courseID =$1",[courseID])
-		.then(extract).then(map(convert)).then(one)
+		return query("SELECT * FROM \"Courses\" WHERE courseID =$1",[courseID])
+		.then(extract).then(map(convertCourse)).then(one)
 	}
 	/**
 	 * One
@@ -33,16 +33,16 @@ export default class CoursesHelper {
 			state,
 			creatorID = undefined
 		} = course;
-		return pool.query("INSERT INTO \"Courses\" VALUES (DEFAULT, $1, $2, $3) RETURNING *", [name, state, creatorID])
-		.then(extract).then(map(convert)).then(one)
+		return query("INSERT INTO \"Courses\" VALUES (DEFAULT, $1, $2, $3) RETURNING *", [name, state, creatorID])
+		.then(extract).then(map(convertCourse)).then(one)
 	}
 
 	/**
 	 * One
 	 */
 	static deleteCourseByID(courseID : string) : Promise<Course>{
-		return pool.query("DELETE FROM \"Courses\" WHERE courseID=$1 RETURNING *",[courseID])
-		.then(extract).then(map(convert)).then(one)
+		return query("DELETE FROM \"Courses\" WHERE courseID=$1 RETURNING *",[courseID])
+		.then(extract).then(map(convertCourse)).then(one)
 	}
 
 	/**
@@ -55,13 +55,13 @@ export default class CoursesHelper {
 			state = undefined,
 			creatorID = undefined
 		} = course;
-		return pool.query(`UPDATE \"Courses\" SET 
+		return query(`UPDATE \"Courses\" SET 
 			name=COALESCE($2, name),
 			state=COALESCE($3,state),
 			creator=COALESCE($4,creator)
 			WHERE courseID=$1
 			RETURNING *`,
 			[courseID, name, state, creatorID])
-		.then(extract).then(map(convert)).then(one)
+		.then(extract).then(map(convertCourse)).then(one)
 	}
 }
