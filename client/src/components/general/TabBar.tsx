@@ -3,7 +3,7 @@ import {TabButton} from './TabButton';
 import {Nav} from 'react-bootstrap';
 
 interface TabProperties {
-	id: string,
+	id?: string,
 	icon: JSX.Element,
 	text: string,
 	location: string
