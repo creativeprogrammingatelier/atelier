@@ -47,6 +47,7 @@ export class UserDB {
 			role,
 			name
 		} = user;
+		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
 		return query(`INSERT INTO "Users" 
 			VALUES (DEFAULT, $1, $2, $3, $4) 
 			RETURNING *`, [name, role, email, password])

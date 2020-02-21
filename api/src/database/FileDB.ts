@@ -66,7 +66,7 @@ export class FileDB {
 	static deleteFile(fileID : string){
 		return query(`DELETE FROM "Files" 
 			WHERE fileID=$1 
-			RETURNING `,[fileID])
+			RETURNING *`,[fileID])
 		.then(extract).then(map(convertFile)).then(one)
 	}
 }
