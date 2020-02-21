@@ -3,8 +3,8 @@ import chai, { expect } from 'chai';
 import chaiSpies from 'chai-spies';
 
 import { Request, Response } from 'express';
-import { AuthMiddleware } from '../api/src/middleware/AuthMiddleware';
-import { issueToken } from '../api/src/helpers/AuthenticationHelper';
+import { AuthMiddleware } from '../../api/src/middleware/AuthMiddleware';
+import { issueToken } from '../../api/src/helpers/AuthenticationHelper';
 
 chai.use(chaiSpies);
 
