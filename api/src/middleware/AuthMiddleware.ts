@@ -22,8 +22,8 @@ export class AuthMiddleware {
             } catch (err) {
                 if (err instanceof jwt.TokenExpiredError) {
                     res.status(401).json({ error: "token.expired", expiredAt: err.expiredAt });
-                } else if (err instanceof jwt.NotBeforeError) {
-                    res.status(401).json({ error: "token.notBefore", date: err.date });
+                } else if (err instanceof jwt.JsonWebTokenError) {
+                    res.status(401).json({ error: "token.invalid" });
                 } else {
                     throw err;
                 }
