@@ -12,14 +12,17 @@ import AuthHelper from '../../helpers/AuthHelper';
 import roleEnum from '../../../enums/roleEnum';
 import {AuthenticatedRoute} from './AuthenticatedRoute';
 import {SubmissionOverview} from './submission/SubmissionOverview';
-import {CommentThread} from './commentthread/CommentThread';
+import {FileOverview} from './submission/FileOverview';
+import {CommentThread} from './submission/comment/CommentThread';
 import {SearchOverview} from './search/SearchOverview';
 import {CourseOverview} from './course/CourseOverview';
-import { UserOverview } from './user/UserOverview';
+import {UserOverview } from './user/UserOverview';
 import {Homepage} from './Homepage';
 
 import '../styles/app.scss';
 import '../styles/base.scss';
+import {SubmissionShare} from './submission/SubmissionShare';
+import {Bootstrap} from "./Bootstrap";
 
 
 /**
@@ -88,9 +91,9 @@ class App extends React.Component<AppProps, AppState> {
 				<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
 				<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
 				<PrivateRoute path='/logout' component={Logout}/>
-				<AuthenticatedRoute path='/submission/:submissionId/search' component={SubmissionOverview}/>
-				<AuthenticatedRoute path='/submission/:submissionId/:tab/:fileId' component={SubmissionOverview}/>
-				<AuthenticatedRoute path='/submission/:submissionId/:tab' component={SubmissionOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
+				<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
 				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
 				<AuthenticatedRoute path='/user/:userId/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
@@ -98,6 +101,7 @@ class App extends React.Component<AppProps, AppState> {
 				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
 				<AuthenticatedRoute path='/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
 				<AuthenticatedRoute path='/' component={Homepage}/>
 			</Switch>
 		);

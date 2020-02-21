@@ -1,80 +1,80 @@
-import React from 'react';
+import React from "react";
 
 export interface UserResponse {
-    userId : number,
-    name : string
+	userId: string,
+	name: string
 }
 
 export interface EssentialSubmissionResponse {
-    name : string,
-    user : string,
-    time : string,
-    tags? : []
+	name: string,
+	user: string,
+	time: string,
+	tags?: []
 }
 
 export interface SubmissionResponse {
-    name : string,
-    submissionId : number,
-    user : string,
-    userId : number,
-    date : string,
-    state : string,
-    comments : CommentResponse[]
+	name: string,
+	submissionId: string,
+	user: string,
+	userId: string,
+	date: string,
+	state: string,
+	comments: CommentResponse[]
 }
 
 export interface CommentThreadResponse {
-    commentThreadId : number,
-    fileId : number,
-    name : string,
-    comments : CommentResponse[]
+	commentThreadId: string,
+	fileId: string,
+	name: string,
+	comments: CommentResponse[]
 }
 
 export interface CommentResponse {
-    commentId : number,
-    commentThreadId : number,
-    submissionId : number,
-    submissionName : string,
-    fileId : number,
-    fileName : string,
-    userId : number,
-    author : string,
-    startLine : number,
-    startCharacter : number,
-    endLine : number,
-    endCharacter : number
-    text : string
+	commentId: string,
+	commentThreadId: string,
+	submissionId: string,
+	submissionName: string,
+	fileId: string,
+	fileName: string,
+	userId: string,
+	author: string,
+	startLine: number,
+	startCharacter: number,
+	endLine: number,
+	endCharacter: number
+	text: string
 }
 
 export interface CourseResponse {
-    courseId : number,
-    name : string
+	courseId: string,
+	name: string
 }
 
 export interface UserResponse {
-    userId : number,
-    name : string
+	userId: string,
+	name: string
 }
 
 export interface FileResponse {
-    fileId : number,
-    submissionId : number,
-    userId : number,
-    userName : string,
-    snippet : string
+	fileId: string,
+	submissionId: string,
+	userId: string,
+	userName: string,
+	snippet: string
 }
 
 export interface SearchResponse {
-    submissions : SubmissionResponse[],
-    files : FileResponse[],
-    comments : CommentResponse[]
+	submissions: SubmissionResponse[],
+	files: FileResponse[],
+	comments: CommentResponse[]
 }
 
 export interface CommentEssential {
-    commentName : string,
-    lastMessage : {
-        text : string,
-        author : string,
-        time : string
-    }
-    snippet : string
+	commentName: string,
+	lastMessage: {
+		text: string,
+		author: string,
+		time: string
+	}
+	snippet: string
 }
