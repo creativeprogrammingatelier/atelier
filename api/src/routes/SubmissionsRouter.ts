@@ -3,13 +3,8 @@
  */
 
 import express, {Response, Request} from 'express';
-import SubmissionHelper from "../database/SubmissionHelper";
+import {SubmissionDB} from "../database/SubmissionDB";
 import {Submission} from "../../../models/Submission";
-import {SubmissionNotFound} from "../../../errors/SubmissionNotFound";
-import FileHelper from "../database/FileHelper";
-import ThreadHelper from "../database/ThreadHelper";
-import {courseRouter} from "./CourseRouter";
-import {userRouter} from "./UserRouter";
 
 export const submissionsRouter = express.Router();
 
@@ -21,7 +16,7 @@ export const submissionsRouter = express.Router();
 submissionsRouter.get('/course/:courseID',
     (request: Request, result: Response) => {
         const courseID = request.params.courseID;
-        SubmissionHelper.getSubmissionsByCourse(courseID)
+        SubmissionDB.getSubmissionsByCourse(courseID)
             .then((submissions : Submission[]) => {
                 result.send(submissions);
             })
@@ -42,7 +37,7 @@ submissionsRouter.get('/user/:userID',
         const userID : string = request.params.userID;
         const limit : number | undefined = request.body.limit;
 
-        SubmissionHelper.getUserSubmissions(userID, limit)
+        SubmissionDB.getUserSubmissions(userID, limit)
             .then((data : any) => {
                 result.send(data);
             })
@@ -62,7 +57,7 @@ submissionsRouter.post('/',
         const userID: string = "00000000-0000-0000-0000-000000000000";
         const name = "Default user";
 
-        SubmissionHelper.addSubmission({userID: userID, name: name})
+        SubmissionDB.addSubmission({userID: userID, name: name})
             .then((data: any) => {
                 console.log(data);
                 result.send(data);

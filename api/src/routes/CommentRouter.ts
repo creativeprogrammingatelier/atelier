@@ -3,7 +3,7 @@
  */
 
 import express, { Response, Request } from 'express';
-import CommentsHelper from "../database/CommentsHelper";
+import {CommentDB} from "../database/CommentDB";
 
 export const commentRouter = express.Router();
 
@@ -14,7 +14,7 @@ commentRouter.put('/:commentThreadID',
         const userID = "00000000-0000-0000-0000-000000000000"; // TODO get userID from somehwere?
         const body = request.params.body;
 
-        CommentsHelper.addComment({
+        CommentDB.addComment({
             commentThreadID : commentThreadID,
             userID : userID,
             body : body

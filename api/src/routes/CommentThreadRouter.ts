@@ -4,11 +4,8 @@
 
 import express, { Response, Request } from 'express';
 import {threadState} from "../../../enums/threadStateEnum";
-import ThreadHelper from "../database/ThreadHelper";
+import {ThreadDB} from "../database/ThreadDB";
 import {Thread} from "../../../models/Thread";
-import SubmissionHelper from "../database/SubmissionHelper";
-import FileHelper from "../database/FileHelper";
-import {submissionsRouter} from "./SubmissionsRouter";
 
 export const commentThreadRouter = express.Router();
 
@@ -19,7 +16,7 @@ commentThreadRouter.get('/:commentThreadID',
     (request: Request, result : Response) => {
         const commentThreadID : string = request.params.commentThreadID;
 
-        ThreadHelper.getThreadByID(commentThreadID)
+        ThreadDB.getThreadByID(commentThreadID)
             .then((thread : Thread) => {
                 result.send(thread);
             })
@@ -36,7 +33,7 @@ commentThreadRouter.post('/submission/:submissionID',
         const submissionID : string = request.params.submissionID;
         const visibilityState : threadState = request.params.visibilityState as threadState;
 
-        ThreadHelper.addThread({submissionID : submissionID, visibilityState : visibilityState})
+        ThreadDB.addThread({submissionID : submissionID, visibilityState : visibilityState})
             .then((data : Thread) => {
                 result.send(data);
             })
@@ -53,7 +50,7 @@ commentThreadRouter.post('/file/:fileID',
         const snippetID : string = request.params.snippetID;
         const visibilityState : threadState = request.params.visibilityState as threadState;
 
-        ThreadHelper.addThread({submissionID : submissionID, fileID : fileID, snippetID : snippetID, visibilityState : visibilityState})
+        ThreadDB.addThread({submissionID : submissionID, fileID : fileID, snippetID : snippetID, visibilityState : visibilityState})
             .then((data : Thread) => {
                 result.send(data);
             })

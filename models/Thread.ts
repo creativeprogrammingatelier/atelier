@@ -27,5 +27,6 @@ export function convertThread(db : DBThread) : Thread {
 	}
 }
 export interface ExtendedThread extends Thread {
-	comments: Comment[]
+	comments: Comment[],
+	snippet? : string
 }

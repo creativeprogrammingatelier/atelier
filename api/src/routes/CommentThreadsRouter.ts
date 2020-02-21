@@ -3,7 +3,10 @@
  */
 
 import express, { Response, Request } from 'express';
-import ThreadHelper from "../database/ThreadHelper";
+import {ThreadDB} from "../database/ThreadDB";
+import {ExtendedThread} from "../../../models/Thread";
+import {SnippetDB} from "../database/SnippetDB";
+import {Snippet} from "../../../models/Snippet";
 
 export const commentThreadsRouter = express.Router();
 
@@ -11,8 +14,8 @@ commentThreadsRouter.get('/submission/:submissionID',
     (request: Request, result: Response) => {
         const submissionID = request.params.submissoinID;
 
-        ThreadHelper.getThreadsBySubmission(submissionID)
-            .then(commentThreads => result.send(commentThreads))
+        ThreadDB.getThreadsBySubmission(submissionID)
+            .then((commentThreads : any) => result.send(commentThreads))
             .catch((error : any) => result.status(500).send({error: error}));
     }
 );
@@ -24,12 +27,34 @@ commentThreadsRouter.get('/submission/:submissionID',
 // CommentHelper.getCommentByThread
 
 commentThreadsRouter.get('/file/:fileID',
-    (request: Request, result : Response) => {
-        const fileID = request.params.fileID;
+    async (request: Request, result : Response) => {
+        try {
+            const fileID = request.params.fileID;
 
-        ThreadHelper.getThreadsByFile(fileID)
-            .then(files => result.send(files))
-            .catch(error => result.status(500).send({error: error}));
+            // Threads and comments
+            const extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
+            const snippets : Snippet[] = await SnippetDB.getSnippetsByFile(fileID);
+
+            let snippetMap = new Map();
+            snippets.forEach((snippet : Snippet) => {
+                snippetMap.set(snippet.snippetID, snippet);
+            });
+
+            const extendedThreadSnippet = extendedThreads.map((extendedThread : ExtendedThread) => {
+                const snippetID : string | undefined = extendedThread.snippetID;
+                const snippet : Snippet = snippetMap.get(snippetID) == undefined ? "" : snippetMap.get(snippetID);
+                return {
+                    ...extendedThread,
+                    snippet : snippet
+                }
+            });
+
+            result.send(extendedThreadSnippet);
+        } catch (error) {
+            result.status(500).send({error:error});
+        }
+
+
     }
 );
 

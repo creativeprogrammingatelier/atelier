@@ -1,8 +1,5 @@
 import express, {Request, Response} from "express";
-import SubmissionHelper from "../database/SubmissionHelper";
-import FileHelper from "../database/FileHelper";
-import ThreadHelper from "../database/ThreadHelper";
-import {submissionsRouter} from "./SubmissionsRouter";
+import {FileDB} from "../database/FileDB";
 
 export const filesRouter = express.Router();
 
@@ -16,7 +13,7 @@ filesRouter.get('/submission/:submissionID',
     async (request: Request, result: Response) => {
         const submissionID: string = request.params.submissionID;
 
-        FileHelper.getFilesBySubmission(submissionID)
-            .then((files : File[]) => result.send(files))
+        FileDB.getFilesBySubmission(submissionID)
+            .then((files : any) => result.send(files))
             .catch((error : any) => result.status(500).send({error: error}));
     });

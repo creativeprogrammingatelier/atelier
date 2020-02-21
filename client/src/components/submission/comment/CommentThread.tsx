@@ -11,55 +11,44 @@ import {ButtonBar} from "../../general/ButtonBar";
 import { Button } from "react-bootstrap";
 import {Loading} from "../../general/Loading";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
+import {ExtendedThread} from "../../../../../models/Thread";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
-	threadId: string
+	thread : ExtendedThread
 	// Maybe also find a way to include the topic, so it can be shown immediately
 }
 
-export function CommentThread({threadId}: CommentThreadProperties) {
-	const [loading, updateLoading] = useState(LoadingState.Unloaded);
-	const [comments, updateComments] = useState([] as Models.Comment[]);
-	const [topic, updateTopic] = useState("");
-	const [snippet, updateSnippet] = useState(undefined as (Models.Snippet | undefined));
+export function CommentThread({thread}: CommentThreadProperties) {
+	const topic : string = "We don't store topics yet so: " + thread.commentThreadID;
+	const comments : Models.Comment[] = thread.comments
+		.map((comment : Comment) => {
+			return {
+				text : comment.body,
+				author : comment.userID,
+				time : comment.date
+			}
+		});
+
+	// TODO get from file body or did we want to store this?
+	const DEFAULT_FULL_TEXT = ["no full", "text yet", "did we want to", "get this from the database", "or manually parse from file?", "parsing from file requires additional (not really needed)", "fetches"];
+	const snippet : Models.Snippet = {
+		fullText : DEFAULT_FULL_TEXT,
+		mainLines : [0, Math.min(2, DEFAULT_FULL_TEXT.length)],
+		fileId : thread.snippet.fileID,
+		fileLines : [thread.snippet.lineStart, thread.snippet.lineEnd]
+	};
+
+	console.log(comments);
+	console.log(snippet);
+
+
+
+	// In case we still need fetching after?
+	const [loading, updateLoading] = useState(LoadingState.Loaded);
 	const [opened, setOpened] = useState(false);
 
-	useEffect(() => {
-		updateLoading(LoadingState.Loading);
-		// TODO: fetch data (and somehow listen for new comments?)
-		const result: Models.CommentThread = {
-			topic: "Sample Comment thread",
-			snippet: {
-				fullText: [
-					"b = color(77, 86, 59);",
-					"c = color(42, 106, 105);",
-					"d = color(165, 89, 20);",
-					"e = color(146, 150, 127);"
-				],
-				mainLines: [1, 3],
-				fileId: "24",
-				fileLines: [7, 9]
-			},
-			comments: [
-				{
-					text: "Example first comment",
-					author: "Pietje Puk",
-					time: new Date(Date.now() - 240000)
-				},
-				{
-					text: "Example second comment with mention to @Pietje Puk",
-					author: "Peter Tester",
-					time: new Date(Date.now() - 10000)
-				}
-			],
-			visibilityLevel: 5
-		};
-		updateComments(result.comments);
-		updateTopic(result.topic);
-		updateSnippet(result.snippet);
-		updateLoading(LoadingState.Loaded);
-	}, []);
+
 
 	// Show a newly created comment directly
 	// Maybe we should let that be done over the server,
@@ -98,3 +87,47 @@ export function CommentThread({threadId}: CommentThreadProperties) {
 		</div>
 	);
 }
+
+/* Reference to previous things loaded
+//const [loading, updateLoading] = useState(LoadingState.Unloaded);
+	//const [comments, updateComments] = useState([] as Models.Comment[]);
+	//const [topic, updateTopic] = useState("");
+	//const [snippet, updateSnippet] = useState(undefined as (Models.Snippet | undefined));
+	//
+
+	useEffect(() => {
+		updateLoading(LoadingState.Loading);
+		// TODO: fetch data (and somehow listen for new comments?)
+		const result: Models.CommentThread = {
+			topic: "Sample Comment thread",
+			snippet: {
+				fullText: [
+					"b = color(77, 86, 59);",
+					"c = color(42, 106, 105);",
+					"d = color(165, 89, 20);",
+					"e = color(146, 150, 127);"
+				],
+				mainLines: [1, 3],
+				fileId: "24",
+				fileLines: [7, 9]
+			},
+			comments: [
+				{
+					text: "Example first comment",
+					author: "Pietje Puk",
+					time: new Date(Date.now() - 240000)
+				},
+				{
+					text: "Example second comment with mention to @Pietje Puk",
+					author: "Peter Tester",
+					time: new Date(Date.now() - 10000)
+				}
+			],
+			visibilityLevel: 5
+		};
+		updateComments(result.comments);
+		updateTopic(result.topic);
+		updateSnippet(result.snippet);
+		updateLoading(LoadingState.Loaded);
+	}, []);
+ */

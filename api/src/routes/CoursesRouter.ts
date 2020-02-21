@@ -15,7 +15,7 @@ export const coursesRouter = express.Router();
  */
 coursesRouter.get('/',
     async (request : Request, result : Response) => {
-        CoursesHelper.getAllCourses()
+        CourseDB.getAllCourses()
             .then((courses : Course[]) => courses.map((course : Course) => {
                 return {
                    courseID : course.courseID,
