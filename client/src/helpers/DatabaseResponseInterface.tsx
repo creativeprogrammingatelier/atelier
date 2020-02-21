@@ -16,7 +16,7 @@ export interface SubmissionResponse {
 	name: string,
 	submissionId: string,
 	user: string,
-	userId: number,
+	userId: string,
 	date: string,
 	state: string,
 	comments: CommentResponse[]
