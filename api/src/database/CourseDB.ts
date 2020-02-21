@@ -11,7 +11,7 @@ export class CourseDB {
 	 * Many
 	 */
 	static getAllCourses() : Promise<Course[]> {
-		return query("SELECT * FROM \"Courses\"")
+		return query(`SELECT * FROM "Courses"`)
 		.then(extract).then(map(convertCourse))
 	}
 
@@ -19,7 +19,7 @@ export class CourseDB {
 	 * One
 	 */
 	static getCourseByID(courseID : string) : Promise<Course>{
-		return query("SELECT * FROM \"Courses\" WHERE courseID =$1",[courseID])
+		return query(`SELECT * FROM "Courses" WHERE courseID =$1`,[courseID])
 		.then(extract).then(map(convertCourse)).then(one)
 	}
 	/**
@@ -31,7 +31,9 @@ export class CourseDB {
 			state,
 			creatorID = undefined
 		} = course;
-		return query("INSERT INTO \"Courses\" VALUES (DEFAULT, $1, $2, $3) RETURNING *", [name, state, creatorID])
+		return query(`INSERT INTO "Courses" 
+			VALUES (DEFAULT, $1, $2, $3) 
+			RETURNING *`, [name, state, creatorID])
 		.then(extract).then(map(convertCourse)).then(one)
 	}
 
@@ -39,7 +41,9 @@ export class CourseDB {
 	 * One
 	 */
 	static deleteCourseByID(courseID : string) : Promise<Course>{
-		return query("DELETE FROM \"Courses\" WHERE courseID=$1 RETURNING *",[courseID])
+		return query(`DELETE FROM "Courses" 
+		WHERE courseID=$1 
+		RETURNING *`,[courseID])
 		.then(extract).then(map(convertCourse)).then(one)
 	}
 
@@ -53,7 +57,7 @@ export class CourseDB {
 			state = undefined,
 			creatorID = undefined
 		} = course;
-		return query(`UPDATE \"Courses\" SET 
+		return query(`UPDATE "Courses" SET 
 			name=COALESCE($2, name),
 			state=COALESCE($3,state),
 			creator=COALESCE($4,creator)

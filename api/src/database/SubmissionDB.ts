@@ -61,7 +61,7 @@ export class SubmissionDB {
 		} = submission
 		if (limit && limit<0) limit=undefined
 		return query(`SELECT * 
-			FROM \"Submissions\" 
+			FROM "Submissions" 
 			WHERE 
 					($1::uuid IS NULL OR submissionID=$1)
 				AND ($2::uuid IS NULL OR courseID=$2)
@@ -88,8 +88,9 @@ export class SubmissionDB {
 			date = new Date(),
 			state = submissionStatus.new
 		} = submission
-		return query("INSERT INTO \"Submissions\" VALUES (DEFAULT, $1, $2, $3, $4, $5) RETURNING *"
-			, [courseID, userID, name, date, state])
+		return query(`INSERT INTO "Submissions" 
+			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
+			RETURNING *`, [courseID, userID, name, date, state])
 		.then(extract).then(map(convertSubmission)).then(one)
 	}
 
@@ -97,7 +98,9 @@ export class SubmissionDB {
 	 *
 	 */
 	static deleteSubmission(submissionID : string){
-		return query("DELETE FROM \"Submissions\" WHERE submissionID=$1 RETURNING *",[submissionID])
+		return query(`DELETE FROM "Submissions" 
+			WHERE submissionID=$1 
+			RETURNING *`,[submissionID])
 		.then(extract).then(map(convertSubmission)).then(one)
 	}
 	/*
@@ -113,7 +116,7 @@ export class SubmissionDB {
 			date = undefined,
 			state = undefined
 		} = submission
-		return query(`UPDATE \"Submissions\" SET
+		return query(`UPDATE "Submissions" SET
 			courseID = COALESCE($2, courseID),
 			userid = COALESCE($3, userid),
 			name = COALESCE($4, name),

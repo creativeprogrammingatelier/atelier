@@ -26,7 +26,7 @@ export class CommentDB {
 			body = undefined
 		} = comment
 		if (limit && limit < 0) limit = undefined
-		return query(`SELECT * FROM \"Comments\" 
+		return query(`SELECT * FROM "Comments" 
 			WHERE
 				($1::uuid IS NULL OR commentID=$1)
 			AND ($2::uuid IS NULL OR commentThreadID=$2)
@@ -46,7 +46,9 @@ export class CommentDB {
 			date=new Date(), 
 			body
 		} = comment
-		return query("INSERT INTO \"Comments\" VALUES (DEFAULT, $1,$2,$3,$4) RETURNING *", [commentThreadID,userID,date,body])
+		return query(`INSERT INTO "Comments" 
+			VALUES (DEFAULT, $1,$2,$3,$4) 
+			RETURNING *`, [commentThreadID,userID,date,body])
 		.then(extract).then(map(convertComment)).then(one)
 	}
 	static updateComment(comment : Comment){
@@ -57,7 +59,7 @@ export class CommentDB {
 			date = undefined, 
 			body = undefined
 		} = comment
-		return query(`UPDATE \"Comments\" SET 
+		return query(`UPDATE "Comments" SET 
 			commentThreadID = COALESCE($2, commentThreadID),
 			userID = COALESCE($3,userID),
 			date = COALESCE($4, date),
@@ -67,7 +69,9 @@ export class CommentDB {
 		.then(extract).then(map(convertComment)).then(one)
 	}
 	static deleteComment(commentID : string){
-		return query("DELETE FROM \"Comments\" WHERE commentID=$1 RETURNING *", [commentID])
+		return query(`DELETE FROM "Comments" 
+			WHERE commentID=$1
+			RETURNING *`, [commentID])
 		.then(extract).then(map(convertComment)).then(one)
 	}
 }

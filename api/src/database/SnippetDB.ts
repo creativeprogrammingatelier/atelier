@@ -27,7 +27,7 @@ export class SnippetDB {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return query(`SELECT * FROM \"Snippets\" 
+		return query(`SELECT * FROM "Snippets" 
 			WHERE
 				($1::uuid IS NULL OR snippetID=$1)
 			AND ($2::integer IS NULL OR lineStart=$2)
@@ -47,7 +47,9 @@ export class SnippetDB {
 			charEnd,
 			fileID
 		} = snippet
-		return query("INSERT INTO \"Snippets\" VALUES (DEFAULT, $1, $2, $3, $4, $5) RETURNING *", [lineStart, lineEnd, charStart, charEnd,fileID])
+		return query(`INSERT INTO "Snippets" 
+			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
+			RETURNING *`, [lineStart, lineEnd, charStart, charEnd,fileID])
 		.then(extract).then(map(convertSnippet)).then(one)
 	}
 
@@ -60,7 +62,7 @@ export class SnippetDB {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return query(`UPDATE \"Snippets\" SET 
+		return query(`UPDATE "Snippets" SET 
 			lineStart = COALESCE($2, lineStart),
 			lineEnd = COALESCE($3, lineEnd),
 			charStart = COALESCE($4, charStart),
@@ -72,8 +74,9 @@ export class SnippetDB {
 	}
 
 	static deleteSnippet(snippetID : string){
-		return query("DELETE FROM \"Snippets\" WHERE snippetID = $1 RETURNING *", [snippetID])
+		return query(`DELETE FROM "Snippets" 
+			WHERE snippetID = $1 
+			RETURNING *`, [snippetID])
 		.then(extract).then(map(convertSnippet)).then(one)
-		
 	}
 }

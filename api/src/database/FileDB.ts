@@ -25,7 +25,7 @@ export class FileDB {
 			pathname = undefined,
 			type = undefined
 		} = file;
-		return query(`SELECT * FROM \"Files\" 
+		return query(`SELECT * FROM "Files" 
 			WHERE
 				($1::uuid IS NULL OR fileID=$1)
 			AND ($2::uuid IS NULL OR submissionID=$2)
@@ -41,7 +41,9 @@ export class FileDB {
 			pathname,
 			type
 		} = file;
-		return query("INSERT INTO \"Files\" VALUES (DEFAULT, $1,$2,$3) RETURNING *", [submissionID, pathname, type])
+		return query(`INSERT INTO "Files" 
+			VALUES (DEFAULT, $1,$2,$3) 
+			RETURNING *`, [submissionID, pathname, type])
 		.then(extract).then(map(convertFile)).then(one)
 	}
 	
@@ -52,7 +54,7 @@ export class FileDB {
 			pathname = undefined,
 			type = undefined
 		} = file;
-		return query(`UPDATE \"Files\" SET 
+		return query(`UPDATE "Files" SET 
 			submissionID = COALESCE($2, submissionID),
 			pathname = COALESCE($3, pathname),
 			type = COALESCE($4, pathname)
@@ -62,7 +64,9 @@ export class FileDB {
 	}
 	
 	static deleteFile(fileID : string){
-		return query("DELETE FROM \"Files\" WHERE fileID=$1 RETURNING *",[fileID])
+		return query(`DELETE FROM "Files" 
+			WHERE fileID=$1 
+			RETURNING `,[fileID])
 		.then(extract).then(map(convertFile)).then(one)
 	}
 }

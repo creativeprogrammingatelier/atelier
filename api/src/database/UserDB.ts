@@ -12,7 +12,9 @@ export class UserDB {
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
 	static getAllStudents() {
-		return query("SELECT userID, name, globalRole, email from \"Users\" WHERE globalRole = 'user'")
+		return query(`SELECT userID, name, globalRole, email 
+			FROM "Users" 
+			WHERE globalRole = 'user'`)
 			.then(extract).then(map(convertUser))
 	}
 
@@ -20,7 +22,7 @@ export class UserDB {
 	 * calls onSuccess() with all users in the system.
 	 */
 	static getAllUsers() {
-		return query("SELECT userID, name, globalRole, email from \"Users\"")
+		return query(`SELECT userID, name, globalRole, email FROM "Users"`)
 			.then(extract).then(map(convertUser))
 	}
 
@@ -28,7 +30,8 @@ export class UserDB {
 	 * calls onSuccess() with a student based on its userID, without password hash
 	 */
 	static getUserByID(userID : string) {
-		return query("SELECT userID, name, globalRole, email from \"Users\" where userID = $1", [userID])
+		return query(`SELECT userID, name, globalRole, email 
+			FROM "Users" where userID = $1`, [userID])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 
@@ -44,7 +47,9 @@ export class UserDB {
 			role,
 			name
 		} = user;
-		return query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, password])
+		return query(`INSERT INTO "Users" 
+			VALUES (DEFAULT, $1, $2, $3, $4) 
+			RETURNING *`, [name, role, email, password])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 	/**
@@ -61,7 +66,7 @@ export class UserDB {
 			name = undefined
 		} = user
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password)
-		return query(`UPDATE \"Users\"
+		return query(`UPDATE "Users"
 			SET 
 			email = COALESCE($2, email),
 			hash = COALESCE($3, hash),
@@ -76,7 +81,9 @@ export class UserDB {
 	 * deletes a user from the database, based on the userID.
 	 */
 	static deleteUser(userID: string) {
-		return query("DELETE FROM \"Users\" WHERE userID = $1 RETURNING *", [userID])
+		return query(`DELETE FROM "Users" 
+			WHERE userID = $1 
+			RETURNING *`, [userID])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 
@@ -85,7 +92,7 @@ export class UserDB {
 	 * this requires parameters 'email' and 'password'
 	 * onSuccess will be called with the corresponding userID to proceed with login.
 	 */
-	static loginUser(
+	static async loginUser(
 		loginRequest : {email:string, password:string}, 
 		onSuccess: (userID : string) => void, 
 		onUnauthorised: () => void, 
@@ -94,28 +101,28 @@ export class UserDB {
 			email,
 			password
 		} = loginRequest;
-		query("SELECT userID, name, globalRole, email, hash FROM \"Users\" where email = $1", [email])
-			.then((res : {rows:DBUser[]}) => {
-				if (res.rows.length !== 1){
-					return onUnauthorised()
-				}
-				if (!res.rows[0].hash){
-					return onFailure(Error('WTF is the database doing'))
-				}
-				const {hash, userid}= res.rows[0]
-				if (userid===undefined){
-					return onFailure(Error("the database is fking with us"))
-				}
-				if (UserDB.comparePassword(hash, password)){
-					return onSuccess(userid)
-				} else {
-					return onUnauthorised()
-				}
-			})
-			.catch((error : Error) => {
+		const res = await query<DBUser, [string]>(`SELECT * 
+			FROM "Users" 
+			WHERE email = $1`, [email])
+			.then(extract).then(one).catch((error : Error) => {
 				console.error(error)
 				return onFailure(error)
-			});	
+			})
+		if (res === undefined){
+			return onUnauthorised()
+		}
+		if (!res.hash){
+			return onFailure(Error('WTF is the database doing'))
+		}
+		const {hash, userid}= res
+		if (userid===undefined){
+			return onFailure(Error("the database is fking with us"))
+		}
+		if (UserDB.comparePassword(hash, password)){
+			return onSuccess(userid)
+		} else {
+			return onUnauthorised()
+		}
 	}
 
 	/**

@@ -12,6 +12,11 @@ const pool = new pg.Pool({
 export const query = pool.query.bind(pool);
 export const end = pool.end.bind(pool);
 
+export function toBin(n : number | undefined){
+	if (n === undefined) return undefined
+	return n.toString(2).padStart(40, '0')
+}
+
 export function extract<T>(result : {rows:T[]}){
 	return result.rows;
 }

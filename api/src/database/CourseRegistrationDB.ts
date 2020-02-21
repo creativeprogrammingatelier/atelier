@@ -1,4 +1,4 @@
-import {query, extract, map, one} from "./HelperDB";
+import {query, extract, map, one, toBin} from "./HelperDB";
 
 import {CourseRegistration, convertCourseReg} from '../../../models/CourseRegistration';
 import {RolePermissionDB} from './RolePermissionDB'
@@ -8,8 +8,6 @@ import {RolePermissionDB} from './RolePermissionDB'
  */
 
  export class CourseRegistrationDB {
-
-	static toBin = RolePermissionDB.toBin;
 
 	/**
 	 * return all entries in this table, with permissions set correctly
@@ -73,9 +71,9 @@ import {RolePermissionDB} from './RolePermissionDB'
 			role,
 			permission = 0
 		} = entry;
-		return query(`INSERT INTO \"CourseRegistration\" 
+		return query(`INSERT INTO "CourseRegistration" 
 			VALUES ($1,$2,$3,$4) 
-			RETURNING *`, [courseID, userID, role, CourseRegistrationDB.toBin(permission)])
+			RETURNING *`, [courseID, userID, role, toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -90,11 +88,10 @@ import {RolePermissionDB} from './RolePermissionDB'
 			userID,
 			role
 		} = entry;
-		return query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE "CourseRegistration" SET 
 			courseRole=COALESCE($3, courseRole)
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *
-			`, [courseID, userID, role])
+			RETURNING *`, [courseID, userID, role])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -109,11 +106,10 @@ import {RolePermissionDB} from './RolePermissionDB'
 			userID,
 			permission
 		} = entry;
-		return query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE "CourseRegistration" SET 
 			permission=permission | $3
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *
-			`, [courseID, userID, CourseRegistrationDB.toBin(permission)])
+			RETURNING *`, [courseID, userID, toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -129,11 +125,10 @@ import {RolePermissionDB} from './RolePermissionDB'
 			userID,
 			permission
 		} = entry;
-		return query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE "CourseRegistration" SET 
 			permission=permission & ~($3::bit(40))
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *
-			`, [courseID, userID, CourseRegistrationDB.toBin(permission)])
+			RETURNING *`, [courseID, userID, toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -146,7 +141,9 @@ import {RolePermissionDB} from './RolePermissionDB'
 			courseID,
 			userID
 		} = entry;
-		return query("DELETE FROM \"CourseRegistration\" WHERE courseID=$1 AND userID=$2 RETURNING *", [courseID, userID])
+		return query(`DELETE FROM "CourseRegistration" 
+			WHERE courseID=$1 AND userID=$2 
+			RETURNING *`, [courseID, userID])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 }
