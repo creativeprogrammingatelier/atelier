@@ -1,5 +1,4 @@
-import * as HH  from "./HelperHelper"
-
+import {query, extract, map, one} from "./HelperDB";
 import {User, DBUser, convertUser} from '../../../models/User';
 import bcrypt from 'bcrypt';
 
@@ -7,9 +6,8 @@ import bcrypt from 'bcrypt';
  * Users middleware provides helper methods for interacting with users in the DB
  * @Author Rens Leendertz
  */
-const {query, map, extract, one} = HH
 
-export default class UsersHelper {
+export class UserDB {
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
@@ -62,7 +60,7 @@ export default class UsersHelper {
 			role = undefined,
 			name = undefined
 		} = user
-		const hash = password === undefined ? undefined : UsersHelper.hashPassword(password)
+		const hash = password === undefined ? undefined : UserDB.hashPassword(password)
 		return query(`UPDATE \"Users\"
 			SET 
 			email = COALESCE($2, email),
@@ -108,7 +106,7 @@ export default class UsersHelper {
 				if (userid===undefined){
 					return onFailure(Error("the database is fking with us"))
 				}
-				if (UsersHelper.comparePassword(hash, password)){
+				if (UserDB.comparePassword(hash, password)){
 					return onSuccess(userid)
 				} else {
 					return onUnauthorised()

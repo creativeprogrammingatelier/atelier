@@ -1,28 +1,26 @@
-const HH = require("./HelperHelper")
-
+import {query, extract, map, one} from "./HelperDB";
 import {Submission, DBSubmission, convertSubmission} from '../../../models/Submission';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
-import RolePermissionHelper from './RolePermissionsHelper'
+
 /**
  * submissionID, userID, name, date, state
  * @Author Rens Leendertz
  */
-const {query, extract, one, map}= HH
 
-export default class SubmissionHelper {
+export class SubmissionDB {
 	/**
 	 * return all submissions in the database
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	 */
 	static getAllSubmissions(limit? : number) {
-		return SubmissionHelper.getRecents({}, limit !== undefined && limit >=0?limit:undefined)
+		return SubmissionDB.getRecents({}, limit !== undefined && limit >=0?limit:undefined)
 	}
 	/*
 	 * get all submissions of a user.
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	*/
 	static getUserSubmissions(userID : string, limit? : number){
-		return SubmissionHelper.getRecents({userID}, limit !== undefined && limit >=0?limit:undefined)
+		return SubmissionDB.getRecents({userID}, limit !== undefined && limit >=0?limit:undefined)
 
 	}
 
@@ -31,7 +29,7 @@ export default class SubmissionHelper {
 	 * undefined if specified id does not exist
 	 */
 	static getSubmissionById(submissionID : string){
-		return SubmissionHelper.getRecents({submissionID}, 1)
+		return SubmissionDB.getRecents({submissionID}, 1)
 			.then(one)
 	}
 	/**
@@ -40,7 +38,7 @@ export default class SubmissionHelper {
 	 * @param limit 
 	 */
 	static getSubmissionsByCourse(courseID : string){
-		return SubmissionHelper.getRecents({courseID}, undefined);
+		return SubmissionDB.getRecents({courseID}, undefined);
 	}
 	/*
 	 * Give a submission object, all fields can be null

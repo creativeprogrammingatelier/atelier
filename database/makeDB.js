@@ -13,11 +13,36 @@ const pool = new pg.Pool({
 // user: 'assistantassistant',
 // password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
 
+pool.query(`
+     CREATE OR REPLACE FUNCTION doit() 
+     RETURNS TABLE (commentThreadID uuid, body text[]) AS $fun$
+     DECLARE
+      res "CommentThread";
+      ids uuid;
+      com text[];
+     BEGIN
+      SELECT * into res FROM "CommentThread";
+      SELECT commentThreadID into ids from res; 
+      SELECT array_agg(body) into com 
+          from "Comments" 
+          where commentThreadID in ids
+          group by commentThreadID
+          order by date
+      RETURN res.*, com;
+     END
+     $fun$ LANGUAGE plpgsql;
+`).then((res) =>console.log(res.rows)).catch(console.error)
+
 /*
+SELECT c.userID, array_agg(c) 
+     from "Comments" as c INNER JOIN "Users" as u ON  c.userid=u.userid
+     group by c.userID
+
+
 
 DROP USER IF EXISTS assistantassistant;
 CREATE ROLE assistantassistant;
- */
+ *
 pool.query(`
 CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";
 
@@ -140,3 +165,4 @@ INSERT INTO "Comments" VALUES
 
 `).then(console.debug).catch(console.error).then(pool.end.bind(pool));
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
+*/

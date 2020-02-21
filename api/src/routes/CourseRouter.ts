@@ -3,7 +3,7 @@
  */
 
 import express, { Response, Request } from 'express';
-import CoursesHelper from "../database/CoursesHelper";
+import {CourseDB} from "../database/CourseDB";
 import {Course} from "../../../models/course";
 
 export const courseRouter = express.Router();

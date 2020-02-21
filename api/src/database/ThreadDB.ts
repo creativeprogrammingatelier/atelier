@@ -1,33 +1,32 @@
-import * as HH from "./HelperHelper";
-
-import {Thread, DBThread, convertThread} from '../../../models/Thread';
+import {query, extract, map, one} from "./HelperDB";
+import {Thread, DBThread, ExtendedThread, convertThread} from '../../../models/Thread';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
-import RolePermissionHelper from './RolePermissionsHelper'
+import { Comment, convertComment } from "../../../models/Comment";
+
 /**
  * commentThreadID, submissionID, fileID, snippetID, visibilityState
  * @Author Rens Leendertz
  */
-const {query, extract, one, map}= HH
 
-export default class ThreadHelper {
+export class ThreadDB {
 	static getAllThreads() : Promise<Thread[]> {
-		return ThreadHelper.getThreadsLimit(undefined)
+		return ThreadDB.getThreadsLimit(undefined)
 	}
 
 	static getThreadsLimit(limit : number | undefined) : Promise<Thread[]>{
-		return ThreadHelper.filterThread({}, limit)
+		return ThreadDB.filterThread({}, limit)
 	}
 
 	static getThreadByID(commentThreadID : string) : Promise<Thread> {
-		return ThreadHelper.filterThread({commentThreadID}, 1).then(one)
+		return ThreadDB.filterThread({commentThreadID}, 1).then(one)
 	}
 
 	static getThreadsBySubmission(submissionID : string) : Promise<Thread[]> {
-		return ThreadHelper.filterThread({submissionID}, undefined)
+		return ThreadDB.filterThread({submissionID}, undefined)
 	}
 
 	static getThreadsByFile(fileID : string) : Promise<Thread[]> {
-		return ThreadHelper.filterThread({fileID}, undefined)
+		return ThreadDB.filterThread({fileID}, undefined)
 	}
 
 	static filterThread(thread : Thread, limit : number | undefined) : Promise<Thread[]> {
@@ -96,4 +95,36 @@ export default class ThreadHelper {
 		return query<DBThread, [string]>(`DELETE FROM \"CommentThread\" WHERE commentThreadID = $1 RETURNING *`, [commentThreadID])
 		.then(extract).then(map(convertThread)).then(one)
 	}
+	static async addCommentSingle(firstQuery : Promise<Thread>) : Promise<ExtendedThread>{
+		const res : ExtendedThread = {...(await firstQuery), comments:[]}
+		const id = res.commentThreadID!
+		const comments = await query("select * from \"Comments\" where commentThreadID = $1", [id])
+		.then(extract).then(map(convertComment))
+		comments.forEach(element => {
+			if (element.commentThreadID !== id){
+				throw new Error("query is broken")
+			}
+		})
+		res.comments=comments;
+		return res;
+	}
+	static async addComments(firstQuery : Promise<Thread[]>) : Promise<ExtendedThread[]>{
+		const res : ExtendedThread[] = (await firstQuery).map((el : Thread) => ({...el, comments:[]}))
+		const mapping = new Map<string, ExtendedThread>();
+		res.forEach(element => {
+			mapping.set(element.commentThreadID!, element);
+		});
+		const ids = res.map((el : Thread) => el.commentThreadID!)
+		const comments = await query("select * from \"Comments\" where commentThreadID = ANY($1)", [ids])
+		.then(extract).then(map(convertComment))
+		comments.forEach(element => {
+			if (element.commentThreadID !== undefined && (mapping.has(element.commentThreadID))){
+				mapping.get(element.commentThreadID)!.comments.push(element)
+			} else {
+				throw new Error("the query is broken")
+			}
+		})
+		return res;
+	}
 }
+
