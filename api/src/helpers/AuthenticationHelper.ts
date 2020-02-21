@@ -4,17 +4,14 @@ import jwt from 'jsonwebtoken';
 import { AUTHSECRETKEY, TOKEN_EXPIRATION } from '../lib/constants';
 
 /** Issue a new token for a user */
-export function issueToken(userID: string) {
-    const token: string = jwt.sign({ userID }, AUTHSECRETKEY, {
-        expiresIn: TOKEN_EXPIRATION
-    });
-    return token;
+export function issueToken(userID: string, expiresIn: string | number = TOKEN_EXPIRATION) {
+    return jwt.sign({ userID }, AUTHSECRETKEY, { expiresIn });
 }
 
 /** Asynchronously verify a token */
-export const verifyToken = (token: string) => 
+export const verifyToken = (token: string, time?: number) => 
     new Promise((resolve: (props: string | object) => void, reject: (err: jwt.VerifyErrors) => void) =>
-        jwt.verify(token, AUTHSECRETKEY, (err, props) => err ? reject(err) : resolve(props))
+        jwt.verify(token, AUTHSECRETKEY, { clockTimestamp: time }, (err, props) => err ? reject(err) : resolve(props))
     );
 
 /** Retrieve the JWT token from request headers */
