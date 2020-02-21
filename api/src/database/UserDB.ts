@@ -44,7 +44,8 @@ export class UserDB {
 			role,
 			name
 		} = user;
-		return query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, password])
+        const hash = password === undefined ? undefined : UserDB.hashPassword(password);
+		return query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, hash])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 	/**
