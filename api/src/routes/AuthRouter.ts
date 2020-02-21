@@ -5,7 +5,8 @@
  */
 import express, { Request, Response } from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware';
-import UsersMiddleware from "../middleware/UsersMiddleware";
+import { issueToken } from '../helpers/AuthenticationHelper';
+import { UserDB } from '../database/UserDB';
 
 export const authRouter = express.Router();
 
@@ -14,12 +15,21 @@ export const authRouter = express.Router();
  * Login end point 
  * @TODO refactor method should be pulled out into helper metheods
  */
-authRouter.post('/login', (request: Request, response: Response) => {
-  UsersMiddleware.loginUser(request,
-    (token: String) => {response.status(200).send({token: token})}, //onSuccess
-    () => {response.status(401).send()}, //onUnauthorised 
-    (error: Error) => {console.error(error); response.status(500).send()} //onFailure
-    );
+authRouter.post('/login', async (request: Request, response: Response) => {
+    UserDB.loginUser(
+        request.body,
+        // Success
+        userID => {
+            const token = issueToken(userID);
+            response.status(200).json({ token });
+        },
+        // Unauthorized
+        () => response.status(401).send(),
+        // Error
+        err => {
+            console.error(err);
+            response.status(500).send();
+        });
 });
 
 /**
@@ -32,11 +42,10 @@ authRouter.get('/token', AuthMiddleware.withAuth, function (request: Request, re
 /**
  * User registration tool 
  */
-authRouter.post('/register', (request, result) => {
-  UsersMiddleware.createUser(request,
-     (token: String) => result.status(200).send({token: token}),//OnSuccess
-     (error: Error) =>  {console.error(error), result.status(500).send('Error creating User')}//OnFailure
-  );
+authRouter.post('/register', async (request, result) => {
+    const user = await UserDB.createUser(request.body);
+    const token = issueToken(user.userID!);
+    result.status(200).json({ token });
 });
 
 /**

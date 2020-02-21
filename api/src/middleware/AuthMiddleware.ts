@@ -5,11 +5,11 @@
  * Created: 13/08/19
  */
 
-import jwt from 'jsonwebtoken';
-import UsersMiddleware from './UsersMiddleware';
+import { getCurrentUserID, verifyToken } from '../helpers/AuthenticationHelper';
 import { AUTHSECRETKEY } from '../lib/constants';
 import {Request, Response} from 'express';
 import {User} from '../../../models/User';
+import { UserDB } from '../database/UserDB';
 
 /**
 * @TODO insert withauth at the start of routers to ensure authentication and unify it.
@@ -23,51 +23,47 @@ export default class AuthMiddleWare {
 
 	 * onSuccess will receive the information encoded in the token found.
 	 */
-	static withAuth(request: Request, result: Response, onSuccess: Function): void {
-		const token = request.headers && request.headers.authorization;
+	static async withAuth(request: Request, result: Response, onSuccess: Function): Promise<void> {
+		const token = request.headers?.authorization;
 		if (!token) {
 			result.status(401).send('Unauthorized: No token provided');
 		} else {
-			jwt.verify(token, AUTHSECRETKEY, function(error: Error, decoded: Object) {
-				if (error) {
-					console.error(error);
-					result.status(401).send('Unauthorized: Invalid token');
-				} else {
-					onSuccess(decoded);
-				}
-			});
+            const props = await verifyToken(token);
+            onSuccess(props);
 		}
 	}
 
 	/**
 	* check permissions for pages on a global level
 	*/
-	static checkRole(request: Request, role: String, onSuccess: Function, onFailure : (error : Error) => void) {
-		UsersMiddleware.getUser(request, (user: User) => {
-			if (user.role!.toLowerCase() == role.toLowerCase()) {
-				onSuccess();
-			} else {
-				onFailure(new Error('Unauthorized: Incorrect role'));
-			}
-		}, onFailure);
+	static async checkRole(request: Request, role: String, onSuccess: Function, onFailure : (error : Error) => void) {
+        const userID = await getCurrentUserID(request);
+        const user = await UserDB.getUserByID(userID);
+        if (user.role!.toLowerCase() === role.toLowerCase()) {
+            onSuccess();
+        } else {
+            onFailure(new Error('Unauthorized: Incorrect role'));
+        }
 	}
 
 	/**
 	* check permissions for pages on a global level
 	*/
-	static checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure : (error : Error) => void) {
+	static async checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure : Function) {
+        const userID = await getCurrentUserID(request);
+        const user = await UserDB.getUserByID(userID);
 		for (const role of roles) {
-			UsersMiddleware.getUser(request, (user: User) => {
-				if (user.role!.toLowerCase() == role.toLowerCase()) {
-					onSuccess();
-				}
-			}, onFailure);
-		}
+            if (user.role!.toLowerCase() === role.toLowerCase()) {
+                onSuccess();
+                return;
+            }
+        }
+        onFailure();
 	}
 
-	static getRole(request: Request, onSuccess: Function, onFailure : (error : Error) => void) {
-		UsersMiddleware.getUser(request, (user: User) => {
-			onSuccess(user.role!.toLowerCase());
-		}, onFailure);
+	static async getRole(request: Request, onSuccess: Function, onFailure : (error : Error) => void) {
+        const userID = await getCurrentUserID(request);
+        const user = await UserDB.getUserByID(userID);
+        onSuccess(user.role!.toLowerCase());
 	}
 }
