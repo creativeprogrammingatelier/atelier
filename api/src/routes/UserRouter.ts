@@ -6,8 +6,12 @@
  */
 
 import express, {Response, Request} from "express";
+import { AuthMiddleware } from "../middleware/AuthMiddleware";
 
 export const userRouter = express.Router();
+
+// Authentication is required for all endpoints
+userRouter.use(AuthMiddleware.requireAuth);
 
 const userResponse = {
 	user: {
