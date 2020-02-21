@@ -1,10 +1,14 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {Button} from "react-bootstrap";
 
 import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/DataBlockList";
 import {DataItemList} from "../general/DataItemList";
+import {Submission} from "../../../../models/Submission";
+import {File} from "../../../../models/File";
+import {CommentThread} from "../../placeholdermodels";
+import {Loading} from "../general/Loading";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -17,12 +21,51 @@ interface SubmissionOverviewProps {
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const submissionPath = "/submission/" + submissionId;
 
+	const [loading, setLoading] = useState(true);
+	const [files, setFiles] = useState([] as File[]);
+	const [comments, setComments] = useState([] as CommentThread[]);
+	const [recent, setRecent] = useState([]);
+
+	useEffect(() => {
+		const getFiles = fetch(`/api/files/submission/${submissionId}`);
+		// TODO get comments or comment threads as well
+
+		Promise.all([getFiles]).then(responses =>
+			Promise.all(responses.map(response => response.json()))
+		).then(data => {
+			setFiles(data[0]);
+			setLoading(false);
+		}).catch((error : any) => console.log(error));
+
+	}, []);
+
 	return <Frame title="Submission" user={{id: "1", name: "John Doe"}} sidebar search={submissionPath + "/search"}>
 		<h1>A Project</h1>
 		<p>Submitted by John Doe</p>
 		<p>Just now</p>
 		<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
-		<DataItemList header="Files" list={[
+
+		{
+			loading ?
+				<Loading />
+				:
+				<div>
+					<DataItemList
+						header="Files"
+						list={files.map((file) => {
+							return {
+								transport : submissionPath + `/${file.fileID}/code`,
+								text : file.pathname == undefined ? "" : file.pathname
+							}
+						})}
+					/>
+
+
+				</div>
+
+		}
+		{/* Reference for tags if needed
+		   <DataItemList header="Files" list={[
 			{
 				transport: submissionPath+"/1/code",
 				text: "FileName1"
@@ -31,26 +74,26 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				text: "FileName2",
 				tags: [{name: "New comment", color: "red", dark:true}]
 			}
-		]}/>
+		]}/>*/}
 		<DataBlockList header="Comments" list={[
 			{
-				title: "John Doe",
-				text: "It broke",
+				title: "We need a way to",
+				text: "get general comments",
 				time: new Date()
 			}, {
-				title: "Jane Doe",
-				text: "Yep, still broke",
+				title: "from the",
+				text: "database",
 				time: new Date()
 			}, {
-				title: "Mary Doe",
-				text: "No? It fixed itself?",
+				title: "and after",
+				text: "filter on ",
 				time: new Date()
 			}
 		]}/>
 		<DataBlockList header="Recent" list={[
 			{
-				title: "FileName2",
-				text: "John Doe: Dont use underscores",
+				title: "recent",
+				text: "to show here",
 				time: new Date()
 			}
 		]}/>

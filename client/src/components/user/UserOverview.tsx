@@ -15,14 +15,17 @@ export function UserOverview() {
     const [user, setUser] = useState(null as unknown as UserResponse);
     const [comments, setComments] = useState(null as unknown as CommentThreadResponse[]);
 
+    // TODO Get name and userID from token?
+    const name = "Jane Doe";
     const userID = "00000000-0000-0000-0000-000000000000";
-    // TODO pass token here as well to the API?
 
+    // TODO pass token here as well to the API?
     useEffect(() => {
        fetch(`/api/user/${userID}/submissions`)
            .then(response => response.json())
            .then(data => {
                console.log(data);
+               setSubmissions(data);
               //setSubmissions(data.submissions);
               //setUser(data.user);
               //setComments(data.commentThreads);
@@ -36,9 +39,9 @@ export function UserOverview() {
                 <Loading />
                 :
                 <Frame
-                    title={user.name}
-                    user={{id: `${user.userId}`, name: user.name}}
-                    sidebar search={`/user/${user.userId}/search`}
+                    title={name}
+                    user={{id: `${userID}`, name: name}}
+                    sidebar search={`/user/${userID}/search`}
                 >
                     <DataTable
                         title="To be reviewed"
@@ -54,14 +57,14 @@ export function UserOverview() {
                             ["Project", x => x.name, x => `/submission/${x.submissionId}`],
                             ["Date", x => new Date(x.date).toLocaleString()]
                         ]}/>
-                    <DataTable
+                    {/*<DataTable
                         title="Comments"
                         data={comments}
                         table={[
                             ["Topic", x => x.name],
                             ["Last author", x => x.comments.slice(-1)[0].author, x => `/user/${x.comments.slice(-1)[0].userId}`],
                             ["Last reply", x => x.comments.slice(-1)[0].text]
-                        ]}/>
+                        ]}/>*/}
                 </Frame>
         }
         </div>

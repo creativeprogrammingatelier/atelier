@@ -3,21 +3,26 @@ import {Frame} from '../frame/Frame';
 import {DataBlockList} from '../general/DataBlockList';
 import {Loading} from '../general/Loading';
 import {EssentialSubmissionResponse} from '../../helpers/DatabaseResponseInterface';
+import {Submission} from "../../../../models/Submission";
 
 interface CourseOverviewProps {
-	courseId: number
+	match: {
+		params: {
+			courseId: string
+		}
+	}
 }
 
-export function CourseOverview({courseId}: CourseOverviewProps) {
+export function CourseOverview({match}: CourseOverviewProps) {
 	const [loading, setLoading] = useState(true);
-	const [submissions, setSubmissions] = useState(null as unknown as EssentialSubmissionResponse[]);
+	const [submissions, setSubmissions] = useState([] as Submission[]);
 
 	useEffect(() => {
-		fetch(`/api/course/${courseId}/submissions`)
+		fetch(`/api/submissions/course/${match.params.courseId}`)
 			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-				setSubmissions(data.submissions);
+			.then((submissions) => {
+				// TODO tags set manually here? what tags?
+				setSubmissions(submissions);
 				setLoading(false);
 			});
 	}, []);
@@ -31,12 +36,14 @@ export function CourseOverview({courseId}: CourseOverviewProps) {
 				<DataBlockList
 					header="Submissions"
 					list={submissions.map(submission => {
+						console.log(submission);
 						return {
-							transport: "/submission/1",
-							title: submission.user,
-							text: submission.name,
-							time: new Date(submission.time),
-							tags: submission.tags
+							transport: `/submission/${submission.submissionID}`,
+							title: submission.name == undefined ? "" : submission.name,
+							text: submission.name == undefined ? "" : submission.name,
+							time: submission.date == undefined ? new Date() : new Date(submission.date),
+							tags : []
+							//tags: submission.tags
 						};
 					})}
 				/>

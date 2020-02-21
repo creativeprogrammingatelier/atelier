@@ -1,8 +1,7 @@
 import React from "react";
 
-import {CommentEssentials} from "./CommentEssentials";
 import {CommentThread} from "./comment/CommentThread";
-import {FileProperties} from "./FileOverview";
+import {File} from "../../../../models/File";
 
 // TODO this should be retrieved from the databaseRoutes
 const comments = {
@@ -38,12 +37,12 @@ const comments = {
 };
 
 interface CommentTabProperties {
-	file: FileProperties,
+	file: File,
 	threads: string[]
 }
-export function CommentTab({file: {name}, threads}: CommentTabProperties) {
+export function CommentTab({file: {pathname}, threads}: CommentTabProperties) {
 	return <div>
-		<h1>{name}</h1>
+		<h1>{pathname}</h1>
 		{threads.map((thread) => <CommentThread threadId={thread}/>)}
 	</div>;
 }
