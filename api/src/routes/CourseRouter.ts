@@ -3,13 +3,12 @@
  */
 
 import express, { Response, Request } from 'express';
-import CoursesHelper from "../database/CoursesHelper";
+import {CourseDB} from "../database/CourseDB";
+
 import {Course} from "../../../models/course";
 import {courseState} from "../../../enums/courseStateEnum";
 
 export const courseRouter = express.Router();
-
-
 
 /** Add a course. Pass parameters as json in the body.
  * @type: post
@@ -25,7 +24,7 @@ courseRouter.post('/',
         const state : courseState = request.body.state;
         const creatorID : number = request.body.creatorID;
 
-        CoursesHelper.addCourse({ name, state, creatorID  })
+        CourseDB.addCourse({ name, state, creatorID  })
             .then((course : Course) => {
                 result.send(course)
             })

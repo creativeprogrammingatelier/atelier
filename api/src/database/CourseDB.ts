@@ -1,13 +1,11 @@
-const HH = require("./HelperHelper")
-
+import {query, extract, map, one} from "./HelperDB";
 import {Course, convertCourse} from '../../../models/Course';
 
 /**
  * @Author Rens Leendertz
  */
-const {query, one, map, extract} = HH;
 
-export default class CoursesHelper {
+export class CourseDB {
 	
 	/**
 	 * Many

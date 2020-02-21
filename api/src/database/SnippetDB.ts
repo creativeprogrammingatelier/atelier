@@ -1,23 +1,21 @@
-const HH = require("./HelperHelper")
-
+import {query, extract, map, one} from "./HelperDB";
 import {Snippet, DBSnippet, convertSnippet} from '../../../models/Snippet';
 
 /**
  * 
  * @Author Rens Leendertz
  */
-const {query, extract, map, one} = HH
-export default class SnippetHelper {
+export class SnippetDB {
 	static getAllSnippets(){
-		return SnippetHelper.filterSnippet({})
+		return SnippetDB.filterSnippet({})
 	}
 	
 	static getSnippetsByFile(fileID : string){
-		return SnippetHelper.filterSnippet({fileID})
+		return SnippetDB.filterSnippet({fileID})
 	}
 	
 	static getSnippetByID(snippetID : string) {
-		return SnippetHelper.filterSnippet({snippetID}).then(one)
+		return SnippetDB.filterSnippet({snippetID}).then(one)
 	}
 
 	static filterSnippet(snippet : Snippet){

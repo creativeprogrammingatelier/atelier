@@ -1,15 +1,15 @@
-const HH = require("./HelperHelper");
+import {query, extract, map, one} from "./HelperDB";
 
 import {CourseRegistration, convertCourseReg} from '../../../models/CourseRegistration';
-import RolePermissionHelper from './RolePermissionsHelper'
+import {RolePermissionDB} from './RolePermissionDB'
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
  */
-const {query, extract, map, one} = HH;
-export default class CourseRegistrationHelper {
 
-	static toBin = RolePermissionHelper.toBin;
+ export class CourseRegistrationDB {
+
+	static toBin = RolePermissionDB.toBin;
 
 	/**
 	 * return all entries in this table, with permissions set correctly
@@ -75,7 +75,7 @@ export default class CourseRegistrationHelper {
 		} = entry;
 		return query(`INSERT INTO \"CourseRegistration\" 
 			VALUES ($1,$2,$3,$4) 
-			RETURNING *`, [courseID, userID, role, CourseRegistrationHelper.toBin(permission)])
+			RETURNING *`, [courseID, userID, role, CourseRegistrationDB.toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -113,7 +113,7 @@ export default class CourseRegistrationHelper {
 			permission=permission | $3
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
-			`, [courseID, userID, CourseRegistrationHelper.toBin(permission)])
+			`, [courseID, userID, CourseRegistrationDB.toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -133,7 +133,7 @@ export default class CourseRegistrationHelper {
 			permission=permission & ~($3::bit(40))
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
-			`, [courseID, userID, CourseRegistrationHelper.toBin(permission)])
+			`, [courseID, userID, CourseRegistrationDB.toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 

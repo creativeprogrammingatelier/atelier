@@ -4,7 +4,7 @@ import { AUTHSECRETKEY } from '../lib/constants';
 import {Request, Response} from 'express';
 import {User} from '../../../models/User';
 import AuthMiddleWare from './AuthMiddleware';
-import UsersHelper from '../database/UsersHelper'
+import {UserDB} from '../database/UserDB'
 /**
  * Files middleware provides helper methods for interacting with comments in the DB
  * @Author Andrew Heath
@@ -13,11 +13,11 @@ export default class UsersMiddleware {
 
 	//@DEPRECATED
 	static getAllStudents(onSuccess: any, onFailure : (error : Error) => void) {
-		UsersHelper.getAllStudents().then(onSuccess).catch(onFailure)
+		UserDB.getAllStudents().then(onSuccess).catch(onFailure)
 	}
 	//@DEPRECATED
 	static getAllUsers(onSuccess: any, onFailure : (error : Error) => void) {
-		UsersHelper.getAllUsers().then(onSuccess).catch(onFailure)
+		UserDB.getAllUsers().then(onSuccess).catch(onFailure)
 	}
 	/**
 	 * Get the user object corresponding to the request
@@ -32,7 +32,7 @@ export default class UsersMiddleware {
 					onFailure(error);
 				} else {
 					const userID = decoded.userID;
-					UsersHelper.getUserByID(userID).then((res : User) =>{
+					UserDB.getUserByID(userID).then((res : User) =>{
 						onSuccess(res, request)
 					}).catch(onFailure);
 				}
@@ -50,7 +50,7 @@ export default class UsersMiddleware {
 			name = email.split('@', 1)[0].replace('.', ' ')
 		} = request.body;
 		const record = {email, password,role,name}
-		UsersHelper.createUser(record).then(({userID} : User) => {
+		UserDB.createUser(record).then(({userID} : User) => {
 			if (userID === undefined) return onFailure(new Error("the database is fking"))
 			onSuccess(this.issueToken(userID))
 		}).catch(onFailure)
@@ -58,12 +58,12 @@ export default class UsersMiddleware {
 
 	//@DEPRECATED
 	static updateUser(user: User, onSuccess: any, onFailure : (error : Error) => void) {
-		UsersHelper.updateUser(user).then(onSuccess).catch(onFailure)
+		UserDB.updateUser(user).then(onSuccess).catch(onFailure)
 	}
 
 	//@DEPRECATED
 	static deleteUser(userID: string, onSuccess: any, onFailure : (error : Error) => void) {
-		UsersHelper.deleteUser(userID).then(onSuccess).catch(onFailure)
+		UserDB.deleteUser(userID).then(onSuccess).catch(onFailure)
 	}
 
 	static loginUser(request: Request, onSuccess: any, onUnauthorised: any, onFailure : (error : Error) => void) {
@@ -71,7 +71,7 @@ export default class UsersMiddleware {
 			email,
 			password
 		} = request.body;
-		UsersHelper.loginUser(
+		UserDB.loginUser(
 			{email, password}
 			, (userID : string) => onSuccess(this.issueToken(userID))
 			, onUnauthorised
