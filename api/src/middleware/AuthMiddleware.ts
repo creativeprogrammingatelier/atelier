@@ -1,69 +1,52 @@
 /**
- * Middleware
- *  Provides management of token, and authentication checks
- * Author: Andrew Heath
+ * Middleware for checking user authentication and authorization
+ * Author: Andrew Heath, Arthur Rump
  * Created: 13/08/19
  */
 
-import { getCurrentUserID, verifyToken } from '../helpers/AuthenticationHelper';
-import { AUTHSECRETKEY } from '../lib/constants';
-import {Request, Response} from 'express';
-import {User} from '../../../models/User';
+import jwt from 'jsonwebtoken';
+import { getCurrentUserID, verifyToken, getToken } from '../helpers/AuthenticationHelper';
+import { RequestHandler } from 'express';
 import { UserDB } from '../database/UserDB';
 
-/**
-* @TODO insert withauth at the start of routers to ensure authentication and unify it.
-*/
-export default class AuthMiddleWare {
-	/**
-	 * Checks to see whether requset is authenticated correctly
-	 * @param {*} request
-	 * @param {*} result
-	 * @param {*} next Callback
-
-	 * onSuccess will receive the information encoded in the token found.
-	 */
-	static async withAuth(request: Request, result: Response, onSuccess: Function): Promise<void> {
-		const token = request.headers?.authorization;
+export class AuthMiddleware {
+    /** Middleware function that will block all non-authenticated requests */
+	static requireAuth: RequestHandler = async (req, res, next) => {
+		const token = getToken(req);
 		if (!token) {
-			result.status(401).send('Unauthorized: No token provided');
+			res.status(401).json({ error: "token.notProvided" });
 		} else {
-            const props = await verifyToken(token);
-            onSuccess(props);
+            try {
+                await verifyToken(token);
+                next();
+            } catch (err) {
+                if (err instanceof jwt.TokenExpiredError) {
+                    res.status(401).json({ error: "token.expired", expiredAt: err.expiredAt });
+                } else if (err instanceof jwt.NotBeforeError) {
+                    res.status(401).json({ error: "token.notBefore", date: err.date });
+                } else {
+                    throw err;
+                }
+            }
 		}
-	}
-
-	/**
-	* check permissions for pages on a global level
-	*/
-	static async checkRole(request: Request, role: String, onSuccess: Function, onFailure : (error : Error) => void) {
-        const userID = await getCurrentUserID(request);
-        const user = await UserDB.getUserByID(userID);
-        if (user.role!.toLowerCase() === role.toLowerCase()) {
-            onSuccess();
-        } else {
-            onFailure(new Error('Unauthorized: Incorrect role'));
-        }
-	}
-
-	/**
-	* check permissions for pages on a global level
-	*/
-	static async checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure : Function) {
-        const userID = await getCurrentUserID(request);
-        const user = await UserDB.getUserByID(userID);
-		for (const role of roles) {
-            if (user.role!.toLowerCase() === role.toLowerCase()) {
-                onSuccess();
-                return;
+    }
+    
+    /** 
+     * Middleware function that requires the user to have a specified role,
+     * implies `requireAuth`
+     */
+    static requireRole(roles: string[]): RequestHandler {
+        const handler: RequestHandler = async (req, res, next) => {
+            const userID = await getCurrentUserID(req);
+            const user = await UserDB.getUserByID(userID);
+            if (roles.includes(user.role!)) {
+                next();
+            } else {
+                res.status(401).json({ error: "role.notAllowed" });
             }
         }
-        onFailure();
-	}
 
-	static async getRole(request: Request, onSuccess: Function, onFailure : (error : Error) => void) {
-        const userID = await getCurrentUserID(request);
-        const user = await UserDB.getUserByID(userID);
-        onSuccess(user.role!.toLowerCase());
-	}
+        return async (req, res, next) => 
+            this.requireAuth(req, res, (err?) => err ? next(err) : handler(req, res, next));
+    }
 }
