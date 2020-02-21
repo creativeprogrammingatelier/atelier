@@ -4,10 +4,13 @@
 
 import express, { Response, Request } from 'express';
 import {CourseDB} from "../database/CourseDB";
-
 import {Course} from "../../../models/course";
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export const courseRouter = express.Router();
+
+// Authentication is required for all endpoints
+courseRouter.use(AuthMiddleware.requireAuth);
 
 const courseSubmissions = {
 	submissions: [
