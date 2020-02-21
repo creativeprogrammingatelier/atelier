@@ -30,6 +30,11 @@ export function UserOverview({userId}: UserOverviewProperties) {
 			});
 	}, []);
 
+	console.log("Rendering a user page");
+	console.log(submissions);
+	console.log(user);
+	console.log(comments);
+
 	return (
 		<div>
 			{loading ?
