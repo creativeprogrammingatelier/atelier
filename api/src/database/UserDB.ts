@@ -1,9 +1,11 @@
-import {query, extract, map, one} from "./HelperDB";
+import {query, extract, map, one, searchify} from "./HelperDB";
 import {User, DBUser, convertUser} from '../../../models/User';
 import bcrypt from 'bcrypt';
+import { Pool } from "pg";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
+ * userID, name, role, email
  * @Author Rens Leendertz
  */
 
@@ -33,6 +35,16 @@ export class UserDB {
 		return query(`SELECT userID, name, globalRole, email 
 			FROM "Users" where userID = $1`, [userID])
 			.then(extract).then(map(convertUser)).then(one)
+	}
+
+	static searchUser(searchString : string, limit? : number){
+		if (limit === undefined || limit < 0) limit=undefined
+		searchString = searchify(searchString)
+		return query(`SELECT userID, name, globalRole, email
+			FROM "Users"
+			WHERE name ILIKE $1
+			LIMIT $2`, [searchString, limit])
+			.then(extract).then(map(convertUser))
 	}
 
 	/**

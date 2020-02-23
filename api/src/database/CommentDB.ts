@@ -1,6 +1,8 @@
-import {query, extract, map, one} from "./HelperDB";
+import {query, extract, map, funmap2, one, searchify} from "./HelperDB";
 
-import {Comment, DBComment, convertComment} from '../../../models/Comment';
+import {Comment, DBComment, convertComment, onlyComment} from '../../../models/Comment';
+import { convertThread, ExtendedThread, Thread, onlyThread } from "../../../models/Thread";
+
 // import RolePermissionHelper from './RolePermissionsHelper'
 /**
  * commentID, commentThreadID, userID, date, body
@@ -36,6 +38,40 @@ export class CommentDB {
 			LIMIT $6
 			`,[commentID, commentThreadID, userID, date, body, limit])
 		.then(extract).then(map(convertComment))
+	}
+
+	static async textSearch(searchString : string, limit ?: number){
+		//escape special characters, allow us to search somewhere in the string instead of the whole
+		searchString = searchify(searchString)
+		if (limit === undefined || limit<0)limit=undefined
+		//query the comments database. union with commentThread for info
+		const response = await query(`SELECT *
+			FROM "Comments" as c, "CommentThread" as t
+			WHERE body ILIKE $1 AND c.commentThreadID = t.commentThreadID
+			LIMIT $2`, [searchString, limit])
+			//map2 runs both conversions, giving back one object.
+			.then(extract).then(funmap2(convertComment, convertThread))
+		//define mapping to use the common uuid to sort
+		const mapping = new Map<string, ExtendedThread>();
+		//result will be the thing we give back
+		const result : ExtendedThread[] = []
+		//for each matching comment
+		response.forEach((element : Comment & Thread) => {
+			//if comment is in a new thread...
+			if (!mapping.has(element.commentThreadID!)){
+				//create that (extended) thread
+				const thread = onlyThread(element)
+				//make a mapping for this item
+				mapping.set(element.commentThreadID!, thread)
+				//store it in the result array as well
+				result.push(thread)
+			}
+			//now we know that the corresponding thread exists, in the mapping,
+			//we simply add the Comment to the comments[] of the ExtendedThread
+			mapping.get(element.commentThreadID!)!.comments.push(onlyComment(element));
+		})
+
+		return result
 	}
 
 

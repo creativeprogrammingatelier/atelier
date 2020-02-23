@@ -26,6 +26,16 @@ export function convertThread(db : DBThread) : Thread {
 		visibilityState: threadState[db.visibilitystate]
 	}
 }
+export function onlyThread(obj : Thread) : ExtendedThread{
+	return {
+		commentThreadID: obj.commentThreadID,
+		submissionID: obj.submissionID,
+		fileID: obj.fileID,
+		snippetID: obj.snippetID,
+		visibilityState: obj.visibilityState,
+		comments: []
+	}
+}
 export interface ExtendedThread extends Thread {
 	comments: Comment[]
 }

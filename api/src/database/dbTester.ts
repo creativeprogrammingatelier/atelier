@@ -170,6 +170,7 @@ async function commentHelper(){
 	const C1 = await promise(C.addComment({commentThreadID:uuid, userID:uuid, body:"this is a comment i just made!"}), 'addComment')
 	await promise(C.updateComment({commentID:C1.commentID, body: "this is an edited comment"}), "updateComment")
 	await promise(C.deleteComment(C1.commentID!), "deleteComment")
+	await promise(C.textSearch('comment'), "textSearch")
 }
 
 function finish(){
