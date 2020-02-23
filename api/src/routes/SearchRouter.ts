@@ -12,6 +12,8 @@
 import express, { Response, Request } from 'express';
 import { SearchResponse } from "../../../client/src/helpers/DatabaseResponseInterface";
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { UserDB } from '../database/UserDB';
+import { CommentDB } from '../database/CommentDB';
 
 export const searchRouter = express.Router();
 
@@ -83,7 +85,9 @@ const searchResponse : SearchResponse = {
 searchRouter.get('/',
     (request : Request, result : Response) => {
         const search = request.params['q'];
-        console.log('search parameter: ' + search);
-
+        process.stdout.write('search parameter: ' + search);
+        // process.stdout.write('search user result'+ await UserDB.searchUser(search))
+        // process.stdout.write('search comment result'+ await CommentDB.textSearch(search))
+        // throw new Error("searc param "+search+"\nuser result:"+await UserDB.searchUser(search)+"\ncomment result:"+await CommentDB.textSearch(search))
         result.send(searchResponse);
     });
