@@ -4,9 +4,9 @@
 
 import express, { Response, Request } from 'express';
 import {ThreadDB} from "../database/ThreadDB";
-import {ExtendedThread} from "../../../models/Thread";
+import {ExtendedThread} from "../../../models/database/Thread";
 import {SnippetDB} from "../database/SnippetDB";
-import {Snippet} from "../../../models/Snippet";
+import {Snippet} from "../../../models/database/Snippet";
 
 export const commentThreadsRouter = express.Router();
 

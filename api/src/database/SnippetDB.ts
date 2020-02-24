@@ -1,5 +1,5 @@
 import {query, extract, map, one} from "./HelperDB";
-import {Snippet, DBSnippet, convertSnippet} from '../../../models/Snippet';
+import {Snippet, DBSnippet, convertSnippet} from '../../../models/database/Snippet';
 
 /**
  * 

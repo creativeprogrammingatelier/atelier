@@ -1,8 +1,8 @@
 import React from "react";
 
 import {CommentThread} from "./comment/CommentThread";
-import {File} from "../../../../models/File";
-import {ExtendedThread} from "../../../../models/Thread";
+import {File} from "../../../../models/database/File";
+import {ExtendedThread} from "../../../../models/database/Thread";
 
 interface CommentTabProperties {
 	file: File,

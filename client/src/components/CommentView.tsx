@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {Comment} from '../../../models/comment';
-import {User} from '../../../models/User';
+import {Comment} from '../../../models/database/Comment';
+import {User} from '../../../models/database/User';
 
 type CommentViewProps = {updateCurrentLineNumber: Function, comment: any, deleteComment: Function};
 class CommentView extends React.Component<CommentViewProps> {

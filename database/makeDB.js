@@ -13,25 +13,25 @@ const pool = new pg.Pool({
 // user: 'assistantassistant',
 // password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
 
-pool.query(`
-     CREATE OR REPLACE FUNCTION doit() 
-     RETURNS TABLE (commentThreadID uuid, body text[]) AS $fun$
-     DECLARE
-      res "CommentThread";
-      ids uuid;
-      com text[];
-     BEGIN
-      SELECT * into res FROM "CommentThread";
-      SELECT commentThreadID into ids from res; 
-      SELECT array_agg(body) into com 
-          from "Comments" 
-          where commentThreadID in ids
-          group by commentThreadID
-          order by date
-      RETURN res.*, com;
-     END
-     $fun$ LANGUAGE plpgsql;
-`).then((res) =>console.log(res.rows)).catch(console.error)
+// pool.query(`
+// 	CREATE OR REPLACE FUNCTION doit()
+// 	RETURNS TABLE (commentThreadID uuid, body text[]) AS $fun$
+// 	DECLARE
+// 		res "CommentThread";
+// 		ids uuid;
+// 		com text[];
+// 	BEGIN
+// 		SELECT * into res FROM "CommentThread";
+// 		SELECT commentThreadID into ids from res;
+// 		SELECT array_agg(body) into com
+// 			from "Comments"
+// 			where commentThreadID in ids
+// 			group by commentThreadID
+// 			order by date
+// 		RETURN res.*, com;
+// 	END
+// 	$fun$ LANGUAGE plpgsql;
+// `).then((res) =>console.log(res.rows)).catch(console.error)
 
 /*
 SELECT c.userID, array_agg(c) 
@@ -42,7 +42,7 @@ SELECT c.userID, array_agg(c)
 
 DROP USER IF EXISTS assistantassistant;
 CREATE ROLE assistantassistant;
- *
+ */
 pool.query(`
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -113,7 +113,7 @@ CREATE TABLE "Submissions" (
      state          text NOT NULL DEFAULT 'new'
 );
 INSERT INTO "Submissions" VALUES
-	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'my_first_submission', DEFAULT, DEFAULT);
+	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'MyFirstSubmission', DEFAULT, DEFAULT);
 
 
 CREATE TABLE "Files" (
@@ -123,7 +123,7 @@ CREATE TABLE "Files" (
      type           text NOT NULL DEFAULT 'unsupported'
 );
 INSERT INTO "Files" VALUES
-     ('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), 'my_first_submission', 'processing');
+     ('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing');
 
 
 CREATE TABLE "Snippets" (
@@ -165,4 +165,3 @@ INSERT INTO "Comments" VALUES
 
 `).then(console.debug).catch(console.error).then(pool.end.bind(pool));
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
-*/

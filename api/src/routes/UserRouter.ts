@@ -6,7 +6,7 @@
 import express, {Response, Request} from "express";
 import { AuthMiddleware } from "../middleware/AuthMiddleware";
 import {UserDB} from "../database/UserDB";
-import {User} from "../../../models/User";
+import {User} from "../../../models/database/User";
 
 export const userRouter = express.Router();
 
