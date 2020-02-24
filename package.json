@@ -8,6 +8,7 @@
 		"dev-server": "sudo service mongod start && ts-node-dev --respawn --transpileOnly ./api/src/app.ts ",
 		"prod-server": "node ./build/api/src/app.js",
 		"start": "node ./build/api/src/app.js",
+		"backend": "npm run compile && npm run start",
 		"dev-watch": "npx webpack --watch ---config webpack.development.config.js ./client/src",
 		"prod-build": "npx webpack ---config webpack.production.config.js ./client/src",
 		"test": "mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
