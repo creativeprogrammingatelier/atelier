@@ -28,6 +28,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	const [recent, setRecent] = useState([]);
 
 	useEffect(() => {
+		const submission = AuthHelper.fetch("/api/submission/"+submissionId);
+		console.log("Gotten a result from a thing");
+		console.log(submission);
+	}, []);
+
+	useEffect(() => {
 		const getFiles = AuthHelper.fetch(`/api/files/submission/${submissionId}`);
 		// TODO get comments or comment threads as well
 

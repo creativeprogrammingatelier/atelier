@@ -5,6 +5,7 @@
 import express, {Response, Request} from 'express';
 import {SubmissionDB} from "../database/SubmissionDB";
 import {Submission} from "../../../models/database/Submission";
+import {UUIDHelper} from "../helpers/UUIDHelper";
 
 export const submissionsRouter = express.Router();
 
