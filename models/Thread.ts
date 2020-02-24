@@ -37,5 +37,13 @@ export function onlyThread(obj : Thread) : ExtendedThread{
 	}
 }
 export interface ExtendedThread extends Thread {
-	comments: Comment[]
+	comments: Comment[],
+	snippet? : {
+		snippetID : string,
+		lineStart : number,
+		lineEnd : number,
+		charStart : number,
+		charEnd : number,
+		fileID : string
+	}
 }

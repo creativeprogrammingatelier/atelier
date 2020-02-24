@@ -63,6 +63,14 @@ export interface FileResponse {
 	snippet: string
 }
 
+export interface OpenFileResponse {
+    fileID : string,
+    submissionID : string,
+    pathname : string,
+    type : string,
+    body : string
+}
+
 export interface SearchResponse {
 	submissions: SubmissionResponse[],
 	files: FileResponse[],

@@ -1,13 +1,15 @@
 import React from 'react';
 import {Sharing} from "../general/Sharing";
+import {File} from "../../../../models/File";
 import {FileProperties} from "./FileOverview";
 
 interface ShareProperties {
-	file: FileProperties
+	file: File,
+	url : string
 }
-export function ShareTab({file:{name, url}}: ShareProperties) {
+export function ShareTab({file, url}: ShareProperties) {
 	return <div className='QRCode'>
-		<h1>{name}</h1>
+		<h1>{file.pathname}</h1>
 		<Sharing url={url}/>
 	</div>;
 }

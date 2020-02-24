@@ -86,6 +86,7 @@ export function WriteComment({placeholder, newCommentCallback}: WriteCommentProp
 			{/*<button className="btn">*/}
 			{/*	<FiNavigation/>*/}
 			{/*</button>*/}
+			<button className="btn">Submit</button>
 			<MentionSuggestions
 				suggestionBase={suggestionBase}
 				onSelected={handleMentionSelected}/>

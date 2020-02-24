@@ -5,16 +5,23 @@ import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import {Controlled as CodeMirror} from 'react-codemirror2';
+import {Comment} from '../../../models/Comment';
 import {File} from '../../../models/File';
-import {FileComment} from "./submission/CodeTab";
+import {FileComment, FileSnippet} from "./submission/CodeTab";
 import {Editor} from "codemirror";
 import {WriteComment} from "./submission/comment/WriteComment";
 import { Button } from 'react-bootstrap';
+import { withRouter } from 'react-router';
+import AuthHelper from './../../helpers/AuthHelper';
+
+import {start} from "repl";
+import {ExtendedThread} from "../../../models/Thread";
 
 type CodeViewer2Props = {
+	submissionID : string,
+	fileID : string,
 	file : File,
-	fileBody : string,
-	comments? : FileComment[]
+	fileBody : string
 }
 
 type CodeViewer2State = {
@@ -22,40 +29,14 @@ type CodeViewer2State = {
 	selecting : boolean,
 	commentSelection : string,
 
-	comments : FileComment[],
+	snippets : FileSnippet[],
+	commentThreads : ExtendedThread[],
 
 	commentStartLine : number,
 	commentStartCharacter : number,
 	commentEndLine : number,
 	commentEndCharacter : number
 }
-
-const fileComments : FileComment[] = [
-	{
-		startLine : 1,
-		startCharacter : 0,
-		endLine : 1,
-		endCharacter : 3,
-		onClick : () => console.log("clicked comment 1"),
-		commentID : 1
-	},
-	{
-		startLine : 3,
-		startCharacter : 0,
-		endLine : 4,
-		endCharacter : 3,
-		onClick : () => console.log("clicked comment 2"),
-		commentID : 2
-	},
-	{
-		startLine : 1,
-		startCharacter : 5,
-		endLine : 1,
-		endCharacter : 30,
-		onClick : () => console.log("clicked comment 3"),
-		commentID : 3
-	}
-];
 
 class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	codeMirror!: CodeMirror.Editor;
@@ -69,7 +50,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 			selecting : false,
 			commentSelection : "",
 
-			comments : [],
+			snippets : [],
+			commentThreads : [],
 
 			commentStartLine : 0,
 			commentStartCharacter : 0,
@@ -82,12 +64,43 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		this.onClick = this.onClick.bind(this);
 		this.setSelecting = this.setSelecting.bind(this);
 		this.addComment = this.addComment.bind(this);
+
+		// Retrieve threads
+		this.getCommentThreads();
 	}
 
 	componentDidUpdate(prevProps: Readonly<CodeViewer2Props>, prevState: Readonly<CodeViewer2State>, snapshot?: any): void {
-		if (this.state.comments !== prevState.comments) {
+		if (this.state.snippets !== prevState.snippets) {
 			this.highlightComments();
 		}
+	}
+
+	getCommentThreads() {
+		AuthHelper.fetch(`/api/commentThreads/file/${this.props.fileID}`)
+			.then((data : any) => data.json())
+			.then((data : ExtendedThread[]) => {
+				console.log(data);
+				let snippets : FileSnippet[] = [];
+				data.map((commentThread : ExtendedThread) => {
+					if (commentThread.snippet != undefined) {
+						const snippet = commentThread.snippet;
+						snippets.push({
+							startLine : snippet.lineStart,
+							startCharacter : snippet.charStart,
+							endLine : snippet.lineEnd,
+							endCharacter : snippet.charEnd,
+							onClick : () => console.log(`Clicked snippet: ${snippet.snippetID}`),
+							snippetID : snippet.snippetID,
+							commentThreadID : commentThread.commentThreadID == undefined ? "" : commentThread.commentThreadID
+						});
+					}
+				});
+				this.setState({
+					snippets : snippets,
+					commentThreads : data
+				});
+			})
+			.catch((error : any) => console.log(error));
 	}
 
 	/**
@@ -95,12 +108,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 */
 	initialize() {
 		this.codeMirror.setSize('100%', '100%');
-
-		// Retrieve comments
-		// TODO get comments from the databaseRoutes
-		this.setState({
-			comments : fileComments
-		});
 
 		// Highlight comments
 		this.highlightComments();
@@ -124,17 +131,19 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * Highlights comments passed to the code viewer.
 	 */
 	highlightComments() {
-		// @Cas colors and opacity that are being looped through
 		let colorIndex = 0;
 		let colors = ['#DCDCDC'];//, '#D3D3D3', '#C0C0C0', '#A9A9A9', '#808080'];
 		let opacity = '7f';
 
-		if (this.state.comments != undefined) {
-			console.log("highlighting: " + this.state.comments.length + " comments");
-			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.comments) {
+		if (this.state.snippets != undefined) {
+			console.log("highlighting: " + this.state.snippets.length + " comments");
+			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.snippets) {
+				// Some snippets dont have lines
+				if (startLine == undefined) continue;
+				console.log(startLine, startCharacter, endLine, endCharacter);
 				this.codeMirror.markText(
-					{line : startLine - 1, ch: startCharacter},
-					{line : endLine - 1, ch : endCharacter},
+					{line : startLine, ch: startCharacter},
+					{line : endLine, ch : endCharacter},
 					{css: `background-color: ${colors[colorIndex] + opacity};`}
 				);
 				colorIndex = (colorIndex + 1) % colors.length;
@@ -148,16 +157,20 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * @param data, data from the selection
 	 */
 	onSelection(editor : Editor, data : any) {
-		// Store comment selection
-		this.setState({
-			commentSelection : editor.getSelection()
-		});
 
 		// Store comment ranges
-		const head = data.ranges[0].head;
-		const anchor = data.ranges[0].anchor;
-
+		const head : CodeMirror.Position = data.ranges[0].head;
+		const anchor : CodeMirror.Position = data.ranges[0].anchor;
 		this.setCommentRanges(head, anchor);
+
+		const startPosition = {line : this.state.commentStartLine, ch : this.state.commentStartCharacter};
+		const endPosition = {line : this.state.commentEndLine, ch : this.state.commentEndCharacter};
+		const formattedSelection = editor.getRange(startPosition, endPosition, '\r\n');
+		console.log("selection: " + startPosition.line + endPosition.line + formattedSelection);
+
+		this.setState({
+			commentSelection : formattedSelection
+		});
 	};
 
 	/**
@@ -216,17 +229,17 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * @param character, character location in the line of the click
 	 */
 	clickComment(line : number, character : number) {
-		const comments : FileComment[] | undefined = this.state.comments;
-		if (comments == undefined) return;
+		const snippets : FileSnippet[] | undefined = this.state.snippets;
+		if (snippets == undefined) return;
 
 		// Find earliest comment that was clicked
-		let first : FileComment | undefined;
-		for (const comment of comments) {
-			const {startLine, startCharacter, endLine, endCharacter, commentID} = comment;
+		let first : FileSnippet | undefined;
+		for (const snippet of snippets) {
+			const {startLine, startCharacter, endLine, endCharacter} = snippet;
 			if ((startLine < line || (startLine == line && startCharacter <= character)) &&
 				(line < endLine || (line == endLine && character <= endCharacter))) {
 				if (first == undefined || startLine < first.startLine || (startLine == first.startLine && startCharacter < first.startCharacter)){
-					first = comment;
+					first = snippet;
 				}
 			}
 		}
@@ -250,30 +263,27 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * Create a comment
 	 */
 	addComment(comment : string) {
-		let fileComments = this.state.comments;
+		const fileID = this.props.fileID;
+		const submissionID = this.props.submissionID;
 
-		const commentID : number = Math.random();
-		fileComments.push({
-			startLine : this.state.commentStartLine + 1,
-			startCharacter : this.state.commentStartCharacter,
-			endLine : this.state.commentEndLine + 1,
-			endCharacter : this.state.commentEndCharacter,
-			onClick : () => console.log("clicked comment " + commentID),
-			commentID : commentID
-		});
-
-		console.log(`made comment ${comment}`);
-
-
-		this.setState({
-			comments : fileComments,
-			selecting : false
-		});
-
-		this.highlightComments();
-
-
-		// TODO call databaseRoutes
+		AuthHelper.fetch(`/api/commentThread/file/${fileID}`, {
+			method : 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body : JSON.stringify({
+				submissionID : submissionID,
+				lineStart : this.state.commentStartLine,
+				lineEnd : this.state.commentEndLine,
+				charStart : this.state.commentStartCharacter,
+				charEnd : this.state.commentEndCharacter,
+				body : comment
+				})
+			})
+			.then(data => data.json())
+			.then((data : any) => console.log(data))
+			.catch((error : any) => console.log(error));
 	}
 
 	render() {
@@ -311,7 +321,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 						<div>
 							<Button id='cancelComment' onClick={() => this.setSelecting(false)}>Cancel</Button>
 							<h4>Code Snippet</h4>
-							<p>{this.state.commentSelection}</p>
+							<textarea value={this.state.commentSelection} />
 							<WriteComment placeholder="Write a comment" newCommentCallback={(text : string) => this.addComment(text)}/>
 						</div>
 						:

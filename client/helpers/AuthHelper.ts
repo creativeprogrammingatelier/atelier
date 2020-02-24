@@ -119,7 +119,7 @@ export default class AuthHelper {
 	/**
 	 * Helper method to do API calls, should / could be repalced with AXIOS
 	 */
-	static fetch = (url: RequestInfo, options: RequestInit) => {
+	static fetch = (url: RequestInfo, options: RequestInit = {}) => {
 		// performs api calls sending the required authentication headers
 		const headers: any = {
 			Accept: 'application/json',
