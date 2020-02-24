@@ -82,12 +82,17 @@ const searchResponse : SearchResponse = {
     }]
 };
 
-searchRouter.get('/',
-    (request : Request, result : Response) => {
+searchRouter.get('/:q',
+    async (request : Request, result : Response) => {
         const search = request.params['q'];
+        if (!search){
+            result.sendStatus(400);
+        }
+        const users = await UserDB.searchUser(search);
+        const comments = await CommentDB.textSearch(search);
         process.stdout.write('search parameter: ' + search);
-        // process.stdout.write('search user result'+ await UserDB.searchUser(search))
-        // process.stdout.write('search comment result'+ await CommentDB.textSearch(search))
-        // throw new Error("searc param "+search+"\nuser result:"+await UserDB.searchUser(search)+"\ncomment result:"+await CommentDB.textSearch(search))
-        result.send(searchResponse);
+        process.stdout.write('search user result'+ users)
+        process.stdout.write('search comment result'+ comments)
+        result.send({...searchResponse,comments, users});
+        // result.send(searchResponse);
     });

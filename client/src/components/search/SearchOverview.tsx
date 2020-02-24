@@ -13,6 +13,7 @@ import {
     SearchResponse,
     SubmissionResponse
 } from "../../helpers/DatabaseResponseInterface";
+import AuthHelper from '../../../helpers/AuthHelper';
 
 
 interface SearchData {
@@ -41,8 +42,9 @@ interface SearchData {
 function handleSearch(value : string, setResults : Function, setLoading : Function) {
     console.log("searching for " + value);
     setLoading(true);
-    fetch(`/api/search?q=${value}`)
-        .then(response => response.json())
+    AuthHelper.fetch(`/api/search/${value}`,{})
+        .then(response => {console.log(response); return response})
+        .then(response => response.json)
         .then(data => {
             setResults({
                submissions : {
