@@ -14,10 +14,10 @@ import {localRole} 			from '../../../enums/localRoleEnum'
 import {submissionStatus}	from '../../../enums/submissionStatusEnum'
 import {threadState}		from '../../../enums/threadStateEnum'
 
-import {Course}				from '../../../models/Course'
-import {CourseRegistration}	from '../../../models/CourseRegistration'
-import {File}				from '../../../models/File'
-import {Snippet}			from '../../../models/Snippet'
+import {Course}				from '../../../models/database/course'
+import {CourseRegistration}	from '../../../models/database/CourseRegistration'
+import {File}				from '../../../models/database/File'
+import {Snippet}			from '../../../models/database/Snippet'
 
 const all = true;
 

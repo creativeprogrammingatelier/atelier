@@ -7,12 +7,12 @@ import {CodeTab} from "./CodeTab";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 
-import {File} from "../../../../models/File";
+import {File} from "../../../../models/database/File";
 import {ProjectTab} from "./ProjectTab";
 import {CommentThread} from "../../placeholdermodels";
 import {FileResponse, OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
 import {Loading} from "../general/Loading";
-import {ExtendedThread} from "../../../../models/Thread";
+import {ExtendedThread} from "../../../../models/database/Thread";
 import AuthHelper from "../../../helpers/AuthHelper";
 
 export interface FileProperties {

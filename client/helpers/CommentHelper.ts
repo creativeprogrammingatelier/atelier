@@ -1,5 +1,5 @@
 import AuthHelper from './AuthHelper';
-import {Comment} from '../../models/comment';
+import {Comment} from '../../models/database/Comment';
 
 /**
  * Helpers for request for files

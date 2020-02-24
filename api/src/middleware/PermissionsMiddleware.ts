@@ -1,5 +1,5 @@
 //import {IFile} from '../../../models/File';
-import {User} from '../../../models/User';
+import {User} from '../../../models/database/User';
 import {Request, Response} from 'express';
 import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { UserDB } from '../database/UserDB';

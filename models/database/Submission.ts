@@ -1,4 +1,4 @@
-import {submissionStatus, checkEnum} from '../enums/submissionStatusEnum'
+import {submissionStatus, checkEnum} from '../../enums/submissionStatusEnum'
 import { brotliDecompress } from 'zlib'
 
 export interface Submission {

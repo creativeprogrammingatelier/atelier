@@ -1,5 +1,5 @@
 import React, {MouseEvent} from 'react';
-import {User} from '../../../../models/User';
+import {User} from '../../../../models/database/User';
 import {FormGroup, Button, FormControl, Modal, ModalProps, FormLabel, Form} from 'react-bootstrap';
 import UserHelper from '../../../helpers/UserHelper';
 import {FiUserX, FiTrash2} from 'react-icons/fi';

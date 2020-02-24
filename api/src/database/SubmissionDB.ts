@@ -1,5 +1,5 @@
 import {query, extract, map, one} from "./HelperDB";
-import {Submission, DBSubmission, convertSubmission} from '../../../models/Submission';
+import {Submission, DBSubmission, convertSubmission} from '../../../models/database/Submission';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 
 /**

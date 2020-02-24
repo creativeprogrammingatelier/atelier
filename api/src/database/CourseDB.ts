@@ -1,5 +1,5 @@
 import {query, extract, map, one} from "./HelperDB";
-import {Course, convertCourse} from '../../../models/Course';
+import {Course, convertCourse} from '../../../models/database/course';
 
 /**
  * @Author Rens Leendertz

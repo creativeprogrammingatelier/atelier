@@ -4,7 +4,7 @@
 
 import express, {Response, Request} from 'express';
 import {SubmissionDB} from "../database/SubmissionDB";
-import {Submission} from "../../../models/Submission";
+import {Submission} from "../../../models/database/Submission";
 
 export const submissionsRouter = express.Router();
 

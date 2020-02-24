@@ -1,4 +1,4 @@
-import {localRole, checkEnum} from '../enums/localRoleEnum'
+import {localRole, checkEnum} from '../../enums/localRoleEnum'
 
 export interface RolePermission{
 	role?:localRole,

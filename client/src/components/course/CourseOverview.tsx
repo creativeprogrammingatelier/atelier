@@ -3,7 +3,7 @@ import {Frame} from '../frame/Frame';
 import {DataBlockList} from '../general/DataBlockList';
 import {Loading} from '../general/Loading';
 import {EssentialSubmissionResponse} from '../../helpers/DatabaseResponseInterface';
-import {Submission} from "../../../../models/Submission";
+import {Submission} from "../../../../models/database/Submission";
 import AuthHelper from './../../../helpers/AuthHelper';
 
 interface CourseOverviewProps {

@@ -1,7 +1,7 @@
 import decode from 'jwt-decode';
 import AuthHelper from './AuthHelper';
 import axios from 'axios';
-import {User} from '../../models/User';
+import {User} from '../../models/database/User';
 
 /**
  * Helpers for request for files

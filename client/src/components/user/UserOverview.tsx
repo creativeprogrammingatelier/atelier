@@ -7,8 +7,8 @@ import {
 	UserResponse
 } from "../../helpers/DatabaseResponseInterface";
 import {Loading} from "../general/Loading";
-import {User} from "../../../../models/User";
-import {Submission} from "../../../../models/Submission";
+import {User} from "../../../../models/database/User";
+import {Submission} from "../../../../models/database/Submission";
 import AuthHelper from './../../../helpers/AuthHelper';
 
 
