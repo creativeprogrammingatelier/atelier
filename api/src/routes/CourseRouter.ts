@@ -5,6 +5,7 @@
 import express, { Response, Request } from 'express';
 import {CourseDB} from "../database/CourseDB";
 import {Course} from "../../../models/course";
+import {courseState} from "../../../enums/courseStateEnum";
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export const courseRouter = express.Router();
@@ -12,31 +13,23 @@ export const courseRouter = express.Router();
 // Authentication is required for all endpoints
 courseRouter.use(AuthMiddleware.requireAuth);
 
-const courseSubmissions = {
-	submissions: [
-		{
-			user: "John Doe",
-			name: "Uploaded helpitbroke.zip",
-			time: new Date(),
-			tags: [{name: "help", color: "red", dark: true}, {name: "me", color: "red", dark: true}, {name: "now", color: "red", dark: true}]
-		}, {
-			user: "John Doe",
-			name: "Uploaded Project 'ImDaBest'",
-			time: new Date(2020, 1, 17, 15).toLocaleString(),
-			tags: [{name: "fuck", color: "green", dark: true}, {name: "yeah", color: "green", dark: true}]
-		}, {
-			user: "Mary Doe",
-			name: "Uploaded project 'ImmaDropOutNow",
-			time: new Date(2020, 0, 9, 15).toLocaleString(),
-			tags: [{name: "fuck", color: "orange"}, {name: "off", color: "orange"}]
-		}
-	]
-};
-
-/**
- * /api/course/:courseId/submissions
+/** Add a course. Pass parameters as json in the body.
+ * @type: post
+ * @url: /api/course
+ * @param name (string): course name
+ * @param state (courseState): state of the course
+ * @param creatorID (number): userID of the creator
+ * @return course created
  */
-courseRouter.get("/:courseId/submissions",
-	(request: Request, result: Response) => {
-		result.send(courseSubmissions);
-	});
+courseRouter.post('/',
+    (request : Request, result : Response) => {
+        const name : string = request.body.name;
+        const state : courseState = request.body.state;
+        const creatorID : number = request.body.creatorID;
+
+        CourseDB.addCourse({ name, state, creatorID  })
+            .then((course : Course) => {
+                result.send(course)
+            })
+            .catch(error => result.status(500).send({error : error}));
+    });

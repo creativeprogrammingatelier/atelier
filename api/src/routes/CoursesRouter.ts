@@ -13,73 +13,21 @@ export const coursesRouter = express.Router();
 // Authentication is required for all endpoints
 coursesRouter.use(AuthMiddleware.requireAuth);
 
-const courseListResponse = {
-    courses: [
-        {
-            courseId : 1,
-            name : 'Pearls of Computer Science',
-            state : 'open',
-            creator : 'Jarik'
-        },
-        {
-            courseId : 2,
-            name : 'Software Systems',
-            state : 'open',
-            creator : 'Jarik'
-        },
-        {
-            courseId : 3,
-            name : 'Network Systems',
-            state : 'open',
-            creator : 'Jarik'
-        },
-        {
-            courseId : 4,
-            name : 'Data and Information',
-            state : 'open',
-            creator : 'Jarik'
-        },
-        {
-            courseId : 5,
-            name : 'Computer Systems',
-            state : 'open',
-            creator : 'Jarik'
-        },
-        {
-            courseId : 6,
-            name : 'Intelligent Interaction Design',
-            state : 'open',
-            creator : 'Jarik'
-        },
-        {
-            courseId : 7,
-            name : 'Discrete Structures & Efficient Algorithms',
-            state : 'open',
-            creator : 'Jarik'
-        },
-        {
-            courseId : 8,
-            name : 'Programming Paradigms',
-            state : 'open',
-            creator : 'Jarik'
-        }
-    ]
-};
-
 /**
- * /api/course/
+ * /api/courses/
  * @return, list of courses
  */
 coursesRouter.get('/',
-    (request : Request, result : Response) => {
-        /*const courses = CoursesHelper.getAllCourses()
+    async (request : Request, result : Response) => {
+        CourseDB.getAllCourses()
             .then((courses : Course[]) => courses.map((course : Course) => {
                 return {
-                    courseId : course.courseID,
-                    name : course.name,
-                    state : course.state,
-                    creator : course.creatorID
+                   courseID : course.courseID,
+                   name : course.name,
+                   state : course.state,
+                   creator : course.creatorID
                 }
-            }));*/
-        result.send(courseListResponse);
+            }))
+            .then(data => result.send(data))
+            .catch((error => result.status(500).send({error : error})));
     });
