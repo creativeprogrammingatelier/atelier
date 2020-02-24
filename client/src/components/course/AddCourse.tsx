@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {InputField} from "../general/InputField";
 import {Course} from "../../../../models/course";
+import AuthHelper from './../../../helpers/AuthHelper';
 
 interface AddCourseProps {
     handleResponse? : (course : Course) => void
@@ -10,7 +11,7 @@ export function AddCourse({handleResponse} : AddCourseProps) {
     // Create course
     function createCourse(courseName : string) {
         // TODO pass token so backend can get userID
-        fetch('/api/course', {
+        AuthHelper.fetch('/api/course', {
             method : 'POST',
             headers : {
                 'Accept' : 'application/json',

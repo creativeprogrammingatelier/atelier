@@ -1,22 +1,21 @@
-const HH = require("./HelperHelper")
+import {query, extract, map, one} from "./HelperDB";
 import {File, DBFile, convertFile} from '../../../models/File';
 
 /**
  * fileID, submissionID, pathname, type
  * @Author Rens Leendertz
  */
-const {query, extract, map, one} = HH;
-export default class FileHelper {
+export class FileDB {
 	static getAllFiles(){
-		return FileHelper.getFilteredFiles({})
+		return FileDB.getFilteredFiles({})
 	}
 
 	static getFileByID(fileID : string){
-		return FileHelper.getFilteredFiles({fileID}).then(one)
+		return FileDB.getFilteredFiles({fileID}).then(one)
 	}
 	
 	static getFilesBySubmission(submissionID : string) {
-		return FileHelper.getFilteredFiles({submissionID})
+		return FileDB.getFilteredFiles({submissionID})
 	}
 
 	static getFilteredFiles(file : File){
@@ -26,7 +25,7 @@ export default class FileHelper {
 			pathname = undefined,
 			type = undefined
 		} = file;
-		return query(`SELECT * FROM \"Files\" 
+		return query(`SELECT * FROM "Files" 
 			WHERE
 				($1::uuid IS NULL OR fileID=$1)
 			AND ($2::uuid IS NULL OR submissionID=$2)
@@ -42,7 +41,9 @@ export default class FileHelper {
 			pathname,
 			type
 		} = file;
-		return query("INSERT INTO \"Files\" VALUES (DEFAULT, $1,$2,$3) RETURNING *", [submissionID, pathname, type])
+		return query(`INSERT INTO "Files" 
+			VALUES (DEFAULT, $1,$2,$3) 
+			RETURNING *`, [submissionID, pathname, type])
 		.then(extract).then(map(convertFile)).then(one)
 	}
 	
@@ -53,7 +54,7 @@ export default class FileHelper {
 			pathname = undefined,
 			type = undefined
 		} = file;
-		return query(`UPDATE \"Files\" SET 
+		return query(`UPDATE "Files" SET 
 			submissionID = COALESCE($2, submissionID),
 			pathname = COALESCE($3, pathname),
 			type = COALESCE($4, pathname)
@@ -63,7 +64,9 @@ export default class FileHelper {
 	}
 	
 	static deleteFile(fileID : string){
-		return query("DELETE FROM \"Files\" WHERE fileID=$1 RETURNING *",[fileID])
+		return query(`DELETE FROM "Files" 
+			WHERE fileID=$1 
+			RETURNING *`,[fileID])
 		.then(extract).then(map(convertFile)).then(one)
 	}
 }

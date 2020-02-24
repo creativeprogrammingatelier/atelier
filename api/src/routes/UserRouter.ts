@@ -2,11 +2,16 @@
  * Api routes relating to user information
  */
 
-import express, { Response, Request } from 'express';
+
+import express, {Response, Request} from "express";
+import { AuthMiddleware } from "../middleware/AuthMiddleware";
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/User";
 
 export const userRouter = express.Router();
+
+// Authentication is required for all endpoints
+userRouter.use(AuthMiddleware.requireAuth);
 
 userRouter.get('/:userID',
     (request : Request, result : Response) => {

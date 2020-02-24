@@ -5,6 +5,7 @@ import {CourseResponse} from "../helpers/DatabaseResponseInterface";
 import {Loading} from "./general/Loading";
 import {AddCourse} from "./course/AddCourse";
 import {Course} from "../../../models/course";
+import AuthHelper from './../../helpers/AuthHelper';
 
 export function Homepage() {
 	const [loading, setLoading] = useState(true);
@@ -12,7 +13,7 @@ export function Homepage() {
 
 	// Retrieve courses
 	useEffect(() => {
-		fetch('/api/courses/')
+		AuthHelper.fetch('/api/courses/')
 			.then((response) => response.json())
 			.then((courses) => {
 				console.log(courses);

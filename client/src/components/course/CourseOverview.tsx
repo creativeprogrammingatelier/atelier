@@ -4,6 +4,7 @@ import {DataBlockList} from '../general/DataBlockList';
 import {Loading} from '../general/Loading';
 import {EssentialSubmissionResponse} from '../../helpers/DatabaseResponseInterface';
 import {Submission} from "../../../../models/Submission";
+import AuthHelper from './../../../helpers/AuthHelper';
 
 interface CourseOverviewProps {
 	match: {
@@ -18,7 +19,7 @@ export function CourseOverview({match}: CourseOverviewProps) {
 	const [submissions, setSubmissions] = useState([] as Submission[]);
 
 	useEffect(() => {
-		fetch(`/api/submissions/course/${match.params.courseId}`)
+		AuthHelper.fetch(`/api/submissions/course/${match.params.courseId}`)
 			.then((response) => response.json())
 			.then((submissions) => {
 				// TODO tags set manually here? what tags?
