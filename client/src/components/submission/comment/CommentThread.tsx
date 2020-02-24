@@ -11,8 +11,8 @@ import {ButtonBar} from "../../general/ButtonBar";
 import { Button } from "react-bootstrap";
 import {Loading} from "../../general/Loading";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
-import {ExtendedThread} from "../../../../../models/Thread";
-import {Comment} from "../../../../../models/Comment";
+import {ExtendedThread} from "../../../../../models/database/Thread";
+import {Comment} from "../../../../../models/database/Comment";
 import AuthHelper from './../../../../helpers/AuthHelper';
 
 interface CommentThreadProperties {

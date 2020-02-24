@@ -4,7 +4,7 @@ import {Frame} from './frame/Frame';
 import {CourseResponse} from "../helpers/DatabaseResponseInterface";
 import {Loading} from "./general/Loading";
 import {AddCourse} from "./course/AddCourse";
-import {Course} from "../../../models/course";
+import {Course} from "../../../models/database/Course";
 import AuthHelper from './../../helpers/AuthHelper';
 
 export function Homepage() {

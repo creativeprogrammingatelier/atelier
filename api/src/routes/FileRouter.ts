@@ -7,7 +7,7 @@
 
 import express, {Response, Request} from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import {File} from "../../../models/File";
+import {File} from "../../../models/database/File";
 import {FileDB} from "../database/FileDB";
 import { readFileAsString } from '../helpers/FilesystemHelper';
 

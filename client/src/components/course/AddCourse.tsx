@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {InputField} from "../general/InputField";
-import {Course} from "../../../../models/course";
+import {Course} from "../../../../models/database/Course";
 import AuthHelper from './../../../helpers/AuthHelper';
 
 interface AddCourseProps {
