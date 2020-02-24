@@ -1,5 +1,5 @@
 import {threadState, checkEnum} from '../enums/threadStateEnum'
-
+import {Comment} from './Comment'
 export interface Thread {
 	commentThreadID?: string,
 	submissionID?: string,
@@ -24,5 +24,26 @@ export function convertThread(db : DBThread) : Thread {
 		fileID: db.fileid,
 		snippetID: db.snippetid,
 		visibilityState: threadState[db.visibilitystate]
+	}
+}
+export function onlyThread(obj : Thread) : ExtendedThread{
+	return {
+		commentThreadID: obj.commentThreadID,
+		submissionID: obj.submissionID,
+		fileID: obj.fileID,
+		snippetID: obj.snippetID,
+		visibilityState: obj.visibilityState,
+		comments: []
+	}
+}
+export interface ExtendedThread extends Thread {
+	comments: Comment[],
+	snippet? : {
+		snippetID : string,
+		lineStart : number,
+		lineEnd : number,
+		charStart : number,
+		charEnd : number,
+		fileID : string
 	}
 }

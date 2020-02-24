@@ -23,3 +23,12 @@ export function convertComment(db : DBComment) : Comment {
 		body: db.body
 	}
 }
+export function onlyComment(obj : Comment){
+    return {
+		commentID: obj.commentID,
+		commentThreadID: obj.commentThreadID,
+		userID: obj.userID,
+		date: obj.date,
+		body: obj.body
+	}
+}

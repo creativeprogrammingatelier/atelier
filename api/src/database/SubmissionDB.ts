@@ -1,28 +1,26 @@
-const HH = require("./HelperHelper")
-
+import {query, extract, map, one} from "./HelperDB";
 import {Submission, DBSubmission, convertSubmission} from '../../../models/Submission';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
-import RolePermissionHelper from './RolePermissionsHelper'
+
 /**
  * submissionID, userID, name, date, state
  * @Author Rens Leendertz
  */
-const {query, extract, one, map}= HH
 
-export default class SubmissionHelper {
+export class SubmissionDB {
 	/**
 	 * return all submissions in the database
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	 */
 	static getAllSubmissions(limit? : number) {
-		return SubmissionHelper.getRecents({}, limit !== undefined && limit >=0?limit:undefined)
+		return SubmissionDB.getRecents({}, limit !== undefined && limit >=0?limit:undefined)
 	}
 	/*
 	 * get all submissions of a user.
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	*/
 	static getUserSubmissions(userID : string, limit? : number){
-		return SubmissionHelper.getRecents({userID}, limit !== undefined && limit >=0?limit:undefined)
+		return SubmissionDB.getRecents({userID}, limit !== undefined && limit >=0?limit:undefined)
 
 	}
 
@@ -31,7 +29,7 @@ export default class SubmissionHelper {
 	 * undefined if specified id does not exist
 	 */
 	static getSubmissionById(submissionID : string){
-		return SubmissionHelper.getRecents({submissionID}, 1)
+		return SubmissionDB.getRecents({submissionID}, 1)
 			.then(one)
 	}
 	/**
@@ -40,7 +38,7 @@ export default class SubmissionHelper {
 	 * @param limit 
 	 */
 	static getSubmissionsByCourse(courseID : string){
-		return SubmissionHelper.getRecents({courseID}, undefined);
+		return SubmissionDB.getRecents({courseID}, undefined);
 	}
 	/*
 	 * Give a submission object, all fields can be null
@@ -63,7 +61,7 @@ export default class SubmissionHelper {
 		} = submission
 		if (limit && limit<0) limit=undefined
 		return query(`SELECT * 
-			FROM \"Submissions\" 
+			FROM "Submissions" 
 			WHERE 
 					($1::uuid IS NULL OR submissionID=$1)
 				AND ($2::uuid IS NULL OR courseID=$2)
@@ -90,8 +88,9 @@ export default class SubmissionHelper {
 			date = new Date(),
 			state = submissionStatus.new
 		} = submission
-		return query("INSERT INTO \"Submissions\" VALUES (DEFAULT, $1, $2, $3, $4, $5) RETURNING *"
-			, [courseID, userID, name, date, state])
+		return query(`INSERT INTO "Submissions" 
+			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
+			RETURNING *`, [courseID, userID, name, date, state])
 		.then(extract).then(map(convertSubmission)).then(one)
 	}
 
@@ -99,7 +98,9 @@ export default class SubmissionHelper {
 	 *
 	 */
 	static deleteSubmission(submissionID : string){
-		return query("DELETE FROM \"Submissions\" WHERE submissionID=$1 RETURNING *",[submissionID])
+		return query(`DELETE FROM "Submissions" 
+			WHERE submissionID=$1 
+			RETURNING *`,[submissionID])
 		.then(extract).then(map(convertSubmission)).then(one)
 	}
 	/*
@@ -115,7 +116,7 @@ export default class SubmissionHelper {
 			date = undefined,
 			state = undefined
 		} = submission
-		return query(`UPDATE \"Submissions\" SET
+		return query(`UPDATE "Submissions" SET
 			courseID = COALESCE($2, courseID),
 			userid = COALESCE($3, userid),
 			name = COALESCE($4, name),

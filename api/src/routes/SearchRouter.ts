@@ -11,8 +11,12 @@
 
 import express, { Response, Request } from 'express';
 import { SearchResponse } from "../../../client/src/helpers/DatabaseResponseInterface";
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export const searchRouter = express.Router();
+
+// Authentication is required for all endpoints
+searchRouter.use(AuthMiddleware.requireAuth);
 
 const searchResponse : SearchResponse = {
     submissions : [{
