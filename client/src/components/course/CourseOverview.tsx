@@ -19,7 +19,7 @@ export function CourseOverview({match}: CourseOverviewProps) {
 	const [submissions, setSubmissions] = useState([] as Submission[]);
 
 	useEffect(() => {
-		AuthHelper.fetch(`/api/submissions/course/${match.params.courseId}`)
+		AuthHelper.fetch(`/api/submission/course/${match.params.courseId}`)
 			.then((response) => response.json())
 			.then((submissions) => {
 				// TODO tags set manually here? what tags?

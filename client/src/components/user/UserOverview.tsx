@@ -25,7 +25,7 @@ export function UserOverview({match}: UserOverviewProperties) {
 	const [submissions, setSubmissions] = useState(null as unknown as Submission[]);
 	const [user, setUser] = useState(null as unknown as User);
 	const [comments, setComments] = useState(null as unknown as CommentThreadResponse[]);
-	const getSubmissions = AuthHelper.fetch(`/api/submissions/user/${match.params.userId}`);
+	const getSubmissions = AuthHelper.fetch(`/api/submission/user/${match.params.userId}`);
 	const getUser = AuthHelper.fetch(`/api/user/${match.params.userId}`);
 	// getUser?, getComments?
 
