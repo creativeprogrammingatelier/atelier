@@ -9,7 +9,7 @@ import express, { Response, Request } from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import {File} from "../../../models/File";
 import {FileDB} from "../database/FileDB";
-const fs = require('fs');
+import { readFileAsString } from '../helpers/FilesystemHelper';
 
 export const fileRouter = express.Router();
 
@@ -23,15 +23,13 @@ fileRouter.get('/:fileID',
         const file : File = await FileDB.getFileByID(fileID);
 
         try {
-                // Get path for file, and load it as string
-                const pathname = "./uploads/" + file.pathname! + '.' + file.type!;
-                const fileBody = fs.readFileSync(pathname).toString();
+            const fileBody = readFileAsString(file.pathname!);
 
-                result.send({
-                        ...file,
-                        body : fileBody
-                })
+            result.send({
+                    ...file,
+                    body : fileBody
+            })
         } catch (e) {
-                result.status(404).send({error:'file not found'})
+            result.status(404).send({error:'file not found'})
         }
 });
