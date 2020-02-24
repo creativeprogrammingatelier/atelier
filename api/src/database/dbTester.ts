@@ -14,7 +14,7 @@ import {localRole} 			from '../../../enums/localRoleEnum'
 import {submissionStatus}	from '../../../enums/submissionStatusEnum'
 import {threadState}		from '../../../enums/threadStateEnum'
 
-import {Course}				from '../../../models/database/course'
+import {Course}				from '../../../models/database/Course'
 import {CourseRegistration}	from '../../../models/database/CourseRegistration'
 import {File}				from '../../../models/database/File'
 import {Snippet}			from '../../../models/database/Snippet'

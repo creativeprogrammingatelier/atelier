@@ -5,7 +5,7 @@
 import express, { Response, Request } from 'express';
 import { CourseResponse } from "../../../client/src/helpers/DatabaseResponseInterface";
 import {CourseDB} from "../database/CourseDB";
-import {Course} from "../../../models/database/course";
+import {Course} from "../../../models/database/Course";
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export const coursesRouter = express.Router();
