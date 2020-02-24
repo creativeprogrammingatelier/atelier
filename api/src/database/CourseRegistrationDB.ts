@@ -1,6 +1,6 @@
 import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
 
-import {CourseRegistration, convertCourseReg} from '../../../models/CourseRegistration';
+import {CourseRegistration, convertCourseReg} from '../../../models/database/CourseRegistration';
 import {RolePermissionDB} from './RolePermissionDB'
 /**
  * courseID, userID, role, permission

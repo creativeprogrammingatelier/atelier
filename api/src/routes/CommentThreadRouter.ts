@@ -5,9 +5,9 @@
 import express, { Response, Request } from 'express';
 import {threadState} from "../../../enums/threadStateEnum";
 import {ThreadDB} from "../database/ThreadDB";
-import {Thread} from "../../../models/Thread";
+import {Thread} from "../../../models/database/Thread";
 import {SnippetDB} from "../database/SnippetDB";
-import {Snippet} from "../../../models/Snippet";
+import {Snippet} from "../../../models/database/Snippet";
 import {CommentDB} from "../database/CommentDB";
 
 export const commentThreadRouter = express.Router();

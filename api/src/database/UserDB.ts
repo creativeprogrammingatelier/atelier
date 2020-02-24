@@ -1,5 +1,5 @@
 import {pool, extract, map, one, searchify, pgDB } from "./HelperDB";
-import {User, DBUser, convertUser} from '../../../models/User';
+import {User, DBUser, convertUser} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
 
 /**

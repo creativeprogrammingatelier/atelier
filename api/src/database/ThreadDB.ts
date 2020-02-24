@@ -1,7 +1,7 @@
 import {pool, extract, map, one, pgDB } from "./HelperDB";
-import {Thread, DBThread, ExtendedThread, convertThread} from '../../../models/Thread';
+import {Thread, DBThread, ExtendedThread, convertThread} from '../../../models/database/Thread';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
-import { Comment, convertComment } from "../../../models/Comment";
+import { Comment, convertComment } from "../../../models/database/Comment";
 
 /**
  * commentThreadID, submissionID, fileID, snippetID, visibilityState

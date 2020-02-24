@@ -4,7 +4,7 @@
 
 import express, { Response, Request } from 'express';
 import {CourseDB} from "../database/CourseDB";
-import {Course} from "../../../models/course";
+import {Course} from "../../../models/database/Course";
 import {courseState} from "../../../enums/courseStateEnum";
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 

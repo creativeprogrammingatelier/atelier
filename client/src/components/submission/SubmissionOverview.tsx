@@ -5,8 +5,8 @@ import {Button} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/DataBlockList";
 import {DataItemList} from "../general/DataItemList";
-import {Submission} from "../../../../models/Submission";
-import {File} from "../../../../models/File";
+import {Submission} from "../../../../models/database/Submission";
+import {File} from "../../../../models/database/File";
 import {CommentThread} from "../../placeholdermodels";
 import {Loading} from "../general/Loading";
 import AuthHelper from "../../../helpers/AuthHelper";
@@ -26,6 +26,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	const [files, setFiles] = useState([] as File[]);
 	const [comments, setComments] = useState([] as CommentThread[]);
 	const [recent, setRecent] = useState([]);
+
+	useEffect(() => {
+		const submission = AuthHelper.fetch("/api/submission/"+submissionId);
+		console.log("Gotten a result from a thing");
+		console.log(submission);
+	}, []);
 
 	useEffect(() => {
 		const getFiles = AuthHelper.fetch(`/api/files/submission/${submissionId}`);

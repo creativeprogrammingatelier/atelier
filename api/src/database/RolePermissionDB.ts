@@ -1,6 +1,6 @@
 import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
 import {localRole, checkEnum} from '../../../enums/localRoleEnum'
-import {RolePermission, DBRolePermission, convertRolePermission} from '../../../models/RolePermission'
+import {RolePermission, DBRolePermission, convertRolePermission} from '../../../models/database/RolePermission'
 /**
  * interface for interacting with rolepermissions
  * @Author Rens Leendertz

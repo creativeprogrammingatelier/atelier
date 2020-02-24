@@ -1,6 +1,6 @@
 import {extract, map, one, pool, pgDB  } from "./HelperDB";
-import { Submission, DBSubmission, convertSubmission } from '../../../models/Submission';
-import { submissionStatus, checkEnum } from '../../../enums/submissionStatusEnum'
+import {Submission, DBSubmission, convertSubmission} from '../../../models/database/Submission';
+import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 
 /**
  * submissionID, userID, name, date, state

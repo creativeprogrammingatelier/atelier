@@ -1,7 +1,7 @@
 import {pool, extract, map, funmap2, one, searchify, pgDB } from "./HelperDB";
 
-import {Comment, DBComment, convertComment, onlyComment} from '../../../models/Comment';
-import { convertThread, ExtendedThread, Thread, onlyThread } from "../../../models/Thread";
+import {Comment, DBComment, convertComment, onlyComment} from '../../../models/database/Comment';
+import { convertThread, ExtendedThread, Thread, onlyThread } from "../../../models/database/Thread";
 
 // import RolePermissionHelper from './RolePermissionsHelper'
 /**

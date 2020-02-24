@@ -1,5 +1,5 @@
 import {pool, extract, map, one, pgDB } from "./HelperDB";
-import {Course, convertCourse} from '../../../models/Course';
+import {Course, convertCourse} from '../../../models/database/Course';
 
 /**
  * @Author Rens Leendertz

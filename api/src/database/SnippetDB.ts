@@ -1,5 +1,5 @@
 import {pool, extract, map, one, pgDB } from "./HelperDB";
-import {Snippet, DBSnippet, convertSnippet} from '../../../models/Snippet';
+import {Snippet, DBSnippet, convertSnippet} from '../../../models/database/Snippet';
 
 /**
  * 
