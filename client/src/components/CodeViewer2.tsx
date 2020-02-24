@@ -12,6 +12,7 @@ import {Editor} from "codemirror";
 import {WriteComment} from "./submission/comment/WriteComment";
 import { Button } from 'react-bootstrap';
 import { withRouter } from 'react-router';
+import AuthHelper from './../../helpers/AuthHelper';
 
 import {start} from "repl";
 import {ExtendedThread} from "../../../models/Thread";
@@ -75,7 +76,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	}
 
 	getCommentThreads() {
-		fetch(`/api/commentThreads/file/${this.props.fileID}`)
+		AuthHelper.fetch(`/api/commentThreads/file/${this.props.fileID}`)
 			.then((data : any) => data.json())
 			.then((data : ExtendedThread[]) => {
 				console.log(data);
@@ -265,7 +266,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		const fileID = this.props.fileID;
 		const submissionID = this.props.submissionID;
 
-		fetch(`/api/commentThread/file/${fileID}`, {
+		AuthHelper.fetch(`/api/commentThread/file/${fileID}`, {
 			method : 'POST',
 			headers: {
 				'Accept': 'application/json',

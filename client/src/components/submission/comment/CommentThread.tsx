@@ -13,6 +13,7 @@ import {Loading} from "../../general/Loading";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
 import {ExtendedThread} from "../../../../../models/Thread";
 import {Comment} from "../../../../../models/Comment";
+import AuthHelper from './../../../../helpers/AuthHelper';
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -59,7 +60,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	// but this makes for a better demo
 	// TODO pass token instead of userID
 	const newComment = (text: string) => {
-		fetch(`/api/comment/${thread.commentThreadID}`, {
+		AuthHelper.fetch(`/api/comment/${thread.commentThreadID}`, {
 			method : 'PUT',
 			headers: {
 				'Accept': 'application/json',

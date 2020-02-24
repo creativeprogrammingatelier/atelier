@@ -27,7 +27,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	const [recent, setRecent] = useState([]);
 
 	useEffect(() => {
-		const getFiles = fetch(`/api/files/submission/${submissionId}`);
+		const getFiles = AuthHelper.fetch(`/api/files/submission/${submissionId}`);
 		// TODO get comments or comment threads as well
 
 		Promise.all([getFiles]).then(responses =>

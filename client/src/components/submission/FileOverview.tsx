@@ -13,6 +13,7 @@ import {CommentThread} from "../../placeholdermodels";
 import {FileResponse, OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
 import {Loading} from "../general/Loading";
 import {ExtendedThread} from "../../../../models/Thread";
+import AuthHelper from "../../../helpers/AuthHelper";
 
 export interface FileProperties {
 	id: string,
@@ -42,8 +43,8 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 	const [commentThreads, setCommentThreads] = useState([] as ExtendedThread[]);
 	const [title, setTitle] = useState("");
 
-	const getFile = fetch(`/api/file/${fileId}`);
-	const getCommentThreads = fetch(`/api/commentThreads/file/${fileId}`);
+	const getFile = AuthHelper.fetch(`/api/file/${fileId}`);
+	const getCommentThreads = AuthHelper.fetch(`/api/commentThreads/file/${fileId}`);
 
 	useEffect(() => {
 		Promise.all([getFile, getCommentThreads]).then(responses =>
