@@ -1,4 +1,4 @@
-import {query, extract, map, one} from "./HelperDB";
+const HH = require("./HelperHelper");
 
 import {Comment, DBComment, convertComment} from '../../../models/Comment';
 // import RolePermissionHelper from './RolePermissionsHelper'
@@ -6,16 +6,16 @@ import {Comment, DBComment, convertComment} from '../../../models/Comment';
  * commentID, commentThreadID, userID, date, body
  * @Author Rens Leendertz
  */
-
-export class CommentDB {
+const {query, extract, map, one} = HH;
+export default class CommentHelper {
 	static getAllComments(limit? :number){
-		return CommentDB.filterComment({}, limit)
+		return CommentHelper.filterComment({}, limit)
 	}
 	static getCommentsByThread(commentThreadID : string, limit ? : number){
-		return CommentDB.filterComment({commentThreadID},limit)
+		return CommentHelper.filterComment({commentThreadID},limit)
 	}
 	static getCommentByID(commentID : string){
-		return CommentDB.filterComment({commentID}, 1).then(one)
+		return CommentHelper.filterComment({commentID}, 1).then(one)
 	}
 	static filterComment(comment : Comment, limit : number | undefined) {
 		const {

@@ -1,5 +1,5 @@
 import {threadState, checkEnum} from '../enums/threadStateEnum'
-import {Comment} from './Comment'
+
 export interface Thread {
 	commentThreadID?: string,
 	submissionID?: string,

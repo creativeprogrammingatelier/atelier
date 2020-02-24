@@ -2,9 +2,8 @@
  * Api routes relating to a course
  */
 
-import express, { Response, Request } from 'express';
-import {CourseDB} from "../database/CourseDB";
-
+import express, {Response, Request} from "express";
+import CoursesHelper from "../database/CoursesHelper";
 import {Course} from "../../../models/course";
 import {courseState} from "../../../enums/courseStateEnum";
 

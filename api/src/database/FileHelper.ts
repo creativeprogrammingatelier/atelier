@@ -1,21 +1,22 @@
-import {query, extract, map, one} from "./HelperDB";
+const HH = require("./HelperHelper")
 import {File, DBFile, convertFile} from '../../../models/File';
 
 /**
  * fileID, submissionID, pathname, type
  * @Author Rens Leendertz
  */
-export class FileDB {
+const {query, extract, map, one} = HH;
+export default class FileHelper {
 	static getAllFiles(){
-		return FileDB.getFilteredFiles({})
+		return FileHelper.getFilteredFiles({})
 	}
 
 	static getFileByID(fileID : string){
-		return FileDB.getFilteredFiles({fileID}).then(one)
+		return FileHelper.getFilteredFiles({fileID}).then(one)
 	}
 	
 	static getFilesBySubmission(submissionID : string) {
-		return FileDB.getFilteredFiles({submissionID})
+		return FileHelper.getFilteredFiles({submissionID})
 	}
 
 	static getFilteredFiles(file : File){

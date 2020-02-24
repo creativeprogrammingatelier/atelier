@@ -1,4 +1,5 @@
-import {query, extract, map, one} from "./HelperDB";
+import * as HH  from "./HelperHelper"
+
 import {User, DBUser, convertUser} from '../../../models/User';
 import bcrypt from 'bcrypt';
 
@@ -6,8 +7,9 @@ import bcrypt from 'bcrypt';
  * Users middleware provides helper methods for interacting with users in the DB
  * @Author Rens Leendertz
  */
+const {query, map, extract, one} = HH
 
-export class UserDB {
+export default class UsersHelper {
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
@@ -44,8 +46,7 @@ export class UserDB {
 			role,
 			name
 		} = user;
-        const hash = password === undefined ? undefined : UserDB.hashPassword(password);
-		return query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, hash])
+		return query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, password])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 	/**
@@ -61,7 +62,7 @@ export class UserDB {
 			role = undefined,
 			name = undefined
 		} = user
-		const hash = password === undefined ? undefined : UserDB.hashPassword(password)
+		const hash = password === undefined ? undefined : UsersHelper.hashPassword(password)
 		return query(`UPDATE \"Users\"
 			SET 
 			email = COALESCE($2, email),
@@ -107,7 +108,7 @@ export class UserDB {
 				if (userid===undefined){
 					return onFailure(Error("the database is fking with us"))
 				}
-				if (UserDB.comparePassword(hash, password)){
+				if (UsersHelper.comparePassword(hash, password)){
 					return onSuccess(userid)
 				} else {
 					return onUnauthorised()

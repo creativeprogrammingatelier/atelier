@@ -20,7 +20,7 @@ import {
 } from "react-bootstrap";
 
 export function Bootstrap() {
-	return <Frame title="Bootstrap test" user={{id: "1", name: "John Doe"}} sidebar={false}>
+	return <Frame title="Bootstrap Test" user={{id: "1", name: "John Doe"}} sidebar={false}>
 		<div className="pb-4">
 			<h2>Alerts</h2>
 			<div>
@@ -139,7 +139,7 @@ export function Bootstrap() {
 					<Card.Footer className="text-muted">2 days ago</Card.Footer>
 				</Card>
 				<Card className="bg-dark text-white">
-					<Card.Img src="holder.js/100px270" alt="Card image" />
+					<Card.Img src="holder.js/100px270" alt="Card image"/>
 					<Card.ImgOverlay>
 						<Card.Title>Card title</Card.Title>
 						<Card.Text>
@@ -152,7 +152,7 @@ export function Bootstrap() {
 				<Card body>This is some text within a card body.</Card>
 				<CardGroup>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
@@ -165,12 +165,12 @@ export function Bootstrap() {
 						</Card.Footer>
 					</Card>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
 								This card has supporting text below as a natural lead-in to additional
-								content.{' '}
+								content.{" "}
 							</Card.Text>
 						</Card.Body>
 						<Card.Footer>
@@ -178,7 +178,7 @@ export function Bootstrap() {
 						</Card.Footer>
 					</Card>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
@@ -194,7 +194,7 @@ export function Bootstrap() {
 				</CardGroup>
 				<CardDeck>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
@@ -207,12 +207,12 @@ export function Bootstrap() {
 						</Card.Footer>
 					</Card>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
 								This card has supporting text below as a natural lead-in to additional
-								content.{' '}
+								content.{" "}
 							</Card.Text>
 						</Card.Body>
 						<Card.Footer>
@@ -220,7 +220,7 @@ export function Bootstrap() {
 						</Card.Footer>
 					</Card>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
@@ -236,7 +236,7 @@ export function Bootstrap() {
 				</CardDeck>
 				<CardColumns>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title that wraps to a new line</Card.Title>
 							<Card.Text>
@@ -259,12 +259,12 @@ export function Bootstrap() {
 						</blockquote>
 					</Card>
 					<Card>
-						<Card.Img variant="top" src="holder.js/100px160" />
+						<Card.Img variant="top" src="holder.js/100px160"/>
 						<Card.Body>
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
 								This card has supporting text below as a natural lead-in to additional
-								content.{' '}
+								content.{" "}
 							</Card.Text>
 						</Card.Body>
 						<Card.Footer>
@@ -289,7 +289,7 @@ export function Bootstrap() {
 							<Card.Title>Card title</Card.Title>
 							<Card.Text>
 								This card has supporting text below as a natural lead-in to additional
-								content.{' '}
+								content.{" "}
 							</Card.Text>
 							<Card.Text>
 								<small className="text-muted">Last updated 3 mins ago</small>
@@ -297,7 +297,7 @@ export function Bootstrap() {
 						</Card.Body>
 					</Card>
 					<Card>
-						<Card.Img src="holder.js/100px160" />
+						<Card.Img src="holder.js/100px160"/>
 					</Card>
 					<Card className="text-right">
 						<blockquote className="blockquote mb-0 card-body">
@@ -334,7 +334,7 @@ export function Bootstrap() {
 						<img
 							className="d-block w-100"
 							alt="First slide"
-							style={{backgroundColor: "#333333", height:"20rem"}}
+							style={{backgroundColor: "#333333", height: "20rem"}}
 						/>
 						<Carousel.Caption>
 							<h3>First slide label</h3>
@@ -345,7 +345,7 @@ export function Bootstrap() {
 						<img
 							className="d-block w-100"
 							alt="Third slide"
-							style={{backgroundColor: "#333333", height:"20rem"}}
+							style={{backgroundColor: "#333333", height: "20rem"}}
 						/>
 
 						<Carousel.Caption>
@@ -357,7 +357,7 @@ export function Bootstrap() {
 						<img
 							className="d-block w-100"
 							alt="Third slide"
-							style={{backgroundColor: "#333333", height:"20rem"}}
+							style={{backgroundColor: "#333333", height: "20rem"}}
 						/>
 						<Carousel.Caption>
 							<h3>Third slide label</h3>
@@ -372,7 +372,7 @@ export function Bootstrap() {
 					<Dropdown.Item eventKey="1">Action</Dropdown.Item>
 					<Dropdown.Item eventKey="2">Another action</Dropdown.Item>
 					<Dropdown.Item eventKey="3" active>Active Item</Dropdown.Item>
-					<Dropdown.Divider />
+					<Dropdown.Divider/>
 					<Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
 				</DropdownButton>
 			</div>
@@ -381,21 +381,21 @@ export function Bootstrap() {
 				<Form>
 					<Form.Group controlId="formBasicEmail">
 						<Form.Label>Email address</Form.Label>
-						<Form.Control type="email" placeholder="Enter email" />
+						<Form.Control type="email" placeholder="Enter email"/>
 						<Form.Text className="text-muted">
 							We'll never share your email with anyone else.
 						</Form.Text>
 					</Form.Group>
 					<Form.Group controlId="formBasicPassword">
 						<Form.Label>Password</Form.Label>
-						<Form.Control type="password" placeholder="Password" />
+						<Form.Control type="password" placeholder="Password"/>
 					</Form.Group>
 					<Form.Group controlId="formBasicCheckbox">
-						<Form.Check type="checkbox" label="Check me out" />
+						<Form.Check type="checkbox" label="Check me out"/>
 					</Form.Group>
 					<Form.Group controlId="exampleForm.ControlInput1">
 						<Form.Label>Email address</Form.Label>
-						<Form.Control type="email" placeholder="name@example.com" />
+						<Form.Control type="email" placeholder="name@example.com"/>
 					</Form.Group>
 					<Form.Group controlId="exampleForm.ControlSelect1">
 						<Form.Label>Example select</Form.Label>
@@ -567,7 +567,7 @@ export function Bootstrap() {
 								<NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
 								<NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
 								<NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-								<NavDropdown.Divider />
+								<NavDropdown.Divider/>
 								<NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
 							</NavDropdown>
 						</Nav>
@@ -598,7 +598,7 @@ export function Bootstrap() {
 			</div>
 			<h2>Popovers</h2>
 			<div>
-				<Popover id="popover" style={{position:"relative"}}>
+				<Popover id="popover" style={{position: "relative"}}>
 					<Popover.Title>Popover right</Popover.Title>
 					<Popover.Content>
 						And here's some <strong>amazing</strong> content. It's very engaging.
@@ -610,9 +610,9 @@ export function Bootstrap() {
 			<div>
 				<ProgressBar now={60} label="60%"/>
 				<ProgressBar>
-					<ProgressBar variant="success" now={35} key={1} />
-					<ProgressBar striped variant="warning" now={20} key={2} />
-					<ProgressBar animated variant="danger" now={10} key={3} />
+					<ProgressBar variant="success" now={35} key={1}/>
+					<ProgressBar striped variant="warning" now={20} key={2}/>
+					<ProgressBar animated variant="danger" now={10} key={3}/>
 				</ProgressBar>
 			</div>
 			<h2>Spinners</h2>
@@ -692,5 +692,5 @@ export function Bootstrap() {
 				</Toast>
 			</div>
 		</div>
-	</Frame>
+	</Frame>;
 }
