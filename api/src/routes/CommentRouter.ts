@@ -12,7 +12,7 @@ commentRouter.put('/:commentThreadID',
         const commentThreadID = request.params.commentThreadID;
         // TODO userID from token
         const userID = "00000000-0000-0000-0000-000000000000"; // TODO get userID from somehwere?
-        const body = request.params.body;
+        const body = request.body.body;
 
         CommentDB.addComment({
             commentThreadID : commentThreadID,
@@ -23,4 +23,11 @@ commentRouter.put('/:commentThreadID',
                 result.send(data);
             })
             .catch((error : any) => result.status(500).send({error : error}));
+});
+
+commentRouter.get('/file/:fileID',
+    (request : Request, result : Response) => {
+        const fileID = request.params.fileID;
+
+        // TODO get comments by file?
 });

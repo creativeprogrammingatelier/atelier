@@ -28,5 +28,12 @@ export function convertThread(db : DBThread) : Thread {
 }
 export interface ExtendedThread extends Thread {
 	comments: Comment[],
-	snippet? : string
+	snippet? : {
+		snippetID : string,
+		lineStart : number,
+		lineEnd : number,
+		charStart : number,
+		charEnd : number,
+		fileID : string
+	}
 }

@@ -4,7 +4,7 @@ import * as Models from "../../../placeholdermodels";
 import {LoadingState} from "../../../placeholdermodels";
 
 import {Header} from "../../frame/Header";
-import {Comment} from "./Comment";
+import {Comment as CommentComponent} from "./Comment";
 import {Snippet} from "./Snippet";
 import {WriteComment} from "./WriteComment";
 import {ButtonBar} from "../../general/ButtonBar";
@@ -12,6 +12,7 @@ import { Button } from "react-bootstrap";
 import {Loading} from "../../general/Loading";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
 import {ExtendedThread} from "../../../../../models/Thread";
+import {Comment} from "../../../../../models/Comment";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -21,22 +22,25 @@ interface CommentThreadProperties {
 
 export function CommentThread({thread}: CommentThreadProperties) {
 	const topic : string = "We don't store topics yet so: " + thread.commentThreadID;
-	const comments : Models.Comment[] = thread.comments
+	const currentComments : Models.Comment[] = thread.comments
 		.map((comment : Comment) => {
 			return {
-				text : comment.body,
-				author : comment.userID,
-				time : comment.date
+				text : comment.body == undefined ? "" : comment.body,
+				author : comment.userID == undefined ? "" : comment.userID ,
+				time : comment.date == undefined ? new Date() : comment.date
 			}
 		});
 
+	const [comments, updateComments] = useState(currentComments);
+
 	// TODO get from file body or did we want to store this?
 	const DEFAULT_FULL_TEXT = ["no full", "text yet", "did we want to", "get this from the database", "or manually parse from file?", "parsing from file requires additional (not really needed)", "fetches"];
+	// TODO get proper snippet with text etc. Can this be undefined as currently in the database?
 	const snippet : Models.Snippet = {
 		fullText : DEFAULT_FULL_TEXT,
 		mainLines : [0, Math.min(2, DEFAULT_FULL_TEXT.length)],
-		fileId : thread.snippet.fileID,
-		fileLines : [thread.snippet.lineStart, thread.snippet.lineEnd]
+		fileId : "00000000-0000-0000-0000-000000000000",
+		fileLines : [0, 0]
 	};
 
 	console.log(comments);
@@ -53,11 +57,31 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	// Show a newly created comment directly
 	// Maybe we should let that be done over the server,
 	// but this makes for a better demo
+	// TODO pass token instead of userID
 	const newComment = (text: string) => {
-		updateComments(comments => [
+		fetch(`/api/comment/${thread.commentThreadID}`, {
+			method : 'PUT',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body : JSON.stringify({
+				userID : "00000000-0000-0000-0000-000000000000",
+				body : text
+			})
+		})
+			.then((data : any) => data.json())
+			.then((response : Comment) => {
+				console.log(response);
+				updateComments((comments : any) => [
+					...comments,
+					{text : response.body, author : response.userID, time : response.date}
+				]);
+			});
+		/*updateComments((comments : any) => [
 			...comments,
 			{text, author: "Pietje Puk", time: new Date(Date.now())}
-		]);
+		]);*/
 	};
 
 	return (
@@ -68,7 +92,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				: <div> {/* Assuming loading is always successful, obviously */}
 					{snippet && <Snippet snippet={snippet}/>}
 					{opened ? <div>
-							{comments.map(comment => <Comment comment={comment}/>)}
+							{comments.map(comment => <CommentComponent comment={comment}/>)}
 							<WriteComment placeholder="Reply..." newCommentCallback={newComment}/>
 							<ButtonBar align="right">
 								<Button><FiSend size={14} color="#FFFFFF"/></Button>
@@ -76,7 +100,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 							</ButtonBar>
 						</div>
 						: comments[0] !== undefined && <div>
-							<Comment comment={comments[0]}/>
+							<CommentComponent comment={comments[0]}/>
 							<ButtonBar align="right">
 								<Button onClick={() => setOpened(true)}><FiChevronDown size={14} color="#FFFFFF"/></Button>
 							</ButtonBar>

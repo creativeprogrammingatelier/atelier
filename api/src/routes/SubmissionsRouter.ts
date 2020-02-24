@@ -38,7 +38,7 @@ submissionsRouter.get('/user/:userID',
         const limit : number | undefined = request.body.limit;
 
         SubmissionDB.getUserSubmissions(userID, limit)
-            .then((data : any) => {
+            .then((data: Submission[]) => {
                 result.send(data);
             })
             .catch((error : any) => result.status(500).send({error : error}));

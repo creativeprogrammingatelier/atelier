@@ -62,7 +62,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 	// Display certain tab
 	let activeTabElement = <div><h1>Tab not found!</h1></div>;
 	if (activeTab === "code") {
-		activeTabElement = <CodeTab file={file}/>;
+		activeTabElement = <CodeTab file={file} submissionID = {submissionId} fileID = {fileId}/>;
 	} else if (activeTab === "comments") {
 		activeTabElement = <CommentTab file={file} threads={commentThreads}/>;
 	} else if (activeTab === "share") {
