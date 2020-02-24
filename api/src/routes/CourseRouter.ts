@@ -2,15 +2,11 @@
  * Api routes relating to a course
  */
 
-import express, { Response, Request } from 'express';
-import {CourseDB} from "../database/CourseDB";
+import express, {Response, Request} from "express";
+import CoursesHelper from "../database/CoursesHelper";
 import {Course} from "../../../models/course";
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export const courseRouter = express.Router();
-
-// Authentication is required for all endpoints
-courseRouter.use(AuthMiddleware.requireAuth);
 
 const courseSubmissions = {
 	submissions: [

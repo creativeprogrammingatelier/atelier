@@ -1,8 +1,7 @@
 //import {IFile} from '../../../models/File';
 import {User} from '../../../models/User';
 import {Request, Response} from 'express';
-import { getCurrentUserID } from '../helpers/AuthenticationHelper';
-import { UserDB } from '../database/UserDB';
+import UsersMiddleware from './UsersMiddleware';
 
 /**
 * @TODO this does in not the required behaviour
@@ -60,26 +59,26 @@ export default class PermissionsMiddleware {
 		);
 	}*/
 
-	static async isTa(request: Request, result: Response, onSuccess: Function) {
-        const userID = await getCurrentUserID(request);
-        const user = await UserDB.getUserByID(userID);
-        const teacherString = 'teacher';
-        if (user.role!.toLowerCase() === teacherString) {
-            onSuccess();
-        } else {
-            result.status(401).send();
-        }
+	static isTa(request: Request, result: Response, onSuccess: Function) {
+		UsersMiddleware.getUser(request, (user: User) => {
+			const teacherString = 'teacher';
+			if (user.role!.toLowerCase() == teacherString) {
+				onSuccess();
+			} else {
+				result.status(401).send();
+			}
+		}, () => result.status(401).send());
 	}
 
-	static async isAdmin(request: Request, result: Response, onSuccess: Function) {
-		const userID = await getCurrentUserID(request);
-        const user = await UserDB.getUserByID(userID);
-        const adminString = 'admin';
-        if (user.role!.toLowerCase() === adminString) {
-            onSuccess();
-        } else {
-            result.status(401).send();
-        }
+	static isAdmin(request: Request, result: Response, onSuccess: Function) {
+		UsersMiddleware.getUser(request, (user: User) => {
+			const adminString = 'admin';
+			if (user.role!.toLowerCase() == adminString) {
+				onSuccess();
+			} else {
+				result.status(401).send();
+			}
+		}, () => result.status(401).send());
 	}
 
 	/*static checkComment(request: Request, response: Response, onAuthorised: Function) {

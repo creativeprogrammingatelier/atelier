@@ -7,9 +7,5 @@
  */
 
 import express, { Response, Request } from 'express';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export const submissionRouter = express.Router();
-
-// Authentication is required for all endpoints
-submissionRouter.use(AuthMiddleware.requireAuth);

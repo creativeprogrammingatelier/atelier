@@ -4,14 +4,10 @@
 
 import express, { Response, Request } from 'express';
 import { CourseResponse } from "../../../client/src/helpers/DatabaseResponseInterface";
-import {CourseDB} from "../database/CourseDB";
+import CoursesHelper from "../database/CoursesHelper";
 import {Course} from "../../../models/course";
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export const coursesRouter = express.Router();
-
-// Authentication is required for all endpoints
-coursesRouter.use(AuthMiddleware.requireAuth);
 
 const courseListResponse = {
     courses: [

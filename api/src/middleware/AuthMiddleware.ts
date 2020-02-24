@@ -1,52 +1,73 @@
 /**
- * Middleware for checking user authentication and authorization
- * Author: Andrew Heath, Arthur Rump
+ * Middleware
+ *  Provides management of token, and authentication checks
+ * Author: Andrew Heath
  * Created: 13/08/19
  */
 
 import jwt from 'jsonwebtoken';
-import { getCurrentUserID, verifyToken, getToken } from '../helpers/AuthenticationHelper';
-import { RequestHandler } from 'express';
-import { UserDB } from '../database/UserDB';
+import UsersMiddleware from './UsersMiddleware';
+import { AUTHSECRETKEY } from '../lib/constants';
+import {Request, Response} from 'express';
+import {User} from '../../../models/User';
 
-export class AuthMiddleware {
-    /** Middleware function that will block all non-authenticated requests */
-	static requireAuth: RequestHandler = async (req, res, next) => {
-		const token = getToken(req);
+/**
+* @TODO insert withauth at the start of routers to ensure authentication and unify it.
+*/
+export default class AuthMiddleWare {
+	/**
+	 * Checks to see whether requset is authenticated correctly
+	 * @param {*} request
+	 * @param {*} result
+	 * @param {*} next Callback
+
+	 * onSuccess will receive the information encoded in the token found.
+	 */
+	static withAuth(request: Request, result: Response, onSuccess: Function): void {
+		const token = request.headers && request.headers.authorization;
 		if (!token) {
-			res.status(401).json({ error: "token.notProvided" });
+			result.status(401).send('Unauthorized: No token provided');
 		} else {
-            try {
-                await verifyToken(token);
-                next();
-            } catch (err) {
-                if (err instanceof jwt.TokenExpiredError) {
-                    res.status(401).json({ error: "token.expired", expiredAt: err.expiredAt });
-                } else if (err instanceof jwt.JsonWebTokenError) {
-                    res.status(401).json({ error: "token.invalid" });
-                } else {
-                    throw err;
-                }
-            }
+			jwt.verify(token, AUTHSECRETKEY, function(error: Error, decoded: Object) {
+				if (error) {
+					console.error(error);
+					result.status(401).send('Unauthorized: Invalid token');
+				} else {
+					onSuccess(decoded);
+				}
+			});
 		}
-    }
-    
-    /** 
-     * Middleware function that requires the user to have a specified role,
-     * implies `requireAuth`
-     */
-    static requireRole(roles: string[]): RequestHandler {
-        const handler: RequestHandler = async (req, res, next) => {
-            const userID = await getCurrentUserID(req);
-            const user = await UserDB.getUserByID(userID);
-            if (roles.includes(user.role!)) {
-                next();
-            } else {
-                res.status(401).json({ error: "role.notAllowed" });
-            }
-        }
+	}
 
-        return async (req, res, next) => 
-            this.requireAuth(req, res, (err?) => err ? next(err) : handler(req, res, next));
-    }
+	/**
+	* check permissions for pages on a global level
+	*/
+	static checkRole(request: Request, role: String, onSuccess: Function, onFailure : (error : Error) => void) {
+		UsersMiddleware.getUser(request, (user: User) => {
+			if (user.role!.toLowerCase() == role.toLowerCase()) {
+				onSuccess();
+			} else {
+				onFailure(new Error('Unauthorized: Incorrect role'));
+			}
+		}, onFailure);
+	}
+
+	/**
+	* check permissions for pages on a global level
+	*/
+	static checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure : (error : Error) => void) {
+		for (const role of roles) {
+			UsersMiddleware.getUser(request, (user: User) => {
+				if (user.role!.toLowerCase() == role.toLowerCase()) {
+					onSuccess();
+				}
+			}, onFailure);
+		}
+	}
+
+	static getRole(request: Request, onSuccess: Function, onFailure : (error : Error) => void) {
+		UsersMiddleware.getUser(request, (user: User) => {
+			onSuccess(user.role!.toLowerCase());
+		}, onFailure);
+	}
 }

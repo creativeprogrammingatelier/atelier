@@ -1,22 +1,20 @@
-import {query, extract, map, one, searchify} from "./HelperDB";
+import * as HH  from "./HelperHelper"
+
 import {User, DBUser, convertUser} from '../../../models/User';
 import bcrypt from 'bcrypt';
-import { Pool } from "pg";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
- * userID, name, role, email
  * @Author Rens Leendertz
  */
+const {query, map, extract, one} = HH
 
-export class UserDB {
+export default class UsersHelper {
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
 	static getAllStudents() {
-		return query(`SELECT userID, name, globalRole, email 
-			FROM "Users" 
-			WHERE globalRole = 'user'`)
+		return query("SELECT userID, name, globalRole, email from \"Users\" WHERE globalRole = 'user'")
 			.then(extract).then(map(convertUser))
 	}
 
@@ -24,7 +22,7 @@ export class UserDB {
 	 * calls onSuccess() with all users in the system.
 	 */
 	static getAllUsers() {
-		return query(`SELECT userID, name, globalRole, email FROM "Users"`)
+		return query("SELECT userID, name, globalRole, email from \"Users\"")
 			.then(extract).then(map(convertUser))
 	}
 
@@ -32,19 +30,8 @@ export class UserDB {
 	 * calls onSuccess() with a student based on its userID, without password hash
 	 */
 	static getUserByID(userID : string) {
-		return query(`SELECT userID, name, globalRole, email 
-			FROM "Users" where userID = $1`, [userID])
+		return query("SELECT userID, name, globalRole, email from \"Users\" where userID = $1", [userID])
 			.then(extract).then(map(convertUser)).then(one)
-	}
-
-	static searchUser(searchString : string, limit? : number){
-		if (limit === undefined || limit < 0) limit=undefined
-		searchString = searchify(searchString)
-		return query(`SELECT userID, name, globalRole, email
-			FROM "Users"
-			WHERE name ILIKE $1
-			LIMIT $2`, [searchString, limit])
-			.then(extract).then(map(convertUser))
 	}
 
 	/**
@@ -59,10 +46,7 @@ export class UserDB {
 			role,
 			name
 		} = user;
-		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
-		return query(`INSERT INTO "Users" 
-			VALUES (DEFAULT, $1, $2, $3, $4) 
-			RETURNING *`, [name, role, email, password])
+		return query("INSERT INTO \"Users\" VALUES (DEFAULT, $1, $2, $3, $4) RETURNING userID;", [name, role, email, password])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 	/**
@@ -78,8 +62,8 @@ export class UserDB {
 			role = undefined,
 			name = undefined
 		} = user
-		const hash = password === undefined ? undefined : UserDB.hashPassword(password)
-		return query(`UPDATE "Users"
+		const hash = password === undefined ? undefined : UsersHelper.hashPassword(password)
+		return query(`UPDATE \"Users\"
 			SET 
 			email = COALESCE($2, email),
 			hash = COALESCE($3, hash),
@@ -94,9 +78,7 @@ export class UserDB {
 	 * deletes a user from the database, based on the userID.
 	 */
 	static deleteUser(userID: string) {
-		return query(`DELETE FROM "Users" 
-			WHERE userID = $1 
-			RETURNING *`, [userID])
+		return query("DELETE FROM \"Users\" WHERE userID = $1 RETURNING *", [userID])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 
@@ -105,7 +87,7 @@ export class UserDB {
 	 * this requires parameters 'email' and 'password'
 	 * onSuccess will be called with the corresponding userID to proceed with login.
 	 */
-	static async loginUser(
+	static loginUser(
 		loginRequest : {email:string, password:string}, 
 		onSuccess: (userID : string) => void, 
 		onUnauthorised: () => void, 
@@ -114,28 +96,28 @@ export class UserDB {
 			email,
 			password
 		} = loginRequest;
-		const res = await query<DBUser, [string]>(`SELECT * 
-			FROM "Users" 
-			WHERE email = $1`, [email])
-			.then(extract).then(one).catch((error : Error) => {
+		query("SELECT userID, name, globalRole, email, hash FROM \"Users\" where email = $1", [email])
+			.then((res : {rows:DBUser[]}) => {
+				if (res.rows.length !== 1){
+					return onUnauthorised()
+				}
+				if (!res.rows[0].hash){
+					return onFailure(Error('WTF is the database doing'))
+				}
+				const {hash, userid}= res.rows[0]
+				if (userid===undefined){
+					return onFailure(Error("the database is fking with us"))
+				}
+				if (UsersHelper.comparePassword(hash, password)){
+					return onSuccess(userid)
+				} else {
+					return onUnauthorised()
+				}
+			})
+			.catch((error : Error) => {
 				console.error(error)
 				return onFailure(error)
-			})
-		if (res === undefined){
-			return onUnauthorised()
-		}
-		if (!res.hash){
-			return onFailure(Error('WTF is the database doing'))
-		}
-		const {hash, userid}= res
-		if (userid===undefined){
-			return onFailure(Error("the database is fking with us"))
-		}
-		if (UserDB.comparePassword(hash, password)){
-			return onSuccess(userid)
-		} else {
-			return onUnauthorised()
-		}
+			});	
 	}
 
 	/**
