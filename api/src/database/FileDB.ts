@@ -1,4 +1,4 @@
-import {query, extract, map, one} from "./HelperDB";
+import {pool, extract, map, one, pgDB } from "./HelperDB";
 import {File, DBFile, convertFile} from '../../../models/File';
 
 /**
@@ -6,26 +6,26 @@ import {File, DBFile, convertFile} from '../../../models/File';
  * @Author Rens Leendertz
  */
 export class FileDB {
-	static getAllFiles(){
+	static getAllFiles(DB : pgDB = pool){
 		return FileDB.getFilteredFiles({})
 	}
 
-	static getFileByID(fileID : string){
+	static getFileByID(fileID : string, DB : pgDB = pool){
 		return FileDB.getFilteredFiles({fileID}).then(one)
 	}
 	
-	static getFilesBySubmission(submissionID : string) {
+	static getFilesBySubmission(submissionID : string, DB : pgDB = pool) {
 		return FileDB.getFilteredFiles({submissionID})
 	}
 
-	static getFilteredFiles(file : File){
+	static getFilteredFiles(file : File, DB : pgDB = pool){
 		const {
 			fileID = undefined,
 			submissionID = undefined,
 			pathname = undefined,
 			type = undefined
 		} = file;
-		return query(`SELECT * FROM "Files" 
+		return DB.query(`SELECT * FROM "Files" 
 			WHERE
 				($1::uuid IS NULL OR fileID=$1)
 			AND ($2::uuid IS NULL OR submissionID=$2)
@@ -35,26 +35,26 @@ export class FileDB {
 		.then(extract).then(map(convertFile))
 	}
 
-	static addFile(file : File) {
+	static addFile(file : File, DB : pgDB = pool) {
 		const {
 			submissionID,
 			pathname,
 			type
 		} = file;
-		return query(`INSERT INTO "Files" 
+		return DB.query(`INSERT INTO "Files" 
 			VALUES (DEFAULT, $1,$2,$3) 
 			RETURNING *`, [submissionID, pathname, type])
 		.then(extract).then(map(convertFile)).then(one)
 	}
 	
-	static updateFile(file : File) {
+	static updateFile(file : File, DB : pgDB = pool) {
 		const {
 			fileID,
 			submissionID = undefined,
 			pathname = undefined,
 			type = undefined
 		} = file;
-		return query(`UPDATE "Files" SET 
+		return DB.query(`UPDATE "Files" SET 
 			submissionID = COALESCE($2, submissionID),
 			pathname = COALESCE($3, pathname),
 			type = COALESCE($4, pathname)
@@ -63,8 +63,8 @@ export class FileDB {
 		.then(extract).then(map(convertFile)).then(one)
 	}
 	
-	static deleteFile(fileID : string){
-		return query(`DELETE FROM "Files" 
+	static deleteFile(fileID : string, DB : pgDB = pool){
+		return DB.query(`DELETE FROM "Files" 
 			WHERE fileID=$1 
 			RETURNING *`,[fileID])
 		.then(extract).then(map(convertFile)).then(one)

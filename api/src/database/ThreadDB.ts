@@ -1,4 +1,4 @@
-import {query, extract, map, one} from "./HelperDB";
+import {pool, extract, map, one, pgDB } from "./HelperDB";
 import {Thread, DBThread, ExtendedThread, convertThread} from '../../../models/Thread';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 import { Comment, convertComment } from "../../../models/Comment";
@@ -9,27 +9,27 @@ import { Comment, convertComment } from "../../../models/Comment";
  */
 
 export class ThreadDB {
-	static getAllThreads() : Promise<Thread[]> {
+	static getAllThreads(DB : pgDB = pool) : Promise<Thread[]> {
 		return ThreadDB.getThreadsLimit(undefined)
 	}
 
-	static getThreadsLimit(limit : number | undefined) : Promise<Thread[]>{
+	static getThreadsLimit(limit : number | undefined, DB : pgDB = pool) : Promise<Thread[]>{
 		return ThreadDB.filterThread({}, limit)
 	}
 
-	static getThreadByID(commentThreadID : string) : Promise<Thread> {
+	static getThreadByID(commentThreadID : string, DB : pgDB = pool) : Promise<Thread> {
 		return ThreadDB.filterThread({commentThreadID}, 1).then(one)
 	}
 
-	static getThreadsBySubmission(submissionID : string) : Promise<Thread[]> {
+	static getThreadsBySubmission(submissionID : string, DB : pgDB = pool) : Promise<Thread[]> {
 		return ThreadDB.filterThread({submissionID}, undefined)
 	}
 
-	static getThreadsByFile(fileID : string) : Promise<Thread[]> {
+	static getThreadsByFile(fileID : string, DB : pgDB = pool) : Promise<Thread[]> {
 		return ThreadDB.filterThread({fileID}, undefined)
 	}
 
-	static filterThread(thread : Thread, limit : number | undefined) : Promise<Thread[]> {
+	static filterThread(thread : Thread, limit : number | undefined, DB : pgDB = pool) : Promise<Thread[]> {
 		const {
 			commentThreadID = undefined, 
 			submissionID = undefined, 
@@ -45,7 +45,7 @@ export class ThreadDB {
 
 		if (limit && limit < 0) limit = undefined
 
-		return query(`SELECT * FROM "CommentThread" 
+		return DB.query(`SELECT * FROM "CommentThread" 
 			WHERE
 				((NOT $2::bool) OR commentThreadID = $1)
 			AND ((NOT $4::bool) OR submissionID = $3)
@@ -63,7 +63,7 @@ export class ThreadDB {
 		.then(extract).then(map(convertThread))
 	}
 
-	static addThread(thread : Thread) : Promise<Thread> {
+	static addThread(thread : Thread, DB : pgDB = pool) : Promise<Thread> {
 		const {
 			// commentThreadID, 
 			submissionID, 
@@ -71,12 +71,12 @@ export class ThreadDB {
 			snippetID, 
 			visibilityState
 		} = thread
-		return query(`INSERT INTO "CommentThread" 
+		return DB.query(`INSERT INTO "CommentThread" 
 			VALUES (DEFAULT, $1, $2, $3, $4) 
 			RETURNING *`, [submissionID, fileID, snippetID, visibilityState])
 		.then(extract).then(map(convertThread)).then(one)
 	}
-	static updateThread(thread : Thread) {
+	static updateThread(thread : Thread, DB : pgDB = pool) {
 		const {
 			commentThreadID, 
 			submissionID = undefined, 
@@ -84,7 +84,7 @@ export class ThreadDB {
 			snippetID = undefined, 
 			visibilityState = undefined
 		} = thread
-		return query(`UPDATE "CommentThread" SET
+		return DB.query(`UPDATE "CommentThread" SET
 			submissionID = COALESCE($2, submissionID),
 			fileID = COALESCE($3, fileID),
 			snippetID = COALESCE($4, snippetID),
@@ -93,19 +93,19 @@ export class ThreadDB {
 			RETURNING *`, [commentThreadID, submissionID, fileID, snippetID, visibilityState])
 		.then(extract).then(map(convertThread)).then(one)
 	}
-	static deleteThread(commentThreadID : string) {
-		return query(`DELETE FROM "CommentThread" 
+	static deleteThread(commentThreadID : string, DB : pgDB = pool) {
+		return DB.query(`DELETE FROM "CommentThread" 
 			WHERE commentThreadID = $1 
 			RETURNING *`, [commentThreadID])
 		.then(extract).then(map(convertThread)).then(one)
 	}
-	static async addCommentSingle(firstQuery : Promise<Thread>) : Promise<ExtendedThread>{
+	static async addCommentSingle(firstQuery : Promise<Thread>, DB : pgDB = pool) : Promise<ExtendedThread>{
 		//receive first result, modify it to accomodate for comments.
 		const res : ExtendedThread = {...(await firstQuery), comments:[]}
 		//retrieve the threadID we need comments for
 		const id = res.commentThreadID!
 		//request comments from database
-		const comments = await query(`SELECT * 
+		const comments = await DB.query(`SELECT * 
 			FROM "Comments" 
 			WHERE commentThreadID = $1`, [id])
 		.then(extract).then(map(convertComment))
@@ -119,7 +119,7 @@ export class ThreadDB {
 		res.comments=comments;
 		return res;
 	}
-	static async addComments(firstQuery : Promise<Thread[]>) : Promise<ExtendedThread[]>{
+	static async addComments(firstQuery : Promise<Thread[]>, DB : pgDB = pool) : Promise<ExtendedThread[]>{
 		//receive first result, modify the incomming result to be of type ExtendedThread
 		const res : ExtendedThread[] = (await firstQuery).map((el : Thread) => ({...el, comments:[]}))
 		//create a mapping to later quickly insert comments
@@ -131,7 +131,7 @@ export class ThreadDB {
 		//retrieve the IDS we neeed to get comments for
 		const ids = res.map((el : Thread) => el.commentThreadID!)
 		//query database
-		const comments = await query(`SELECT * 
+		const comments = await DB.query(`SELECT * 
 			FROM "Comments" 
 			WHERE commentThreadID = ANY($1)`, [ids])
 		.then(extract).then(map(convertComment))

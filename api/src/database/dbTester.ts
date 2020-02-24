@@ -1,4 +1,4 @@
-import {end} from './HelperDB'
+import {end, pgDB } from './HelperDB'
 import {UserDB as UH}	from './UserDB'
 import {CourseDB as CH}	from './CourseDB'
 import {RolePermissionDB as RPH}	from "./RolePermissionDB"

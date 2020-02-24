@@ -86,7 +86,7 @@ searchRouter.get('/:q',
     async (request : Request, result : Response) => {
         const search = request.params['q'];
         if (!search){
-            result.sendStatus(400);
+            result.status(400).send();
         }
         const users = await UserDB.searchUser(search);
         const comments = await CommentDB.textSearch(search);

@@ -1,7 +1,9 @@
 import * as pg from "pg"
 console.log("helper startup")
 
-const pool = new pg.Pool({
+export type pgDB = pg.Pool | pg.Client
+
+export const pool = new pg.Pool({
 	user: 'assistantassistant',
 	host: 'localhost',
 	database: 'assistantassistant',
@@ -9,7 +11,6 @@ const pool = new pg.Pool({
 	port: 5432,
 	max: 1
 });
-export const query = pool.query.bind(pool);
 export const end = pool.end.bind(pool);
 
 export function toBin(n : number | undefined){

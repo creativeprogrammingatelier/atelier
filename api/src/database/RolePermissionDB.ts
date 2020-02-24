@@ -1,4 +1,4 @@
-import {query, extract, map, one, toBin} from "./HelperDB";
+import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
 import {localRole, checkEnum} from '../../../enums/localRoleEnum'
 import {RolePermission, DBRolePermission, convertRolePermission} from '../../../models/RolePermission'
 /**
@@ -10,8 +10,8 @@ export class RolePermissionDB {
 	/**
 	 * get all roles currently stored in the database, given to onSuccess as a list of Permission
 	 */
-	static getAllRoles(){
-		return query(`SELECT * FROM "CourseRolePermissions"`)
+	static getAllRoles(DB : pgDB = pool){
+		return DB.query(`SELECT * FROM "CourseRolePermissions"`)
 		.then(extract).then(map(convertRolePermission))
 	}
 
@@ -19,8 +19,8 @@ export class RolePermissionDB {
 	 * get all permissions associated with a role currently stored in the database by name, 
 	 * given to onSuccess as an Permission
 	 */
-	static getRolePermissions(role : string){
-		return query(`SELECT * 
+	static getRolePermissions(role : string, DB : pgDB = pool){
+		return DB.query(`SELECT * 
 			FROM "CourseRolePermissions" 
 			WHERE courseRoleID=$1`,[role])
 		.then(extract).then(map(convertRolePermission)).then(one)
@@ -29,8 +29,8 @@ export class RolePermissionDB {
 	/**
 	 * Add a new role to the database
 	 */
-	static addNewLocalRole(name : string, permissions : number){
-		return query(`INSERT INTO "CourseRolePermissions" 
+	static addNewLocalRole(name : string, permissions : number, DB : pgDB = pool){
+		return DB.query(`INSERT INTO "CourseRolePermissions" 
 			VALUES ($1,$2) 
 			RETURNING *`, [name, toBin(permissions)])
 		.then(extract).then(map(convertRolePermission)).then(one)
@@ -39,8 +39,8 @@ export class RolePermissionDB {
 	 * set the the permissions for a role in the database.
 	 * all old permissions will NOT be retained.
 	 */
-	static setPermissionOnRole(name : string, permissions : number){
-		return query(`UPDATE "CourseRolePermissions" 
+	static setPermissionOnRole(name : string, permissions : number, DB : pgDB = pool){
+		return DB.query(`UPDATE "CourseRolePermissions" 
 			SET permission = $2 
 			WHERE courseRoleID=$1 
 			RETURNING *`,[name, toBin(permissions)])
@@ -52,8 +52,8 @@ export class RolePermissionDB {
 	 * If the role already has some of the rights, those will be retained
 	 * No permissions will be removed
 	 */
-	static addPermissionToRole(name : string, permission : number){
-		return query(`UPDATE "CourseRolePermissions" 
+	static addPermissionToRole(name : string, permission : number, DB : pgDB = pool){
+		return DB.query(`UPDATE "CourseRolePermissions" 
 			SET permission=permission | $2 
 			WHERE courseRoleID=$1 
 			RETURNING *`,[name, toBin(permission)])
@@ -66,8 +66,8 @@ export class RolePermissionDB {
 	 * If the role already does not have (some of) the rights, those will not enabled
 	 * No permissions will be added
 	 */
-	static removePermissionFromRole(name : string, permission : number){
-		return query(`UPDATE "CourseRolePermissions" 
+	static removePermissionFromRole(name : string, permission : number, DB : pgDB = pool){
+		return DB.query(`UPDATE "CourseRolePermissions" 
 			SET permission=permission & (~($2::bit(40))) 
 			WHERE courseRoleID=$1 
 			RETURNING *`,[name, toBin(permission)])
@@ -79,8 +79,8 @@ export class RolePermissionDB {
 	 * This may fail due to foreign key constraints if there are still users with this role in a course.
 	 * make sure to change those permissions first.
 	 */
-	static deleteLocalRole(name : string) {
-		return query(`DELETE FROM "CourseRolePermissions" 
+	static deleteLocalRole(name : string, DB : pgDB = pool) {
+		return DB.query(`DELETE FROM "CourseRolePermissions" 
 			WHERE courseRoleID=$1 
 			RETURNING *`,[name])
 		.then(extract).then(map(convertRolePermission)).then(one)

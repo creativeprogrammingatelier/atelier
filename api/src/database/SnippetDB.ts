@@ -1,4 +1,4 @@
-import {query, extract, map, one} from "./HelperDB";
+import {pool, extract, map, one, pgDB } from "./HelperDB";
 import {Snippet, DBSnippet, convertSnippet} from '../../../models/Snippet';
 
 /**
@@ -6,19 +6,19 @@ import {Snippet, DBSnippet, convertSnippet} from '../../../models/Snippet';
  * @Author Rens Leendertz
  */
 export class SnippetDB {
-	static getAllSnippets(){
+	static getAllSnippets(DB : pgDB = pool){
 		return SnippetDB.filterSnippet({})
 	}
 	
-	static getSnippetsByFile(fileID : string){
+	static getSnippetsByFile(fileID : string, DB : pgDB = pool){
 		return SnippetDB.filterSnippet({fileID})
 	}
 	
-	static getSnippetByID(snippetID : string) {
+	static getSnippetByID(snippetID : string, DB : pgDB = pool) {
 		return SnippetDB.filterSnippet({snippetID}).then(one)
 	}
 
-	static filterSnippet(snippet : Snippet){
+	static filterSnippet(snippet : Snippet, DB : pgDB = pool){
 		const {
 			snippetID = undefined,
 			lineStart = undefined,
@@ -27,7 +27,7 @@ export class SnippetDB {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return query(`SELECT * FROM "Snippets" 
+		return DB.query(`SELECT * FROM "Snippets" 
 			WHERE
 				($1::uuid IS NULL OR snippetID=$1)
 			AND ($2::integer IS NULL OR lineStart=$2)
@@ -39,7 +39,7 @@ export class SnippetDB {
 		.then(extract).then(map(convertSnippet))
 	}
 
-	static addSnippet(snippet : Snippet){
+	static addSnippet(snippet : Snippet, DB : pgDB = pool){
 		const {
 			lineStart,
 			lineEnd,
@@ -47,13 +47,13 @@ export class SnippetDB {
 			charEnd,
 			fileID
 		} = snippet
-		return query(`INSERT INTO "Snippets" 
+		return DB.query(`INSERT INTO "Snippets" 
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
 			RETURNING *`, [lineStart, lineEnd, charStart, charEnd,fileID])
 		.then(extract).then(map(convertSnippet)).then(one)
 	}
 
-	static updateSnippet(snippet : Snippet){
+	static updateSnippet(snippet : Snippet, DB : pgDB = pool){
 		const {
 			snippetID,
 			lineStart = undefined,
@@ -62,7 +62,7 @@ export class SnippetDB {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return query(`UPDATE "Snippets" SET 
+		return DB.query(`UPDATE "Snippets" SET 
 			lineStart = COALESCE($2, lineStart),
 			lineEnd = COALESCE($3, lineEnd),
 			charStart = COALESCE($4, charStart),
@@ -73,8 +73,8 @@ export class SnippetDB {
 		.then(extract).then(map(convertSnippet)).then(one)
 	}
 
-	static deleteSnippet(snippetID : string){
-		return query(`DELETE FROM "Snippets" 
+	static deleteSnippet(snippetID : string, DB : pgDB = pool){
+		return DB.query(`DELETE FROM "Snippets" 
 			WHERE snippetID = $1 
 			RETURNING *`, [snippetID])
 		.then(extract).then(map(convertSnippet)).then(one)
