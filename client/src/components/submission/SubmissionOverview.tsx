@@ -9,6 +9,7 @@ import {Submission} from "../../../../models/Submission";
 import {File} from "../../../../models/File";
 import {CommentThread} from "../../placeholdermodels";
 import {Loading} from "../general/Loading";
+import AuthHelper from "../../../helpers/AuthHelper";
 
 interface SubmissionOverviewProps {
 	match: {
