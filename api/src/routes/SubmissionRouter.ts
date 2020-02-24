@@ -5,15 +5,16 @@
 import express, {Response, Request} from 'express';
 import {SubmissionDB} from "../database/SubmissionDB";
 import {Submission} from "../../../models/Submission";
+import {UUIDHelper} from "../helpers/UUIDHelper";
 
-export const submissionsRouter = express.Router();
+export const submissionRouter = express.Router();
 
 /** Get submissions of a course
  * @type: get
  * @url: /api/submissions/course/:courseId
  * @return: submissions of a certain course
  */
-submissionsRouter.get('/course/:courseID',
+submissionRouter.get('/course/:courseID',
     (request: Request, result: Response) => {
         const courseID = request.params.courseID;
         SubmissionDB.getSubmissionsByCourse(courseID)
@@ -32,7 +33,7 @@ submissionsRouter.get('/course/:courseID',
  * @param limit? : limit to submissions in the body
  * @return submissions of a user
  */
-submissionsRouter.get('/user/:userID',
+submissionRouter.get('/user/:userID',
     (request: Request, result: Response) => {
         const userID : string = request.params.userID;
         const limit : number | undefined = request.body.limit;
@@ -50,7 +51,7 @@ submissionsRouter.get('/user/:userID',
  * @param userId (string) : id of the user
  * @param name (string) : name of the user
  */
-submissionsRouter.post('/',
+submissionRouter.post('/',
     (request: Request, result: Response) => {
         // TODO get userID from logged in user
         // TODO get name from logged in user
@@ -64,3 +65,13 @@ submissionsRouter.post('/',
             })
             .catch((error: any) => result.status(500).send({error: error}));
     });
+
+submissionRouter.get("/:submissionId", (request: Request, response: Response) => {
+    console.log("Gotten a request for a submission");
+    console.log(request.params);
+
+    console.log(UUIDHelper.toUUID(request.params.submissionId));
+    console.log(UUIDHelper.fromUUID(UUIDHelper.toUUID(request.params.submissionId)));
+
+    response.send({});
+});
