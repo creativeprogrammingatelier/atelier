@@ -62,10 +62,6 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	const newComment = (text: string) => {
 		AuthHelper.fetch(`/api/comment/${thread.commentThreadID}`, {
 			method : 'PUT',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
 			body : JSON.stringify({
 				userID : "00000000-0000-0000-0000-000000000000",
 				body : text

@@ -268,10 +268,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 
 		AuthHelper.fetch(`/api/commentThread/file/${fileID}`, {
 			method : 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
 			body : JSON.stringify({
 				submissionID : submissionID,
 				lineStart : this.state.commentStartLine,
