@@ -1,15 +1,13 @@
-const HH = require("./HelperHelper");
+import {query, extract, map, one, toBin} from "./HelperDB";
 
 import {CourseRegistration, convertCourseReg} from '../../../models/CourseRegistration';
-import RolePermissionHelper from './RolePermissionsHelper'
+import {RolePermissionDB} from './RolePermissionDB'
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
  */
-const {query, extract, map, one} = HH;
-export default class CourseRegistrationHelper {
 
-	static toBin = RolePermissionHelper.toBin;
+ export class CourseRegistrationDB {
 
 	/**
 	 * return all entries in this table, with permissions set correctly
@@ -73,9 +71,9 @@ export default class CourseRegistrationHelper {
 			role,
 			permission = 0
 		} = entry;
-		return query(`INSERT INTO \"CourseRegistration\" 
+		return query(`INSERT INTO "CourseRegistration" 
 			VALUES ($1,$2,$3,$4) 
-			RETURNING *`, [courseID, userID, role, CourseRegistrationHelper.toBin(permission)])
+			RETURNING *`, [courseID, userID, role, toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -90,11 +88,10 @@ export default class CourseRegistrationHelper {
 			userID,
 			role
 		} = entry;
-		return query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE "CourseRegistration" SET 
 			courseRole=COALESCE($3, courseRole)
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *
-			`, [courseID, userID, role])
+			RETURNING *`, [courseID, userID, role])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -109,11 +106,10 @@ export default class CourseRegistrationHelper {
 			userID,
 			permission
 		} = entry;
-		return query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE "CourseRegistration" SET 
 			permission=permission | $3
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *
-			`, [courseID, userID, CourseRegistrationHelper.toBin(permission)])
+			RETURNING *`, [courseID, userID, toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -129,11 +125,10 @@ export default class CourseRegistrationHelper {
 			userID,
 			permission
 		} = entry;
-		return query(`UPDATE \"CourseRegistration\" SET 
+		return query(`UPDATE "CourseRegistration" SET 
 			permission=permission & ~($3::bit(40))
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *
-			`, [courseID, userID, CourseRegistrationHelper.toBin(permission)])
+			RETURNING *`, [courseID, userID, toBin(permission)])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -146,7 +141,9 @@ export default class CourseRegistrationHelper {
 			courseID,
 			userID
 		} = entry;
-		return query("DELETE FROM \"CourseRegistration\" WHERE courseID=$1 AND userID=$2 RETURNING *", [courseID, userID])
+		return query(`DELETE FROM "CourseRegistration" 
+			WHERE courseID=$1 AND userID=$2 
+			RETURNING *`, [courseID, userID])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 }

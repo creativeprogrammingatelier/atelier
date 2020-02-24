@@ -1,19 +1,17 @@
-const HH = require("./HelperHelper")
-
+import {query, extract, map, one} from "./HelperDB";
 import {Course, convertCourse} from '../../../models/Course';
 
 /**
  * @Author Rens Leendertz
  */
-const {query, one, map, extract} = HH;
 
-export default class CoursesHelper {
+export class CourseDB {
 	
 	/**
 	 * Many
 	 */
 	static getAllCourses() : Promise<Course[]> {
-		return query("SELECT * FROM \"Courses\"")
+		return query(`SELECT * FROM "Courses"`)
 		.then(extract).then(map(convertCourse))
 	}
 
@@ -21,7 +19,7 @@ export default class CoursesHelper {
 	 * One
 	 */
 	static getCourseByID(courseID : string) : Promise<Course>{
-		return query("SELECT * FROM \"Courses\" WHERE courseID =$1",[courseID])
+		return query(`SELECT * FROM "Courses" WHERE courseID =$1`,[courseID])
 		.then(extract).then(map(convertCourse)).then(one)
 	}
 	/**
@@ -33,7 +31,9 @@ export default class CoursesHelper {
 			state,
 			creatorID = undefined
 		} = course;
-		return query("INSERT INTO \"Courses\" VALUES (DEFAULT, $1, $2, $3) RETURNING *", [name, state, creatorID])
+		return query(`INSERT INTO "Courses" 
+			VALUES (DEFAULT, $1, $2, $3) 
+			RETURNING *`, [name, state, creatorID])
 		.then(extract).then(map(convertCourse)).then(one)
 	}
 
@@ -41,7 +41,9 @@ export default class CoursesHelper {
 	 * One
 	 */
 	static deleteCourseByID(courseID : string) : Promise<Course>{
-		return query("DELETE FROM \"Courses\" WHERE courseID=$1 RETURNING *",[courseID])
+		return query(`DELETE FROM "Courses" 
+		WHERE courseID=$1 
+		RETURNING *`,[courseID])
 		.then(extract).then(map(convertCourse)).then(one)
 	}
 
@@ -55,7 +57,7 @@ export default class CoursesHelper {
 			state = undefined,
 			creatorID = undefined
 		} = course;
-		return query(`UPDATE \"Courses\" SET 
+		return query(`UPDATE "Courses" SET 
 			name=COALESCE($2, name),
 			state=COALESCE($3,state),
 			creator=COALESCE($4,creator)
