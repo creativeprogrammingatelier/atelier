@@ -3,7 +3,7 @@ import {PanelButton} from './general/PanelButton'
 import {Frame} from './frame/Frame';
 import {Loading} from "./general/Loading";
 import {AddCourse} from "./course/AddCourse";
-import {Course} from "../../../models/course";
+import {Course} from "../../../models/database/Course";
 import AuthHelper from './../../helpers/AuthHelper';
 
 export function Homepage() {

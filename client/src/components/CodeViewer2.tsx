@@ -5,8 +5,8 @@ import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import {Controlled as CodeMirror} from 'react-codemirror2';
-import {Comment} from '../../../models/Comment';
-import {File} from '../../../models/File';
+import {Comment} from '../../../models/database/Comment';
+import {File} from '../../../models/database/File';
 import {FileComment, FileSnippet} from "./submission/CodeTab";
 import {Editor} from "codemirror";
 import {WriteComment} from "./submission/comment/WriteComment";
@@ -15,7 +15,7 @@ import { withRouter } from 'react-router';
 import AuthHelper from './../../helpers/AuthHelper';
 
 import {start} from "repl";
-import {ExtendedThread} from "../../../models/Thread";
+import {ExtendedThread} from "../../../models/database/Thread";
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -267,10 +267,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 
 		AuthHelper.fetch(`/api/commentThread/file/${fileID}`, {
 			method : 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
 			body : JSON.stringify({
 				submissionID : submissionID,
 				lineStart : this.state.commentStartLine,

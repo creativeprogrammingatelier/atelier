@@ -1,5 +1,5 @@
 import {query, extract, map, one} from "./HelperDB";
-import {File, DBFile, convertFile} from '../../../models/File';
+import {File, DBFile, convertFile} from '../../../models/database/File';
 
 /**
  * fileID, submissionID, pathname, type

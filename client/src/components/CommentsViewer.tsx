@@ -8,8 +8,8 @@ import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import CommentCreator from './CommentCreator';
 //@ts-ignore
 import io from 'socket.io-client';
-import { Comment } from '../../../models/comment';
-import {File} from '../../../models/File';
+import { Comment } from '../../../models/database/Comment';
+import {File} from '../../../models/database/File';
 
 type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: File}
 type CommentsViewerState = {file: File, currentLineNumber: number, comments: Comment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function}

@@ -16,7 +16,7 @@ import { coursesRouter } from './routes/CoursesRouter';
 import { fileRouter } from './routes/FileRouter';
 import { indexRouter } from './routes/IndexRouter';
 import { searchRouter } from './routes/SearchRouter';
-import { submissionsRouter } from './routes/SubmissionsRouter';
+import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
 import {commentRouter} from "./routes/CommentRouter";
@@ -52,7 +52,7 @@ app.use('/api/courses', coursesRouter);
 app.use('/api/file', fileRouter);
 app.use('/api/files', filesRouter);
 app.use('/api/search', searchRouter);
-app.use('/api/submissions', submissionsRouter);
+app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);
 app.use('/', indexRouter);
 

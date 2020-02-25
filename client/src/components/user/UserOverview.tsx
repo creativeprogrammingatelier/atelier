@@ -7,8 +7,8 @@ import {
 	UserResponse
 } from "../../helpers/DatabaseResponseInterface";
 import {Loading} from "../general/Loading";
-import {User} from "../../../../models/User";
-import {Submission} from "../../../../models/Submission";
+import {User} from "../../../../models/database/User";
+import {Submission} from "../../../../models/database/Submission";
 import AuthHelper from './../../../helpers/AuthHelper';
 
 
@@ -21,7 +21,7 @@ interface UserOverviewProperties {
 }
 
 export function UserOverview({match: { params: { userId } } }: UserOverviewProperties) {
-    const getSubmissions = (userId: string) => AuthHelper.fetch(`/api/submissions/user/${userId}`).then(res => res.json());
+	const getSubmissions = (userId: string) => AuthHelper.fetch(`/api/submissions/user/${userId}`).then(res => res.json());
 	const getUser = (userId: string) => AuthHelper.fetch(`/api/user/${userId}`).then(res => res.json());
 	// getComments?
 

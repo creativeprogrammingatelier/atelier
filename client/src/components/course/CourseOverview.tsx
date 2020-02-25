@@ -2,8 +2,8 @@ import React from 'react';
 import {Frame} from '../frame/Frame';
 import {DataBlockList} from '../general/DataBlockList';
 import {Loading} from '../general/Loading';
+import {Submission} from "../../../../models/database/Submission";
 import AuthHelper from './../../../helpers/AuthHelper';
-import { Submission } from '../../../../models/Submission';
 
 interface CourseOverviewProps {
 	match: {

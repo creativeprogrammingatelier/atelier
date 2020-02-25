@@ -1,10 +1,10 @@
 import React from "react";
 
 import {CommentThread} from "./comment/CommentThread";
-import {File} from "../../../../models/File";
+import {File} from "../../../../models/database/File";
 import { Loading } from "../general/Loading";
 import AuthHelper from "../../../helpers/AuthHelper";
-import { ExtendedThread } from "../../../../models/Thread";
+import { ExtendedThread } from "../../../../models/database/Thread";
 
 interface CommentTabProperties {
     file: File

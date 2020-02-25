@@ -5,7 +5,7 @@ import {faFileDownload, faEye, faTrash} from '@fortawesome/free-solid-svg-icons'
 import FileHelper from '../../helpers/FileHelper';
 import CommentsViewer from './CommentsViewer';
 import {useRef} from 'react';
-import {File} from '../../../models/File';
+import {File} from '../../../models/database/File';
 
 class FileViewer extends React.Component<{files: File[], update: Function}> {
 	state: {viewedFile: File | null, currentLineNumber: number};

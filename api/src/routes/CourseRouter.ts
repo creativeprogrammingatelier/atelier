@@ -4,7 +4,7 @@
 
 import express, { Response, Request } from 'express';
 import {CourseDB} from "../database/CourseDB";
-import {Course} from "../../../models/course";
+import {Course} from "../../../models/database/Course";
 import {courseState} from "../../../enums/courseStateEnum";
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
@@ -25,7 +25,9 @@ courseRouter.post('/',
     (request : Request, result : Response) => {
         const name : string = request.body.name;
         const state : courseState = request.body.state;
-        const creatorID : number = request.body.creatorID;
+        const creatorID : number | undefined = request.body.creatorID;
+
+        console.log(name, state, creatorID);
 
         CourseDB.addCourse({ name, state, creatorID  })
             .then((course : Course) => {

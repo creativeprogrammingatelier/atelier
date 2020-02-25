@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {InputField} from "../general/InputField";
-import {Course} from "../../../../models/course";
+import {Course} from "../../../../models/database/Course";
 import AuthHelper from './../../../helpers/AuthHelper';
 
 interface AddCourseProps {
@@ -13,10 +13,6 @@ export function AddCourse({handleResponse} : AddCourseProps) {
         // TODO pass token so backend can get userID
         AuthHelper.fetch('/api/course', {
             method : 'POST',
-            headers : {
-                'Accept' : 'application/json',
-                'Content-Type' : 'application/json'
-            },
             body : JSON.stringify({
                 name : courseName,
                 state : 'open',

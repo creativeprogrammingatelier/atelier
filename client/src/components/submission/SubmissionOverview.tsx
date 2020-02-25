@@ -5,11 +5,11 @@ import {Button} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/DataBlockList";
 import {DataItemList} from "../general/DataItemList";
-import {File} from "../../../../models/File";
+import {File} from "../../../../models/database/File";
 import {Loading} from "../general/Loading";
 import AuthHelper from "../../../helpers/AuthHelper";
 import { Header } from "../frame/Header";
-import { ExtendedThread } from "../../../../models/Thread";
+import { ExtendedThread } from "../../../../models/database/Thread";
 import { CommentThread } from "./comment/CommentThread";
 
 interface SubmissionOverviewProps {

@@ -1,4 +1,4 @@
-import {courseState, checkEnum} from "../enums/courseStateEnum"
+import {courseState, checkEnum} from "../../enums/courseStateEnum"
 
 export interface Course {
 	courseID?:string,

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {File} from "../../../../models/File";
+import {File} from "../../../../models/database/File";
 import CodeViewer2 from "../CodeViewer2";
 import {OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
 import AuthHelper from "../../../helpers/AuthHelper";
