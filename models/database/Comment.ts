@@ -1,3 +1,5 @@
+import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
+
 export interface Comment {
     commentID?: string,
     commentThreadID?: string, 
@@ -16,9 +18,9 @@ export interface DBComment {
 
 export function convertComment(db : DBComment) : Comment {
 	return {
-		commentID: db.commentid,
-		commentThreadID: db.commentthreadid,
-		userID: db.userid,
+		commentID: UUIDHelper.fromUUID(db.commentid),
+		commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
+		userID: UUIDHelper.fromUUID(db.userid),
 		date: db.date,
 		body: db.body
 	}

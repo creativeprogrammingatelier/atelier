@@ -1,6 +1,7 @@
-import {extract, map, one, pool, pgDB  } from "./HelperDB";
+import {extract, map, one, pool, pgDB, checkAvailable  } from "./HelperDB";
 import {Submission, DBSubmission, convertSubmission} from '../../../models/database/Submission';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
+import { UUIDHelper } from "../helpers/UUIDHelper";
 
 /**
  * submissionID, userID, name, date, state
@@ -12,14 +13,14 @@ export class SubmissionDB {
 	 * return all submissions in the database
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	 */
-	static getAllSubmissions(limit?: number, DB : pgDB = pool) {
+	static async getAllSubmissions(limit?: number, DB : pgDB = pool) {
 		return SubmissionDB.getRecents({}, limit !== undefined && limit >= 0 ? limit : undefined)
 	}
 	/*
 	 * get all submissions of a user.
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	*/
-	static getUserSubmissions(userID: string, limit?: number, DB : pgDB = pool) {
+	static async getUserSubmissions(userID: string, limit?: number, DB : pgDB = pool) {
 		return SubmissionDB.getRecents({ userID }, limit !== undefined && limit >= 0 ? limit : undefined)
 
 	}
@@ -28,7 +29,7 @@ export class SubmissionDB {
 	 * return a submission in the database
 	 * undefined if specified id does not exist
 	 */
-	static getSubmissionById(submissionID: string, DB : pgDB = pool) {
+	static async getSubmissionById(submissionID: string, DB : pgDB = pool) {
 		return SubmissionDB.getRecents({ submissionID }, 1)
 			.then(one)
 	}
@@ -37,7 +38,7 @@ export class SubmissionDB {
 	 * @param submission 
 	 * @param limit 
 	 */
-	static getSubmissionsByCourse(courseID: string, DB : pgDB = pool) {
+	static async getSubmissionsByCourse(courseID: string, DB : pgDB = pool) {
 		return SubmissionDB.getRecents({ courseID }, undefined);
 	}
 	/*
@@ -50,7 +51,7 @@ export class SubmissionDB {
 	 * The parameter date will be treated differently:
 	 * if set, only submissions that are more recent will be displayed.
 	 */
-	static getRecents(submission: Submission, limit: number | undefined, DB : pgDB = pool) {
+	static async getRecents(submission: Submission, limit: number | undefined, DB : pgDB = pool) {
 		const {
 			submissionID = undefined,
 			courseID = undefined,
@@ -59,6 +60,9 @@ export class SubmissionDB {
 			date = undefined,
 			state = undefined
 		} = submission
+		const submissionid = UUIDHelper.toUUID(submissionID),
+			courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID);
 		if (limit && limit < 0) limit = undefined
 		return DB.query(`SELECT * 
 			FROM "Submissions" 
@@ -70,7 +74,7 @@ export class SubmissionDB {
 				AND ($5::timestamp IS NULL OR date <= $5)
 				AND ($6::text IS NULL OR state=$6)
 			ORDER BY date DESC
-			LIMIT $7`, [submissionID, courseID, userID, name, date, state, limit])
+			LIMIT $7`, [submissionid, courseid, userid, name, date, state, limit])
 			.then(extract).then(map(convertSubmission))
 	}
 
@@ -80,7 +84,8 @@ export class SubmissionDB {
 	 * Even though not required, date and state can be given
 	 * When not given, each of these columns will default to their standard value
 	 */
-	static addSubmission(submission: Submission, DB : pgDB = pool) {
+	static async addSubmission(submission: Submission, DB : pgDB = pool) {
+		checkAvailable(['courseID','userID','name'], submission)
 		const {
 			courseID,
 			userID,
@@ -88,26 +93,30 @@ export class SubmissionDB {
 			date = new Date(),
 			state = submissionStatus.new
 		} = submission
+		const courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID);
 		return DB.query(`INSERT INTO "Submissions" 
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
-			RETURNING *`, [courseID, userID, name, date, state])
+			RETURNING *`, [courseid, userid, name, date, state])
 			.then(extract).then(map(convertSubmission)).then(one)
 	}
 
-	/* delete an submission from the database.
-	 *
+	/**
+	 *  delete an submission from the database.
 	 */
-	static deleteSubmission(submissionID: string, DB : pgDB = pool) {
+	static async deleteSubmission(submissionID: string, DB : pgDB = pool) {
+		const submissionid = UUIDHelper.toUUID(submissionID);
 		return DB.query(`DELETE FROM "Submissions" 
 			WHERE submissionID=$1 
-			RETURNING *`, [submissionID])
+			RETURNING *`, [submissionid])
 			.then(extract).then(map(convertSubmission)).then(one)
 	}
 	/*
 	 * update a submission submissionid is required, all others are optional.
 	 * params not given will be left unchanged.
 	 */
-	static updateSubmission(submission: Submission, DB : pgDB = pool) {
+	static async updateSubmission(submission: Submission, DB : pgDB = pool) {
+		checkAvailable(['submissionID'], submission)
 		const {
 			submissionID,
 			courseID = undefined,
@@ -116,6 +125,9 @@ export class SubmissionDB {
 			date = undefined,
 			state = undefined
 		} = submission
+		const submissionid = UUIDHelper.toUUID(submissionID),
+			courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID);
 		return DB.query(`UPDATE "Submissions" SET
 			courseID = COALESCE($2, courseID),
 			userid = COALESCE($3, userid),
@@ -124,7 +136,7 @@ export class SubmissionDB {
 			state = COALESCE($6, state)
 			WHERE submissionID=$1
 			RETURNING *`
-			, [submissionID, courseID, userID, name, date, state])
+			, [submissionid, courseid, userid, name, date, state])
 			.then(extract).then(map(convertSubmission)).then(one)
 	}
 }

@@ -1,7 +1,8 @@
-import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
+import {pool, extract, map, one, toBin, pgDB, checkAvailable } from "./HelperDB";
 
 import {CourseRegistration, convertCourseReg} from '../../../models/database/CourseRegistration';
 import {RolePermissionDB} from './RolePermissionDB'
+import { UUIDHelper, ID64 } from "../helpers/UUIDHelper";
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
@@ -12,7 +13,7 @@ import {RolePermissionDB} from './RolePermissionDB'
 	/**
 	 * return all entries in this table, with permissions set correctly
 	 */
-	 static getAllEntries(DB : pgDB = pool) {
+	 static async getAllEntries(DB : pgDB = pool) {
 		return DB.query(`SELECT 
 				userID, 
 				courseID, 
@@ -29,7 +30,8 @@ import {RolePermissionDB} from './RolePermissionDB'
 	/**
 	 * get all users entered in a specific course. permissions set correctly
 	 */
-	static getEntriesByCourse(courseID : string, DB : pgDB = pool) {
+	static async getEntriesByCourse(courseID : ID64, DB : pgDB = pool) {
+		const courseid = UUIDHelper.toUUID(courseID);
 		return DB.query(`SELECT 
 				userID, 
 				courseID, 
@@ -39,14 +41,15 @@ import {RolePermissionDB} from './RolePermissionDB'
 							 WHERE courseRoleID=courseRole
 							) AS permission
 			FROM "CourseRegistration"
-			WHERE courseID=$1`, [courseID])
+			WHERE courseID=$1`, [courseid])
 		.then(extract).then(map(convertCourseReg))
 	}
 
 	/**
 	 * get all courses a user is entered into. permissions set correctly
 	 */
-	static getEntriesByUser(userID : string, DB : pgDB = pool) {
+	static async getEntriesByUser(userID : ID64, DB : pgDB = pool) {
+		const userid = UUIDHelper.toUUID(userID);
 		return DB.query(`SELECT 
 				userID, 
 				courseID, 
@@ -56,7 +59,7 @@ import {RolePermissionDB} from './RolePermissionDB'
 							 WHERE courseRoleID=courseRole
 							) AS permission
 			FROM "CourseRegistration" 
-			WHERE userID=$1`, [userID])
+			WHERE userID=$1`, [userid])
 		.then(extract).then(map(convertCourseReg))
 		
 	}
@@ -64,16 +67,20 @@ import {RolePermissionDB} from './RolePermissionDB'
 	/**
 	 * add a new entry, all is required but permission. This defaults to no elevated permissions.
 	 */
-	static addEntry(entry : CourseRegistration, DB : pgDB = pool){
+	static async addEntry(entry : CourseRegistration, DB : pgDB = pool){
+		checkAvailable(['courseID','userID','role'], entry);
 		const {
 			courseID,
 			userID,
 			role,
 			permission = 0
 		} = entry;
+		const courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID),
+			perm = toBin(permission)
 		return DB.query(`INSERT INTO "CourseRegistration" 
 			VALUES ($1,$2,$3,$4) 
-			RETURNING *`, [courseID, userID, role, toBin(permission)])
+			RETURNING *`, [courseid, userid, role, perm])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -82,16 +89,19 @@ import {RolePermissionDB} from './RolePermissionDB'
 	 *
 	 * permission field will be ignored
 	 */
-	static updateRole(entry : CourseRegistration, DB : pgDB = pool){
+	static async updateRole(entry : CourseRegistration, DB : pgDB = pool){
+		checkAvailable(['courseID','userID','role'], entry)
 		const {
 			courseID,
 			userID,
 			role
 		} = entry;
+		const courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID);
 		return DB.query(`UPDATE "CourseRegistration" SET 
 			courseRole=COALESCE($3, courseRole)
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *`, [courseID, userID, role])
+			RETURNING *`, [courseid, userid, role])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -100,16 +110,20 @@ import {RolePermissionDB} from './RolePermissionDB'
 	 * The given field will be unioned with the current state.
 	 * the role field will be ignored, others are mandatory.
 	 */
-	static addPermission(entry : CourseRegistration, DB : pgDB = pool){
+	static async addPermission(entry : CourseRegistration, DB : pgDB = pool){
+		checkAvailable(['courseID','userID','permission'], entry)
 		const {
 			courseID,
 			userID,
 			permission
 		} = entry;
+		const courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID),
+			perm = toBin(permission);
 		return DB.query(`UPDATE "CourseRegistration" SET 
 			permission=permission | $3
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *`, [courseID, userID, toBin(permission)])
+			RETURNING *`, [courseid, userid, perm])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -119,16 +133,20 @@ import {RolePermissionDB} from './RolePermissionDB'
 	 * A user will keep the permissions associated with its role. these cannot be removed.
 	 * the role field will be ignored, others are mandatory.
 	 */
-	static removePermission(entry : CourseRegistration, DB : pgDB = pool){
+	static async removePermission(entry : CourseRegistration, DB : pgDB = pool){
+		checkAvailable(['courseID','userID','permission'], entry)
 		const {
 			courseID,
 			userID,
 			permission
 		} = entry;
+		const courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID),
+			perm = toBin(permission);
 		return DB.query(`UPDATE "CourseRegistration" SET 
 			permission=permission & ~($3::bit(40))
 			WHERE courseID=$1 AND userID=$2
-			RETURNING *`, [courseID, userID, toBin(permission)])
+			RETURNING *`, [courseid, userid, perm])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 
@@ -136,14 +154,17 @@ import {RolePermissionDB} from './RolePermissionDB'
 	 * remove a user from a course. 
 	 * permission and role will be ignored.
 	 */
-	static deleteEntry(entry : CourseRegistration, DB : pgDB = pool){
+	static async deleteEntry(entry : CourseRegistration, DB : pgDB = pool){
+		checkAvailable(['courseID','userID'], entry)
 		const {
 			courseID,
 			userID
 		} = entry;
+		const courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID)
 		return DB.query(`DELETE FROM "CourseRegistration" 
 			WHERE courseID=$1 AND userID=$2 
-			RETURNING *`, [courseID, userID])
+			RETURNING *`, [courseid, userid])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
 }

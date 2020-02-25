@@ -1,16 +1,17 @@
 import {courseState, checkEnum} from "../../enums/courseStateEnum"
+import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 
 export interface Course {
 	courseID?:string,
 	name?: string,
-	creatorID?: number,
+	creatorID?: string,
 	state?: courseState
 }
 
 export interface DBCourse {
 	courseid:string,
 	name: string,
-	creatorid: number,
+	creatorid: string,
 	state:string
 }
 
@@ -20,9 +21,9 @@ export function convertCourse(db : DBCourse) : Course {
 		throw new Error('non-existent enum type from db: '+db.state)
 	}
 	return {
-		courseID:db.courseid,
+		courseID:UUIDHelper.fromUUID(db.courseid),
 		name:db.name,
-		creatorID:db.creatorid,
+		creatorID:UUIDHelper.fromUUID(db.creatorid),
 		state:courseState[db.state]
 	}
 }

@@ -17,6 +17,13 @@ export function toBin(n : number | undefined){
 	if (n === undefined) return undefined
 	return n.toString(2).padStart(40, '0')
 }
+export function checkAvailable(required : string[], obj : {}){
+	required.forEach(element => {
+		if (!(element in obj)){
+			throw new Error("a required field is missing: "+element)
+		}
+	});
+}
 
 export function searchify(input : string){
 	return '%'+input.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')+'%'

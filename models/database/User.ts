@@ -1,5 +1,7 @@
+import { UUIDHelper, ID64, UUID } from "../../api/src/helpers/UUIDHelper";
+
 export interface User {
-	userID?: string;
+	userID?: ID64;
 	name?: string;
 	email?: string;
 	role?: string;
@@ -7,7 +9,7 @@ export interface User {
 }
 
 export interface DBUser {
-	userid: string;
+	userid: UUID;
 	name: string;
 	email: string;
 	role: string;
@@ -16,7 +18,7 @@ export interface DBUser {
 
 export function convertUser(db : DBUser) : User{
 	return {
-		userID:db.userid,
+		userID:UUIDHelper.fromUUID(db.userid),
 		name:db.name,
 		email:db.email,
 		role:db.role

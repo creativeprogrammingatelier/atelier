@@ -1,3 +1,5 @@
+import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
+
 /**
  * Modeling the file object
  * Author: Andrew Heath
@@ -20,8 +22,8 @@ export interface DBFile {
 
 export function convertFile(db : DBFile) : File {
 	return {
-		fileID: db.fileid,
-		submissionID: db.submissionid,
+		fileID: UUIDHelper.fromUUID(db.fileid),
+		submissionID: UUIDHelper.fromUUID(db.submissionid),
 		pathname: db.pathname,
 		type: db.type
 	}
