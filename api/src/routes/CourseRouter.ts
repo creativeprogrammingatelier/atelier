@@ -25,7 +25,9 @@ courseRouter.post('/',
     (request : Request, result : Response) => {
         const name : string = request.body.name;
         const state : courseState = request.body.state;
-        const creatorID : string = request.body.creatorID;
+        const creatorID : string | undefined = request.body.creatorID;
+
+        console.log(name, state, creatorID);
 
         CourseDB.addCourse({ name, state, creatorID  })
             .then((course : Course) => {
