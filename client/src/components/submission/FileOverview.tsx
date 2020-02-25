@@ -38,50 +38,32 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 		setActiveTab(tab);
 	}, [tab]);
 
-	const [loading, setLoading] = useState(true);
-	const [file, setFile] = useState({} as OpenFileResponse);
-	const [commentThreads, setCommentThreads] = useState([] as ExtendedThread[]);
 	const [title, setTitle] = useState("");
 
-	const getFile = AuthHelper.fetch(`/api/file/${fileId}`);
-	const getCommentThreads = AuthHelper.fetch(`/api/commentThreads/file/${fileId}`);
-
-	useEffect(() => {
-		Promise.all([getFile, getCommentThreads]).then(responses =>
-			Promise.all(responses.map(response => response.json()))
-		).then(data => {
-			setFile(data[0]);
-			setTitle(data[0].pathname);
-			setCommentThreads(data[1]);
-			setLoading(false);
-		}).catch((error : any) => console.log(error));
-	}, []);
-
+	const getFile = (fileId: string) => AuthHelper.fetch(`/api/file/${fileId}`);
 
 	const filePath = "/submission/" + submissionId + "/" + fileId;
-
-	// Display certain tab
-	let activeTabElement = <div><h1>Tab not found!</h1></div>;
-	if (activeTab === "code") {
-		activeTabElement = <CodeTab file={file} submissionID = {submissionId} fileID = {fileId}/>;
-	} else if (activeTab === "comments") {
-		activeTabElement = <CommentTab file={file} threads={commentThreads}/>;
-	} else if (activeTab === "share") {
-		activeTabElement = <ShareTab file={file} url={window.location.origin + filePath}/>;
-	}
+    
+    function renderTabContents(file: File) {
+        // TODO: Take out the h1 from all these since it's always the same
+        // then they don't need a reference to file anymore, so they don't
+        // need to wait for it to be loaded
+        if (activeTab === "code") {
+            return <CodeTab file={file} submissionID={submissionId} />;
+        } else if (activeTab === "comments") {
+            return <CommentTab file={file} />;
+        } else if (activeTab === "share") {
+            return <ShareTab file={file} url={window.location.origin + filePath} />;
+        }
+        return <div><h1>Tab not found!</h1></div>;
+    }
 
 	return (
 		<Frame title={title} user={{id: "1", name: "John Doe"}} sidebar search={filePath + "/search"}>
-			<div className="contentTab">
-				{
-					loading ?
-						<Loading />
-						:
-						<div>
-							{activeTabElement}
-						</div>
-				}
-			</div>
+            <Loading<File> 
+                loader={getFile}
+                params={[fileId]}
+                component={renderTabContents} />
 			<TabBar
 				tabs={[{
 					id: "code",
