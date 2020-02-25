@@ -20,50 +20,39 @@ interface UserOverviewProperties {
 	}
 }
 
-export function UserOverview({match}: UserOverviewProperties) {
-	const [loading, setLoading] = useState(true);
-	const [submissions, setSubmissions] = useState(null as unknown as Submission[]);
-	const [user, setUser] = useState(null as unknown as User);
-	const [comments, setComments] = useState(null as unknown as CommentThreadResponse[]);
-	const getSubmissions = AuthHelper.fetch(`/api/submissions/user/${match.params.userId}`);
-	const getUser = AuthHelper.fetch(`/api/user/${match.params.userId}`);
-	// getUser?, getComments?
-
-	useEffect(() => {
-		Promise.all([getSubmissions, getUser]).then(responses =>
-			Promise.all(responses.map(response => response.json()))
-		).then(data => {
-			setSubmissions(data[0]);
-			setUser(data[1]);
-			setLoading(false);
-		}).catch(error => console.log(error));
-	}, []);
+export function UserOverview({match: { params: { userId } } }: UserOverviewProperties) {
+    const getSubmissions = (userId: string) => AuthHelper.fetch(`/api/submissions/user/${userId}`).then(res => res.json());
+	const getUser = (userId: string) => AuthHelper.fetch(`/api/user/${userId}`).then(res => res.json());
+	// getComments?
 
 	return (
-		<div>
-			{loading ?
-				<Loading/>
-				:
+		<Loading<User>
+			loader={getUser}
+			params={[userId]}
+			component={user =>
 				<Frame
-					title={user.name == undefined ? "Undefined" : user.name}
-					user={{id: ""+user.userID, name: user.name == undefined ? "Undefined" : user.name}}
-					sidebar search={`/user/${user.userID}/search`}
-				>
+					title={user.name === undefined ? "Undefined" : user.name}
+					user={{id: ""+user.userID, name: user.name === undefined ? "Undefined" : user.name}}
+					sidebar search={`/user/${user.userID}/search`}>
 					<p>Introduction section</p>
 					{/*<DataTable
-						title="To be reviewed"
+						title="Recent"
 						data={submissions}
 						table={[
 							["Project", x => x.name, x => `/submission/${x.submissionId}`],
 							["Date", x => new Date(x.date).toLocaleString()]
 						]}/>*/}
-					<DataTable
-						title="Projects"
-						data={submissions}
-						table={[
-							["Project", x => x.name!, x => `/submission/${x.submissionID}`],
-							["Date", x => new Date(x.date!).toLocaleString()]
-						]}/>
+					<Loading<Submission[]>
+						loader={getSubmissions}
+						params={[user.userID!]}
+						component={submissions =>
+							<DataTable
+								title="Projects"
+								data={submissions}
+								table={[
+									["Project", x => x.name!, x => `/submission/${x.submissionID}`],
+									["Date", x => new Date(x.date!).toLocaleString()]
+								]} />} />
 					{/*<DataTable
 						title="Comments"
 						data={comments}
@@ -73,7 +62,6 @@ export function UserOverview({match}: UserOverviewProperties) {
 							["Last reply", x => x.comments.slice(-1)[0].text]
 						]}/>*/}
 				</Frame>
-			}
-		</div>
+			} />
 	);
 }

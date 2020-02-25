@@ -1,7 +1,6 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 
 import * as Models from "../../../placeholdermodels";
-import {LoadingState} from "../../../placeholdermodels";
 
 import {Header} from "../../frame/Header";
 import {Comment as CommentComponent} from "./Comment";
@@ -9,7 +8,6 @@ import {Snippet} from "./Snippet";
 import {WriteComment} from "./WriteComment";
 import {ButtonBar} from "../../general/ButtonBar";
 import { Button } from "react-bootstrap";
-import {Loading} from "../../general/Loading";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
 import {ExtendedThread} from "../../../../../models/Thread";
 import {Comment} from "../../../../../models/Comment";
@@ -22,6 +20,8 @@ interface CommentThreadProperties {
 }
 
 export function CommentThread({thread}: CommentThreadProperties) {
+    const [opened, setOpened] = useState(false);
+
 	const topic : string = "We don't store topics yet so: " + thread.commentThreadID;
 	const currentComments : Models.Comment[] = thread.comments
 		.map((comment : Comment) => {
@@ -46,14 +46,6 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	console.log(comments);
 	console.log(snippet);
-
-
-
-	// In case we still need fetching after?
-	const [loading, updateLoading] = useState(LoadingState.Loaded);
-	const [opened, setOpened] = useState(false);
-
-
 
 	// Show a newly created comment directly
 	// Maybe we should let that be done over the server,
@@ -87,27 +79,25 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	return (
 		<div className="commentThread">
-			<h3 className="m-0 px-2 py-1">{loading === LoadingState.Loading ? "Atelier" : topic}</h3>
-			{loading === LoadingState.Loading
-				? <Loading/>
-				: <div> {/* Assuming loading is always successful, obviously */}
-					{snippet && <Snippet snippet={snippet}/>}
-					{opened ? <div>
-							{comments.map(comment => <CommentComponent comment={comment}/>)}
-							<WriteComment placeholder="Reply..." newCommentCallback={newComment}/>
-							<ButtonBar align="right">
-								<Button><FiSend size={14} color="#FFFFFF"/></Button>
-								<Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>
-							</ButtonBar>
-						</div>
-						: comments[0] !== undefined && <div>
-							<CommentComponent comment={comments[0]}/>
-							<ButtonBar align="right">
-								<Button onClick={() => setOpened(true)}><FiChevronDown size={14} color="#FFFFFF"/></Button>
-							</ButtonBar>
-						</div>
-					}
-				</div>
+			<h3 className="m-0 px-2 py-1">{topic}</h3>
+			<div> {/* Assuming loading is always successful, obviously */}
+                {snippet && <Snippet snippet={snippet}/>}
+                {opened ? <div>
+                        {comments.map(comment => <CommentComponent comment={comment}/>)}
+                        <WriteComment placeholder="Reply..." newCommentCallback={newComment}/>
+                        <ButtonBar align="right">
+                            <Button><FiSend size={14} color="#FFFFFF"/></Button>
+                            <Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>
+                        </ButtonBar>
+                    </div>
+                    : comments[0] !== undefined && <div>
+                        <CommentComponent comment={comments[0]}/>
+                        <ButtonBar align="right">
+                            <Button onClick={() => setOpened(true)}><FiChevronDown size={14} color="#FFFFFF"/></Button>
+                        </ButtonBar>
+                    </div>
+                }
+            </div>
 			}
 		</div>
 	);
