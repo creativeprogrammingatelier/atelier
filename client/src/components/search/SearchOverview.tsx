@@ -42,9 +42,9 @@ interface SearchData {
 function handleSearch(value : string, setResults : Function, setLoading : Function) {
     console.log("searching for " + value);
     setLoading(true);
-    AuthHelper.fetch(`/api/search?q=${value}`)
+    AuthHelper.fetch(`/api/search/${value}`)
     .then(response => {console.log(response); return response})
-    .then(response => response.json)
+    .then(response => response.json())
         .then(data => {
             setResults({
                submissions : {
