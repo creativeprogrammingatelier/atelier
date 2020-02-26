@@ -97,7 +97,6 @@ export function CommentThread({thread}: CommentThreadProperties) {
                     </div>
                 }
             </div>
-			}
 		</div>
 	);
 }
