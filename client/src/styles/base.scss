@@ -155,6 +155,9 @@ textarea:focus, textarea:active {
 .dataItem:not(:last-child), .dataBlock:not(:last-child) {
 	margin-bottom: 0.5rem;
 }
+.list:not(:last-child) {
+	margin-bottom: 1rem;
+}
 .toast {
 	backdrop-filter: none;
 	background-color: $colorWhite;

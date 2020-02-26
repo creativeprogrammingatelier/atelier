@@ -8,9 +8,9 @@ interface DataItemListProperties {
 	children?: JSX.Element | JSX.Element[]
 }
 export function DataList({header, children}: DataItemListProperties) {
-	return <div>
+	return <div className="list">
 		<Header title={header}/>
-		<div className="py-2">
+		<div className="mt-3">
 			{children}
 		</div>
 	</div>

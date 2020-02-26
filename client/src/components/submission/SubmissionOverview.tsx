@@ -25,11 +25,6 @@ interface SubmissionOverviewProps {
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const submissionPath = "/submission/" + submissionId;
 
-	console.log("Loading a submission overview page");
-	console.log(submissionId);
-	console.log(submissionPath);
-	console.log(`/api/submission/${submissionId}`);
-
 	const getSubmission = (submissionID: string) => Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);
     const getFiles = (submissionID: string) => Fetch.fetchJson<File[]>(`/api/file/submission/${submissionID}`);
 	const getGlobalComments = (submissionID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}`);
