@@ -4,6 +4,7 @@ import CodeViewer2 from "../CodeViewer2";
 import {OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
 import AuthHelper from "../../../helpers/AuthHelper";
 import { Loading } from "../general/Loading";
+import { Fetch } from "../../../helpers/FetchHelper";
 
 export interface FileComment {
 	startLine: number,
@@ -31,7 +32,7 @@ interface CodeProperties {
 }
 
 export function CodeTab({file, submissionID} : CodeProperties) {
-    const getFileContents = () => AuthHelper.fetch(`/api/file/${file.fileID}/body`).then((res: Response) => res.text());
+    const getFileContents = () => Fetch.fetchString(`/api/file/${file.fileID}/body`);
 
 	return <div>
 		<h1>{file.pathname}</h1>
