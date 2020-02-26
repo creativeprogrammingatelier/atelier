@@ -12,6 +12,7 @@ export const pool = new pg.Pool({
 	max: 1
 });
 export const end = pool.end.bind(pool);
+export const getClient : () => Promise<pg.PoolClient> = pool.connect.bind(pool);
 
 export function toBin(n : number | undefined){
 	if (n === undefined) return undefined

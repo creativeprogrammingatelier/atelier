@@ -2,10 +2,13 @@ import {User} from "./User";
 import {File} from "./File";
 
 export interface Submission {
-	id: string,
+	ID: string,
 	name: string,
 	user: User,
 	date: string,
 	state: string,
-	files: File[]
+	files: File[],
+	references: {
+		courseID: string
+	}
 }

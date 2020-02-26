@@ -1,7 +1,7 @@
 import {File} from "./File";
 
 export interface Snippet {
-	id: string,
+	ID: string,
 	file: File,
 	start: {
 		line: number,
@@ -10,5 +10,10 @@ export interface Snippet {
 	end: {
 		line: number,
 		character: number
+	}
+	references: {
+		courseID: string,
+		submissionID: string,
+		commentThreadID: string
 	}
 }

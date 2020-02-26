@@ -1,5 +1,5 @@
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
-
+import {File as APIFile} from "../api/File"
 /**
  * Modeling the file object
  * Author: Andrew Heath
@@ -19,6 +19,11 @@ export interface DBFile {
 	pathname : string,
 	type : string
 }
+export interface DBAPIFile extends DBFile{
+	courseid: string,
+	commentthreadid: string
+}
+
 
 export function convertFile(db : DBFile) : File {
 	return {
@@ -26,5 +31,18 @@ export function convertFile(db : DBFile) : File {
 		submissionID: UUIDHelper.fromUUID(db.submissionid),
 		pathname: db.pathname,
 		type: db.type
+	}
+}
+
+export function fileToAPI(db :DBAPIFile) : APIFile {
+	return {
+		ID:UUIDHelper.fromUUID(db.fileid),
+		name: db.pathname,
+		type: db.type,
+		references:{
+			courseID: UUIDHelper.fromUUID(db.courseid),
+			submissionID: UUIDHelper.fromUUID(db.submissionid),
+			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid)
+		}
 	}
 }
