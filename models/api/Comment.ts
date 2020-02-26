@@ -1,8 +1,13 @@
 import {User} from "./User";
 
 export interface Comment {
-	id: string,
+	ID: string,
 	user: User,
 	text: string,
-	date: string
+	date: string,
+	references: {
+		courseID: string,
+		submissionID: string,
+		commentThreadID: string
+	}
 }
