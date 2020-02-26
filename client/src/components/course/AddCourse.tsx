@@ -18,7 +18,9 @@ export function AddCourse({handleResponse} : AddCourseProps) {
                     state : 'open',
                 })
             });
-            handleResponse(course);
+            if (handleResponse !== undefined) {
+                handleResponse(course);
+            }
         } catch (err) {
             // TODO: handle error for the user
             console.log(err);

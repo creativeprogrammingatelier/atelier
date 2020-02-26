@@ -64,7 +64,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
             console.log(comment);
             updateComments(comments => [
                 ...comments,
-                {text : comment.body, author : comment.userID, time : comment.date}
+                {text : comment.body, author : comment.userID, time : comment.date} as Models.Comment
             ]);
         } catch (err) {
             if (err instanceof JsonFetchError) {
