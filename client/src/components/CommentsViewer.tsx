@@ -1,5 +1,4 @@
 import React, {Component, ReactElement} from 'react';
-import Axios from 'axios';
 import AuthHelper from '../../helpers/AuthHelper';
 import CommentHelper from '../../helpers/CommentHelper';
 import CommentView from './CommentView';
