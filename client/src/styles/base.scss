@@ -1,6 +1,9 @@
 @import "./variabes.scss";
 @import '~bootstrap/scss/bootstrap.scss';
 
+* {
+	overflow-wrap: break-word;
+}
 html, body {
 	background-color: $backgroundColor;
 }
