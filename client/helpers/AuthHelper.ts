@@ -38,7 +38,7 @@ export default class AuthHelper {
 	}
 
 	static register(email: string, password: string, role: string, onSuccess: Function, onFailure: Function) {
-		Fetch.fetch('/api/auth/register', {
+		Fetch.fetchJson('/api/auth/register', {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
@@ -46,12 +46,8 @@ export default class AuthHelper {
 				role
 			})
 		}).then((res: any) => {
-			res.json().then((json: any) => {
-				this.setToken(json.token); // Setting the token in localStorage
-				onSuccess();
-			}).catch((e: any) => {
-				console.log(e), onFailure();
-			});
+            this.setToken(res.token); // Setting the token in localStorage
+            onSuccess();
 		}).catch((e: any) => {
 			console.log(e), onFailure();
 		});

@@ -1,5 +1,4 @@
 import AuthHelper from './AuthHelper';
-import axios, { AxiosAdapter, AxiosError } from 'axios';
 import fileDownload from 'js-file-download';
 import { Fetch } from './FetchHelper';
 
@@ -63,14 +62,10 @@ export default class FileHelper {
 	};
 
 	static deleteFile = (fileId: string, onSuccess: Function, onFailure: Function) => {
-		const config = {
-			headers: {
-				'content-type': 'multipart/form-data',
-				'Authorization': AuthHelper.getToken()
-			}
-		};
-		axios.delete(`/files/${fileId}`, config
-		).then((response) => {
+        Fetch.fetch(`/files/${fileId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((response) => {
 			onSuccess();
 		}).catch(function(error) {
 			//TODO Handle errors in a nice way
@@ -81,14 +76,11 @@ export default class FileHelper {
 	static uploadFile = (file: any, onSuccess: Function, onFailure: Function) => {
 		const formData = new FormData();
 		formData.append('file', file);
-		const config = {
-			headers: {
-				'content-type': 'multipart/form-data',
-				'Authorization': AuthHelper.getToken()
-			}
-		};
-		axios.put('/files/', formData, config
-		).then((response) => {
+		Fetch.fetch('/files/', {
+            method: 'PUT',
+            body: formData, 
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((response) => {
 			onSuccess();
 
 		}).catch(function(error) {
@@ -96,7 +88,7 @@ export default class FileHelper {
 		});
     };
     
-    static uploadFolder = (project: string, files: File[], onSuccess: () => void, onFailure: (error: AxiosError) => void) => {
+    static uploadFolder = (project: string, files: File[], onSuccess: () => void, onFailure: (error: any) => void) => {
         const formData = new FormData();
         formData.append('project', project);
         for (const file of files) {
@@ -108,9 +100,12 @@ export default class FileHelper {
                 'Authorization': AuthHelper.getToken()
             }
         };
-        axios.put('/files/', formData, config)
-            .then(_ => onSuccess())
-            .catch((err: AxiosError) => onFailure(err));
+        Fetch.fetch('/files/', {
+            method: 'PUT',
+            body: formData, 
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then(_ => onSuccess())
+            .catch((err: any) => onFailure(err));
     }
 
 }

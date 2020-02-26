@@ -27,7 +27,6 @@
 		"@fortawesome/react-fontawesome": "^0.1.8",
 		"@primer/octicons-react": "^9.4.0",
 		"archiver": "^3.1.1",
-		"axios": "^0.19.2",
 		"bcrypt": "^3.0.8",
 		"bootstrap": "^4.4.1",
 		"codemirror": "^5.52.0",

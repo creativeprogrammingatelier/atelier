@@ -27,9 +27,13 @@ authRouter.post('/login', async (req, res, next) => {
 
 /** Registration endpoint for new users */
 authRouter.post('/register', async (req, res) => {
-    const user = await UserDB.createUser(req.body);
-    const token = issueToken(user.userID!);
-    res.status(200).json({ token });
+    try {
+        const user = await UserDB.createUser(req.body);
+        const token = issueToken(user.userID!);
+        res.status(200).json({ token });
+    } catch (err) {
+        res.status(500).json(err);
+    }
 });
 
 /** Refresh the current users authentication with a new token */
