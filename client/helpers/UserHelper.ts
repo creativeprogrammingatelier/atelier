@@ -2,14 +2,16 @@ import decode from 'jwt-decode';
 import AuthHelper from './AuthHelper';
 import axios from 'axios';
 import {User} from '../../models/database/User';
+import { Fetch } from './FetchHelper';
 
 /**
  * Helpers for request for files
+ * @deprecated This class uses old API endpoints and should not be used
  */
 export default class UserHelper {
 
 	static getStudents = (onSuccess: Function, onFailure: Function) => {
-		AuthHelper.fetch(`users/students`, {
+		Fetch.fetch(`users/students`, {
 			method: 'GET'
 		}).then((response) => {
 			response.json().then((json: User[]) => {
@@ -22,7 +24,7 @@ export default class UserHelper {
 	};
 
 	static getUsers = (onSuccess: Function, onFailure: Function) => {
-		AuthHelper.fetch(`users`, {
+		Fetch.fetch(`users`, {
 			method: 'GET'
 		}).then((response) => {
 			response.json().then((json: User[]) => {
@@ -35,7 +37,7 @@ export default class UserHelper {
 	};
 
 	static deleteUser = (userId: any, onSuccess: Function, onFailure: Function) => {
-		AuthHelper.fetch(`users/${userId}`, {
+		Fetch.fetch(`users/${userId}`, {
 			method: 'delete'
 		}).then((response) => {
 			response.json().then((res: any) => {

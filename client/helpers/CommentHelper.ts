@@ -1,13 +1,14 @@
-import AuthHelper from './AuthHelper';
+import { Fetch } from './FetchHelper';
 import {Comment} from '../../models/database/Comment';
 
 /**
  * Helpers for request for files
+ * @deprecated This class uses old API endpoints and should not be used
  */
 export default class CommentHelper {
 
 	static getFileComments = (fileId: String, onSuccess: Function, onFailure: Function) => {
-		AuthHelper.fetch(`/comments/file/${fileId}`, {
+		Fetch.fetch(`/comments/file/${fileId}`, {
 			method: 'GET'
 		}).then((response) => {
 			response.json().then((json: Comment[]) => {
@@ -21,7 +22,7 @@ export default class CommentHelper {
 	};
 
 	static putComment = (comment: any, onSuccess: Function, onFailure: Function) => {
-		AuthHelper.fetch(`/comments`, {
+		Fetch.fetch(`/comments`, {
 			method: 'PUT',
 			body: JSON.stringify(comment)
 		}).then(() => {
@@ -32,7 +33,7 @@ export default class CommentHelper {
 	};
 
 	static deleteComment = (commentId: String, onSuccess: Function, onFailure: Function) => {
-		AuthHelper.fetch(`/comments/${commentId}`, {
+		Fetch.fetch(`/comments/${commentId}`, {
 			method: 'delete'
 		}).then(() => {
 			onSuccess();
