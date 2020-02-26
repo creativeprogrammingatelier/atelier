@@ -1,6 +1,7 @@
 api/node_modules/
 client/node_modules/
 dist/
+uploads/
 /processing-examples
 node_modules
 npm-debug.log
