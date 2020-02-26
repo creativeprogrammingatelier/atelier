@@ -1,9 +1,10 @@
 import {courseState, checkEnum} from "../../enums/courseStateEnum"
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Course as APICourse } from "../api/Course"
-import { DBComment } from "./Comment"
-import { DBUser, userToAPI} from "./User"
-import { DBRolePermission permissionToAPI} from "./RolePermission"
+import { DBAPIComment } from "./Comment"
+import { DBAPIUser, userToAPI} from "./User"
+import { DBAPICourseRegistration } from "./CourseRegistration"
+import { courseRegToAPI } from "./CourseRegistration"
 export interface Course {
 	courseID?:string,
 	name?: string,
@@ -18,6 +19,10 @@ export interface DBCourse {
 	state:string
 }
 
+export interface DBAPICourse extends DBCourse, DBAPIUser, DBAPICourseRegistration{
+
+}
+
 
 export function convertCourse(db : DBCourse) : Course {
 	if (!checkEnum(db.state)){
@@ -30,7 +35,7 @@ export function convertCourse(db : DBCourse) : Course {
 		state:courseState[db.state]
 	}
 }
-export function convertToAPI(db : DBCourse & DBUser & DBRolePermission) : APICourse {
+export function convertToAPI(db : DBAPICourse) : APICourse {
 	if (!checkEnum(db.state)){
 		throw new Error('non-existent enum type from db: '+db.state)
 	}
@@ -39,7 +44,6 @@ export function convertToAPI(db : DBCourse & DBUser & DBRolePermission) : APICou
 		name: db.name,
 		state: db.state,
 		creator: userToAPI(db),
-		currentUserPermission: permissionToAPI(db)
-	}
+		currentUserPermission: courseRegToAPI(db)
 	}
 }

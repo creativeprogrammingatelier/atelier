@@ -5,7 +5,7 @@ import {File} from "./File";
 export interface CommentThread {
 	ID: string,
 	submissionID : string,
-	visibility: number,
+	visibility: string,
 	file?: File,
 	snippet?: Snippet,
 	comments: Comment[]

@@ -19,6 +19,11 @@ export interface DBFile {
 	pathname : string,
 	type : string
 }
+export interface DBAPIFile extends DBFile{
+	courseid: string,
+	commentthreadid: string
+}
+
 
 export function convertFile(db : DBFile) : File {
 	return {
@@ -29,10 +34,15 @@ export function convertFile(db : DBFile) : File {
 	}
 }
 
-export function fileToAPI(db :DBFile) : APIFile {
+export function fileToAPI(db :DBAPIFile) : APIFile {
 	return {
 		ID:UUIDHelper.fromUUID(db.fileid),
 		name: db.pathname,
-		type: db.type
+		type: db.type,
+		references:{
+			courseID: UUIDHelper.fromUUID(db.courseid),
+			submissionID: UUIDHelper.fromUUID(db.submissionid),
+			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid)
+		}
 	}
 }

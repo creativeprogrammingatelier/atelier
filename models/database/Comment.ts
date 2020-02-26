@@ -1,6 +1,6 @@
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Comment as APIComment } from "../api/Comment"
-import { DBUser, convertToAPI as userToAPI } from "./User"
+import { DBAPIUser, userToAPI } from "./User"
 export interface Comment {
     commentID?: string,
     commentThreadID?: string, 
@@ -16,6 +16,10 @@ export interface DBComment {
     date: Date,
     body: string
 }
+export interface DBAPIComment extends DBComment, DBAPIUser {
+	submissionid: string,
+	courseid: string
+}
 
 export function convertComment(db : DBComment) : Comment {
 	return {
@@ -26,16 +30,16 @@ export function convertComment(db : DBComment) : Comment {
 		body: db.body
 	}
 }
-export function commentToAPI(db : DBComment & DBUser) : APIComment {
+export function commentToAPI(db : DBAPIComment) : APIComment {
 	return {
 		ID: UUIDHelper.fromUUID(db.commentid),
 		user: userToAPI(db),
 		text:db.body,
 		date:db.date.toLocaleString(),
 		references: {
-			courseID: "",
-			submissionID: "",
-			commentThreadID: ""
+			courseID: UUIDHelper.fromUUID(db.courseid),
+			submissionID: UUIDHelper.fromUUID(db.submissionid),
+			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid)
 		}
 	}
 }
