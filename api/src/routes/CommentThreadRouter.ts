@@ -143,7 +143,10 @@ commentThreadRouter.get('/submission/:submissionID',
         const submissionID = request.params.submissoinID;
 
         try {
-            const extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+            let extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+            extendedThreads = extendedThreads.filter((extendedThread : ExtendedThread) => {
+               return extendedThread.fileID == undefined;
+            });
             result.send(extendedThreads);
         } catch (error) {
             result.status(500).send({error:error});

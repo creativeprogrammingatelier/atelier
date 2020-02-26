@@ -28,17 +28,19 @@ export interface FileSnippet {
 interface CodeProperties {
 	submissionID : string,
     file: File,
+	body : string,
 	comments?: FileComment[],
 }
 
-export function CodeTab({file, submissionID} : CodeProperties) {
-    const getFileContents = () => Fetch.fetchString(`/api/file/${file.fileID}/body`);
+export function CodeTab({file, body, submissionID} : CodeProperties) {
+
 
 	return <div>
 		<h1>{file.pathname}</h1>
-        <Loading<string>
-            loader={getFileContents}
-            component={fileContents =>
-		        <CodeViewer2 fileContents={fileContents} submissionID={submissionID} fileID={file.fileID!} />} />
-	</div>;
+		<CodeViewer2 submissionID={submissionID} fileID={file.fileID} fileContents={body} />
+        {/*<Loading<string>*/}
+        {/*    loader={getFileContents}*/}
+        {/*    component={fileContents =>*/}
+		{/*        <CodeViewer2 fileContents={body} submissionID={submissionID} fileID={file.fileID!} />} />*/}
+	</div>
 }

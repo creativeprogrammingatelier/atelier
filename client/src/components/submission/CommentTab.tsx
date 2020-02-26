@@ -8,10 +8,11 @@ import { ExtendedThread } from "../../../../models/database/Thread";
 import { Fetch } from "../../../helpers/FetchHelper";
 
 interface CommentTabProperties {
+    body : string,
     file: File
 }
 
-export function CommentTab({ file }: CommentTabProperties) {
+export function CommentTab({ file , body}: CommentTabProperties) {
     const getThreads = (fileID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/file/${fileID}`);
 
 	return <div>
@@ -19,6 +20,6 @@ export function CommentTab({ file }: CommentTabProperties) {
         <Loading<ExtendedThread[]>
             loader={getThreads}
             params={[file.fileID]}
-            component={threads => threads.map(thread => <CommentThread thread={thread} />)} />
+            component={threads => threads.map(thread => <CommentThread thread={thread} body={body} />)} />
 	</div>;
 }
