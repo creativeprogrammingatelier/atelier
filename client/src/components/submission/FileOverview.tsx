@@ -14,6 +14,7 @@ import {FileResponse, OpenFileResponse} from "../../helpers/DatabaseResponseInte
 import {Loading} from "../general/Loading";
 import {ExtendedThread} from "../../../../models/database/Thread";
 import AuthHelper from "../../../helpers/AuthHelper";
+import { Fetch } from "../../../helpers/FetchHelper";
 
 export interface FileProperties {
 	id: string,
@@ -40,7 +41,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 
 	const [title, setTitle] = useState("");
 
-	const getFile = (fileId: string) => AuthHelper.fetch(`/api/file/${fileId}`);
+	const getFile = (fileId: string) => Fetch.fetchJson<File>(`/api/file/${fileId}`);
 
 	const filePath = "/submission/" + submissionId + "/" + fileId;
     
