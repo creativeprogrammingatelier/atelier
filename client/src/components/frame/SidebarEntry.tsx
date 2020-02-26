@@ -6,7 +6,9 @@ interface LinkProperties {
 	location: string
 }
 export function SidebarEntry({children, location}: LinkProperties) {
-	return <div className="link">
+	return (
+		<div className="link">
 		<Link to={location}><h4>{children}</h4></Link>
-	</div>
+		</div>
+	)
 }

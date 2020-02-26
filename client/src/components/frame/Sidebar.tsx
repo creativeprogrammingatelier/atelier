@@ -21,7 +21,7 @@ interface SidebarProperties {
 export function Sidebar({position, close}: SidebarProperties) {
 	return (
 		<div className="sidebar col-10 col-sm-8 col-md-5 col-lg-3 col-xl-2 p-0" style={{left: position}}>
-			<Header transparent leftButton={{icon:<FiX size={40} color="#FFFFFF"/>, click:close}}/>
+			<Header transparent leftButton={{icon: <FiX size={40} color="#FFFFFF"/>, click: close}}/>
 			<div className="sidebarContent p-0">
 				<Logo/>
 				<SidebarEntry location="/">My Courses</SidebarEntry>
@@ -29,7 +29,7 @@ export function Sidebar({position, close}: SidebarProperties) {
 				<SidebarEntry location="/logout">Logout</SidebarEntry>
 				<Loading<User>
 					loader={() => Fetch.fetchJson('/api/user/')}
-					component={user => <SidebarEntry location={"/user/"+user.id}>{user.name}</SidebarEntry>
+					component={user => <SidebarEntry location={"/user/" + user.ID}>{user.name}</SidebarEntry>
 					}
 				/>
 			</div>

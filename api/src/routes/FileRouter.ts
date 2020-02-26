@@ -5,7 +5,7 @@
  *  - text (no json)
  */
 
-import express from 'express';
+import express, {Request, Response} from "express";
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import {FileDB} from "../database/FileDB";
 import { readFile } from '../helpers/FilesystemHelper';
@@ -36,4 +36,19 @@ fileRouter.get('/:fileID/body', async (request, response) => {
     } catch (err) {
         response.status(500).send(); // This is not guaranteed to be JSON, so no error
     }
+});
+
+/** Get a files from a submission
+ * @type: get
+ * @url: /api/files/submission/:submissionId
+ * @param submissionId (string) : id of the submission
+ * @return Submission or 404
+ */
+fileRouter.get('/submission/:submissionID',
+    async (request: Request, result: Response) => {
+        const submissionID: string = request.params.submissionID;
+
+        FileDB.getFilesBySubmission(submissionID)
+            .then((files : any) => result.send(files))
+            .catch((error : any) => result.status(500).send({error: error}));
 });

@@ -24,7 +24,7 @@ interface SubmissionOverviewProps {
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const submissionPath = "/submission/" + submissionId;
     
-    const getFiles = (submissionId: string) => Fetch.fetchJson<File[]>(`/api/files/submission/${submissionId}`);
+    const getFiles = (submissionId: string) => Fetch.fetchJson<File[]>(`/api/file/submission/${submissionId}`);
     const getComments = (submissionId: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionId}`);
     // also find a way to get recent comments
 
