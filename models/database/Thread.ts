@@ -1,6 +1,9 @@
 import {threadState, checkEnum} from '../../enums/threadStateEnum'
 import {Comment} from './Comment'
 import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
+import {CommentThread as ThreadAPI} from '../api/CommentThread'
+import { fileToAPI, DBFile } from './File'
+
 export interface Thread {
 	commentThreadID?: string,
 	submissionID?: string,
@@ -27,6 +30,19 @@ export function convertThread(db : DBThread) : Thread {
 		visibilityState: threadState[db.visibilitystate]
 	}
 }
+export function threadToAPI(db : DBThread & DBFile) : ThreadAPI{
+	if (!(checkEnum(db.visibilitystate))) {
+		throw new Error("enum from database not recognized on server"+db.visibilitystate)
+	}
+	return {
+		ID: UUIDHelper.fromUUID(db.commentthreadid),
+		submissionID: UUIDHelper.fromUUID(db.submissionid),
+		file: fileToAPI(db),
+		snippet: UUIDHelper.fromUUID(db.snippetid),
+		visibilityState: threadState[db.visibilitystate]
+	}
+}
+
 export function onlyThread(obj : Thread) : ExtendedThread{
 	return {
 		commentThreadID: obj.commentThreadID,

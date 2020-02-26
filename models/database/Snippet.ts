@@ -1,5 +1,6 @@
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
-
+import {Snippet as SnippetAPI } from "../api/Snippet"
+import { fileToAPI, DBFile } from "./File"
 export interface Snippet {
 	snippetID?: string,
 	lineStart?: number,
@@ -32,4 +33,18 @@ export function convertSnippet(db : DBSnippet) : Snippet {
 	// 	ret[key] = db[key]
 	// }
 	return ret
+}
+export function snippetToAPI(db : DBSnippet & DBFile) : SnippetAPI {
+	return {
+		ID: UUIDHelper.fromUUID(db.snippetid),
+		file: fileToAPI(db),
+		start: {
+			line: db.linestart,
+			character: db.charstart
+		},
+		end: {
+			line: db.lineend,
+			character: db.charend
+		}
+	}
 }
