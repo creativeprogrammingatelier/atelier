@@ -2,11 +2,11 @@
  * Api routes relating to a course
  */
 
-import express, { Response, Request } from 'express';
+import express, {Response, Request} from "express";
 import {CourseDB} from "../database/CourseDB";
 import {Course} from "../../../models/database/Course";
 import {courseState} from "../../../enums/courseStateEnum";
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import {AuthMiddleware} from "../middleware/AuthMiddleware";
 
 export const courseRouter = express.Router();
 
@@ -17,20 +17,20 @@ courseRouter.use(AuthMiddleware.requireAuth);
  * /api/courses/
  * @return, list of courses
  */
-courseRouter.get('/',
-    async (request : Request, result : Response) => {
-        CourseDB.getAllCourses()
-            .then((courses : Course[]) => courses.map((course : Course) => {
-                return {
-                    courseID : course.courseID,
-                    name : course.name,
-                    state : course.state,
-                    creator : course.creatorID
-                }
-            }))
-            .then(data => result.send(data))
-            .catch((error => result.status(500).send({error : error})));
-    });
+courseRouter.get("/",
+	async(request: Request, result: Response) => {
+		CourseDB.getAllCourses()
+			.then((courses: Course[]) => courses.map((course: Course) => {
+				return {
+					courseID: course.courseID,
+					name: course.name,
+					state: course.state,
+					creator: course.creatorID
+				};
+			}))
+			.then(data => result.send(data))
+			.catch((error => result.status(500).send({error: "internal", message: "Internal server error", details: error})));
+	});
 
 /** Add a course. Pass parameters as json in the body.
  * @type: post
@@ -40,17 +40,28 @@ courseRouter.get('/',
  * @param creatorID (string): userID of the creator
  * @return course created
  */
-courseRouter.post('/',
-    (request : Request, result : Response) => {
-        const name : string = request.body.name;
-        const state : courseState = request.body.state;
-        const creatorID : string | undefined = request.body.creatorID;
+courseRouter.post("/",
+	(request: Request, result: Response) => {
+		const name: string = request.body.name;
+		const state: courseState = request.body.state;
+		const creatorID: string | undefined = request.body.creatorID;
 
-        console.log(name, state, creatorID);
+		console.log(name, state, creatorID);
 
-        CourseDB.addCourse({ name, state, creatorID  })
-            .then((course : Course) => {
-                result.send(course)
-            })
-            .catch((error : Error) => result.status(500).send({error}));
-    });
+		CourseDB.addCourse({name, state, creatorID})
+			.then((course: Course) => {
+				result.send(course);
+			})
+			.catch((error: Error) => result.status(500).send({error}));
+	});
+
+courseRouter.get("/:courseID", async(request: Request, response: Response) => {
+	const courseID = request.params.courseID;
+
+	try {
+		const course: Course = await CourseDB.getCourseByID(courseID);
+		response.send(course);
+	} catch (error) {
+		response.status(500).send({error: "internal", message: "Could not retrieve course details", details: error});
+	}
+});
