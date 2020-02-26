@@ -139,11 +139,14 @@ commentThreadRouter.get('/file/:fileID',
 );
 
 commentThreadRouter.get('/submission/:submissionID',
-    (request: Request, result: Response) => {
+    async (request: Request, result: Response) => {
         const submissionID = request.params.submissoinID;
 
-        ThreadDB.getThreadsBySubmission(submissionID)
-            .then((commentThreads : any) => result.send(commentThreads))
-            .catch((error : any) => result.status(500).send({error: error}));
+        try {
+            const extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+            result.send(extendedThreads);
+        } catch (error) {
+            result.status(500).send({error:error});
+        }
     }
 );
