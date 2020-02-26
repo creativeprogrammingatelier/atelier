@@ -59,17 +59,15 @@ export default class AuthHelper {
 
 	static login(email: string, password: string, onSuccess: Function, onFailure: Function) {
 		// Get a token from api server using the fetch api
-		Fetch.fetch(`/api/auth/login`, {
+		Fetch.fetchJson(`/api/auth/login`, {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
 				password
 			})
 		}).then((res: any) => {
-			res.json().then((json: any) => {
-				this.setToken(json.token); // Setting the token in localStorage
-				onSuccess();
-			});
+            this.setToken(res.token); // Setting the token in localStorage
+            onSuccess();
 		}).catch((e: any) => {
 			console.log(e), onFailure();
 		});
