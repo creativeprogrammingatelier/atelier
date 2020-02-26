@@ -1,16 +1,17 @@
 import {localRole, checkEnum} from '../../enums/localRoleEnum'
-import {Permission as PermissionAPI} from '../api/Permission'
+import {Permission as APIPermission} from '../api/Permission'
 export interface RolePermission{
 	role?:localRole,
 	permission : number
 }
 
+export {APIPermission}
 
 export interface DBRolePermission {
 	courseroleid : string,
 	permission : number
 }
-export interface DBAPIRolePermission extends DBRolePermission{}
+export type DBAPIRolePermission = DBRolePermission
 
 export function convertRolePermission(db : DBRolePermission) : RolePermission {
 	if (!checkEnum(db.courseroleid)){
@@ -21,7 +22,7 @@ export function convertRolePermission(db : DBRolePermission) : RolePermission {
 		permission: db.permission
 	}
 }
-export function rolePermToAPI(db : DBAPIRolePermission) : PermissionAPI {
+export function rolePermToAPI(db : DBAPIRolePermission) : APIPermission {
 	if (!checkEnum(db.courseroleid)){
 		throw new Error("role stored in database does not match enum on server: "+ db.courseroleid)
 	}

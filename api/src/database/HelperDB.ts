@@ -25,6 +25,12 @@ export function checkAvailable(required : string[], obj : {}){
 		}
 	});
 }
+export function keyInMap<T>(key : string, map : object) : key is keyof typeof map  {
+	if (!(key in map)){
+		throw new Error("key "+key+" not found in map");
+	}
+	return true
+}
 
 export function searchify(input : string){
 	return '%'+input.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')+'%'

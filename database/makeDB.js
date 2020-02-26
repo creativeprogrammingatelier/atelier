@@ -119,49 +119,69 @@ INSERT INTO "Submissions" VALUES
 CREATE TABLE "Files" (
      fileID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
      submissionID   uuid NOT NULL REFERENCES "Submissions"(submissionID),
+     courseID       uuid NOT NULL REFERENCES "Courses"(courseID),
      pathname       text NOT NULL CHECK (pathname <> ''),
      type           text NOT NULL DEFAULT 'unsupported'
 );
 INSERT INTO "Files" VALUES
-     ('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing');
+     ('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT courseID from "Courses" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing');
 
 
 CREATE TABLE "Snippets" (
      snippetID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     fileID            uuid REFERENCES "Files"(fileID),
+     commentThreadID   uuid,--THIS IS ADDED LATER, NO CIRCULAR REFS REFERENCES "CommentThread"(commentThreadID),
+     submissionID      uuid NOT NULL REFERENCES "Submissions"(submissionID),
+     courseID          uuid NOT NULL REFERENCES "Courses"(courseID),
      lineStart         integer NOT NULL,
      lineEnd           integer NOT NULL,
-     charStart         integer,
-     charEnd           integer,
-     fileID            uuid REFERENCES "Files"(fileID)
+     charStart         integer NOT NULL,
+     charEnd           integer NOT NULL,
+     body              text NOT NULL
 );
 INSERT INTO "Snippets" VALUES
-	('00000000-0000-0000-0000-000000000000', 0, 1, 0, 0, (SELECT fileID from "Files" LIMIT 1));
+     (    '00000000-0000-0000-0000-000000000000', 
+          (SELECT fileID from "Files" LIMIT 1),  
+          '00000000-0000-0000-0000-000000000000', 
+          (SELECT submissionID from "Submissions" LIMIT 1),  
+          (SELECT courseID from "Courses" LIMIT 1),  
+          0, 1, 0, 0, 
+          'this is a snippet of a file'
+     );
 
 
 CREATE TABLE "CommentThread" (
      commentThreadID   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
      submissionID      uuid NOT NULL REFERENCES "Submissions"(submissionID),
+     courseID          uuid NOT NULL REFERENCES "Courses"(courseID),
      fileID            uuid REFERENCES "Files"(fileID),
      snippetID         uuid REFERENCES "Snippets"(snippetID),
      visibilityState   text NOT NULL DEFAULT 'public'
 );
 INSERT INTO "CommentThread" VALUES
-	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), (SELECT snippetID from "Snippets" LIMIT 1), DEFAULT),
-	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), NULL, DEFAULT),
-	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), NULL, NULL, DEFAULT);
+	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT courseID from "Courses" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), (SELECT snippetID from "Snippets" LIMIT 1), DEFAULT),
+	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT courseID from "Courses" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), NULL, DEFAULT),
+	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT courseID from "Courses" LIMIT 1), NULL, NULL, DEFAULT);
 
 
 CREATE TABLE "Comments" (
      commentID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
      commentThreadID   uuid NOT NULL REFERENCES "CommentThread"(commentThreadID),
+     submissionID      uuid NOT NULL REFERENCES "Submissions"(submissionID),
+     courseID          uuid NOT NULL REFERENCES "Courses"(courseID),
      userID            uuid NOT NULL REFERENCES "Users"(userID),
      date              timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
      body              text NOT NULL
 );
 INSERT INTO "Comments" VALUES
-	('00000000-0000-0000-0000-000000000000', (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is comment 0.'),
-	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a multi\\nline comment!'),
-	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a comment about nothing at all..');
+	('00000000-0000-0000-0000-000000000000', (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT submissionID from "Submissions" LIMIT 1), (SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is comment 0.'),
+	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT submissionID from "Submissions" LIMIT 1), (SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a multi\\nline comment!'),
+	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT submissionID from "Submissions" LIMIT 1), (SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a comment about nothing at all..');
+
+
+ALTER TABLE "Snippets" ADD CONSTRAINT "Snippets_commentthreadid_fkey" FOREIGN KEY (commentThreadID) REFERENCES "CommentThread"(commentThreadID);
+
+
 
 `).then(console.debug).catch(console.error).then(pool.end.bind(pool));
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())

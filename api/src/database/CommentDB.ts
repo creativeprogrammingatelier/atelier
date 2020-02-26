@@ -1,7 +1,7 @@
-import {pool, extract, map, funmap2, one, searchify, checkAvailable, pgDB } from "./HelperDB";
+import {pool, extract, map, funmap2, one, searchify, checkAvailable, pgDB, keyInMap } from "./HelperDB";
 
-import {Comment, DBComment, convertComment, onlyComment} from '../../../models/database/Comment';
-import { convertThread, ExtendedThread, Thread, onlyThread } from "../../../models/database/Thread";
+import {Comment, DBComment, convertComment, onlyComment, APIComment, commentToAPI} from '../../../models/database/Comment';
+import { convertThread, Thread} from "../../../models/database/Thread";
 import { UUIDHelper } from "../helpers/UUIDHelper";
 
 // import RolePermissionHelper from './RolePermissionsHelper'
@@ -11,6 +11,34 @@ import { UUIDHelper } from "../helpers/UUIDHelper";
  */
 
 export class CommentDB {
+	static async APIgetCommentsByThreads(ids : string[], DB : pgDB = pool) {
+		//This mapping is a map of key=> comment[]. this is fine
+		// tslint:disable-next-line: no-any
+		const mapping : any = {}
+		ids.forEach(element => {
+			mapping[element]=[]
+		});
+
+		const comments = await DB.query(`SELECT * 
+			FROM "Comments" 
+			WHERE commentThreadID = ANY($1)
+			`, [ids])
+			.then(extract).then(map(commentToAPI))
+		comments.forEach(element => {
+			if (keyInMap(element.references.commentThreadID, mapping)){
+				mapping[element.references.commentThreadID].push(element)
+			} else {
+				throw new Error("database concurrent modification exception")
+			}
+		})
+		return mapping
+	}
+
+
+
+	/**
+	 * all functions below are for a this table only 
+	 */
 	static async getAllComments(limit? :number, DB : pgDB = pool){
 		return CommentDB.filterComment({}, limit, DB)
 	}
@@ -61,7 +89,7 @@ export class CommentDB {
 		//for each matching comment
 		response.forEach((element : Comment & Thread) => {
 			//if comment is in a new thread...
-			if (!mapping.has(element.commentThreadID!)){
+			if (!(mapping.has(element.commentThreadID!))){
 				//create that (extended) thread
 				const thread = onlyThread(element)
 				//make a mapping for this item

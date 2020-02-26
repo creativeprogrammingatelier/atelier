@@ -16,9 +16,9 @@ export interface DBUser {
 	hash?: string;
 }
 
-export interface DBAPIUser extends DBUser{
-	
-}
+export {APIUser}
+
+export type DBAPIUser = DBUser
 
 export function convertUser(db : DBUser) : User{
 	return {
@@ -34,7 +34,8 @@ export function userToAPI(db : DBAPIUser) : APIUser {
 		ID: UUIDHelper.fromUUID(db.userid),
 		name: db.name,
 		email: db.email,
-		permission: {
+		//@TODO? this is not supported by the database whatsoever, maybe change it to more accurately represent it.
+		permission: { 
 			role:db.role,
 			permissions: 2**41-1
 		}

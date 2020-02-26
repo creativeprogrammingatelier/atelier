@@ -14,9 +14,9 @@ export interface DBCourseRegistration {
 	permission : number
 }
 
-export interface DBAPICourseRegistration extends DBCourseRegistration{
+export {APICourseRegistration}
 
-}
+export type DBAPICourseRegistration = DBCourseRegistration
 
 export function convertCourseReg(db :DBCourseRegistration) : CourseRegistration {
 	if (!checkEnum(db.courserole)){

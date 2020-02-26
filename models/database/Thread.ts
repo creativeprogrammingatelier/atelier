@@ -1,13 +1,14 @@
 import {threadState, checkEnum} from '../../enums/threadStateEnum'
 import {Comment} from './Comment'
 import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
-import {CommentThread as ThreadAPI} from '../api/CommentThread'
+import {CommentThread as APIThread} from '../api/CommentThread'
 import { fileToAPI, DBAPIFile } from './File'
 import { snippetToAPI, DBAPISnippet } from './Snippet'
 
 export interface Thread {
 	commentThreadID?: string,
 	submissionID?: string,
+	courseID?: string,
 	fileID?: string,
 	snippetID?: string,
 	visibilityState?: threadState
@@ -15,13 +16,16 @@ export interface Thread {
 export interface DBThread {
 	commentthreadid: string,
 	submissionid: string,
+	courseid: string,
 	fileid: string,
 	snippetid: string,
 	visibilitystate: string
 }
-export interface DBAPIThread extends DBThread, DBAPIFile, DBAPISnippet {
-	courseID:string
-}
+
+export {APIThread}
+
+export type DBAPIThread = DBThread & DBAPIFile & DBAPISnippet
+
 export function convertThread(db : DBThread) : Thread {
 	if (!(checkEnum(db.visibilitystate))) {
 		throw new Error("enum from database not recognized on server"+db.visibilitystate)
@@ -29,12 +33,13 @@ export function convertThread(db : DBThread) : Thread {
 	return {
 		commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
 		submissionID: UUIDHelper.fromUUID(db.submissionid),
+		courseID: UUIDHelper.fromUUID(db.courseid),
 		fileID: UUIDHelper.fromUUID(db.fileid),
 		snippetID: UUIDHelper.fromUUID(db.snippetid),
 		visibilityState: threadState[db.visibilitystate]
 	}
 }
-export function threadToAPI(db : DBAPIThread) : ThreadAPI{
+export function threadToAPI(db : DBAPIThread) : APIThread{
 	if (!(checkEnum(db.visibilitystate))) {
 		throw new Error("enum from database not recognized on server"+db.visibilitystate)
 	}
@@ -46,29 +51,7 @@ export function threadToAPI(db : DBAPIThread) : ThreadAPI{
 		visibility: db.visibilitystate,
 		comments: [],
 		references:{
-			courseID: UUIDHelper.fromUUID(db.courseID)
+			courseID: UUIDHelper.fromUUID(db.courseid)
 		}
-	}
-}
-
-export function onlyThread(obj : Thread) : ExtendedThread{
-	return {
-		commentThreadID: obj.commentThreadID,
-		submissionID: obj.submissionID,
-		fileID: obj.fileID,
-		snippetID: obj.snippetID,
-		visibilityState: obj.visibilityState,
-		comments: []
-	}
-}
-export interface ExtendedThread extends Thread {
-	comments: Comment[],
-	snippet? : {
-		snippetID : string,
-		lineStart : number,
-		lineEnd : number,
-		charStart : number,
-		charEnd : number,
-		fileID : string
 	}
 }

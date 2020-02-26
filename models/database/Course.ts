@@ -1,10 +1,10 @@
 import {courseState, checkEnum} from "../../enums/courseStateEnum"
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Course as APICourse } from "../api/Course"
-import { DBAPIComment } from "./Comment"
 import { DBAPIUser, userToAPI} from "./User"
 import { DBAPICourseRegistration } from "./CourseRegistration"
 import { courseRegToAPI } from "./CourseRegistration"
+
 export interface Course {
 	courseID?:string,
 	name?: string,
@@ -19,9 +19,9 @@ export interface DBCourse {
 	state:string
 }
 
-export interface DBAPICourse extends DBCourse, DBAPIUser, DBAPICourseRegistration{
+export {APICourse}
 
-}
+export type DBAPICourse = DBCourse & DBAPIUser & DBAPICourseRegistration
 
 
 export function convertCourse(db : DBCourse) : Course {

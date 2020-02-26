@@ -1,6 +1,6 @@
 import {submissionStatus, checkEnum} from '../../enums/submissionStatusEnum'
 import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
-import { Submission as SubmissionAPI} from '../api/Submission'
+import { Submission as APISubmission} from '../api/Submission'
 import { DBAPIUser, userToAPI } from './User'
 
 export interface Submission {
@@ -21,9 +21,9 @@ export interface DBSubmission {
 	state: string;
 }
 
-export interface DBAPISubmission extends DBSubmission, DBAPIUser {
+export {APISubmission}
 
-}
+export type DBAPISubmission = DBSubmission & DBAPIUser 
 
 export function convertSubmission(db : DBSubmission) : Submission {
 	if (!checkEnum(db.state)){
@@ -38,7 +38,7 @@ export function convertSubmission(db : DBSubmission) : Submission {
 		state: submissionStatus[db.state]
 	}
 }
-export function submissionToAPI(db : DBAPISubmission) : SubmissionAPI {
+export function submissionToAPI(db : DBAPISubmission) : APISubmission {
 	if (!checkEnum(db.state)){
 		throw new Error("Enum stored in database doesn't exist: "+db.state)
 	}
