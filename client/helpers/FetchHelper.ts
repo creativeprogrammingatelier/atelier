@@ -26,7 +26,7 @@ export class Fetch {
             if (token) headers["Authorization"] = token;
         }
 
-        const res = await fetch(url, this.combineHeaders(options, headers));
+        const res = await fetch(url, Fetch.combineHeaders(options, headers));
 
         if (res.ok) {
             return res;
@@ -46,7 +46,7 @@ export class Fetch {
         };
 
         try {
-            const res = await this.fetch(url, this.combineHeaders(options, headers));
+            const res = await Fetch.fetch(url, Fetch.combineHeaders(options, headers));
             return res.json();
         } catch (err) {
             if (err instanceof FetchError) {
@@ -59,7 +59,7 @@ export class Fetch {
 
     /** Do a fetch of binary data, returning the blob */
     static async fetchBlob(url: RequestInfo, options: RequestInit = {}) {
-        const res = await this.fetch(url, options);
+        const res = await Fetch.fetch(url, options);
         return res.blob();
     }
 
@@ -70,7 +70,7 @@ export class Fetch {
             "Accept": "text/*"
         }
 
-        const res = await this.fetch(url, this.combineHeaders(options, headers));
+        const res = await Fetch.fetch(url, Fetch.combineHeaders(options, headers));
         return res.text();
     }
 }
