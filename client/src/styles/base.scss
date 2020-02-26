@@ -234,11 +234,13 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowSmallDown;
 }
 .commentThread {
-	margin-bottom: 1rem;
 	background-color: $colorWhite;
 	border-left: 10px solid $primaryColor;
 
 	h3 {
 		box-shadow: $shadowSmallDown;
 	}
+}
+.commentThread:not(:last-child) {
+	margin-bottom: 1rem;
 }
