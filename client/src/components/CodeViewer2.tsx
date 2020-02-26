@@ -161,8 +161,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 			for (const entry of highlights.entries()) {
 				const [line, ch] : string[] = entry[0].split("-");
 
-				const startLocation : number[] = {line : parseInt(line), ch : parseInt(ch)};
-				const endLocation : number[] = { line : startLocation.line, ch : startLocation.ch + 1};
+				const startLocation : {line : number, ch : number} = {line : parseInt(line), ch : parseInt(ch)};
+				const endLocation : {line : number, ch : number} = { line : startLocation.line, ch : startLocation.ch + 1};
 
 				const highlights = Math.min(entry[1], opacityRange.length - 1);
 				const opacity = opacityRange[highlights];
@@ -355,4 +355,4 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	}
 }
 
-export default CodeViewer2
+export default CodeViewer2;

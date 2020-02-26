@@ -37,7 +37,7 @@ export function CodeTab({file, body, submissionID} : CodeProperties) {
 
 	return <div>
 		<h1>{file.pathname}</h1>
-		<CodeViewer2 submissionID={submissionID} fileID={file.fileID} fileContents={body} />
+		<CodeViewer2 submissionID={submissionID} fileID={file.fileID!} fileContents={body} />
         {/*<Loading<string>*/}
         {/*    loader={getFileContents}*/}
         {/*    component={fileContents =>*/}

@@ -46,7 +46,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 
 	const filePath = "/submission/" + submissionId + "/" + fileId;
     
-    function renderTabContents([file, body]) {
+    function renderTabContents([file, body] : [File, string]) {
         // TODO: Take out the h1 from all these since it's always the same
         // then they don't need a reference to file anymore, so they don't
         // need to wait for it to be loaded
@@ -62,7 +62,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 
 	return (
 		<Frame title={title} user={{id: "1", name: "John Doe"}} sidebar search={filePath + "/search"}>
-            <Loading<File> 
+            <Loading<[File, string]>
                 loader={(fileId) => Promise.all([getFile(fileId), getFileContents(fileId)])}
                 params={[fileId]}
                 component={renderTabContents} />

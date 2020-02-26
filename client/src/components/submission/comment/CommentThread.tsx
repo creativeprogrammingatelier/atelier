@@ -17,7 +17,7 @@ import { Fetch, JsonFetchError } from "../../../../helpers/FetchHelper";
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
 	thread : ExtendedThread,
-	body : string
+	body? : string
 	// Maybe also find a way to include the topic, so it can be shown immediately
 }
 
@@ -35,8 +35,7 @@ const LARGE_SNIPPET_LINES_ABOVE = 0;
 const LARGE_SNIPPET_LINES_BELOW = 0;
 
 export function CommentThread({thread, body}: CommentThreadProperties) {
-	const fileContent : string[] = body.replace('\r', '').split('\n');
-	const totalLines : number = fileContent.length;
+
 
     // Load comments in the thread
 	const currentComments : Models.Comment[] = thread.comments
@@ -51,29 +50,40 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(false);
 	const [comments, updateComments] = useState(currentComments);
 
-	const small : boolean = (thread.snippet.lineEnd - thread.snippet.lineStart + 1) <= SMALL_SNIPPET_LINES;
-	const mainLineStart = thread.snippet.lineStart;
-	const mainLineEnd = Math.min(thread.snippet.lineEnd + 1, thread.snippet.lineStart + MINIMIZED_LINES + 1);
-	const fileLineStart = Math.max(0, thread.snippet.lineStart - (small ? SMALL_SNIPPET_LINES_ABOVE : LARGE_SNIPPET_LINES_ABOVE));
-	const fileLineEnd = Math.min(totalLines, thread.snippet.lineEnd + (small ? SMALL_SNIPPET_LINES_BELOW : LARGE_SNIPPET_LINES_BELOW));
+	let snippet : Models.Snippet | undefined;
+	if (body != undefined) {
+		// Parse body into lines
+		const fileContent : string[] = body.replace('\r', '').split('\n');
+		const totalLines : number = fileContent.length;
 
-	const snippet : Models.Snippet = {
-		fullText : fileContent.slice(fileLineStart, fileLineEnd + 1),
-		mainLines : [mainLineStart, mainLineEnd],
-		fileId : "00000000-0000-0000-0000-000000000000",
-		fileLines : [fileLineStart, fileLineEnd]
-	};
+		// Get snippet data
+		const threadSnippet = thread.snippet!;
+		const lineStart : number = threadSnippet.lineStart;
+		const lineEnd : number = threadSnippet.lineEnd;
 
-	console.log(comments);
-	console.log(snippet);
+		// Get ranges for minimized/maximized inclusive
+		const smallSnippet : boolean = (lineEnd - lineStart + 1) <= SMALL_SNIPPET_LINES;
+		const mainLineStart = lineStart;
+		const mainLineEnd = Math.min(lineEnd, lineStart + MINIMIZED_LINES);
+		const fileLineStart = Math.max(0, lineStart - (smallSnippet ? SMALL_SNIPPET_LINES_ABOVE : LARGE_SNIPPET_LINES_ABOVE));
+		const fileLineEnd = Math.min(totalLines - 1, lineEnd + (smallSnippet ? SMALL_SNIPPET_LINES_BELOW : LARGE_SNIPPET_LINES_BELOW));
 
-	// TODO pass token instead of userID
+		// Define snippet for render
+		// TODO fileID
+		snippet = {
+			fullText : fileContent.slice(fileLineStart, fileLineEnd + 1),
+			mainLines : [mainLineStart, mainLineEnd + 1],
+			fileId : "00000000-0000-0000-0000-000000000000",
+			fileLines : [fileLineStart, fileLineEnd + 1]
+		};
+	}
+
+
 	const newComment = async (text: string) => {
         try {
             const comment = await Fetch.fetchJson<Comment>(`/api/comment/${thread.commentThreadID}`, {
                 method : 'PUT',
                 body : JSON.stringify({
-                    userID : "00000000-0000-0000-0000-000000000000",
                     body : text
                 })
             });

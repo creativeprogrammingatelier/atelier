@@ -35,40 +35,6 @@ interface SearchData {
     }
 }
 
-/**
- * Method to handle a search.
- * @param value: value of the search field
- * @param setResults: method to set the results of the tables for code, comments and submissions.
- * @param setLoading: method to set loading variable for visual feedback
- */
-function handleSearch(value : string, setResults : Function, setLoading : Function) {
-    console.log("searching for " + value);
-    setLoading(true);
-    AuthHelper.fetch(`/api/search/${value}`)
-    .then(response => {console.log(response); return response})
-    .then(response => response.json())
-        .then(data => {
-            setResults({
-               submissions : {
-                   title : 'Submissions',
-                   data : data.submissions,
-                   table : submissionRendering
-               },
-               codes : {
-                   title : 'Code',
-                   data : data.files,
-                   table : codeRendering
-               },
-               comments : {
-                   title : 'Comments',
-                   data : data.comments,
-                   table : commentRendering
-               }
-            });
-            setLoading(false);
-        });
-}
-
 export function SearchOverview() {
     const [searchTerm, updateSearchTerm] = useState("");
 
