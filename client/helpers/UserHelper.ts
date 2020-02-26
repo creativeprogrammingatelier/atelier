@@ -1,6 +1,3 @@
-import decode from 'jwt-decode';
-import AuthHelper from './AuthHelper';
-import axios from 'axios';
 import {User} from '../../models/database/User';
 import { Fetch } from './FetchHelper';
 
@@ -50,16 +47,9 @@ export default class UserHelper {
 	};
 
 	static updateUser = (user: any, onSuccess: Function, onFailure: Function) => {
-		const config = {
-			headers: {
-				'Authorization': AuthHelper.getToken()
-			}
-		};
-		axios.put(`users`, {
-				'user': user
-			},
-			config
-		).then((response) => {
+		Fetch.fetch(`users`, {
+            body: JSON.stringify({ user })
+        }).then((response) => {
 			onSuccess();
 
 		}).catch(function(error) {
