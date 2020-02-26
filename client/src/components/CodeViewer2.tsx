@@ -16,6 +16,7 @@ import AuthHelper from './../../helpers/AuthHelper';
 
 import {start} from "repl";
 import {ExtendedThread} from "../../../models/database/Thread";
+import { Fetch, JsonFetchError } from '../../helpers/FetchHelper';
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -74,32 +75,37 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		}
 	}
 
-	getCommentThreads() {
-		AuthHelper.fetch(`/api/commentThreads/file/${this.props.fileID}`)
-			.then((data : any) => data.json())
-			.then((data : ExtendedThread[]) => {
-				console.log(data);
-				let snippets : FileSnippet[] = [];
-				data.map((commentThread : ExtendedThread) => {
-					if (commentThread.snippet != undefined) {
-						const snippet = commentThread.snippet;
-						snippets.push({
-							startLine : snippet.lineStart,
-							startCharacter : snippet.charStart,
-							endLine : snippet.lineEnd,
-							endCharacter : snippet.charEnd,
-							onClick : () => console.log(`Clicked snippet: ${snippet.snippetID}`),
-							snippetID : snippet.snippetID,
-							commentThreadID : commentThread.commentThreadID == undefined ? "" : commentThread.commentThreadID
-						});
-					}
-				});
-				this.setState({
-					snippets : snippets,
-					commentThreads : data
-				});
-			})
-			.catch((error : any) => console.log(error));
+	async getCommentThreads() {
+        try {
+            const threads = await Fetch.fetchJson<ExtendedThread[]>(`/api/commentThreads/file/${this.props.fileID}`);
+            console.log(threads);
+            const snippets : FileSnippet[] = [];
+            threads.map((commentThread : ExtendedThread) => {
+                if (commentThread.snippet !== undefined) {
+                    const snippet = commentThread.snippet;
+                    snippets.push({
+                        startLine : snippet.lineStart,
+                        startCharacter : snippet.charStart,
+                        endLine : snippet.lineEnd,
+                        endCharacter : snippet.charEnd,
+                        onClick : () => console.log(`Clicked snippet: ${snippet.snippetID}`),
+                        snippetID : snippet.snippetID,
+                        commentThreadID : commentThread.commentThreadID === undefined ? "" : commentThread.commentThreadID
+                    });
+                }
+            });
+            this.setState({
+                snippets,
+                commentThreads : threads
+            });
+        } catch (err) {
+            if (err instanceof JsonFetchError) {
+                // TODO: Handle error for the user
+                console.log(err);
+            } else {
+                throw err;
+            }
+        }
 	}
 
 	/**
@@ -130,11 +136,43 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * Highlights comments passed to the code viewer.
 	 */
 	highlightComments() {
-		let colorIndex = 0;
-		let colors = ['#DCDCDC'];//, '#D3D3D3', '#C0C0C0', '#A9A9A9', '#808080'];
-		let opacity = '7f';
+		let color = '#DCDCDC';
+		//let opacity = '7f';
 
 		if (this.state.snippets != undefined) {
+			let highlights = new Map();
+			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.snippets) {
+				if (startLine == undefined) continue;
+
+				for (let lineNumber = startLine; lineNumber <= endLine; lineNumber++) {
+					const line : string = this.codeMirror.getDoc().getLine(lineNumber);
+					const length : number = line.length;
+
+					let startChar = (lineNumber == startLine) ? startCharacter : 0;
+					const endChar = (lineNumber == endLine) ? endCharacter : length;
+
+					for (; startChar <= endChar; startChar += 1) {
+						const location = {line : lineNumber, ch : startChar};
+						const currentHighlights = highlights.get(location);
+
+						highlights.set(location, currentHighlights == undefined ? 1 : currentHighlights + 1);
+					}
+				}
+			}
+
+			for (const entry of highlights.entries()) {
+				const highlights = entry[0];
+				const opacity = Math.min(highlights / 10, 1).toString(16);
+				const location = entry[1];
+				this.codeMirror.markText(
+					location,
+					location,
+					{css: `background-color: ${color}${opacity};`}
+				);
+			}
+		}
+
+		/*if (this.state.snippets != undefined) {
 			console.log("highlighting: " + this.state.snippets.length + " comments");
 			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.snippets) {
 				// Some snippets dont have lines
@@ -147,7 +185,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 				);
 				colorIndex = (colorIndex + 1) % colors.length;
 			}
-		}
+		}*/
 	}
 
 	/**
@@ -261,24 +299,30 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	/**
 	 * Create a comment
 	 */
-	addComment(comment : string) {
+	async addComment(comment : string) {
 		const fileID = this.props.fileID;
 		const submissionID = this.props.submissionID;
-
-		AuthHelper.fetch(`/api/commentThread/file/${fileID}`, {
-			method : 'POST',
-			body : JSON.stringify({
-				submissionID : submissionID,
-				lineStart : this.state.commentStartLine,
-				lineEnd : this.state.commentEndLine,
-				charStart : this.state.commentStartCharacter,
-				charEnd : this.state.commentEndCharacter,
-				body : comment
-				})
-			})
-			.then(data => data.json())
-			.then((data : any) => console.log(data))
-			.catch((error : any) => console.log(error));
+        
+        try {
+		    await Fetch.fetchJson(`/api/commentThread/file/${fileID}`, {
+                method : 'POST',
+                body : JSON.stringify({
+                    submissionID,
+                    lineStart : this.state.commentStartLine,
+                    lineEnd : this.state.commentEndLine,
+                    charStart : this.state.commentStartCharacter,
+                    charEnd : this.state.commentEndCharacter,
+                    body : comment
+                })
+            });
+        } catch (err) {
+            if (err instanceof JsonFetchError) {
+                // TODO: handle error for the user
+                console.log(err);
+            } else {
+                throw err;
+            }
+        }
 	}
 
 	render() {

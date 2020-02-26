@@ -11,6 +11,7 @@ import AuthHelper from "../../../helpers/AuthHelper";
 import { Header } from "../frame/Header";
 import { ExtendedThread } from "../../../../models/database/Thread";
 import { CommentThread } from "./comment/CommentThread";
+import { Fetch } from "../../../helpers/FetchHelper";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -23,8 +24,8 @@ interface SubmissionOverviewProps {
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const submissionPath = "/submission/" + submissionId;
     
-    const getFiles = (submissionId: string): Promise<File[]> => AuthHelper.fetch(`/api/files/submission/${submissionId}`).then(res => res.json());
-    const getComments = (submissionId: string) => AuthHelper.fetch(`/api/commentThread/submission/${submissionId}`).then(res => res.json());
+    const getFiles = (submissionId: string) => Fetch.fetchJson<File[]>(`/api/files/submission/${submissionId}`);
+    const getComments = (submissionId: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionId}`);
     // also find a way to get recent comments
 
 	return <Frame title="Submission" user={{id: "1", name: "John Doe"}} sidebar search={submissionPath + "/search"}>

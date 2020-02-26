@@ -21,7 +21,6 @@ import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
 import {commentRouter} from "./routes/CommentRouter";
 import {filesRouter} from "./routes/FilesRouter";
-import {commentThreadsRouter} from "./routes/CommentThreadsRouter";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -42,11 +41,17 @@ socket.on('connect', (socket: Socket) => {
 });
 app.use(cookieParser());
 
+const api404Router = express.Router();
+const api404Response = (_: Request, response: Response) => response.status(404).send({error: "This API call does not exists"});
+api404Router.get("*", api404Response);
+api404Router.post("*", api404Response);
+api404Router.put("*", api404Response);
+api404Router.delete("*", api404Response);
+
 app.use(express.static(path.join(__dirname, '../../client/')));
 app.use('/api/auth', authRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
-app.use('/api/commentThreads', commentThreadsRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/courses', coursesRouter);
 app.use('/api/file', fileRouter);
@@ -54,6 +59,7 @@ app.use('/api/files', filesRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);
+app.use('/api', api404Router);
 app.use('/', indexRouter);
 
 app.use((err: any, req: Request, res: Response, next: Function) => {

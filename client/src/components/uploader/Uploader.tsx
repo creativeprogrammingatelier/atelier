@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
-import { AxiosError } from 'axios';
 
 import '../../../../helpers/Extensions';
 import FileHelper from '../../../helpers/FileHelper';
@@ -11,6 +10,7 @@ import { defaultValidation, validateProjectClient } from '../../../../helpers/Pr
 
 import '../../styles/file-uploader.scss';
 import { MAX_PROJECT_SIZE } from '../../../../helpers/Constants';
+import { FetchError } from '../../../helpers/FetchHelper';
 
 interface UploaderProperties {
     /** Callback to call when uploading is finished */
@@ -62,7 +62,7 @@ export function Uploader({ onUploadComplete }: UploaderProperties) {
         onUploadComplete();
     }
 
-    function handleUploadError(error: AxiosError) {
+    function handleUploadError(error: FetchError) {
         console.log(`Error uploading folder: ${error}`);
         updateErrors(prev => ({ ...prev, upload: (error.response?.status || true) }));
         updateUploading(false);

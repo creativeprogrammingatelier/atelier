@@ -5,7 +5,7 @@
 import express, { Response, Request } from 'express';
 import {threadState} from "../../../enums/threadStateEnum";
 import {ThreadDB} from "../database/ThreadDB";
-import {Thread} from "../../../models/database/Thread";
+import {ExtendedThread, Thread} from "../../../models/database/Thread";
 import {SnippetDB} from "../database/SnippetDB";
 import {Snippet} from "../../../models/database/Snippet";
 import {CommentDB} from "../database/CommentDB";
@@ -108,3 +108,42 @@ commentThreadRouter.post('/file/:fileID',
 
     });
 
+commentThreadRouter.get('/file/:fileID',
+    async (request: Request, result : Response) => {
+        try {
+            const fileID = request.params.fileID;
+
+            // Threads and comments
+            const extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
+            const snippets : Snippet[] = await SnippetDB.getSnippetsByFile(fileID);
+
+            let snippetMap = new Map();
+            snippets.forEach((snippet : Snippet) => {
+                snippetMap.set(snippet.snippetID, snippet);
+            });
+
+            const extendedThreadSnippet = extendedThreads.map((extendedThread : ExtendedThread) => {
+                const snippetID : string | undefined = extendedThread.snippetID;
+                const snippet : Snippet = snippetMap.get(snippetID) == undefined ? "" : snippetMap.get(snippetID);
+                return {
+                    ...extendedThread,
+                    snippet : snippet
+                }
+            });
+
+            result.send(extendedThreadSnippet);
+        } catch (error) {
+            result.status(500).send({error:error});
+        }
+    }
+);
+
+commentThreadRouter.get('/submission/:submissionID',
+    (request: Request, result: Response) => {
+        const submissionID = request.params.submissoinID;
+
+        ThreadDB.getThreadsBySubmission(submissionID)
+            .then((commentThreads : any) => result.send(commentThreads))
+            .catch((error : any) => result.status(500).send({error: error}));
+    }
+);

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import axios from 'axios';
 import FileViewer from './FileViewer';
 import { Uploader } from './uploader/Uploader';
 import AuthHelper from '../../helpers/AuthHelper';
