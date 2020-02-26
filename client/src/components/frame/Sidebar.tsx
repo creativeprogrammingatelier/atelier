@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FiX} from 'react-icons/fi';
+import {FiActivity, FiHome, FiLogOut, FiSearch, FiSettings, FiUser, FiX} from "react-icons/fi";
 import {Header} from './Header';
 import {Logo} from './Logo';
 import {SidebarEntry} from './SidebarEntry';
@@ -24,14 +24,16 @@ export function Sidebar({position, close}: SidebarProperties) {
 			<Header transparent leftButton={{icon: <FiX size={40} color="#FFFFFF"/>, click: close}}/>
 			<div className="sidebarContent p-0">
 				<Logo/>
-				<SidebarEntry location="/">My Courses</SidebarEntry>
-				<SidebarEntry location="/search">Search</SidebarEntry>
-				<SidebarEntry location="/logout">Logout</SidebarEntry>
+				<hr/>
+				<SidebarEntry location="/" icon={FiHome}>Home</SidebarEntry>
+				<SidebarEntry location="/search" icon={FiActivity}>Activity</SidebarEntry>
+				<SidebarEntry location="/settings" icon={FiSettings}>Settings</SidebarEntry>
 				<Loading<User>
 					loader={() => Fetch.fetchJson('/api/user/')}
-					component={user => <SidebarEntry location={"/user/" + user.ID}>{user.name}</SidebarEntry>
+					component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser}>{user.name}</SidebarEntry>
 					}
 				/>
+				<SidebarEntry location="/logout" icon={FiLogOut}>Logout</SidebarEntry>
 			</div>
 		</div>
 	);
