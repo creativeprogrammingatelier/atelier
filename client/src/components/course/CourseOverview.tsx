@@ -16,7 +16,7 @@ interface CourseOverviewProps {
 
 export function CourseOverview({match}: CourseOverviewProps) {
     // TODO tags set manually here? what tags?
-	const getSubmissions = (courseId: string) => Fetch.fetchJson<Submission[]>(`/api/submissions/course/${courseId}`);
+	const getSubmissions = (courseId: string) => Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}`);
 
 	return (
 		<Frame title="Course" user={{id: "0", name: "John Doe"}} sidebar search={"/course/../search"}>
