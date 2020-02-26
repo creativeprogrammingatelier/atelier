@@ -65,3 +65,9 @@ submissionRouter.post('/',
             })
             .catch((error: any) => result.status(500).send({error: error}));
     });
+
+submissionRouter.get('/:submissionID', (request: Request, response: Response) => {
+    SubmissionDB.getSubmissionById(request.params.submissionID)
+        .then((data: Submission) => {response.send(data);})
+        .catch((error : any) => response.status(500).send({error : error}));
+});

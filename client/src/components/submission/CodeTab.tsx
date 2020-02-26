@@ -5,6 +5,7 @@ import {OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
 import AuthHelper from "../../../helpers/AuthHelper";
 import { Loading } from "../general/Loading";
 import { Fetch } from "../../../helpers/FetchHelper";
+import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 export interface FileComment {
 	startLine: number,
@@ -35,7 +36,7 @@ export function CodeTab({file, submissionID} : CodeProperties) {
     const getFileContents = () => Fetch.fetchString(`/api/file/${file.fileID}/body`);
 
 	return <div>
-		<h1>{file.pathname}</h1>
+		<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
         <Loading<string>
             loader={getFileContents}
             component={fileContents =>

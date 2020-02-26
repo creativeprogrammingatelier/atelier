@@ -6,6 +6,7 @@ import { Loading } from "../general/Loading";
 import AuthHelper from "../../../helpers/AuthHelper";
 import { ExtendedThread } from "../../../../models/database/Thread";
 import { Fetch } from "../../../helpers/FetchHelper";
+import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 interface CommentTabProperties {
     file: File
@@ -15,7 +16,7 @@ export function CommentTab({ file }: CommentTabProperties) {
     const getThreads = (fileID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/file/${fileID}`);
 
 	return <div>
-		<h1>{file.pathname}</h1>
+		<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
         <Loading<ExtendedThread[]>
             loader={getThreads}
             params={[file.fileID]}

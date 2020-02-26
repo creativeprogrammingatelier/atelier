@@ -11,7 +11,7 @@ import {User} from "../../../../models/api/User";
 import {Fetch} from "../../../helpers/FetchHelper";
 
 interface SidebarProperties {
-	user: {
+	user?: {
 		id: string,
 		name: string
 	},

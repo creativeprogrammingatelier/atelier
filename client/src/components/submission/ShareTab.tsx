@@ -2,6 +2,7 @@ import React from 'react';
 import {Sharing} from "../general/Sharing";
 import {File} from "../../../../models/database/File";
 import {FileProperties} from "./FileOverview";
+import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 interface ShareProperties {
 	file: File,
@@ -9,7 +10,7 @@ interface ShareProperties {
 }
 export function ShareTab({file, url}: ShareProperties) {
 	return <div className='QRCode'>
-		<h1>{file.pathname}</h1>
+		<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
 		<Sharing url={url}/>
 	</div>;
 }
