@@ -47,7 +47,7 @@ class Login extends Component {
 		}
 		return (
 			<div className="center-form-container">
-				<h3>Login to Atelier</h3>
+				<h3 style={{paddingBottom: 10}}>Welcome to Atelier</h3>
 				<div className="form-container">
 					<Form onSubmit={this.onSubmit}>
 						<div className="form-group">
@@ -85,7 +85,6 @@ class Login extends Component {
 								</li>
 							</ul>
 						</div>
-
 					</Form>
 				</div>
 			</div>
