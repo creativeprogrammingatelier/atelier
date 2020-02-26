@@ -1,7 +1,7 @@
-import {query, extract, map, one, searchify} from "./HelperDB";
+import {pool, extract, map, one, searchify, pgDB, checkAvailable } from "./HelperDB";
 import {User, DBUser, convertUser} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
-import { Pool } from "pg";
+import { UUIDHelper } from "../helpers/UUIDHelper";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
@@ -13,8 +13,8 @@ export class UserDB {
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
-	static getAllStudents() {
-		return query(`SELECT userID, name, globalRole, email 
+	static async getAllStudents(DB : pgDB = pool) {
+		return DB.query(`SELECT userID, name, globalRole, email 
 			FROM "Users" 
 			WHERE globalRole = 'user'`)
 			.then(extract).then(map(convertUser))
@@ -23,24 +23,25 @@ export class UserDB {
 	/**
 	 * calls onSuccess() with all users in the system.
 	 */
-	static getAllUsers() {
-		return query(`SELECT userID, name, globalRole, email FROM "Users"`)
+	static async getAllUsers(DB : pgDB = pool) {
+		return DB.query(`SELECT userID, name, globalRole, email FROM "Users"`)
 			.then(extract).then(map(convertUser))
 	}
 
 	/**
 	 * calls onSuccess() with a student based on its userID, without password hash
 	 */
-	static getUserByID(userID : string) {
-		return query(`SELECT userID, name, globalRole, email 
-			FROM "Users" where userID = $1`, [userID])
+	static async getUserByID(userID : string, DB : pgDB = pool) {
+		const userid = UUIDHelper.toUUID(userID);
+		return DB.query(`SELECT userID, name, globalRole, email 
+			FROM "Users" where userID = $1`, [userid])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 
-	static searchUser(searchString : string, limit? : number){
+	static async searchUser(searchString : string, limit? : number, DB : pgDB = pool){
 		if (limit === undefined || limit < 0) limit=undefined
 		searchString = searchify(searchString)
-		return query(`SELECT userID, name, globalRole, email
+		return DB.query(`SELECT userID, name, globalRole, email
 			FROM "Users"
 			WHERE name ILIKE $1
 			LIMIT $2`, [searchString, limit])
@@ -52,7 +53,8 @@ export class UserDB {
 	 * All fields but userID are required
 	 * if a userID is present, it will be ignored.
 	 */
-	static createUser(user : User) {
+	static async createUser(user : User, DB : pgDB = pool) {
+		checkAvailable(['email','password','role','name'], user)
 		const {
 			email,
 			password,
@@ -60,7 +62,7 @@ export class UserDB {
 			name
 		} = user;
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
-		return query(`INSERT INTO "Users" 
+		return DB.query(`INSERT INTO "Users" 
 			VALUES (DEFAULT, $1, $2, $3, $4) 
 			RETURNING *`, [name, role, email, password])
 			.then(extract).then(map(convertUser)).then(one)
@@ -70,7 +72,8 @@ export class UserDB {
 	 * userID is required to identify the user.
 	 * all other fields may or may not be present and will be updated accordingly.
 	 */
-	static updateUser(user: User) {
+	static async updateUser(user: User, DB : pgDB = pool) {
+		checkAvailable(['userID'], user)
 		const {
 			userID, //primary key is required
 			email = undefined,
@@ -78,25 +81,27 @@ export class UserDB {
 			role = undefined,
 			name = undefined
 		} = user
+		const userid = UUIDHelper.toUUID(userID);
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password)
-		return query(`UPDATE "Users"
+		return DB.query(`UPDATE "Users"
 			SET 
 			email = COALESCE($2, email),
 			hash = COALESCE($3, hash),
 			globalRole = COALESCE($4, globalRole),
 			name = COALESCE($5, name)
 			WHERE userID = $1
-			RETURNING * `, [userID, email, hash, role, name])
+			RETURNING * `, [userid, email, hash, role, name])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 
 	/**
 	 * deletes a user from the database, based on the userID.
 	 */
-	static deleteUser(userID: string) {
-		return query(`DELETE FROM "Users" 
+	static async deleteUser(userID: string, DB : pgDB = pool) {
+		const userid = UUIDHelper.toUUID(userID);
+		return DB.query(`DELETE FROM "Users" 
 			WHERE userID = $1 
-			RETURNING *`, [userID])
+			RETURNING *`, [userid])
 			.then(extract).then(map(convertUser)).then(one)
 	}
 
@@ -109,12 +114,13 @@ export class UserDB {
 		loginRequest : {email:string, password:string}, 
 		onSuccess: (userID : string) => void, 
 		onUnauthorised: () => void, 
-		onFailure : (error : Error) => void) {
+		onFailure : (error : Error) => void,
+		DB : pgDB = pool) {
 		const {
 			email,
 			password
 		} = loginRequest;
-		const res = await query<DBUser, [string]>(`SELECT * 
+		const res = await DB.query<DBUser, [string]>(`SELECT * 
 			FROM "Users" 
 			WHERE email = $1`, [email])
 			.then(extract).then(one).catch((error : Error) => {

@@ -22,6 +22,7 @@ export function Frame({children, title, user, sidebar, search}: FrameProperties)
 		setSidebarPosition(() => '0vw');
 	}
 	function sidebarClose() {
+		console.log("Closing sidebar");
 		setSidebarPosition(() => '-150vw');
 	}
 	function searchClick() {

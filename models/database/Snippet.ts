@@ -1,3 +1,5 @@
+import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
+
 export interface Snippet {
 	snippetID?: string,
 	lineStart?: number,
@@ -18,12 +20,12 @@ export interface DBSnippet {
 const keys = ['snippetid', 'linestart', 'lineend', 'charstart', 'charend', 'fileid']
 export function convertSnippet(db : DBSnippet) : Snippet {
 	const ret = {
-		snippetID: db.snippetid,
+		snippetID: UUIDHelper.fromUUID(db.snippetid),
 		lineStart: db.linestart,
 		lineEnd: db.lineend,
 		charStart: db.charstart,
 		charEnd: db.charend,
-		fileID: db.fileid
+		fileID: UUIDHelper.fromUUID(db.fileid)
 	}
 	// for (const key in db){
 	// 	if (key in keys) continue

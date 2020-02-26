@@ -1,24 +1,25 @@
-import {query, extract, map, one} from "./HelperDB";
+import {pool, extract, map, one, pgDB, checkAvailable } from "./HelperDB";
 import {Snippet, DBSnippet, convertSnippet} from '../../../models/database/Snippet';
+import { UUIDHelper } from "../helpers/UUIDHelper";
 
 /**
  * 
  * @Author Rens Leendertz
  */
 export class SnippetDB {
-	static getAllSnippets(){
+	static async getAllSnippets(DB : pgDB = pool){
 		return SnippetDB.filterSnippet({})
 	}
 	
-	static getSnippetsByFile(fileID : string){
+	static async getSnippetsByFile(fileID : string, DB : pgDB = pool){
 		return SnippetDB.filterSnippet({fileID})
 	}
 	
-	static getSnippetByID(snippetID : string) {
+	static async getSnippetByID(snippetID : string, DB : pgDB = pool) {
 		return SnippetDB.filterSnippet({snippetID}).then(one)
 	}
 
-	static filterSnippet(snippet : Snippet){
+	static async filterSnippet(snippet : Snippet, DB : pgDB = pool){
 		const {
 			snippetID = undefined,
 			lineStart = undefined,
@@ -27,7 +28,9 @@ export class SnippetDB {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return query(`SELECT * FROM "Snippets" 
+		const snippetid = UUIDHelper.toUUID(snippetID),
+			fileid = UUIDHelper.toUUID(fileID);
+		return DB.query(`SELECT * FROM "Snippets" 
 			WHERE
 				($1::uuid IS NULL OR snippetID=$1)
 			AND ($2::integer IS NULL OR lineStart=$2)
@@ -35,11 +38,12 @@ export class SnippetDB {
 			AND ($4::integer IS NULL OR charStart=$4)
 			AND ($5::integer IS NULL OR charEnd=$5)
 			AND ($6::uuid IS NULL OR fileID=$6)
-			`,[snippetID, lineStart, lineEnd, charStart, charEnd, fileID])
+			`,[snippetid, lineStart, lineEnd, charStart, charEnd, fileid])
 		.then(extract).then(map(convertSnippet))
 	}
 
-	static addSnippet(snippet : Snippet){
+	static async addSnippet(snippet : Snippet, DB : pgDB = pool){
+		checkAvailable(['lineStart','lineEnd','charStart','charEnd','fileID'], snippet)
 		const {
 			lineStart,
 			lineEnd,
@@ -47,13 +51,15 @@ export class SnippetDB {
 			charEnd,
 			fileID
 		} = snippet
-		return query(`INSERT INTO "Snippets" 
+		const fileid = UUIDHelper.toUUID(fileID);
+		return DB.query(`INSERT INTO "Snippets" 
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
-			RETURNING *`, [lineStart, lineEnd, charStart, charEnd,fileID])
+			RETURNING *`, [lineStart, lineEnd, charStart, charEnd,fileid])
 		.then(extract).then(map(convertSnippet)).then(one)
 	}
 
-	static updateSnippet(snippet : Snippet){
+	static async updateSnippet(snippet : Snippet, DB : pgDB = pool){
+		checkAvailable(['snippetID'], snippet)
 		const {
 			snippetID,
 			lineStart = undefined,
@@ -62,21 +68,24 @@ export class SnippetDB {
 			charEnd = undefined,
 			fileID = undefined
 		} = snippet
-		return query(`UPDATE "Snippets" SET 
+		const snippetid = UUIDHelper.toUUID(snippetID),
+			fileid = UUIDHelper.toUUID(fileID);
+		return DB.query(`UPDATE "Snippets" SET 
 			lineStart = COALESCE($2, lineStart),
 			lineEnd = COALESCE($3, lineEnd),
 			charStart = COALESCE($4, charStart),
 			charEnd = COALESCE($5, charEnd),
 			fileID = COALESCE($6, fileID)
 			WHERE snippetID=$1
-			RETURNING *`, [snippetID, lineStart, lineEnd, charStart, charEnd, fileID])
+			RETURNING *`, [snippetid, lineStart, lineEnd, charStart, charEnd, fileid])
 		.then(extract).then(map(convertSnippet)).then(one)
 	}
 
-	static deleteSnippet(snippetID : string){
-		return query(`DELETE FROM "Snippets" 
+	static async deleteSnippet(snippetID : string, DB : pgDB = pool){
+		const snippetid = UUIDHelper.toUUID(snippetID);
+		return DB.query(`DELETE FROM "Snippets" 
 			WHERE snippetID = $1 
-			RETURNING *`, [snippetID])
+			RETURNING *`, [snippetid])
 		.then(extract).then(map(convertSnippet)).then(one)
 	}
 }

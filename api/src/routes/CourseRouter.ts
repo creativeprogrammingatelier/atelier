@@ -18,14 +18,14 @@ courseRouter.use(AuthMiddleware.requireAuth);
  * @url: /api/course
  * @param name (string): course name
  * @param state (courseState): state of the course
- * @param creatorID (number): userID of the creator
+ * @param creatorID (string): userID of the creator
  * @return course created
  */
 courseRouter.post('/',
     (request : Request, result : Response) => {
         const name : string = request.body.name;
         const state : courseState = request.body.state;
-        const creatorID : number | undefined = request.body.creatorID;
+        const creatorID : string | undefined = request.body.creatorID;
 
         console.log(name, state, creatorID);
 
@@ -33,5 +33,5 @@ courseRouter.post('/',
             .then((course : Course) => {
                 result.send(course)
             })
-            .catch(error => result.status(500).send({error : error}));
+            .catch((error : Error) => result.status(500).send({error}));
     });

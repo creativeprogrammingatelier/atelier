@@ -1,4 +1,5 @@
 import {localRole, checkEnum} from "../../enums/localRoleEnum"
+import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 
 export interface CourseRegistration {
 	courseID? : string,
@@ -17,8 +18,8 @@ export function convertCourseReg(db :DBCourseRegistration) : CourseRegistration 
 		throw new Error("courserole from database does not match enum on server: "+db.courserole)
 	}
 	return {
-		courseID: db.courseid,
-		userID: db.userid,
+		courseID: UUIDHelper.fromUUID(db.courseid),
+		userID: UUIDHelper.fromUUID(db.userid),
 		role: localRole[db.courserole],
 		permission: db.permission
 	}

@@ -1,7 +1,8 @@
-import {query, extract, map, funmap2, one, searchify} from "./HelperDB";
+import {pool, extract, map, funmap2, one, searchify, checkAvailable, pgDB } from "./HelperDB";
 
 import {Comment, DBComment, convertComment, onlyComment} from '../../../models/database/Comment';
 import { convertThread, ExtendedThread, Thread, onlyThread } from "../../../models/database/Thread";
+import { UUIDHelper } from "../helpers/UUIDHelper";
 
 // import RolePermissionHelper from './RolePermissionsHelper'
 /**
@@ -10,16 +11,16 @@ import { convertThread, ExtendedThread, Thread, onlyThread } from "../../../mode
  */
 
 export class CommentDB {
-	static getAllComments(limit? :number){
-		return CommentDB.filterComment({}, limit)
+	static async getAllComments(limit? :number, DB : pgDB = pool){
+		return CommentDB.filterComment({}, limit, DB)
 	}
-	static getCommentsByThread(commentThreadID : string, limit ? : number){
-		return CommentDB.filterComment({commentThreadID},limit)
+	static async getCommentsByThread(commentThreadID : string, limit ? : number, DB : pgDB = pool){
+		return CommentDB.filterComment({commentThreadID},limit, DB)
 	}
-	static getCommentByID(commentID : string){
-		return CommentDB.filterComment({commentID}, 1).then(one)
+	static async getCommentByID(commentID : string, DB : pgDB = pool){
+		return CommentDB.filterComment({commentID}, 1, DB).then(one)
 	}
-	static filterComment(comment : Comment, limit : number | undefined) {
+	static async filterComment(comment : Comment, limit : number | undefined, DB : pgDB = pool) {
 		const {
 			commentID = undefined,
 			commentThreadID = undefined, 
@@ -27,8 +28,10 @@ export class CommentDB {
 			date = undefined, 
 			body = undefined
 		} = comment
+		const commentid = UUIDHelper.toUUID(commentID), 
+			commentthreadid = UUIDHelper.toUUID(commentThreadID)
 		if (limit && limit < 0) limit = undefined
-		return query(`SELECT * FROM "Comments" 
+		return DB.query(`SELECT * FROM "Comments" 
 			WHERE
 				($1::uuid IS NULL OR commentID=$1)
 			AND ($2::uuid IS NULL OR commentThreadID=$2)
@@ -36,16 +39,16 @@ export class CommentDB {
 			AND ($4::timestamp IS NULL OR date=$4)
 			AND ($5::text IS NULL OR body=$5)
 			LIMIT $6
-			`,[commentID, commentThreadID, userID, date, body, limit])
+			`,[commentid, commentthreadid, userID, date, body, limit])
 		.then(extract).then(map(convertComment))
 	}
 
-	static async textSearch(searchString : string, limit ?: number){
+	static async textSearch(searchString : string, limit ?: number, DB : pgDB=pool){
 		//escape special characters, allow us to search somewhere in the string instead of the whole
 		searchString = searchify(searchString)
 		if (limit === undefined || limit<0)limit=undefined
 		//query the comments database. union with commentThread for info
-		const response = await query(`SELECT *
+		const response = await DB.query(`SELECT *
 			FROM "Comments" as c, "CommentThread" as t
 			WHERE body ILIKE $1 AND c.commentThreadID = t.commentThreadID
 			LIMIT $2`, [searchString, limit])
@@ -75,19 +78,23 @@ export class CommentDB {
 	}
 
 
-	static addComment(comment : Comment){
+	static async addComment(comment : Comment, DB : pgDB = pool){
+		checkAvailable(['commentThreadID', 'userID', 'body'], comment)
 		const {
 			commentThreadID, 
 			userID, 
 			date=new Date(), 
 			body
 		} = comment
-		return query(`INSERT INTO "Comments" 
+		const commentThreadid = UUIDHelper.toUUID(commentThreadID),
+			userid = UUIDHelper.toUUID(userID);
+		return DB.query(`INSERT INTO "Comments" 
 			VALUES (DEFAULT, $1,$2,$3,$4) 
-			RETURNING *`, [commentThreadID,userID,date,body])
+			RETURNING *`, [commentThreadid,userid,date,body])
 		.then(extract).then(map(convertComment)).then(one)
 	}
-	static updateComment(comment : Comment){
+	static async updateComment(comment : Comment, DB : pgDB = pool){
+		checkAvailable(['commentID'], comment)
 		const {
 			commentID,
 			commentThreadID = undefined, 
@@ -95,19 +102,23 @@ export class CommentDB {
 			date = undefined, 
 			body = undefined
 		} = comment
-		return query(`UPDATE "Comments" SET 
+		const commentid = UUIDHelper.toUUID(commentID),
+			commentThreadid = UUIDHelper.toUUID(commentThreadID),
+			userid = UUIDHelper.toUUID(userID);
+		return DB.query(`UPDATE "Comments" SET 
 			commentThreadID = COALESCE($2, commentThreadID),
 			userID = COALESCE($3,userID),
 			date = COALESCE($4, date),
 			body = COALESCE($5, body)
 			WHERE commentID =$1
-			RETURNING *`, [commentID, commentThreadID, userID, date, body])
+			RETURNING *`, [commentid, commentThreadid, userid, date, body])
 		.then(extract).then(map(convertComment)).then(one)
 	}
-	static deleteComment(commentID : string){
-		return query(`DELETE FROM "Comments" 
+	static async deleteComment(commentID : string, DB : pgDB = pool){
+		const commentid = UUIDHelper.toUUID(commentID);
+		return DB.query(`DELETE FROM "Comments" 
 			WHERE commentID=$1
-			RETURNING *`, [commentID])
+			RETURNING *`, [commentid])
 		.then(extract).then(map(convertComment)).then(one)
 	}
 }

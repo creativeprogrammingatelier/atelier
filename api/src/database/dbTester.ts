@@ -1,4 +1,4 @@
-import {end} from './HelperDB'
+import {end, pgDB } from './HelperDB'
 import {UserDB as UH}	from './UserDB'
 import {CourseDB as CH}	from './CourseDB'
 import {RolePermissionDB as RPH}	from "./RolePermissionDB"
@@ -18,6 +18,7 @@ import {Course}				from '../../../models/database/Course'
 import {CourseRegistration}	from '../../../models/database/CourseRegistration'
 import {File}				from '../../../models/database/File'
 import {Snippet}			from '../../../models/database/Snippet'
+import { UUIDHelper } from '../helpers/UUIDHelper'
 
 const all = true;
 
@@ -35,7 +36,7 @@ function log<T>(a : string, b ?:T) : void {
 	}
 
 
-const uuid = "00000000-0000-0000-0000-000000000000"
+const uuid = UUIDHelper.fromUUID("00000000-0000-0000-0000-000000000000")
 
 function logger<T>(pre: string) {
 	return (s: T) => {log<T>(pre, s); return s}
@@ -179,12 +180,12 @@ function finish(){
 	if (!OK) console.log(stored)
 }
 setTimeout(usersHelper, 0)
-setTimeout(coursesHelper,100)
-setTimeout(rolesHelper, 200)
-setTimeout(courseRegistrationHelper, 300)
-setTimeout(submissionHelper, 400)
-setTimeout(fileHelper, 500)
-setTimeout(snippetHelper, 600)
-setTimeout(ThreadHelper, 700)
-setTimeout(commentHelper, 800)
-setTimeout(finish, 1000)
+setTimeout(coursesHelper,200)
+setTimeout(rolesHelper, 400)
+setTimeout(courseRegistrationHelper, 600)
+setTimeout(submissionHelper, 800)
+setTimeout(fileHelper, 1000)
+setTimeout(snippetHelper, 1200)
+setTimeout(ThreadHelper, 1400)
+setTimeout(commentHelper, 1600)
+setTimeout(finish, 1800)
