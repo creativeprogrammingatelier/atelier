@@ -60,7 +60,6 @@ textarea:focus, textarea:active {
 .sidebar {
 	top: 0;
 	height: 100vh;
-	padding: $headerHeight 0 0 !important;
 	position: fixed !important;
 	background-color: $secondaryColor;
 	z-index: 1050;
@@ -71,6 +70,7 @@ textarea:focus, textarea:active {
 	height: 100%;
 	position: relative;
 	overflow: auto;
+	padding: 10px;
 }
 .logo {
 	font-family: $fontTitle;

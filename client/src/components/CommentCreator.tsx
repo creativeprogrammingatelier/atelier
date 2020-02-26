@@ -4,7 +4,6 @@ import PrivateRoute from './PrivateRoute';
 import {throws} from 'assert';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSave} from '@fortawesome/free-solid-svg-icons';
-import Axios from 'axios';
 import CommentHelper from '../../helpers/CommentHelper';
 import '../styles/comment-creator.scss';
 import { Comment } from '../../../models/database/Comment';

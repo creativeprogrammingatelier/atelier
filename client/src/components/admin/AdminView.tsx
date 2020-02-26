@@ -4,7 +4,6 @@ import FileViewer from '../FileViewer';
 import FileHelper from '../../../helpers/FileHelper';
 import {User} from '../../../../models/database/User';
 import {File} from '../../../../models/database/File';
-import axios from 'axios';
 import AuthHelper from '../../../helpers/AuthHelper';
 import AdminControl from './AdminControl';
 import EditUserModal from './EditUserModal';

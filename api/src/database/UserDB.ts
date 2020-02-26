@@ -133,12 +133,13 @@ export class UserDB {
 		if (!res.hash){
 			return onFailure(Error('WTF is the database doing'))
 		}
-		const {hash, userid}= res
-		if (userid===undefined){
+		const {hash, userid}= res;
+		const userID = UUIDHelper.fromUUID(userid);
+		if (userID === undefined){
 			return onFailure(Error("the database is fking with us"))
 		}
 		if (UserDB.comparePassword(hash, password)){
-			return onSuccess(userid)
+			return onSuccess(userID)
 		} else {
 			return onUnauthorised()
 		}

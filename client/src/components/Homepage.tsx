@@ -5,12 +5,12 @@ import {Loading} from "./general/Loading";
 import {AddCourse} from "./course/AddCourse";
 import {Course} from "../../../models/database/Course";
 import AuthHelper from './../../helpers/AuthHelper';
+import { Fetch } from '../../helpers/FetchHelper';
 
 export function Homepage() {
 
 	// Retrieve courses
-	const getCourses = () =>
-		AuthHelper.fetch('/api/courses/').then((response) => response.json());
+	const getCourses = () => Fetch.fetchJson<Course[]>('/api/courses/');
 
 	function updateCourse(course : Course) {
 		// TODO: create new course in the api
