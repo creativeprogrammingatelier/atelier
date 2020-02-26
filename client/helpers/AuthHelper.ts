@@ -1,6 +1,5 @@
 import decode from 'jwt-decode';
-import {type} from 'os';
-import roleEnum from '../../enums/roleEnum';
+import { Fetch } from './FetchHelper';
 
 /**
  * Helper with function to do with Authentication and users
@@ -95,15 +94,14 @@ export default class AuthHelper {
 		}
 	}
 
-	static setToken = (idToken: string) => {
-		// Saves user token to localStorage
+    /** Save token to local storage */
+	static setToken(idToken: string) {
 		localStorage.setItem('id_token', idToken);
 	};
 
-	static getToken(): any {
-		// Retrieves the user token from localStorage
-		let idToken: any = localStorage.getItem('id_token');
-		return idToken;
+    /** Retrieve current token from storage */
+	static getToken() {
+		return localStorage.getItem('id_token');
 	};
 
 	static logout = () => {
@@ -111,33 +109,10 @@ export default class AuthHelper {
 		localStorage.removeItem('id_token');
 	};
 
-	static getConfirm = () => {
-		// Using jwt-decode npm package to decode the token
-		let answer = decode(AuthHelper.getToken());
-		return answer;
-	};
 	/**
 	 * Helper method to do API calls, should / could be repalced with AXIOS
 	 */
-	static fetch = (url: RequestInfo, options: RequestInit = {}) => {
-		// performs api calls sending the required authentication headers
-		const headers: any = {
-			Accept: 'application/json',
-			'Content-Type': 'application/json'
-		};
-		// Setting Authorization header
-		// Authorization: Bearer xxxxxxx.xxxxxxxx.xxxxxx
-		if (AuthHelper.loggedIn()) {
-			headers['Authorization'] = AuthHelper.getToken();
-		}
-
-		return fetch(url, {
-			headers,
-			...options
-		})
-		.then(AuthHelper._checkStatus).catch(reponse => reponse)
-		.then(response => response);
-	};
+	static fetch = Fetch.fetch;
 
 	static _checkStatus = (response: {status: number; statusText: string;}) => {
 		// raises an error in case response status is not a success

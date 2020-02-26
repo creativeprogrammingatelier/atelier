@@ -10,7 +10,7 @@ interface AuthenticatedRouteProperties<T> {
 	roles?: string[]
 }
 export function AuthenticatedRoute<T>({path, component, roles}: AuthenticatedRouteProperties<T>) {
-	const [authenticated, setAuthenticated] = useState();
+	const [authenticated, setAuthenticated] = useState(undefined as boolean | undefined);
 
 	useEffect(() => {
 		if (roles !== undefined) {

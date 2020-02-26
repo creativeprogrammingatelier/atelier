@@ -20,8 +20,7 @@ import {ExtendedThread} from "../../../models/database/Thread";
 type CodeViewer2Props = {
 	submissionID : string,
 	fileID : string,
-	file : File,
-	fileBody : string
+	fileContents : string
 }
 
 type CodeViewer2State = {
@@ -46,7 +45,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		super(props);
 
 		this.state = {
-			formattedCode : props.fileBody,
+			formattedCode : props.fileContents,
 			selecting : false,
 			commentSelection : "",
 

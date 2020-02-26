@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from "react";
+import React, {Fragment} from "react";
 import {Link} from "react-router-dom";
 import {Button} from "react-bootstrap";
 
 import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/DataBlockList";
 import {DataItemList} from "../general/DataItemList";
-import {Submission} from "../../../../models/database/Submission";
 import {File} from "../../../../models/database/File";
-import {CommentThread} from "../../placeholdermodels";
 import {Loading} from "../general/Loading";
 import AuthHelper from "../../../helpers/AuthHelper";
+import { Header } from "../frame/Header";
+import { ExtendedThread } from "../../../../models/database/Thread";
+import { CommentThread } from "./comment/CommentThread";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -21,56 +22,30 @@ interface SubmissionOverviewProps {
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const submissionPath = "/submission/" + submissionId;
-
-	const [loading, setLoading] = useState(true);
-	const [files, setFiles] = useState([] as File[]);
-	const [comments, setComments] = useState([] as CommentThread[]);
-	const [recent, setRecent] = useState([]);
-
-	useEffect(() => {
-		const submission = AuthHelper.fetch("/api/submission/"+submissionId);
-		console.log("Gotten a result from a thing");
-		console.log(submission);
-	}, []);
-
-	useEffect(() => {
-		const getFiles = AuthHelper.fetch(`/api/files/submission/${submissionId}`);
-		// TODO get comments or comment threads as well
-
-		Promise.all([getFiles]).then(responses =>
-			Promise.all(responses.map(response => response.json()))
-		).then(data => {
-			setFiles(data[0]);
-			setLoading(false);
-		}).catch((error : any) => console.log(error));
-
-	}, []);
+    
+    const getFiles = (submissionId: string): Promise<File[]> => AuthHelper.fetch(`/api/files/submission/${submissionId}`).then(res => res.json());
+    const getComments = (submissionId: string) => AuthHelper.fetch(`/api/commentThread/submission/${submissionId}`).then(res => res.json());
+    // also find a way to get recent comments
 
 	return <Frame title="Submission" user={{id: "1", name: "John Doe"}} sidebar search={submissionPath + "/search"}>
 		<h1>A Project</h1>
 		<p>Submitted by John Doe</p>
 		<p>Just now</p>
 		<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+        <Loading<File[]>
+            loader={getFiles}
+            params={[submissionId]}
+            component={files =>
+                <DataItemList
+                    header="Files"
+                    list={files.map(file => {
+                        return {
+                            transport : submissionPath + `/${file.fileID}/code`,
+                            text : file.pathname === undefined ? "" : file.pathname
+                        }
+                    })}
+                />} />
 
-		{
-			loading ?
-				<Loading />
-				:
-				<div>
-					<DataItemList
-						header="Files"
-						list={files.map((file) => {
-							return {
-								transport : submissionPath + `/${file.fileID}/code`,
-								text : file.pathname == undefined ? "" : file.pathname
-							}
-						})}
-					/>
-
-
-				</div>
-
-		}
 		{/* Reference for tags if needed
 		   <DataItemList header="Files" list={[
 			{
@@ -82,21 +57,16 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				tags: [{name: "New comment", color: "red", dark:true}]
 			}
 		]}/>*/}
-		<DataBlockList header="Comments" list={[
-			{
-				title: "We need a way to",
-				text: "get general comments",
-				time: new Date()
-			}, {
-				title: "from the",
-				text: "database",
-				time: new Date()
-			}, {
-				title: "and after",
-				text: "filter on ",
-				time: new Date()
-			}
-		]}/>
+
+        <Loading<ExtendedThread[]>
+            loader={getComments}
+            params={[submissionId]}
+            component={threads =>
+                <Fragment>
+                    <Header title="Comments" />
+                    {threads.map(thread => <CommentThread thread={thread} />)}
+                </Fragment>} />
+
 		<DataBlockList header="Recent" list={[
 			{
 				title: "recent",
