@@ -12,6 +12,7 @@ import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
 import {ExtendedThread} from "../../../../../models/database/Thread";
 import {Comment} from "../../../../../models/database/Comment";
 import AuthHelper from './../../../../helpers/AuthHelper';
+import { Fetch, JsonFetchError } from "../../../../helpers/FetchHelper";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -51,26 +52,28 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	// Maybe we should let that be done over the server,
 	// but this makes for a better demo
 	// TODO pass token instead of userID
-	const newComment = (text: string) => {
-		AuthHelper.fetch(`/api/comment/${thread.commentThreadID}`, {
-			method : 'PUT',
-			body : JSON.stringify({
-				userID : "00000000-0000-0000-0000-000000000000",
-				body : text
-			})
-		})
-			.then((data : any) => data.json())
-			.then((response : Comment) => {
-				console.log(response);
-				updateComments((comments : any) => [
-					...comments,
-					{text : response.body, author : response.userID, time : response.date}
-				]);
-			});
-		/*updateComments((comments : any) => [
-			...comments,
-			{text, author: "Pietje Puk", time: new Date(Date.now())}
-		]);*/
+	const newComment = async (text: string) => {
+        try {
+            const comment = await Fetch.fetchJson<Comment>(`/api/comment/${thread.commentThreadID}`, {
+                method : 'PUT',
+                body : JSON.stringify({
+                    userID : "00000000-0000-0000-0000-000000000000",
+                    body : text
+                })
+            });
+            console.log(comment);
+            updateComments(comments => [
+                ...comments,
+                {text : comment.body, author : comment.userID, time : comment.date}
+            ]);
+        } catch (err) {
+            if (err instanceof JsonFetchError) {
+                // TODO: handle error for user
+                console.log(err);
+            } else {
+                throw err;
+            }
+        }
 	};
 
 	return (
