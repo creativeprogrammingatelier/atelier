@@ -12,7 +12,7 @@ interface CommentTabProperties {
 }
 
 export function CommentTab({ file }: CommentTabProperties) {
-    const getThreads = (fileID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/comments/file/${fileID}`);
+    const getThreads = (fileID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/file/${fileID}`);
 
 	return <div>
 		<h1>{file.pathname}</h1>
