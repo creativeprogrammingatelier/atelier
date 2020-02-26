@@ -13,7 +13,6 @@ import {
     SearchResponse,
     SubmissionResponse
 } from "../../helpers/DatabaseResponseInterface";
-import AuthHelper from '../../../helpers/AuthHelper';
 import { Fetch } from '../../../helpers/FetchHelper';
 
 

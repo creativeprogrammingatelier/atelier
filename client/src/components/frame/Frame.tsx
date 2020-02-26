@@ -7,7 +7,7 @@ import {Content} from './Content';
 interface FrameProperties {
 	children?: JSX.Element | JSX.Element[],
 	title: string,
-	user: {
+	user?: {
 		id: string,
 		name: string
 	}

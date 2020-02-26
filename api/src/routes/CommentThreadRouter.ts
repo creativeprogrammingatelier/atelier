@@ -153,3 +153,18 @@ commentThreadRouter.get('/submission/:submissionID',
         }
     }
 );
+
+commentThreadRouter.get('/submission/:submissionID/recent', async (request: Request, response: Response) => {
+    const submissionID = request.params.submissionID;
+    const limit = request.params.limit;
+    const offset = request.params.offset;
+
+    // TODO: Wait for backend support
+
+    try {
+        const commentThreads: ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+        response.send(commentThreads);
+    } catch (error) {
+        response.status(500).send({error:"internal", message:"Could not retrieve recent comments", details:error});
+    }
+});
