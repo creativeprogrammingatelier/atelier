@@ -13,6 +13,25 @@ export const courseRouter = express.Router();
 // Authentication is required for all endpoints
 courseRouter.use(AuthMiddleware.requireAuth);
 
+/**
+ * /api/courses/
+ * @return, list of courses
+ */
+courseRouter.get('/',
+    async (request : Request, result : Response) => {
+        CourseDB.getAllCourses()
+            .then((courses : Course[]) => courses.map((course : Course) => {
+                return {
+                    courseID : course.courseID,
+                    name : course.name,
+                    state : course.state,
+                    creator : course.creatorID
+                }
+            }))
+            .then(data => result.send(data))
+            .catch((error => result.status(500).send({error : error})));
+    });
+
 /** Add a course. Pass parameters as json in the body.
  * @type: post
  * @url: /api/course

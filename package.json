@@ -52,6 +52,7 @@
 		"react-dom": "^16.12.0",
 		"react-icons": "^3.9.0",
 		"react-router-dom": "^5.1.2",
+		"saml2-js": "^2.0.5",
 		"socket.io": "^2.3.0"
 	},
 	"devDependencies": {

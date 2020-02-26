@@ -58,7 +58,7 @@ class Register extends Component {
 		}
 		return (
 			<div className="center-form-container">
-				<h3>Create account</h3>
+				<h3>Registration form</h3>
 				<div className="form-container">
 					<Form onSubmit={this.onSubmit}>
 						<div className="form-group">

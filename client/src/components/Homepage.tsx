@@ -10,7 +10,7 @@ import { Fetch } from '../../helpers/FetchHelper';
 export function Homepage() {
 
 	// Retrieve courses
-	const getCourses = () => Fetch.fetchJson<Course[]>('/api/courses/');
+	const getCourses = () => Fetch.fetchJson<Course[]>('/api/course/');
 
 	function updateCourse(course : Course) {
 		// TODO: create new course in the api
@@ -18,7 +18,7 @@ export function Homepage() {
 
 	return (
 		<Frame title="Homepage" user={{id:"1", name:"John Doe"}} sidebar>
-			<p>Some introduction of sorts?</p>
+			<p></p>
             <Loading<Course[]>
                 loader={getCourses}
                 component={courses => 

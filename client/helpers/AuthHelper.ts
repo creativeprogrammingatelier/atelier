@@ -16,7 +16,7 @@ export default class AuthHelper {
 		});
 	}
 	static checkRoles(roles: string[]) {
-		return Fetch.fetch(`/api/auth/roles`, {
+		return Fetch.fetch(`/api/auth/role`, {
 			method: 'POST',
 			body: JSON.stringify({
 				roles

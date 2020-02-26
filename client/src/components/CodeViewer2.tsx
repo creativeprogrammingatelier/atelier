@@ -77,7 +77,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 
 	async getCommentThreads() {
         try {
-            const threads = await Fetch.fetchJson<ExtendedThread[]>(`/api/commentThreads/file/${this.props.fileID}`);
+            const threads = await Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/file/${this.props.fileID}`);
             console.log(threads);
             const snippets : FileSnippet[] = [];
             threads.map((commentThread : ExtendedThread) => {

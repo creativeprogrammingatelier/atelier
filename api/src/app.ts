@@ -12,7 +12,7 @@ import logger from 'morgan';
 // API routes
 import { authRouter } from './routes/AuthRouter';
 import { courseRouter } from './routes/CourseRouter';
-import { coursesRouter } from './routes/CoursesRouter';
+// import { coursesRouter } from './routes/CoursesRouter';
 import { fileRouter } from './routes/FileRouter';
 import { indexRouter } from './routes/IndexRouter';
 import { searchRouter } from './routes/SearchRouter';
@@ -20,7 +20,7 @@ import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
 import {commentRouter} from "./routes/CommentRouter";
-import {filesRouter} from "./routes/FilesRouter";
+// import {filesRouter} from "./routes/FilesRouter";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -53,9 +53,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
-app.use('/api/courses', coursesRouter);
+// app.use('/api/courses', coursesRouter);
 app.use('/api/file', fileRouter);
-app.use('/api/files', filesRouter);
+// app.use('/api/files', filesRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);

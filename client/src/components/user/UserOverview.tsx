@@ -22,7 +22,7 @@ interface UserOverviewProperties {
 }
 
 export function UserOverview({match: { params: { userId } } }: UserOverviewProperties) {
-	const getSubmissions = (userId: string) => Fetch.fetchJson<Submission[]>(`/api/submissions/user/${userId}`);
+	const getSubmissions = (userId: string) => Fetch.fetchJson<Submission[]>(`/api/submission/user/${userId}`);
 	const getUser = (userId: string) => Fetch.fetchJson<User>(`/api/user/${userId}`);
 	// getComments?
 
