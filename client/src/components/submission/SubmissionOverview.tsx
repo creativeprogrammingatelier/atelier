@@ -10,11 +10,13 @@ import {Loading} from "../general/Loading";
 import AuthHelper from "../../../helpers/AuthHelper";
 import { Header } from "../frame/Header";
 import { ExtendedThread } from "../../../../models/database/Thread";
-import { CommentThread } from "./comment/CommentThread";
+import { CommentThread as CommentThreadComponent} from "./comment/CommentThread";
 import { Fetch } from "../../../helpers/FetchHelper";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {LoadingIcon} from "../general/LoadingIcon";
 import {Submission} from "../../../../models/database/Submission";
+import {DataList} from "../general/DataList";
+import {DataItem} from "../general/DataItem";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -32,10 +34,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	console.log(submissionPath);
 	console.log(`/api/submission/${submissionId}`);
 
-	const getSubmission = (submissionId: string) => Fetch.fetchJson<Submission>(`/api/submission/${submissionId}`);
-    const getFiles = (submissionId: string) => Fetch.fetchJson<File[]>(`/api/files/submission/${submissionId}`);
-    const getComments = (submissionId: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionId}`);
-    // also find a way to get recent comments
+	const getSubmission = (submissionID: string) => Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);
+    const getFiles = (submissionID: string) => Fetch.fetchJson<File[]>(`/api/files/submission/${submissionID}`);
+	const getGlobalComments = (submissionID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}`);
+	const getRecentComments = (submissionID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
+	const getCourse = (courseID: string) => Fetch.fetchJson<Course>(`/api/course/${courseID}`);
+	// also find a way to get recent comments
 
 	return <Loading<Submission>
 		loader={getSubmission}
@@ -43,25 +47,35 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		component={
 			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
 				<h1>{submission.name}</h1>
-				<p>Submitted by {submission.userID}</p>
-				<p>In course {submission.courseID}</p>
+				<p>Submitted by <Link to={"/user/"+submission.userID}>{submission.userID}</Link></p>{/* User data should be given with the new API submission.user.* */}
+				<Loading
+					loader={getCourse}
+					params={[submission.courseID]}
+					component={course => <p>In course <Link to={"/course/"+course.id}>{course.name}</Link></p>}
+				/>
 				<p>Just now</p>
 				<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
-				<Loading<File[]>
-					loader={getFiles}
-					params={[submissionId]}
-					component={files =>
-						<DataItemList
-							header="Files"
-							list={files.map(file => {
-								return {
-									transport : submissionPath + `/${file.fileID}/code`,
-									text : file.pathname === undefined ? "" : FileNameHelper.fromPath(file.pathname)
-								}
-							})}
-						/>
-					}
-				/>
+				<DataList header="Files">
+					<Loading<File[]>
+						loader={getFiles}
+						params={[submissionId]}
+						component={files => files.map(file => <DataItem text={FileNameHelper.fromPath(file.pathname!)} transport={submissionPath + "/" + file.fileID + "/code"}/>)}
+					/>
+				</DataList>
+				<DataList header="Comments">
+					<Loading<ExtendedThread[]>
+						loader={getGlobalComments}
+						params={[submissionId]}
+						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+					/>
+				</DataList>
+				<DataList header="Recent">
+					<Loading<ExtendedThread[]>
+						loader={getRecentComments}
+						params={[submissionId]}
+						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+					/>
+				</DataList>
 
 				{/* Reference for tags if needed
 				 <DataItemList header="Files" list={[
@@ -74,25 +88,6 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				 tags: [{name: "New comment", color: "red", dark:true}]
 				 }
 				 ]}/>*/}
-
-				<Header title="Comments"/>
-				<Loading<ExtendedThread[]>
-					loader={getComments}
-					params={[submissionId]}
-					component={threads =>
-						<Fragment>
-							{threads.map(thread => <CommentThread thread={thread}/>)}
-						</Fragment>
-					}
-				/>
-
-				<DataBlockList header="Recent" list={[
-					{
-						title: "recent",
-						text: "to show here",
-						time: new Date()
-					}
-				]}/>
 			</Frame>
 		}
 		wrapper={children => <Frame title="Submission" sidebar search={submissionPath + "/search"}>{children}</Frame>}
