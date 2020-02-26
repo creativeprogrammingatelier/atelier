@@ -39,6 +39,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 
 	return <Loading<Submission>
 		loader={getSubmission}
+		params={[submissionId]}
 		component={
 			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
 				<h1>{submission.name}</h1>
@@ -94,6 +95,6 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				]}/>
 			</Frame>
 		}
-		loadingComponent={<Frame title="submission" sidebar search={submissionPath + "/search"}><LoadingIcon/></Frame>}
+		wrapper={children => <Frame title="Submission" sidebar search={submissionPath + "/search"}>{children}</Frame>}
 	/>;
 }

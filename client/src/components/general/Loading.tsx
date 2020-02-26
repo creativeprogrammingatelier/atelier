@@ -16,18 +16,20 @@ interface LoadingProperties<R, F extends LoadingFunc<R>> {
 	params?: Parameters<F>,
 	/** Function taking the loaded data returning the component to render */
 	component: (result: R) => React.ReactElement | React.ReactElement[]
-	/** An optional component to use instead of the default loading icon */
-	loadingComponent?: JSX.Element
+	/** An optional component to use to wrap around the loading icon or error message */
+	wrapper?: (children: JSX.Element) => React.ReactElement | React.ReactElement[]
 }
 
 /**
  * Loading component that shows a loading spinner wile data is loading
  * and gives the data
  */
-export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: promise, params: param, component, loadingComponent}: LoadingProperties<R, F>) {
+export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: promise, params: param, component, wrapper}: LoadingProperties<R, F>) {
 	const [state, updateState] = useState(LoadingState.Loading);
 	const [result, updateResult] = useState(undefined as R | undefined);
 	const [error, updateError] = useState(undefined as {error: string, message: string} | undefined);
+
+	const wrapped = (children: JSX.Element) => wrapper ? <Fragment>{wrapper(children)}</Fragment> : children;
 
 	useEffect(() => {
 		(param ? promise(...param) : promise()).then(res => {
@@ -46,12 +48,12 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
 			</Fragment>
 		);
 	} else if (state === LoadingState.Error) {
-		return (
+		return wrapped(
 			<div>
 				An error occurred: {error!.message}.
 			</div>
 		);
 	} else { // state === LoadingState.Loading
-		return loadingComponent ? loadingComponent : <LoadingIcon/>;
+		return wrapped(<LoadingIcon/>);
 	}
 }
