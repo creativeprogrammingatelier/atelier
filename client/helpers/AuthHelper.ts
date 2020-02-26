@@ -8,7 +8,7 @@ export default class AuthHelper {
 
 
 	static checkRole(role: string) {
-		return this.fetch(`/api/auth/role`, {
+		return Fetch.fetch(`/api/auth/role`, {
 			method: 'POST',
 			body: JSON.stringify({
 				role
@@ -16,7 +16,7 @@ export default class AuthHelper {
 		});
 	}
 	static checkRoles(roles: string[]) {
-		return this.fetch(`/api/auth/roles`, {
+		return Fetch.fetch(`/api/auth/roles`, {
 			method: 'POST',
 			body: JSON.stringify({
 				roles
@@ -25,7 +25,7 @@ export default class AuthHelper {
 	}
 
 	static getRole() {
-		return this.fetch(`/api/auth/role`, {
+		return Fetch.fetch(`/api/auth/role`, {
 			method: 'GET'
 		});
 	}
@@ -38,7 +38,7 @@ export default class AuthHelper {
 	}
 
 	static register(email: string, password: string, role: string, onSuccess: Function, onFailure: Function) {
-		this.fetch('/api/auth/register', {
+		Fetch.fetch('/api/auth/register', {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
@@ -59,17 +59,15 @@ export default class AuthHelper {
 
 	static login(email: string, password: string, onSuccess: Function, onFailure: Function) {
 		// Get a token from api server using the fetch api
-		this.fetch(`/api/auth/login`, {
+		Fetch.fetchJson(`/api/auth/login`, {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
 				password
 			})
 		}).then((res: any) => {
-			res.json().then((json: any) => {
-				this.setToken(json.token); // Setting the token in localStorage
-				onSuccess();
-			});
+            this.setToken(res.token); // Setting the token in localStorage
+            onSuccess();
 		}).catch((e: any) => {
 			console.log(e), onFailure();
 		});
@@ -108,11 +106,6 @@ export default class AuthHelper {
 		// Clear user token and profile data from localStorage
 		localStorage.removeItem('id_token');
 	};
-
-	/**
-	 * Helper method to do API calls, should / could be repalced with AXIOS
-	 */
-	static fetch = Fetch.fetch;
 
 	static _checkStatus = (response: {status: number; statusText: string;}) => {
 		// raises an error in case response status is not a success

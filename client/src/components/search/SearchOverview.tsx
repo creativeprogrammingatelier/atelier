@@ -14,6 +14,7 @@ import {
     SubmissionResponse
 } from "../../helpers/DatabaseResponseInterface";
 import AuthHelper from '../../../helpers/AuthHelper';
+import { Fetch } from '../../../helpers/FetchHelper';
 
 
 interface SearchData {
@@ -72,8 +73,8 @@ export function SearchOverview() {
     const [searchTerm, updateSearchTerm] = useState("");
 
     const getResults = (term: string): Promise<SearchData> =>
-        AuthHelper.fetch(`/api/search?q=${term}`)
-            .then(response => response.json())
+        // TODO: find correct type
+        Fetch.fetchJson<any>(`/api/search?q=${term}`)
             .then(data => ({
                    submissions : {
                        title : 'Submissions',

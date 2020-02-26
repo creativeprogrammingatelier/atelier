@@ -4,6 +4,7 @@ import {DataBlockList} from '../general/DataBlockList';
 import {Loading} from '../general/Loading';
 import {Submission} from "../../../../models/database/Submission";
 import AuthHelper from './../../../helpers/AuthHelper';
+import { Fetch } from '../../../helpers/FetchHelper';
 
 interface CourseOverviewProps {
 	match: {
@@ -14,16 +15,15 @@ interface CourseOverviewProps {
 }
 
 export function CourseOverview({match}: CourseOverviewProps) {
-	const getSubmissions = () =>
-		AuthHelper.fetch(`/api/submissions/course/${match.params.courseId}`)
-			.then((response) => response.json());
-            // TODO tags set manually here? what tags?
+    // TODO tags set manually here? what tags?
+	const getSubmissions = (courseId: string) => Fetch.fetchJson<Submission[]>(`/api/submissions/course/${courseId}`);
 
 	return (
 		<Frame title="Course" user={{id: "0", name: "John Doe"}} sidebar search={"/course/../search"}>
 			<h1>Course Overview</h1>
 				<Loading<Submission[]>
                     loader={getSubmissions}
+                    params={[match.params.courseId]}
                     component={submissions => 
                         <DataBlockList
                             header="Submissions"
