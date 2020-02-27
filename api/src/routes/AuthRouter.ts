@@ -5,11 +5,15 @@
  */
 import express from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { samlRouter } from './SamlRouter';
 import { issueToken, getCurrentUserID, AuthError } from '../helpers/AuthenticationHelper';
 import { UserDB } from '../database/UserDB';
 import { capture } from '../helpers/ErrorHelper';
 
 export const authRouter = express.Router();
+
+/** Redirect SAML requests to the SamlRouter */
+authRouter.use('/saml', samlRouter);
 
 /** Login endpoint, returns a token to use for subsequent requests */
 authRouter.post('/login', capture(async (request, response) => {

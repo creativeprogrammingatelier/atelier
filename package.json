@@ -22,6 +22,7 @@
 		"check": "gts check"
 	},
 	"dependencies": {
+		"@authenio/samlify-node-xmllint": "^1.0.2",
 		"@fortawesome/fontawesome-svg-core": "^1.2.27",
 		"@fortawesome/free-solid-svg-icons": "^5.12.1",
 		"@fortawesome/react-fontawesome": "^0.1.8",
@@ -52,7 +53,7 @@
 		"react-dom": "^16.12.0",
 		"react-icons": "^3.9.0",
 		"react-router-dom": "^5.1.2",
-		"saml2-js": "^2.0.5",
+		"samlify": "^2.7.1",
 		"socket.io": "^2.3.0"
 	},
 	"devDependencies": {
