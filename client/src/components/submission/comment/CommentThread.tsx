@@ -2,7 +2,6 @@ import React, {useState} from "react";
 
 import * as Models from "../../../placeholdermodels";
 
-import {Header} from "../../frame/Header";
 import {Comment as CommentComponent} from "./Comment";
 import {Snippet} from "./Snippet";
 import {WriteComment} from "./WriteComment";
@@ -11,7 +10,6 @@ import { Button } from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
 import {ExtendedThread} from "../../../../../models/database/Thread";
 import {Comment} from "../../../../../models/database/Comment";
-import AuthHelper from './../../../../helpers/AuthHelper';
 import { Fetch, JsonFetchError } from "../../../../helpers/FetchHelper";
 
 interface CommentThreadProperties {
@@ -21,7 +19,7 @@ interface CommentThreadProperties {
 	// Maybe also find a way to include the topic, so it can be shown immediately
 }
 
-/** Amount of lines to display when minimized*/
+/** Amount of lines to display when minimized */
 const MINIMIZED_LINES = 3;
 /** Amount of lines inclusive that count as a small snippet */
 const SMALL_SNIPPET_LINES = 3;
@@ -41,9 +39,9 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 	const currentComments : Models.Comment[] = thread.comments
 		.map((comment : Comment) => {
 			return {
-				text : comment.body == undefined ? "" : comment.body,
-				author : comment.userID == undefined ? "" : comment.userID ,
-				time : comment.date == undefined ? new Date() : comment.date
+				text : comment.body === undefined ? "" : comment.body,
+				author : comment.userID === undefined ? "" : comment.userID ,
+				time : comment.date === undefined ? new Date() : comment.date
 			}
 		});
 
@@ -51,7 +49,7 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 	const [comments, updateComments] = useState(currentComments);
 
 	let snippet : Models.Snippet | undefined;
-	if (body != undefined) {
+	if (body !== undefined) {
 		// Parse body into lines
 		const fileContent : string[] = body.replace('\r', '').split('\n');
 		const totalLines : number = fileContent.length;
@@ -108,9 +106,9 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
                 {snippet && <Snippet snippet={snippet}/>}
                 {opened ? <div>
                         {comments.map(comment => <CommentComponent comment={comment}/>)}
-                        <WriteComment placeholder="Reply..." newCommentCallback={newComment}/>
+                        <WriteComment placeholder="Reply..." internalButton={false} newCommentCallback={newComment}/>
                         <ButtonBar align="right">
-                            <Button><FiSend size={14} color="#FFFFFF"/></Button>
+                            <Button form="commentCreator" type="submit"><FiSend size={14} color="#FFFFFF"/></Button>
                             <Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>
                         </ButtonBar>
                     </div>

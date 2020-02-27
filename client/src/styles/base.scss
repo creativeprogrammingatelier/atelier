@@ -275,3 +275,19 @@ textarea:focus, textarea:active {
 .commentThread:not(:last-child) {
 	margin-bottom: 1rem;
 }
+
+.mention {
+	padding: 0.1rem 0.5rem;
+	color: $colorWhite;
+	background-color: $primaryColor;
+	border-radius: 1rem;
+}
+.mention:not(:last-child) {
+	margin-right: 0.25rem;
+	margin-bottom: 0.25rem;
+}
+.mention:hover {
+	color: $colorOffWhite;
+	background-color: $secondaryColor;
+	box-shadow: $shadowSmall;
+}
