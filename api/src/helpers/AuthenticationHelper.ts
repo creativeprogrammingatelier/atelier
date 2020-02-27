@@ -3,6 +3,15 @@ import jwt from 'jsonwebtoken';
 
 import { AUTHSECRETKEY, TOKEN_EXPIRATION } from '../lib/constants';
 
+/** Error that gets thrown when the user is not authorized or authenticated */
+export class AuthError extends Error {
+    reason: string
+    constructor(reason: string, message: string) {
+        super(message);
+        this.reason = reason;
+    }
+}
+
 /** Issue a new token for a user */
 export function issueToken(userID: string, expiresIn: string | number = TOKEN_EXPIRATION) {
     return jwt.sign({ userID }, AUTHSECRETKEY, { expiresIn });
@@ -21,9 +30,6 @@ export function getToken(request: Request) {
         ?.trim();
 }
 
-/** Error thrown if no token is provided with a request */
-export class UnauthorizedError { }
-
 /** Get the `userID` of the user making the request */
 export async function getCurrentUserID(request: Request) {
     const token = getToken(request);
@@ -31,6 +37,6 @@ export async function getCurrentUserID(request: Request) {
         const props = await verifyToken(token);
         return (props as { userID: string }).userID;
     } else {
-        throw new UnauthorizedError();
+        throw new AuthError("token.notProvided", "No token was provided with this request. You're probably not logged in.");
     }
 }
