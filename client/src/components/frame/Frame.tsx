@@ -7,14 +7,10 @@ import {Content} from "./Content";
 interface FrameProperties {
 	children?: JSX.Element | JSX.Element[],
 	title: string,
-	user?: {
-		id: string,
-		name: string
-	}
 	sidebar: boolean,
 	search?: string,
 }
-export function Frame({children, title, user, sidebar, search}: FrameProperties) {
+export function Frame({children, title, sidebar, search}: FrameProperties) {
 	const [sidebarPosition, setSidebarPosition] = useState("-150vw");
 
 	function sidebarOpen() {
@@ -30,7 +26,7 @@ export function Frame({children, title, user, sidebar, search}: FrameProperties)
 	return (
 		<div>
 			<Header fixed title={title} leftButton={sidebar ? {icon: FiMenu, click: sidebarOpen} : undefined} rightButton={search ? {icon: FiSearch, click: searchClick} : undefined}/>
-			<Sidebar user={user} position={sidebarPosition} close={sidebarClose}/>
+			<Sidebar position={sidebarPosition} close={sidebarClose}/>
 			<Content>{children}</Content>
 		</div>
 	);

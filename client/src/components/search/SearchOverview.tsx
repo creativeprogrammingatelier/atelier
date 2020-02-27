@@ -59,7 +59,7 @@ export function SearchOverview() {
                 }));
 
     return (
-        <Frame title="Search" user={{id:"1", name:"John Doe"}} sidebar>
+        <Frame title="Search" sidebar>
             <h1>Search Overview Page</h1>
             <SearchBar handleSearch={updateSearchTerm} />
             <Loading<SearchData>
