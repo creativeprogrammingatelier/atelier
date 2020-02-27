@@ -16,6 +16,7 @@ import { Button } from 'react-bootstrap';
 import {ExtendedThread} from "../../../models/database/Thread";
 import { JsonFetchError } from '../../helpers/FetchHelper';
 import { getFileComments, createFileCommentThread } from '../../helpers/APIHelper';
+import { Range, getRanges } from "../helpers/HighlightingHelper";
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -138,7 +139,33 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		let color = '#dc3339';
 		const opacityRange = ['00', '6F', 'BF', 'FF'];
 
+		/** Highlight based on ranges*/
 		if (this.state.snippets != undefined) {
+			const ranges : Range[] = this.state.snippets.map(snippet => {
+				return {
+					startLine : snippet.startLine,
+					startChar : snippet.startCharacter,
+					endLine : snippet.endLine,
+					endChar : snippet.endCharacter,
+					overlap : 1
+				}
+			});
+
+			const highlightRanges : Range[] = getRanges(ranges);
+			for (const {startLine, startChar, endLine, endChar, overlap} of highlightRanges) {
+				const opacity = opacityRange[Math.min(overlap, opacityRange.length - 1)];
+
+				this.codeMirror.markText(
+					{line : startLine, ch : startChar},
+					{line : endLine, ch : endChar},
+					{
+						css: `background-color: ${color}${opacity};`}
+				);
+			}
+		}
+
+		/** Highlight based on character*/
+		/*if (this.state.snippets != undefined) {
 			let highlights = new Map();
 			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.snippets) {
 				if (startLine == undefined) continue;
@@ -176,7 +203,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 						css: `background-color: ${color}${opacity};`}
 				);
 			}
-		}
+		}*/
 	}
 
 	/**
@@ -325,7 +352,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 							this.initialize();
 						}
 					}
-					onBeforeChange={(editor, data, value) => {
+					onBeforeChange={() => {
 						// uncomment if we allow changes to be made
 						/*this.setState({
 						 formattedCode : value
@@ -334,7 +361,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 					onSelection={this.onSelection}
 					onMouseDown={this.onClick}
 					onTouchStart={this.onClick}
-					onChange={(editor, data, value) => {}}
+					onChange={() => {}}
 				/>
 				{
 					this.state.selecting ?

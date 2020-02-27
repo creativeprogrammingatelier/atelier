@@ -75,11 +75,6 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 		const mainLineStart = topMargin;
 		const mainLineEnd = topMargin + Math.min(MINIMIZED_LINES, snippetLength);
 
-		console.log("--- " + lineStart + " " + lineEnd + "---");
-		console.log("File: " + fileContent.slice(fileLineStart, fileLineEnd));
-		console.log("Main: " + mainLineStart + " " + mainLineEnd);
-		console.log("FileLine: " + fileLineStart + " " + (fileLineEnd));
-
 		// Define snippet for render
 		// TODO fileID
 		snippet = {

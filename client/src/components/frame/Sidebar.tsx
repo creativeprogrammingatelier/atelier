@@ -29,7 +29,7 @@ export function Sidebar({position, close}: SidebarProperties) {
 				<SidebarEntry location="/settings" icon={FiSettings}>Settings</SidebarEntry>
 				<Loading<User>
 					loader={getCurrentUser}
-					component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser}>{user.name}</SidebarEntry>
+					component={user => <SidebarEntry location={"/user/" + user.id} icon={FiUser}>{user.name}</SidebarEntry>
 					}
 				/>
 				<SidebarEntry location="/logout" icon={FiLogOut}>Logout</SidebarEntry>
