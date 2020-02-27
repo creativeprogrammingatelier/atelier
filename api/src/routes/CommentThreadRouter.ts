@@ -124,10 +124,12 @@ commentThreadRouter.get('/file/:fileID',
 
             const extendedThreadSnippet = extendedThreads.map((extendedThread : ExtendedThread) => {
                 const snippetID : string | undefined = extendedThread.snippetID;
-                const snippet : Snippet = snippetMap.get(snippetID) == undefined ? "" : snippetMap.get(snippetID);
+                if (snippetMap.get(snippetID) == undefined) return extendedThread;
+
+                //const snippet : Snippet = snippetMap.get(snippetID) == undefined ? "" : snippetMap.get(snippetID);
                 return {
                     ...extendedThread,
-                    snippet : snippet
+                    snippet : snippetMap.get(snippetID)
                 }
             });
 

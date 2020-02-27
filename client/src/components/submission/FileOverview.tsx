@@ -34,17 +34,12 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 		setActiveTab(tab);
 	}, [tab]);
 
-	const [title, setTitle] = useState("");
-
 	const getFile = (fileId: string) => Fetch.fetchJson<File>(`/api/file/${fileId}`);
 	const getFileContents = (fileId : string) => Fetch.fetchString(`/api/file/${fileId}/body`);
 
 	const filePath = "/submission/" + submissionId + "/" + fileId;
     
     function renderTabContents([file, body] : [File, string]) {
-        // TODO: Take out the h1 from all these since it's always the same
-        // then they don't need a reference to file anymore, so they don't
-        // need to wait for it to be loaded
         if (activeTab === "code") {
             return <CodeTab body={body} file={file} submissionID={submissionId} />;
         } else if (activeTab === "comments") {

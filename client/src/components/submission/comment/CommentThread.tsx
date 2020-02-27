@@ -13,6 +13,7 @@ import {ExtendedThread} from "../../../../../models/database/Thread";
 import {Comment} from "../../../../../models/database/Comment";
 import AuthHelper from './../../../../helpers/AuthHelper';
 import { Fetch, JsonFetchError } from "../../../../helpers/FetchHelper";
+import {main} from "ts-node/dist/bin";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -35,8 +36,6 @@ const LARGE_SNIPPET_LINES_ABOVE = 0;
 const LARGE_SNIPPET_LINES_BELOW = 0;
 
 export function CommentThread({thread, body}: CommentThreadProperties) {
-
-
     // Load comments in the thread
 	const currentComments : Models.Comment[] = thread.comments
 		.map((comment : Comment) => {
@@ -50,31 +49,45 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(false);
 	const [comments, updateComments] = useState(currentComments);
 
-	let snippet : Models.Snippet | undefined;
-	if (body != undefined) {
+	let snippet : Models.Snippet | undefined = undefined;
+	if (body != undefined && thread.snippet != undefined) {
 		// Parse body into lines
 		const fileContent : string[] = body.replace('\r', '').split('\n');
 		const totalLines : number = fileContent.length;
 
 		// Get snippet data
-		const threadSnippet = thread.snippet!;
+		const threadSnippet = thread.snippet;
 		const lineStart : number = threadSnippet.lineStart;
 		const lineEnd : number = threadSnippet.lineEnd;
 
-		// Get ranges for minimized/maximized inclusive
-		const smallSnippet : boolean = (lineEnd - lineStart + 1) <= SMALL_SNIPPET_LINES;
-		const mainLineStart = lineStart;
-		const mainLineEnd = Math.min(lineEnd, lineStart + MINIMIZED_LINES);
-		const fileLineStart = Math.max(0, lineStart - (smallSnippet ? SMALL_SNIPPET_LINES_ABOVE : LARGE_SNIPPET_LINES_ABOVE));
-		const fileLineEnd = Math.min(totalLines - 1, lineEnd + (smallSnippet ? SMALL_SNIPPET_LINES_BELOW : LARGE_SNIPPET_LINES_BELOW));
+		// Get margins for the snippet
+		const snippetLength : number = (lineEnd - lineStart + 1);
+		const smallSnippet : boolean = snippetLength <= SMALL_SNIPPET_LINES;
+		let topMargin : number = smallSnippet ? SMALL_SNIPPET_LINES_ABOVE : LARGE_SNIPPET_LINES_ABOVE;
+		let bottomMargin : number = smallSnippet ? SMALL_SNIPPET_LINES_BELOW : LARGE_SNIPPET_LINES_BELOW;
+		topMargin = Math.min(topMargin, lineStart);
+		bottomMargin = Math.min(bottomMargin, totalLines - 1 - lineEnd);
+
+		// Corresponding lines in the file
+		const fileLineStart = lineStart - topMargin;
+		const fileLineEnd = lineEnd + bottomMargin + 1;
+
+		// Main lines to highlight first
+		const mainLineStart = topMargin;
+		const mainLineEnd = topMargin + Math.min(MINIMIZED_LINES, snippetLength);
+
+		console.log("--- " + lineStart + " " + lineEnd + "---");
+		console.log("File: " + fileContent.slice(fileLineStart, fileLineEnd));
+		console.log("Main: " + mainLineStart + " " + mainLineEnd);
+		console.log("FileLine: " + fileLineStart + " " + (fileLineEnd));
 
 		// Define snippet for render
 		// TODO fileID
 		snippet = {
-			fullText : fileContent.slice(fileLineStart, fileLineEnd + 1),
-			mainLines : [mainLineStart, mainLineEnd + 1],
+			fullText : fileContent.slice(fileLineStart, fileLineEnd),
+			mainLines : [mainLineStart, mainLineEnd],
 			fileId : "00000000-0000-0000-0000-000000000000",
-			fileLines : [fileLineStart, fileLineEnd + 1]
+			fileLines : [fileLineStart, fileLineEnd]
 		};
 	}
 
@@ -102,6 +115,7 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
         }
 	};
 
+	//console.log(thread, snippet);
 	return (
 		<div className="commentThread">
 			<div> {/* Assuming loading is always successful, obviously */}
@@ -125,47 +139,3 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 		</div>
 	);
 }
-
-/* Reference to previous things loaded
-//const [loading, updateLoading] = useState(LoadingState.Unloaded);
-	//const [comments, updateComments] = useState([] as Models.Comment[]);
-	//const [topic, updateTopic] = useState("");
-	//const [snippet, updateSnippet] = useState(undefined as (Models.Snippet | undefined));
-	//
-
-	useEffect(() => {
-		updateLoading(LoadingState.Loading);
-		// TODO: fetch data (and somehow listen for new comments?)
-		const result: Models.CommentThread = {
-			topic: "Sample Comment thread",
-			snippet: {
-				fullText: [
-					"b = color(77, 86, 59);",
-					"c = color(42, 106, 105);",
-					"d = color(165, 89, 20);",
-					"e = color(146, 150, 127);"
-				],
-				mainLines: [1, 3],
-				fileId: "24",
-				fileLines: [7, 9]
-			},
-			comments: [
-				{
-					text: "Example first comment",
-					author: "Pietje Puk",
-					time: new Date(Date.now() - 240000)
-				},
-				{
-					text: "Example second comment with mention to @Pietje Puk",
-					author: "Peter Tester",
-					time: new Date(Date.now() - 10000)
-				}
-			],
-			visibilityLevel: 5
-		};
-		updateComments(result.comments);
-		updateTopic(result.topic);
-		updateSnippet(result.snippet);
-		updateLoading(LoadingState.Loaded);
-	}, []);
- */
