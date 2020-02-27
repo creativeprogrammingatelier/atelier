@@ -13,7 +13,7 @@ import {
     SearchResponse,
     SubmissionResponse
 } from "../../helpers/DatabaseResponseInterface";
-import { Fetch } from '../../../helpers/FetchHelper';
+import { search } from '../../../helpers/APIHelper';
 
 
 interface SearchData {
@@ -38,8 +38,7 @@ export function SearchOverview() {
     const [searchTerm, updateSearchTerm] = useState("");
 
     const getResults = (term: string): Promise<SearchData> =>
-        // TODO: find correct type
-        Fetch.fetchJson<any>(`/api/search?q=${term}`)
+        search(term)
             .then(data => ({
                    submissions : {
                        title : 'Submissions',
