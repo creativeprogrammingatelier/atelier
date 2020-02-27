@@ -78,3 +78,9 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
         response.status(500).send({ error: "unknown", message: "Something went wrong. Please try again later." });
     }
 });
+
+// Handle errors that were not caught in the pipeline
+// This really shouldn't happen, it means requests will go unanswered
+process.on('unhandledRejection', error => {
+    console.log('\x1b[31mCRITICAL (Unhandled rejection): ', error);
+});
