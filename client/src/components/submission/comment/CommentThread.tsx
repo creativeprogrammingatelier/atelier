@@ -16,14 +16,28 @@ import { Fetch, JsonFetchError } from "../../../../helpers/FetchHelper";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
-	thread : ExtendedThread
+	thread : ExtendedThread,
+	body? : string
 	// Maybe also find a way to include the topic, so it can be shown immediately
 }
 
-export function CommentThread({thread}: CommentThreadProperties) {
-    const [opened, setOpened] = useState(false);
+/** Amount of lines to display when minimized*/
+const MINIMIZED_LINES = 3;
+/** Amount of lines inclusive that count as a small snippet */
+const SMALL_SNIPPET_LINES = 3;
+/** Amount of context lines to show above for a small snippet */
+const SMALL_SNIPPET_LINES_ABOVE = 2;
+/** Amount of context lines to show below for a small snippet */
+const SMALL_SNIPPET_LINES_BELOW = 2;
+/** Amount of context lines to show above for a small snippet */
+const LARGE_SNIPPET_LINES_ABOVE = 0;
+/** Amount of context lines to show below for a small snippet */
+const LARGE_SNIPPET_LINES_BELOW = 0;
 
-	const topic : string = "We don't store topics yet so: " + thread.commentThreadID;
+export function CommentThread({thread, body}: CommentThreadProperties) {
+
+
+    // Load comments in the thread
 	const currentComments : Models.Comment[] = thread.comments
 		.map((comment : Comment) => {
 			return {
@@ -33,31 +47,43 @@ export function CommentThread({thread}: CommentThreadProperties) {
 			}
 		});
 
+	const [opened, setOpened] = useState(false);
 	const [comments, updateComments] = useState(currentComments);
 
-	// TODO get from file body or did we want to store this?
-	const DEFAULT_FULL_TEXT = ["no full", "text yet", "did we want to", "get this from the database", "or manually parse from file?", "parsing from file requires additional (not really needed)", "fetches"];
-	// TODO get proper snippet with text etc. Can this be undefined as currently in the database?
-	const snippet : Models.Snippet = {
-		fullText : DEFAULT_FULL_TEXT,
-		mainLines : [0, Math.min(2, DEFAULT_FULL_TEXT.length)],
-		fileId : "00000000-0000-0000-0000-000000000000",
-		fileLines : [0, 0]
-	};
+	let snippet : Models.Snippet | undefined;
+	if (body != undefined) {
+		// Parse body into lines
+		const fileContent : string[] = body.replace('\r', '').split('\n');
+		const totalLines : number = fileContent.length;
 
-	console.log(comments);
-	console.log(snippet);
+		// Get snippet data
+		const threadSnippet = thread.snippet!;
+		const lineStart : number = threadSnippet.lineStart;
+		const lineEnd : number = threadSnippet.lineEnd;
 
-	// Show a newly created comment directly
-	// Maybe we should let that be done over the server,
-	// but this makes for a better demo
-	// TODO pass token instead of userID
+		// Get ranges for minimized/maximized inclusive
+		const smallSnippet : boolean = (lineEnd - lineStart + 1) <= SMALL_SNIPPET_LINES;
+		const mainLineStart = lineStart;
+		const mainLineEnd = Math.min(lineEnd, lineStart + MINIMIZED_LINES);
+		const fileLineStart = Math.max(0, lineStart - (smallSnippet ? SMALL_SNIPPET_LINES_ABOVE : LARGE_SNIPPET_LINES_ABOVE));
+		const fileLineEnd = Math.min(totalLines - 1, lineEnd + (smallSnippet ? SMALL_SNIPPET_LINES_BELOW : LARGE_SNIPPET_LINES_BELOW));
+
+		// Define snippet for render
+		// TODO fileID
+		snippet = {
+			fullText : fileContent.slice(fileLineStart, fileLineEnd + 1),
+			mainLines : [mainLineStart, mainLineEnd + 1],
+			fileId : "00000000-0000-0000-0000-000000000000",
+			fileLines : [fileLineStart, fileLineEnd + 1]
+		};
+	}
+
+
 	const newComment = async (text: string) => {
         try {
             const comment = await Fetch.fetchJson<Comment>(`/api/comment/${thread.commentThreadID}`, {
                 method : 'PUT',
                 body : JSON.stringify({
-                    userID : "00000000-0000-0000-0000-000000000000",
                     body : text
                 })
             });
@@ -78,7 +104,6 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	return (
 		<div className="commentThread">
-			<h3 className="m-0 px-2 py-1">{topic}</h3>
 			<div> {/* Assuming loading is always successful, obviously */}
                 {snippet && <Snippet snippet={snippet}/>}
                 {opened ? <div>

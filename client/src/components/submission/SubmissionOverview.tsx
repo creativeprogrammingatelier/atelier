@@ -1,17 +1,18 @@
-import React, {Fragment} from "react";
+import React from "react";
 import {Link} from "react-router-dom";
 import {Button} from "react-bootstrap";
 
 import {Frame} from "../frame/Frame";
-import {DataBlockList} from "../general/DataBlockList";
-import {DataItemList} from "../general/DataItemList";
 import {File} from "../../../../models/database/File";
 import {Loading} from "../general/Loading";
-import AuthHelper from "../../../helpers/AuthHelper";
-import { Header } from "../frame/Header";
 import { ExtendedThread } from "../../../../models/database/Thread";
-import { CommentThread } from "./comment/CommentThread";
+import { CommentThread as CommentThreadComponent} from "./comment/CommentThread";
 import { Fetch } from "../../../helpers/FetchHelper";
+import {FileNameHelper} from "../../helpers/FileNameHelper";
+import {Submission} from "../../../../models/database/Submission";
+import {DataList} from "../general/DataList";
+import {DataItem} from "../general/DataItem";
+import { Course } from "../../../../models/database/Course";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -23,57 +24,63 @@ interface SubmissionOverviewProps {
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const submissionPath = "/submission/" + submissionId;
-    
-    const getFiles = (submissionId: string) => Fetch.fetchJson<File[]>(`/api/file/submission/${submissionId}`);
-    const getComments = (submissionId: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionId}`);
-    // also find a way to get recent comments
 
-	return <Frame title="Submission" user={{id: "1", name: "John Doe"}} sidebar search={submissionPath + "/search"}>
-		<h1>A Project</h1>
-		<p>Submitted by John Doe</p>
-		<p>Just now</p>
-		<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
-        <Loading<File[]>
-            loader={getFiles}
-            params={[submissionId]}
-            component={files =>
-                <DataItemList
-                    header="Files"
-                    list={files.map(file => {
-                        return {
-                            transport : submissionPath + `/${file.fileID}/code`,
-                            text : file.pathname === undefined ? "" : file.pathname
-                        }
-                    })}
-                />} />
+	const getSubmission = (submissionID: string) => Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);
+    const getFiles = (submissionID: string) => Fetch.fetchJson<File[]>(`/api/file/submission/${submissionID}`);
+	const getGlobalComments = (submissionID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}`);
+	const getRecentComments = (submissionID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
+	const getCourse = (courseID: string) => Fetch.fetchJson<Course>(`/api/course/${courseID}`);
+	// also find a way to get recent comments
 
-		{/* Reference for tags if needed
-		   <DataItemList header="Files" list={[
-			{
-				transport: submissionPath+"/1/code",
-				text: "FileName1"
-			}, {
-				transport: submissionPath+"/2/code",
-				text: "FileName2",
-				tags: [{name: "New comment", color: "red", dark:true}]
-			}
-		]}/>*/}
+	return <Loading<Submission>
+		loader={getSubmission}
+		params={[submissionId]}
+		component={
+			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
+				<h1>{submission.name}</h1>
+				<p>Submitted by <Link to={"/user/"+submission.userID}>{submission.userID}</Link></p>{/* User data should be given with the new API submission.user.* */}
+				<Loading<Course>
+					loader={getCourse}
+					params={[submission.courseID!]}
+					component={course => <p>In course <Link to={"/course/"+course.courseID}>{course.name}</Link></p>}
+				/>
+				<p>Just now</p>
+				<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+				<DataList header="Files">
+					<Loading<File[]>
+						loader={getFiles}
+						params={[submissionId]}
+						component={files => files.map(file => <DataItem text={FileNameHelper.fromPath(file.pathname!)} transport={submissionPath + "/" + file.fileID + "/code"}/>)}
+					/>
+				</DataList>
+				<DataList header="Comments">
+					<Loading<ExtendedThread[]>
+						loader={getGlobalComments}
+						params={[submissionId]}
+						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+					/>
+				</DataList>
+				<DataList header="Recent">
+					<Loading<ExtendedThread[]>
+						loader={getRecentComments}
+						params={[submissionId]}
+						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+					/>
+				</DataList>
 
-        <Loading<ExtendedThread[]>
-            loader={getComments}
-            params={[submissionId]}
-            component={threads =>
-                <Fragment>
-                    <Header title="Comments" />
-                    {threads.map(thread => <CommentThread thread={thread} />)}
-                </Fragment>} />
-
-		<DataBlockList header="Recent" list={[
-			{
-				title: "recent",
-				text: "to show here",
-				time: new Date()
-			}
-		]}/>
-	</Frame>;
+				{/* Reference for tags if needed
+				 <DataItemList header="Files" list={[
+				 {
+				 transport: submissionPath+"/1/code",
+				 text: "FileName1"
+				 }, {
+				 transport: submissionPath+"/2/code",
+				 text: "FileName2",
+				 tags: [{name: "New comment", color: "red", dark:true}]
+				 }
+				 ]}/>*/}
+			</Frame>
+		}
+		wrapper={children => <Frame title="Submission" sidebar search={submissionPath + "/search"}>{children}</Frame>}
+	/>;
 }

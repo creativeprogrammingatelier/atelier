@@ -3,8 +3,9 @@ import {File} from "../../../../models/database/File";
 import CodeViewer2 from "../CodeViewer2";
 import {OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
 import AuthHelper from "../../../helpers/AuthHelper";
-import { Loading } from "../general/Loading";
-import { Fetch } from "../../../helpers/FetchHelper";
+import {Loading} from "../general/Loading";
+import {Fetch} from "../../../helpers/FetchHelper";
+import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 export interface FileComment {
 	startLine: number,
@@ -16,29 +17,31 @@ export interface FileComment {
 }
 
 export interface FileSnippet {
-	startLine : number,
-	startCharacter : number,
-	endLine : number,
-	endCharacter : number,
-	onClick : Function,
-	snippetID : string,
-	commentThreadID : string
+	startLine: number,
+	startCharacter: number,
+	endLine: number,
+	endCharacter: number,
+	onClick: Function,
+	snippetID: string,
+	commentThreadID: string
 }
 
 interface CodeProperties {
 	submissionID : string,
     file: File,
+	body : string,
 	comments?: FileComment[],
 }
 
-export function CodeTab({file, submissionID} : CodeProperties) {
-    const getFileContents = () => Fetch.fetchString(`/api/file/${file.fileID}/body`);
+export function CodeTab({file, body, submissionID} : CodeProperties) {
 
-	return <div>
-		<h1>{file.pathname}</h1>
-        <Loading<string>
-            loader={getFileContents}
-            component={fileContents =>
-		        <CodeViewer2 fileContents={fileContents} submissionID={submissionID} fileID={file.fileID!} />} />
-	</div>;
+
+	return <div className="contentTab">
+		<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
+		<CodeViewer2 submissionID={submissionID} fileID={file.fileID!} fileContents={body} />
+        {/*<Loading<string>*/}
+        {/*    loader={getFileContents}*/}
+        {/*    component={fileContents =>*/}
+		{/*        <CodeViewer2 fileContents={body} submissionID={submissionID} fileID={file.fileID!} />} />*/}
+	</div>
 }

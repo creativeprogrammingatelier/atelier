@@ -1,20 +1,18 @@
 import React from 'react';
 import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/oceanic-next.css';
+// IMPORT THEME : https://codemirror.net/demo/theme.html#default
+import 'codemirror/theme/eclipse.css';
+import 'codemirror/theme/base16-light.css';
+// IMPORT SYNTAX : https://codemirror.net/mode/
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import {Controlled as CodeMirror} from 'react-codemirror2';
-import {Comment} from '../../../models/database/Comment';
-import {File} from '../../../models/database/File';
-import {FileComment, FileSnippet} from "./submission/CodeTab";
+import {FileSnippet} from "./submission/CodeTab";
 import {Editor} from "codemirror";
 import {WriteComment} from "./submission/comment/WriteComment";
 import { Button } from 'react-bootstrap';
-import { withRouter } from 'react-router';
-import AuthHelper from './../../helpers/AuthHelper';
 
-import {start} from "repl";
 import {ExtendedThread} from "../../../models/database/Thread";
 import { Fetch, JsonFetchError } from '../../helpers/FetchHelper';
 
@@ -78,6 +76,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	async getCommentThreads() {
         try {
             const threads = await Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/file/${this.props.fileID}`);
+
             console.log(threads);
             const snippets : FileSnippet[] = [];
             threads.map((commentThread : ExtendedThread) => {
@@ -136,8 +135,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * Highlights comments passed to the code viewer.
 	 */
 	highlightComments() {
-		let color = '#DCDCDC';
-		//let opacity = '7f';
+		let color = '#dc3339';
+		const opacityRange = ['00', '6F', 'BF', 'FF'];
 
 		if (this.state.snippets != undefined) {
 			let highlights = new Map();
@@ -152,40 +151,32 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 					const endChar = (lineNumber == endLine) ? endCharacter : length;
 
 					for (; startChar <= endChar; startChar += 1) {
-						const location = {line : lineNumber, ch : startChar};
+						const location = `${lineNumber}-${startChar}`;
 						const currentHighlights = highlights.get(location);
+						const updatedHighlights = (currentHighlights == undefined) ? 1 : currentHighlights + 1;
 
-						highlights.set(location, currentHighlights == undefined ? 1 : currentHighlights + 1);
+						highlights.set(location, updatedHighlights);
 					}
 				}
 			}
 
 			for (const entry of highlights.entries()) {
-				const highlights = entry[0];
-				const opacity = Math.min(highlights / 10, 1).toString(16);
-				const location = entry[1];
+				const [line, ch] : string[] = entry[0].split("-");
+
+				const startLocation : {line : number, ch : number} = {line : parseInt(line), ch : parseInt(ch)};
+				const endLocation : {line : number, ch : number} = { line : startLocation.line, ch : startLocation.ch + 1};
+
+				const highlights = Math.min(entry[1], opacityRange.length - 1);
+				const opacity = opacityRange[highlights];
+
 				this.codeMirror.markText(
-					location,
-					location,
-					{css: `background-color: ${color}${opacity};`}
+					startLocation,
+					endLocation,
+					{
+						css: `background-color: ${color}${opacity};`}
 				);
 			}
 		}
-
-		/*if (this.state.snippets != undefined) {
-			console.log("highlighting: " + this.state.snippets.length + " comments");
-			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.snippets) {
-				// Some snippets dont have lines
-				if (startLine == undefined) continue;
-				console.log(startLine, startCharacter, endLine, endCharacter);
-				this.codeMirror.markText(
-					{line : startLine, ch: startCharacter},
-					{line : endLine, ch : endCharacter},
-					{css: `background-color: ${colors[colorIndex] + opacity};`}
-				);
-				colorIndex = (colorIndex + 1) % colors.length;
-			}
-		}*/
 	}
 
 	/**
@@ -203,7 +194,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		const startPosition = {line : this.state.commentStartLine, ch : this.state.commentStartCharacter};
 		const endPosition = {line : this.state.commentEndLine, ch : this.state.commentEndCharacter};
 		const formattedSelection = editor.getRange(startPosition, endPosition, '\r\n');
-		console.log("selection: " + startPosition.line + endPosition.line + formattedSelection);
 
 		this.setState({
 			commentSelection : formattedSelection
@@ -236,8 +226,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 			commentEndLine : ranges[1].line,
 			commentEndCharacter : ranges[1].ch
 		});
-
-		console.log(`Current comment: ${this.state.commentStartLine}:${this.state.commentStartCharacter}-${this.state.commentEndLine}:${this.state.commentEndCharacter}: ${this.state.commentSelection}`);
 	}
 
 	/**
@@ -251,8 +239,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 				const line = editor.getCursor().line;
 				const character = editor.getCursor().ch;
 
-				// Check if comment was clicked. Line increased by 1 for editor.
-				this.clickComment(line + 1, character);
+				this.clickComment(line, character);
 			}, 10);
 		}
 	}
@@ -331,11 +318,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 				<CodeMirror
 					value = {this.state.formattedCode}
 					options = {{
-						// .pde is not supported : https://codemirror.net/mode/
-						// TODO implement pde language support?
-						mode : 'java',
-						// @Cas pick a theme
-						theme : 'material',
+						mode : 'clike',
+						theme : 'base16-light',
 						lineNumbers : true
 					}}
 					editorDidMount={
@@ -373,4 +357,4 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	}
 }
 
-export default CodeViewer2
+export default CodeViewer2;

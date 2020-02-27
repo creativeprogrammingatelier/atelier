@@ -143,10 +143,28 @@ commentThreadRouter.get('/submission/:submissionID',
         const submissionID = request.params.submissoinID;
 
         try {
-            const extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+            let extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+            extendedThreads = extendedThreads.filter((extendedThread : ExtendedThread) => {
+               return extendedThread.fileID == undefined;
+            });
             result.send(extendedThreads);
         } catch (error) {
             result.status(500).send({error:error});
         }
     }
 );
+
+commentThreadRouter.get('/submission/:submissionID/recent', async (request: Request, response: Response) => {
+    const submissionID = request.params.submissionID;
+    const limit = request.params.limit;
+    const offset = request.params.offset;
+
+    // TODO: Wait for backend support
+
+    try {
+        const commentThreads: ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+        response.send(commentThreads);
+    } catch (error) {
+        response.status(500).send({error:"internal", message:"Could not retrieve recent comments", details:error});
+    }
+});

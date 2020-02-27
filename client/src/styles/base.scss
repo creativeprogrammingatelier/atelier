@@ -1,6 +1,9 @@
 @import "./variabes.scss";
 @import '~bootstrap/scss/bootstrap.scss';
 
+* {
+	overflow-wrap: break-word;
+}
 html, body {
 	background-color: $backgroundColor;
 }
@@ -71,20 +74,47 @@ textarea:focus, textarea:active {
 	position: relative;
 	overflow: auto;
 	padding: 10px;
+
+	hr {
+		margin: 1rem;
+		border-color: $colorWhite;
+	}
 }
 .logo {
 	font-family: $fontTitle;
 	color: $colorWhite;
+
+	h1 {
+		font-size: 2.25rem;
+	}
+}
+.links {
+	margin: 0 1rem;
+	border-top: 1px solid $colorWhite;
 }
 .link {
-	padding: 1rem 0.5rem 0.5rem;
+	padding: 0.75rem 0.5rem;
 
 	a {
 		color: #FFFFFF !important;
 	}
+	a:hover {
+		text-decoration: none;
+	}
+	h4 {
+		margin: 0;
+		font-weight: 300;
+	}
+	svg {
+		margin: 0 1rem;
+		vertical-align: bottom;
+	}
 }
 .link + .link {
-	border-top: 1px solid $colorWhite;
+	//border-top: 1px solid $colorWhite;
+}
+.link:hover {
+	background-color: #FFFFFF20;
 }
 
 .content {
@@ -151,6 +181,9 @@ textarea:focus, textarea:active {
 }
 .dataItem:not(:last-child), .dataBlock:not(:last-child) {
 	margin-bottom: 0.5rem;
+}
+.list:not(:last-child) {
+	margin-bottom: 1rem;
 }
 .toast {
 	backdrop-filter: none;
@@ -232,11 +265,13 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowSmallDown;
 }
 .commentThread {
-	margin-bottom: 1rem;
 	background-color: $colorWhite;
 	border-left: 10px solid $primaryColor;
 
 	h3 {
 		box-shadow: $shadowSmallDown;
 	}
+}
+.commentThread:not(:last-child) {
+	margin-bottom: 1rem;
 }
