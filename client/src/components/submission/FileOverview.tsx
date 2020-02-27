@@ -8,8 +8,8 @@ import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/database/File";
 import {Loading} from "../general/Loading";
-import { Fetch } from "../../../helpers/FetchHelper";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
+import { getFile, getFileContents } from "../../../helpers/APIHelper";
 
 export interface FileProperties {
 	id: string,
@@ -33,9 +33,6 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 	useEffect(() => {
 		setActiveTab(tab);
 	}, [tab]);
-
-	const getFile = (fileId: string) => Fetch.fetchJson<File>(`/api/file/${fileId}`);
-	const getFileContents = (fileId : string) => Fetch.fetchString(`/api/file/${fileId}/body`);
 
 	const filePath = "/submission/" + submissionId + "/" + fileId;
     

@@ -6,9 +6,8 @@ import {SidebarEntry} from './SidebarEntry';
 import {Course} from "../../../../models/database/Course";
 import {PanelButton} from "../general/PanelButton";
 import {Loading} from "../general/Loading";
-import AuthHelper from "../../../helpers/AuthHelper";
 import {User} from "../../../../models/api/User";
-import {Fetch} from "../../../helpers/FetchHelper";
+import { getCurrentUser } from './../../../helpers/APIHelper';
 
 interface SidebarProperties {
 	user?: {
@@ -29,7 +28,7 @@ export function Sidebar({position, close}: SidebarProperties) {
 				<SidebarEntry location="/search" icon={FiActivity}>Activity</SidebarEntry>
 				<SidebarEntry location="/settings" icon={FiSettings}>Settings</SidebarEntry>
 				<Loading<User>
-					loader={() => Fetch.fetchJson('/api/user/')}
+					loader={getCurrentUser}
 					component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser}>{user.name}</SidebarEntry>
 					}
 				/>

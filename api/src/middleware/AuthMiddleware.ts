@@ -5,46 +5,47 @@
  */
 
 import jwt from 'jsonwebtoken';
-import { getCurrentUserID, verifyToken, getToken } from '../helpers/AuthenticationHelper';
+import { getCurrentUserID, verifyToken, getToken, AuthError } from '../helpers/AuthenticationHelper';
 import { RequestHandler } from 'express';
 import { UserDB } from '../database/UserDB';
+import { captureNext } from '../helpers/ErrorHelper';
 
 export class AuthMiddleware {
     /** Middleware function that will block all non-authenticated requests */
-	static requireAuth: RequestHandler = async (req, res, next) => {
-		const token = getToken(req);
+	static requireAuth: RequestHandler = captureNext(async (request, _response, next) => {
+		const token = getToken(request);
 		if (!token) {
-			res.status(401).json({ error: "token.notProvided" });
+			next(new AuthError("token.notProvided", "No token was provided with this request. You're probably not logged in."));
 		} else {
             try {
                 await verifyToken(token);
                 next();
             } catch (err) {
                 if (err instanceof jwt.TokenExpiredError) {
-                    res.status(401).json({ error: "token.expired", expiredAt: err.expiredAt });
+                    next(new AuthError("token.expired", "Your token is expired. Please log in again."));
                 } else if (err instanceof jwt.JsonWebTokenError) {
-                    res.status(401).json({ error: "token.invalid" });
+                    next(new AuthError("token.invalid", "An invalid token was provided. Please try logging in again."));
                 } else {
-                    throw err;
+                    next(err);
                 }
             }
 		}
-    }
+    });
     
     /** 
      * Middleware function that requires the user to have a specified role,
      * implies `requireAuth`
      */
     static requireRole(roles: string[]): RequestHandler {
-        const handler: RequestHandler = async (req, res, next) => {
-            const userID = await getCurrentUserID(req);
+        const handler: RequestHandler = captureNext(async (request, response, next) => {
+            const userID = await getCurrentUserID(request);
             const user = await UserDB.getUserByID(userID);
             if (roles.includes(user.role!)) {
                 next();
             } else {
-                res.status(401).json({ error: "role.notAllowed" });
+                next(new AuthError("role.notAllowed", "You're not qualified to access this information."));
             }
-        }
+        });
 
         return async (req, res, next) => 
             this.requireAuth(req, res, (err?) => err ? next(err) : handler(req, res, next));

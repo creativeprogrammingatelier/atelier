@@ -1,5 +1,3 @@
-import { NextFunction } from "express";
-
 /** Errors as returned by Postgres */
 export interface PostgresError extends Error {
     name: string,
@@ -50,18 +48,4 @@ export function parsePostgresErrorCode(err: PostgresError) {
     } else {
         return PostgresErrorCode.OTHER;
     }
-}
-
-/** 
- * If the error is thrown by the database, give a generic database error. 
- * Returns true if the error is handled, false otherwise.
- */
-export function handleDatabaseError(err: Error, next: NextFunction) {
-    if (isPostgresError(err)) {
-        const code = parsePostgresErrorCode(err as PostgresError);
-        next({ error: code, message: "Something went wrong while connecting to the database." });
-        // TODO: log error
-        return true;
-    }
-    return false;
 }

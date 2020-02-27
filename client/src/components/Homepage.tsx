@@ -4,13 +4,9 @@ import {Frame} from './frame/Frame';
 import {Loading} from "./general/Loading";
 import {AddCourse} from "./course/AddCourse";
 import {Course} from "../../../models/database/Course";
-import AuthHelper from './../../helpers/AuthHelper';
-import { Fetch } from '../../helpers/FetchHelper';
+import { getCourses } from '../../helpers/APIHelper';
 
 export function Homepage() {
-
-	// Retrieve courses
-	const getCourses = () => Fetch.fetchJson<Course[]>('/api/course/');
 
 	function updateCourse(course : Course) {
 		// TODO: create new course in the api

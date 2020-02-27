@@ -1,4 +1,5 @@
 import * as pg from "pg"
+import { NotFoundDatabaseError } from "./DatabaseErrors";
 console.log("helper startup")
 
 export type pgDB = pg.Pool | pg.Client
@@ -33,7 +34,12 @@ export function extract<T>(result : {rows:T[]}){
 	return result.rows;
 }
 export function one<T>(result : T[]) {
-	return result[0];
+    const one = result[0];
+    if (one === undefined) {
+        throw new NotFoundDatabaseError();
+    } else {
+        return one;
+    }
 }
 export function map<S, T>(fun : (element : S) => T){
 	return (list : S[]) => list.map(fun)

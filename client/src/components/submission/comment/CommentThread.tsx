@@ -11,9 +11,8 @@ import { Button } from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
 import {ExtendedThread} from "../../../../../models/database/Thread";
 import {Comment} from "../../../../../models/database/Comment";
-import AuthHelper from './../../../../helpers/AuthHelper';
-import { Fetch, JsonFetchError } from "../../../../helpers/FetchHelper";
-import {main} from "ts-node/dist/bin";
+import { JsonFetchError } from "../../../../helpers/FetchHelper";
+import { createComment } from "../../../../helpers/APIHelper";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -94,11 +93,8 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 
 	const newComment = async (text: string) => {
         try {
-            const comment = await Fetch.fetchJson<Comment>(`/api/comment/${thread.commentThreadID}`, {
-                method : 'PUT',
-                body : JSON.stringify({
-                    body : text
-                })
+            const comment = await createComment(thread.commentThreadID!, {
+                body : text
             });
             console.log(comment);
             updateComments(comments => [
