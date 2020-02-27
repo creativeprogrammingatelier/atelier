@@ -1,17 +1,18 @@
 import React from 'react';
 import {Navbar} from 'react-bootstrap';
 import {HeaderButton} from './HeaderButton';
+import {IconType} from "react-icons";
 
 interface HeaderProperties {
 	title?: string,
 	transparent?: boolean,
 	fixed?: boolean,
 	leftButton?: {
-		icon: JSX.Element,
+		icon: IconType,
 		click: React.MouseEventHandler
 	},
 	rightButton?: {
-		icon: JSX.Element,
+		icon: IconType,
 		click: React.MouseEventHandler
 	}
 }
