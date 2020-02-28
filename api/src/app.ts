@@ -3,6 +3,8 @@
  * @author Andrew Heath
  */
 
+import { config } from './helpers/ConfigurationHelper';
+
 import express, { Request, Response, NextFunction } from 'express';
 import { Socket } from 'socket.io';
 import path from 'path';
@@ -10,7 +12,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 // API routes
-import { authRouter } from './routes/AuthRouter';
+import { authRouter } from './routes/authentication/AuthRouter';
 import { courseRouter } from './routes/CourseRouter';
 import { fileRouter } from './routes/FileRouter';
 import { indexRouter } from './routes/IndexRouter';
@@ -33,7 +35,7 @@ app.use(express.urlencoded({
 
 //Socket io
 const http = require('http').createServer(app);
-http.listen(5000, '127.0.0.1');
+http.listen(config.port, '127.0.0.1');
 const socket: Socket = require('socket.io')(http);
 app.set('socket-io', socket);
 
