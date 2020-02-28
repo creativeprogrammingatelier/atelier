@@ -7,12 +7,12 @@ import {File} from "../../../../models/database/File";
 import {Loading} from "../general/Loading";
 import { ExtendedThread } from "../../../../models/database/Thread";
 import { CommentThread as CommentThreadComponent} from "./comment/CommentThread";
-import { Fetch } from "../../../helpers/FetchHelper";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {Submission} from "../../../../models/database/Submission";
 import {DataList} from "../general/DataList";
 import {DataItem} from "../general/DataItem";
 import { Course } from "../../../../models/database/Course";
+import { getSubmission, getCourse, getFiles, getProjectComments, getRecentComments } from "../../../helpers/APIHelper";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -24,13 +24,6 @@ interface SubmissionOverviewProps {
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const submissionPath = "/submission/" + submissionId;
-
-	const getSubmission = (submissionID: string) => Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);
-    const getFiles = (submissionID: string) => Fetch.fetchJson<File[]>(`/api/file/submission/${submissionID}`);
-	const getGlobalComments = (submissionID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}`);
-	const getRecentComments = (submissionID: string) => Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
-	const getCourse = (courseID: string) => Fetch.fetchJson<Course>(`/api/course/${courseID}`);
-	// also find a way to get recent comments
 
 	return <Loading<Submission>
 		loader={getSubmission}
@@ -58,7 +51,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				</DataList>
 				<DataList header="Comments">
 					<Loading<ExtendedThread[]>
-						loader={getGlobalComments}
+						loader={getProjectComments}
 						params={[submissionId]}
 						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>

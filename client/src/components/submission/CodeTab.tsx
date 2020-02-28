@@ -2,9 +2,7 @@ import React, {useState} from "react";
 import {File} from "../../../../models/database/File";
 import CodeViewer2 from "../CodeViewer2";
 import {OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
-import AuthHelper from "../../../helpers/AuthHelper";
 import {Loading} from "../general/Loading";
-import {Fetch} from "../../../helpers/FetchHelper";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 export interface FileComment {

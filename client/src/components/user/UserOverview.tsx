@@ -9,9 +9,7 @@ import {
 import {Loading} from "../general/Loading";
 import {User} from "../../../../models/database/User";
 import {Submission} from "../../../../models/database/Submission";
-import AuthHelper from './../../../helpers/AuthHelper';
-import { Fetch } from "../../../helpers/FetchHelper";
-
+import { getUserSubmissions, getUser } from "../../../helpers/APIHelper";
 
 interface UserOverviewProperties {
 	match : {
@@ -22,10 +20,6 @@ interface UserOverviewProperties {
 }
 
 export function UserOverview({match: { params: { userId } } }: UserOverviewProperties) {
-	const getSubmissions = (userId: string) => Fetch.fetchJson<Submission[]>(`/api/submission/user/${userId}`);
-	const getUser = (userId: string) => Fetch.fetchJson<User>(`/api/user/${userId}`);
-	// getComments?
-
 	return (
 		<Loading<User>
 			loader={getUser}
@@ -43,7 +37,7 @@ export function UserOverview({match: { params: { userId } } }: UserOverviewPrope
 							["Date", x => new Date(x.date).toLocaleString()]
 						]}/>*/}
 					<Loading<Submission[]>
-						loader={getSubmissions}
+						loader={getUserSubmissions}
 						params={[user.userID!]}
 						component={submissions =>
 							<DataTable

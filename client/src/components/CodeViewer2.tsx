@@ -14,7 +14,8 @@ import {WriteComment} from "./submission/comment/WriteComment";
 import { Button } from 'react-bootstrap';
 
 import {ExtendedThread} from "../../../models/database/Thread";
-import { Fetch, JsonFetchError } from '../../helpers/FetchHelper';
+import { JsonFetchError } from '../../helpers/FetchHelper';
+import { getFileComments, createFileCommentThread } from '../../helpers/APIHelper';
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -75,8 +76,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 
 	async getCommentThreads() {
         try {
-            const threads = await Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/file/${this.props.fileID}`);
-
+            const threads = await getFileComments(this.props.fileID);
             console.log(threads);
             const snippets : FileSnippet[] = [];
             threads.map((commentThread : ExtendedThread) => {
@@ -291,16 +291,13 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		const submissionID = this.props.submissionID;
         
         try {
-		    await Fetch.fetchJson(`/api/commentThread/file/${fileID}`, {
-                method : 'POST',
-                body : JSON.stringify({
-                    submissionID,
-                    lineStart : this.state.commentStartLine,
-                    lineEnd : this.state.commentEndLine,
-                    charStart : this.state.commentStartCharacter,
-                    charEnd : this.state.commentEndCharacter,
-                    body : comment
-                })
+		    await createFileCommentThread(fileID, {
+                submissionID,
+                lineStart : this.state.commentStartLine,
+                lineEnd : this.state.commentEndLine,
+                charStart : this.state.commentStartCharacter,
+                charEnd : this.state.commentEndCharacter,
+                body : comment
             });
         } catch (err) {
             if (err instanceof JsonFetchError) {
