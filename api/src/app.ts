@@ -24,6 +24,7 @@ import { commentRouter } from "./routes/CommentRouter";
 import { NotFoundDatabaseError } from './database/DatabaseErrors';
 import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
 import { AuthError } from './helpers/AuthenticationHelper';
+import { AuthMiddleware } from './middleware/AuthMiddleware';
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -44,6 +45,8 @@ socket.on('connect', (socket: Socket) => {
 });
 
 app.use(cookieParser());
+
+app.use(AuthMiddleware.refreshCookieToken);
 
 // Serve static files from the client directory
 app.use(express.static(path.join(__dirname, '../../client/')));

@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import fetch from 'node-fetch';
 import { ServiceProvider, IdentityProvider, setSchemaValidator } from 'samlify';
-import * as validator from '@authenio/samlify-node-xmllint';
+import validator from '@authenio/samlify-node-xmllint';
 // If the above import complains about missing types, create this file:
 //  node_modules/@authenio/samlify-node-xmllint/build/index.d.ts
 // with these contents:
@@ -11,7 +11,9 @@ import * as validator from '@authenio/samlify-node-xmllint';
 import { capture } from '../../helpers/ErrorHelper';
 import { config, SamlLoginConfiguration } from '../../helpers/ConfigurationHelper';
 import { readFileAsString } from '../../helpers/FilesystemHelper';
-import { AuthError } from '../../helpers/AuthenticationHelper';
+import { AuthError, setTokenCookie } from '../../helpers/AuthenticationHelper';
+import { UserDB } from '../../database/UserDB';
+import { NotFoundDatabaseError } from '../../database/DatabaseErrors';
 
 setSchemaValidator(validator);
 
@@ -29,7 +31,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     const sp = ServiceProvider({
         entityID: urlBase,
         nameIDFormat: [
-            "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+            "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
         ],
         assertionConsumerService: [
             { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/login` }
@@ -60,7 +62,24 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     /** Post back the SAML response to finish logging in */
     samlRouter.post('/login', capture(async (request, response) => {
         const result = await sp.parseLoginResponse(idp, 'post', request);
-        response.send(result);
+        const extID = result.extract.nameID; // `${samlConfig.id}_${result.extract.nameID}` to support multiple IDPs with possibly conflicting nameIDs
+        let user = undefined;
+        try {
+            // TODO: get user by external id, not the internal id
+            user = await UserDB.getUserByID(extID);
+        } catch (err) {
+            if (err instanceof NotFoundDatabaseError) {
+                // TODO: if we don't get information we need here from SAML attributes,
+                // then probably redirect the user to a page in the front-end where they 
+                // enter that, or find some other source for this info (e.g. Canvas)
+                // If we do have the information, we can simply create the user right here
+                // and return the login flow
+                user = await UserDB.createUser({});
+            } else {
+                throw err;
+            }
+        }
+        setTokenCookie(response, user.userID!).redirect("/");
     }));
 
     // samlRouter.get('/logout', capture(async (request, response) => {

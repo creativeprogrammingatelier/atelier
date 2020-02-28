@@ -7,7 +7,7 @@ import { config } from '../../helpers/ConfigurationHelper';
 
 import express from 'express';
 import { AuthMiddleware } from '../../middleware/AuthMiddleware';
-import { issueToken, getCurrentUserID } from '../../helpers/AuthenticationHelper';
+import { issueToken, getCurrentUserID, clearTokenCookie } from '../../helpers/AuthenticationHelper';
 import { capture } from '../../helpers/ErrorHelper';
 import { getSamlRouter } from './SamlRouter';
 import { loginRouter } from './LoginRouter';
@@ -30,6 +30,10 @@ for (const loginConfig of config.loginProviders) {
         default: assertNever(loginConfig);
     }
 }
+
+authRouter.get('/logout', AuthMiddleware.requireAuth, (request, response) => {
+    clearTokenCookie(response).redirect('/');
+});
 
 /** Refresh the current users authentication with a new token */
 authRouter.get('/refresh', AuthMiddleware.requireAuth, capture(async (request, response) => {
