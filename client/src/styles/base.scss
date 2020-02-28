@@ -10,6 +10,12 @@ html, body {
 a {
 	color: $colorWhite;
 }
+p a {
+	color: $primaryColor;
+}
+p a:hover {
+	color: $secondaryColor;
+}
 thead {
 	padding: 1rem;
 	color: $colorWhite;
