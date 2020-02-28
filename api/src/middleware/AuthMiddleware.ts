@@ -15,7 +15,7 @@ export class AuthMiddleware {
     static refreshCookieToken: RequestHandler = captureNext(async (request, response, next) => {
         if (request.cookies.atelierToken) {
             const token = await verifyToken(request.cookies.atelierToken);
-            if (token.iat + 60000 > Date.now()) {
+            if (token.iat + 60000 < Date.now()) {
                 setTokenCookie(response, token.userID);
             }
         }

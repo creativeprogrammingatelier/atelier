@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import fetch from 'node-fetch';
 import { ServiceProvider, IdentityProvider, setSchemaValidator } from 'samlify';
-import validator from '@authenio/samlify-node-xmllint';
+import * as validator from '@authenio/samlify-node-xmllint';
 // If the above import complains about missing types, create this file:
 //  node_modules/@authenio/samlify-node-xmllint/build/index.d.ts
 // with these contents:
