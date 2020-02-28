@@ -1,0 +1,24 @@
+{
+    "host": "http://localhost:5000",
+    "port": 5000,
+    "loginProviders": [
+        {
+            "type": "saml",
+            "id": "samling",
+            "name": "Samling",
+            "metadata": { "url": "https://capriza.github.io/samling/public/metadata.xml" }
+        },
+        {
+            "type": "builtin",
+            "id": "atelier",
+            "name": "Atelier"
+        }
+    ],
+    "database": {
+        "user": "assistantassistant",
+        "host": "localhost",
+        "database": "assistantassistant",
+        "password": "0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel",
+        "port": 5432
+    }
+}
