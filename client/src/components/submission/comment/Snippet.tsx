@@ -20,8 +20,11 @@ export function Snippet({snippet}: SnippetProperties) {
 
 	const highlightStyle: React.CSSProperties =
 		expanded
-			? {backgroundColor: "#eee"}
+			? {}
 			: {};
+	// TODO: previously mainlines had a styling, however main lines are only what we show. The actual snippet is usually
+	// the whole snippet except 0/2 lines on the bottom/top. Do we want to do highlighting for all these lines or
+	// keep it without highlighting? Highlighting looked weird now since almost all lines are highlighted then.
 
 	return (
 		<div className="snippet">

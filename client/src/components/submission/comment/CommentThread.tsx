@@ -13,10 +13,12 @@ import {ExtendedThread} from "../../../../../models/database/Thread";
 import {Comment} from "../../../../../models/database/Comment";
 import { JsonFetchError } from "../../../../helpers/FetchHelper";
 import { createComment } from "../../../../helpers/APIHelper";
+import {File} from "../../../../../models/database/File";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
 	thread : ExtendedThread,
+	file? : File,
 	body? : string
 	// Maybe also find a way to include the topic, so it can be shown immediately
 }
@@ -34,7 +36,7 @@ const LARGE_SNIPPET_LINES_ABOVE = 0;
 /** Amount of context lines to show below for a small snippet */
 const LARGE_SNIPPET_LINES_BELOW = 0;
 
-export function CommentThread({thread, body}: CommentThreadProperties) {
+export function CommentThread({thread, body, file}: CommentThreadProperties) {
     // Load comments in the thread
 	const currentComments : Models.Comment[] = thread.comments
 		.map((comment : Comment) => {
@@ -75,12 +77,10 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 		const mainLineStart = topMargin;
 		const mainLineEnd = topMargin + Math.min(MINIMIZED_LINES, snippetLength);
 
-		// Define snippet for render
-		// TODO fileID
 		snippet = {
 			fullText : fileContent.slice(fileLineStart, fileLineEnd),
 			mainLines : [mainLineStart, mainLineEnd],
-			fileId : "00000000-0000-0000-0000-000000000000",
+			fileId : file!.fileID!,
 			fileLines : [fileLineStart, fileLineEnd]
 		};
 	}

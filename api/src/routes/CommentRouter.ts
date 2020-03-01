@@ -7,6 +7,8 @@ import {CommentDB} from "../database/CommentDB";
 
 export const commentRouter = express.Router();
 
+/** ---------- PUT REQUESTS ---------- */
+
 commentRouter.put('/:commentThreadID',
     (request : Request, result : Response) => {
         const commentThreadID = request.params.commentThreadID;
@@ -24,11 +26,4 @@ commentRouter.put('/:commentThreadID',
                 result.send(data);
             })
             .catch((error : any) => result.status(500).send({error : error}));
-});
-
-commentRouter.get('/file/:fileID',
-    (request : Request, result : Response) => {
-        const fileID = request.params.fileID;
-
-        // TODO get comments by file?
 });

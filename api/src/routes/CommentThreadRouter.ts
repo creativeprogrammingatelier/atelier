@@ -10,13 +10,24 @@ import {SnippetDB} from "../database/SnippetDB";
 import {Snippet} from "../../../models/database/Snippet";
 import {CommentDB} from "../database/CommentDB";
 
+import {CommentThread} from "../../../models/api/CommentThread";
+
 export const commentThreadRouter = express.Router();
+
+/** ---------- GET REQUESTS ---------- */
 
 /**
  * Get a specific comment thread.
  */
 commentThreadRouter.get('/:commentThreadID',
-    (request: Request, result : Response) => {
+    async (request: Request, result : Response) => {
+        /* Code for new interfaces
+        const commentThreadID : string = request.params.commentThreadID;
+        const thread : CommentThread = await ThreadDB.getThreadByID(commentThreadID);
+        result.status(200).send(thread);
+        */
+
+
         const commentThreadID : string = request.params.commentThreadID;
 
         ThreadDB.getThreadByID(commentThreadID)
@@ -27,6 +38,87 @@ commentThreadRouter.get('/:commentThreadID',
                 result.status(500).send({ error : error });
             })
     });
+
+/**
+ * Get comment threads of a file
+ */
+commentThreadRouter.get('/file/:fileID',
+    async (request: Request, result : Response) => {
+        /* Code for new interfaces
+        const fileID = request.params.fileID;
+        const commentThreads : CommentThread[] = await ThreadDB.getThreadsByFile(fileID);
+        result.status(200).send(commentThreads);
+        */
+
+        try {
+            const fileID = request.params.fileID;
+
+            // Threads and comments
+            const extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
+            const snippets : Snippet[] = await SnippetDB.getSnippetsByFile(fileID);
+
+            let snippetMap = new Map();
+            snippets.forEach((snippet : Snippet) => {
+                snippetMap.set(snippet.snippetID, snippet);
+            });
+
+            const extendedThreadSnippet = extendedThreads.map((extendedThread : ExtendedThread) => {
+                const snippetID : string | undefined = extendedThread.snippetID;
+                if (snippetMap.get(snippetID) == undefined) return extendedThread;
+
+                //const snippet : Snippet = snippetMap.get(snippetID) == undefined ? "" : snippetMap.get(snippetID);
+                return {
+                    ...extendedThread,
+                    snippet : snippetMap.get(snippetID)
+                }
+            });
+
+            result.send(extendedThreadSnippet);
+        } catch (error) {
+            result.status(500).send({error:error});
+        }
+    }
+);
+
+commentThreadRouter.get('/submission/:submissionID',
+    async (request: Request, result: Response) => {
+        /* Code new interfaces
+        const submissionID : string = request.params.submissionID;
+        const commentThreads : CommentThread[] = await ThreadDB.getThreadsBySubmission(submissionID);
+        result.status(200).send(commentThreads);
+         */
+
+        const submissionID = request.params.submissoinID;
+
+        try {
+            let extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+            extendedThreads = extendedThreads.filter((extendedThread : ExtendedThread) => {
+                return extendedThread.fileID == undefined;
+            });
+            result.send(extendedThreads);
+        } catch (error) {
+            result.status(500).send({error:error});
+        }
+    }
+);
+
+commentThreadRouter.get('/submission/:submissionID/recent', async (request: Request, response: Response) => {
+    const submissionID = request.params.submissionID;
+    const limit = request.params.limit;
+    const offset = request.params.offset;
+
+    // TODO: Wait for backend support
+
+    try {
+        const commentThreads: ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
+        response.send(commentThreads);
+    } catch (error) {
+        response.status(500).send({error:"internal", message:"Could not retrieve recent comments", details:error});
+    }
+});
+
+
+/** ---------- POST REQUESTS ---------- */
 
 /**
  * Create comment thread on a submission. General comment thread.
@@ -41,7 +133,7 @@ commentThreadRouter.post('/submission/:submissionID',
                 result.send(data);
             })
             .catch((error : any) => result.status(500).send({error : error}));
-});
+    });
 
 /**
  * Create comment thread on a file.
@@ -108,65 +200,4 @@ commentThreadRouter.post('/file/:fileID',
 
     });
 
-commentThreadRouter.get('/file/:fileID',
-    async (request: Request, result : Response) => {
-        try {
-            const fileID = request.params.fileID;
 
-            // Threads and comments
-            const extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
-            const snippets : Snippet[] = await SnippetDB.getSnippetsByFile(fileID);
-
-            let snippetMap = new Map();
-            snippets.forEach((snippet : Snippet) => {
-                snippetMap.set(snippet.snippetID, snippet);
-            });
-
-            const extendedThreadSnippet = extendedThreads.map((extendedThread : ExtendedThread) => {
-                const snippetID : string | undefined = extendedThread.snippetID;
-                if (snippetMap.get(snippetID) == undefined) return extendedThread;
-
-                //const snippet : Snippet = snippetMap.get(snippetID) == undefined ? "" : snippetMap.get(snippetID);
-                return {
-                    ...extendedThread,
-                    snippet : snippetMap.get(snippetID)
-                }
-            });
-
-            result.send(extendedThreadSnippet);
-        } catch (error) {
-            result.status(500).send({error:error});
-        }
-    }
-);
-
-commentThreadRouter.get('/submission/:submissionID',
-    async (request: Request, result: Response) => {
-        const submissionID = request.params.submissoinID;
-
-        try {
-            let extendedThreads : ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
-            extendedThreads = extendedThreads.filter((extendedThread : ExtendedThread) => {
-               return extendedThread.fileID == undefined;
-            });
-            result.send(extendedThreads);
-        } catch (error) {
-            result.status(500).send({error:error});
-        }
-    }
-);
-
-commentThreadRouter.get('/submission/:submissionID/recent', async (request: Request, response: Response) => {
-    const submissionID = request.params.submissionID;
-    const limit = request.params.limit;
-    const offset = request.params.offset;
-
-    // TODO: Wait for backend support
-
-    try {
-        const commentThreads: ExtendedThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID));
-        response.send(commentThreads);
-    } catch (error) {
-        response.status(500).send({error:"internal", message:"Could not retrieve recent comments", details:error});
-    }
-});

@@ -12,12 +12,13 @@ interface CommentTabProperties {
     file: File
 }
 
+// TODO sort threads once new interface is implemented. Useful for switch between code and comment threads.
 export function CommentTab({ file , body}: CommentTabProperties) {
 	return <div className="contentTab">
 		<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
         <Loading<ExtendedThread[]>
             loader={getFileComments}
             params={[file.fileID]}
-            component={threads => threads.map(thread => <CommentThread thread={thread} body={body} />)} />
+            component={threads => threads.map(thread => <CommentThread thread={thread} file={file} body={body} />)} />
     </div>
 }

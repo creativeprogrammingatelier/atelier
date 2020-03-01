@@ -13,12 +13,19 @@ export const courseRouter = express.Router();
 // Authentication is required for all endpoints
 courseRouter.use(AuthMiddleware.requireAuth);
 
+/** ---------- GET REQUESTS ---------- */
+
 /**
  * /api/courses/
  * @return, list of courses
  */
 courseRouter.get("/",
 	async(request: Request, result: Response) => {
+		/* Code for new interfaces
+		const courses : Course[] = await CourseDB.getAllCourses();
+		result.status(200).send(courses);
+		 */
+
 		CourseDB.getAllCourses()
 			.then((courses: Course[]) => courses.map((course: Course) => {
 				return {
@@ -31,6 +38,24 @@ courseRouter.get("/",
 			.then(data => result.send(data))
 			.catch((error => result.status(500).send({error: "internal", message: "Internal server error", details: error})));
 	});
+
+courseRouter.get("/:courseID", async(request: Request, response: Response) => {
+	/* Code for new interfaces
+	const courseID : string = request.params.courseID;
+	const course : Course = await CourseDB.getCourseByID(courseID);
+	result.status(200).send(course);
+	 */
+	const courseID = request.params.courseID;
+
+	try {
+		const course: Course = await CourseDB.getCourseByID(courseID);
+		response.send(course);
+	} catch (error) {
+		response.status(500).send({error: "internal", message: "Could not retrieve course details", details: error});
+	}
+});
+
+/** ---------- POST REQUESTS ---------- */
 
 /** Add a course. Pass parameters as json in the body.
  * @type: post
@@ -55,13 +80,3 @@ courseRouter.post("/",
 			.catch((error: Error) => result.status(500).send({error}));
 	});
 
-courseRouter.get("/:courseID", async(request: Request, response: Response) => {
-	const courseID = request.params.courseID;
-
-	try {
-		const course: Course = await CourseDB.getCourseByID(courseID);
-		response.send(course);
-	} catch (error) {
-		response.status(500).send({error: "internal", message: "Could not retrieve course details", details: error});
-	}
-});
