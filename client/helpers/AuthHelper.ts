@@ -76,8 +76,7 @@ export default class AuthHelper {
 	};
 
 	static logout = () => {
-		// Clear user token and profile data from localStorage
-		localStorage.removeItem('id_token');
+		Fetch.fetch("/api/auth/logout");
 	};
 
 	static _checkStatus = (response: {status: number; statusText: string;}) => {
