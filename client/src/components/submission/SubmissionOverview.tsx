@@ -1,16 +1,16 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import {Button} from "react-bootstrap";
+import {Button, Jumbotron} from "react-bootstrap";
 
 import {Frame} from "../frame/Frame";
 import {File} from "../../../../models/database/File";
-import {Loading} from "../general/Loading";
+import {Loading} from "../general/loading/Loading";
 import { ExtendedThread } from "../../../../models/database/Thread";
 import { CommentThread as CommentThreadComponent} from "./comment/CommentThread";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {Submission} from "../../../../models/database/Submission";
-import {DataList} from "../general/DataList";
-import {DataItem} from "../general/DataItem";
+import {DataList} from "../general/data/DataList";
+import {DataItem} from "../general/data/DataItem";
 import { Course } from "../../../../models/database/Course";
 import { getSubmission, getCourse, getFiles, getProjectComments, getRecentComments } from "../../../helpers/APIHelper";
 
@@ -30,18 +30,20 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		params={[submissionId]}
 		component={
 			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
-				<h1>{submission.name}</h1>
-				<p>
-					Uploaded by <Link to={"/user/"+submission.userID}>{submission.userID}</Link>, for {/* User data should be given with the new API submission.user.* */}
-					<Loading<Course>
-						loader={getCourse}
-						params={[submission.courseID!]}
-						component={course => <Link to={"/course/"+course.courseID}>{course.name}</Link>}
-					/>
-					<br/>
-					<small className="text-muted">{submission.date}</small>
-				</p>
-				<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+				<Jumbotron>
+					<h1>{submission.name}</h1>
+					<p>
+						Uploaded by <Link to={"/user/"+submission.userID}>{submission.userID}</Link>, for {/* User data should be given with the new API submission.user.* */}
+						<Loading<Course>
+							loader={getCourse}
+							params={[submission.courseID!]}
+							component={course => <Link to={"/course/"+course.courseID}>{course.name}</Link>}
+						/>
+						<br/>
+						<small className="text-light">{submission.date}</small>
+					</p>
+					<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+				</Jumbotron>
 				<DataList header="Files">
 					<Loading<File[]>
 						loader={getFiles}

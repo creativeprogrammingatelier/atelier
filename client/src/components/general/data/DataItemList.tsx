@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Header} from '../frame/Header';
+import {Header} from '../../frame/Header';
 import {DataTagProperties} from "./DataTag";
 import {DataItem} from "./DataItem";
 
@@ -14,8 +14,8 @@ interface DataItemListProperties {
 }
 export function DataItemList({header, list}: DataItemListProperties) {
 	return <div>
-		<Header title={header}/>
-		<div className="py-2">
+		<Header title={header} small/>
+		<div className="m-3">
 			{list.map((block) => <DataItem transport={block.transport} text={block.text} tags={block.tags}/>)}
 		</div>
 	</div>

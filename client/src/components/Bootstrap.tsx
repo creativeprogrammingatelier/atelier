@@ -466,7 +466,7 @@ export function Bootstrap() {
 			</div>
 			<h2>Jumbotron</h2>
 			<div>
-				<Jumbotron>
+				<Jumbotron fluid>
 					<h1>Hello, world!</h1>
 					<p>
 						This is a simple hero unit, a simple jumbotron-style component for calling

@@ -7,7 +7,7 @@ import {CodeTab} from "./CodeTab";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/database/File";
-import {Loading} from "../general/Loading";
+import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import { getFile, getFileContents } from "../../../helpers/APIHelper";
 

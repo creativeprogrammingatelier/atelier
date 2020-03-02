@@ -5,7 +5,7 @@ import { configure, shallow } from 'enzyme';
 
 import React from 'react';
 
-import { Loading } from './../src/components/general/Loading';
+import { Loading } from '../src/components/general/loading/Loading';
 
 configure({adapter: new Adapter()});
 

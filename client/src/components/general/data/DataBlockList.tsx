@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {DataBlock} from './DataBlock';
-import {Header} from '../frame/Header';
+import {Header} from '../../frame/Header';
 import {DataTagProperties} from "./DataTag";
 
 interface DataListEntryProperties {
@@ -24,8 +24,8 @@ export function DataBlockList({header, list}: DataListProperties) {
 	}, []);
 
 	return <div>
-		<Header title={header}/>
-		<div className="py-2">
+		<Header title={header} small/>
+		<div className="m-3">
 			{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time, offset:currentTime}} tags={block.tags}/>)}
 		</div>
 	</div>

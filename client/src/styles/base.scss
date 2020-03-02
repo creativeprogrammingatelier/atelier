@@ -42,12 +42,14 @@ textarea:focus, textarea:active {
 	height: $headerHeight;
 	margin: 0 !important;
 	background-color: $primaryColor;
+	//background: $gradientHorizontal;
 
 	h1, h2, h3, h4, h5, h6 {
 		margin: 0 !important;
 		line-height: $headerHeight !important;
-		white-space: nowrap;
+		font-weight: 300;
 		color: $colorWhite;
+		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
@@ -55,6 +57,15 @@ textarea:focus, textarea:active {
 .navbar.position-fixed {
 	top: 0;
 	z-index: 1040;
+}
+.navbar.navbar-small {
+	height: unset;
+
+	h1, h2, h3, h4, h5, h6 {
+		padding: 0;
+		line-height: unset !important;
+		font-size: 1.75rem;
+	}
 }
 .nav {
 	background-color: $secondaryColor;
@@ -70,7 +81,8 @@ textarea:focus, textarea:active {
 	top: 0;
 	height: 100vh;
 	position: fixed !important;
-	background-color: $secondaryColor;
+	//background-color: $secondaryColor;
+	background: $gradientVertical;
 	z-index: 1050;
 	box-shadow: $shadowLarge; // TODO: Only for mobile
 }
@@ -124,10 +136,10 @@ textarea:focus, textarea:active {
 }
 
 .content {
-	margin-top: $headerHeight;
+	//margin-top: $headerHeight;
 }
 .contentPage {
-	padding: 1rem 1.5rem 0 !important;
+	//padding: 1rem 1.5rem 0 !important;
 }
 .contentTab {
 	padding-bottom: calc(28px + 1rem);
@@ -150,6 +162,7 @@ textarea:focus, textarea:active {
 
 			h1, h2, h3, h4, h5, h6 {
 				margin: 0 0.5rem;
+				font-weight: 300;
 			}
 		}
 		.panelBottom {
@@ -162,9 +175,10 @@ textarea:focus, textarea:active {
 .panel:hover {
 	a {
 		text-decoration: none;
-		color: $colorOffWhite;
+		//color: $colorOffWhite;
 
 		.panelBottom {
+			background: $gradientSecondary;
 			box-shadow: $shadowSmallUp;
 		}
 	}
@@ -296,4 +310,33 @@ textarea:focus, textarea:active {
 	color: $colorOffWhite;
 	background-color: $secondaryColor;
 	box-shadow: $shadowSmall;
+}
+
+.contentPage .jumbotron:first-child {
+	padding-top: calc(1rem + #{$headerHeight});
+	//margin: -1rem -1.5rem 1rem;
+	//box-shadow: $shadowMedium;
+}
+.jumbotron {
+	margin: 0;
+	padding: 1rem 1.5rem;
+	color: $colorWhite;
+	//background-color: $secondaryColor;
+	background: $gradientSecondary;
+	border-radius: 0;
+
+	* {
+		font-weight: 300;
+	}
+	.btn {
+		color: $primaryColor;
+		background-color: $colorWhite;
+
+		a {
+			color: $primaryColor;
+		}
+	}
+	.btn:hover {
+		background-color: $colorOffWhite;
+	}
 }

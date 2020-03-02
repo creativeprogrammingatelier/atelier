@@ -1,5 +1,5 @@
 import React from 'react';
-import {DataTableProperties, DataTableRowMapping} from "../components/general/DataTable";
+import {DataTableProperties, DataTableRowMapping} from "../components/general/data/DataTable";
 import {CommentResponse} from "./DatabaseResponseInterface";
 
 /**

@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from "react";
-import {DataTable} from "../general/DataTable";
+import {DataTable} from "../general/data/DataTable";
 import {Frame} from "../frame/Frame";
 import {
 	CommentThreadResponse,
 	SubmissionResponse,
 	UserResponse
 } from "../../helpers/DatabaseResponseInterface";
-import {Loading} from "../general/Loading";
+import {Loading} from "../general/loading/Loading";
 import {User} from "../../../../models/database/User";
 import {Submission} from "../../../../models/database/Submission";
 import { getUserSubmissions, getUser } from "../../../helpers/APIHelper";

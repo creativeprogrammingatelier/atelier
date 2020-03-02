@@ -2,7 +2,7 @@ import React, {Fragment} from "react";
 
 import {CommentThread} from "./comment/CommentThread";
 import {File} from "../../../../models/database/File";
-import {Loading} from "../general/Loading";
+import {Loading} from "../general/loading/Loading";
 import {ExtendedThread} from "../../../../models/database/Thread";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import { getFileComments } from "../../../helpers/APIHelper";
