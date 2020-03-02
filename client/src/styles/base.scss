@@ -333,6 +333,9 @@ textarea:focus, textarea:active {
 	* {
 		font-weight: 300;
 	}
+	p:last-child {
+		margin: 0;
+	}
 	.btn {
 		color: $primaryColor;
 		background-color: $colorWhite;
