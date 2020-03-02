@@ -5,7 +5,8 @@ import { ExtendedThread } from '../../models/database/Thread';
 import { Course } from '../../models/database/Course';
 import { Submission } from '../../models/database/Submission';
 import { User } from '../../models/api/User';
-import { Comment } from "../../models/database/Comment";
+import { Comment } from '../../models/database/Comment';
+import { LoginProvider } from '../../models/api/LoginProvider';
 
 // TODO: Fix all anys to be the correct model
 
@@ -74,3 +75,7 @@ export const createComment = (commentThreadID: string, comment: Comment) =>
 // Search
 export const search = (term: string) =>
     Fetch.fetchJson<any>(`/api/search?q=${term}`);
+
+// Auth
+export const getLoginProviders = () =>
+    Fetch.fetchJson<LoginProvider[]>('/api/auth/providers');

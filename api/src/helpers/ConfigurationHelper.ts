@@ -51,7 +51,13 @@ export const config: Configuration = {
     env,
     host: json.host,
     port: json.port || 5000,
-    loginProviders: json.loginProviders || [ { type: "builtin" } ],
+    loginProviders: json.loginProviders || [ 
+        {
+            type: "builtin",
+            id: "atelier",
+            name: "Atelier"
+        }
+    ],
     database: {
         host: json.database.host || "localhost",
         port: json.database.port || 5432,
@@ -60,3 +66,5 @@ export const config: Configuration = {
         database: json.database.database
     }
 };
+
+Object.freeze(config);
