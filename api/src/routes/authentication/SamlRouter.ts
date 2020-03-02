@@ -79,7 +79,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                 throw err;
             }
         }
-        setTokenCookie(response, user.userID!).redirect("/");
+        (await setTokenCookie(response, user.userID!)).redirect("/");
     }));
 
     // samlRouter.get('/logout', capture(async (request, response) => {

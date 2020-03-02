@@ -53,17 +53,19 @@ export async function getCurrentUserID(request: Request) {
     }
 }
 
-export function setTokenCookie(response: Response, userID: string) {
+export async function setTokenCookie(response: Response, userID: string) {
     const options: CookieOptions = { 
         secure: config.env === "production",
         sameSite: "strict",
         path: "/api"
     };
+    const token = issueToken(userID);
+    const exp = (await verifyToken(token)).exp;
     return response
-        .cookie("atelierLoggedIn", true, options)
+        .cookie("atelierTokenExp", exp, options)
         .cookie("atelierToken", issueToken(userID), { ...options, httpOnly: true });
 }
 
 export function clearTokenCookie(response: Response) {
-    return response.clearCookie("atelierLoggedIn").clearCookie("atelierToken");
+    return response.clearCookie("atelierTokenExp").clearCookie("atelierToken");
 }
