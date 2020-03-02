@@ -1,11 +1,12 @@
 /** Contains functions to access all API endpoints */
 
 import { Fetch } from './FetchHelper';
-import { ExtendedThread } from '../../models/database/Thread';
-import { Course } from '../../models/database/Course';
-import { Submission } from '../../models/database/Submission';
+import { CommentThread } from '../../models/api/CommentThread';
+import { Course } from '../../models/api/Course';
+import { Submission } from '../../models/api/Submission';
 import { User } from '../../models/api/User';
-import { Comment } from "../../models/database/Comment";
+import { Comment } from "../../models/api/Comment";
+import { File } from "../../models/api/File";
 
 // TODO: Fix all anys to be the correct model
 
@@ -16,7 +17,7 @@ export const getCourses = () =>
 export const getCourse = (courseID: string) => 
     Fetch.fetchJson<Course>(`/api/course/${courseID}`);
     
-export const createCourse = (course: Course) => 
+export const createCourse = (course: {name : string, state : string}) =>
     Fetch.fetchJson<Course>('/api/course', {
         method : 'POST',
         body : JSON.stringify(course)
@@ -51,21 +52,21 @@ export const getFileContents = (fileId : string) =>
     
 // CommentThreads
 export const getFileComments = (fileID: string) => 
-    Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/file/${fileID}`);
+    Fetch.fetchJson<CommentThread[]>(`/api/commentThread/file/${fileID}`);
 
 export const getProjectComments = (submissionID: string) => 
-    Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}`);
+    Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}`);
     
 export const getRecentComments = (submissionID: string) => 
-    Fetch.fetchJson<ExtendedThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
+    Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
 
 export const createFileCommentThread = (fileID: string, thread: any) => 
-    Fetch.fetchJson<ExtendedThread>(`/api/commentThread/file/${fileID}`, {
+    Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, {
         method : 'POST',
         body : JSON.stringify(thread)
     });
 
-export const createComment = (commentThreadID: string, comment: Comment) =>
+export const createComment = (commentThreadID: string, comment : {body : string}) =>
     Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, {
         method : 'PUT',
         body : JSON.stringify(comment)

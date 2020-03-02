@@ -2,37 +2,34 @@
  * Api routes relating to user information
  */
 
-
 import express, {Response, Request} from "express";
 import { AuthMiddleware } from "../middleware/AuthMiddleware";
 import {UserDB} from "../database/UserDB";
-import {User} from "../../../models/database/User";
+import {User} from "../../../models/api/User";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {capture} from "../helpers/ErrorHelper";
 
 export const userRouter = express.Router();
 
 // Authentication is required for all endpoints
 userRouter.use(AuthMiddleware.requireAuth);
 
-userRouter.get('/:userID', (request : Request, result : Response) => {
-	UserDB.getUserByID(request.params.userID)
-		.then((user : User) => result.send(user))
-		.catch((error : any) => result.status(500).send({error: error}));
-});
+/**
+ * Get a specific user
+ */
+userRouter.get('/:userID', capture(async(request : Request, response : Response) => {
+	const userID : string = request.params.userID;
+	// TODO database does not give back correct User
+	// const user : User = UserDB.getUserByID(userID);
+	// response.status(200).send(user);
+}));
 
-userRouter.get('/', (request : Request, response : Response) => {
-	// console.log("The sidebar is finding what the current user is");
-	// console.log(getCurrentUserID(request).then(userID => {console.log(userID)}));
-	getCurrentUserID(request)
-		.then(userID => {
-			// console.log("Found user ID "+userID);
-			UserDB.getUserByID(userID)
-				.then((user : User) => {
-					// console.log("Found user object:");
-					// console.log(user);
-					response.send(user)
-				})
-				.catch((error : any) => response.status(500).send({error: error}));
-		})
-		.catch((error: any) => response.status(500).send({error: error}));
-});
+/**
+ * Get current user
+ */
+userRouter.get('/', capture(async(request : Request, response : Response) => {
+	const userID : string = await getCurrentUserID(request);
+	// TODO database does not give back correct User
+	// const user : User = await UserDB.getUserByID(userID);
+	// response.status(200).send(user);
+}));

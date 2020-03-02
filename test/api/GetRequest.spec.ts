@@ -1,20 +1,3 @@
-import {assert} from 'chai';
-
-// Interface to match
-import {Course} from "../../models/api/Course";
-import {Comment} from "../../models/api/Comment";
-import {CommentThread} from "../../models/api/CommentThread";
-import {File} from "../../models/api/File";
-import {Permission} from "../../models/api/Permission";
-import {Snippet} from "../../models/api/Snippet";
-import {Submission} from "../../models/api/Submission";
-import {User} from "../../models/api/User";
-
-// Parameters to set
-const BASE_URL = "http://localhost:5000";
-const DEFAULT_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-const AUTHORIZATION_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYS5hIiwiaWF0IjoxNTgyMDI5NDkyLCJleHAiOjE1ODcwNjk0OTJ9.ZiN4uRJZqLVxZ3N_UVjnIvIhgoYhM_1j3eLNqPiHMBQ";
-
 /** Tests API paths
  *
  * - Checks whether the response matches the interface type
@@ -25,6 +8,23 @@ const AUTHORIZATION_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFA
  * - Tests are run in the backend, where local storage does not exist, so authorization key needs
  *   to be provided by the user.
  * */
+
+import {assert} from 'chai';
+
+/** Interfaces the API should match */
+import {Course} from "../../models/api/Course";
+import {Comment} from "../../models/api/Comment";
+import {CommentThread} from "../../models/api/CommentThread";
+import {File} from "../../models/api/File";
+import {Permission} from "../../models/api/Permission";
+import {Snippet} from "../../models/api/Snippet";
+import {Submission} from "../../models/api/Submission";
+import {User} from "../../models/api/User";
+
+/** Parameters for making requests to the API */
+const BASE_URL = "http://localhost:5000";
+const DEFAULT_ID = "AAAAAAAAAAAAAAAAAAAAAA";
+const AUTHORIZATION_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYS5hIiwiaWF0IjoxNTgyMDI5NDkyLCJleHAiOjE1ODcwNjk0OTJ9.ZiN4uRJZqLVxZ3N_UVjnIvIhgoYhM_1j3eLNqPiHMBQ";
 
 /** Fetch methods */
 const fetch = require('node-fetch');

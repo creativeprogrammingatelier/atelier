@@ -1,6 +1,6 @@
 import React from 'react';
 import {InputField} from '../general/InputField';
-import {Course} from '../../../../models/database/Course';
+import {Course} from '../../../../models/api/Course';
 import { createCourse } from '../../../helpers/APIHelper';
 import { courseState } from '../../../../enums/courseStateEnum';
 
@@ -12,7 +12,7 @@ export function AddCourse({handleResponse} : AddCourseProps) {
     // Create course
     async function handleSubmission(courseName : string) {
         try {
-            const course = await createCourse({
+            const course : Course = await createCourse({
                 name : courseName,
                 state : courseState.open
             });

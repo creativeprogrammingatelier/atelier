@@ -1,6 +1,6 @@
 import React from "react";
 
-import {Comment} from "../../../placeholdermodels";
+import {Comment} from "../../../../../models/api/Comment";
 
 interface CommentProperties {
 	comment: Comment
@@ -9,7 +9,7 @@ interface CommentProperties {
 export function Comment({comment}: CommentProperties) {
 	return (
 		<div className="comment px-2 py-1">
-			<small><span>{comment.author}</span> at <span>{comment.time.toLocaleString()}</span></small>
+			<small><span>{comment.user.name}</span> at <span>{(new Date(comment.date)).toLocaleString()}</span></small>
 			<div>{comment.text}</div>
 		</div>
 	);

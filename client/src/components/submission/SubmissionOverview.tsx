@@ -3,15 +3,15 @@ import {Link} from "react-router-dom";
 import {Button} from "react-bootstrap";
 
 import {Frame} from "../frame/Frame";
-import {File} from "../../../../models/database/File";
+import {File} from "../../../../models/api/File";
 import {Loading} from "../general/Loading";
-import { ExtendedThread } from "../../../../models/database/Thread";
+import { CommentThread } from "../../../../models/api/CommentThread";
 import { CommentThread as CommentThreadComponent} from "./comment/CommentThread";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import {Submission} from "../../../../models/database/Submission";
+import {Submission} from "../../../../models/api/Submission";
 import {DataList} from "../general/DataList";
 import {DataItem} from "../general/DataItem";
-import { Course } from "../../../../models/database/Course";
+import { Course } from "../../../../models/api/Course";
 import { getSubmission, getCourse, getFiles, getProjectComments, getRecentComments } from "../../../helpers/APIHelper";
 
 interface SubmissionOverviewProps {
@@ -29,13 +29,13 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		loader={getSubmission}
 		params={[submissionId]}
 		component={
-			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
+			submission => <Frame title={submission.name} sidebar search={submissionPath + "/search"}>
 				<h1>{submission.name}</h1>
-				<p>Submitted by <Link to={"/user/"+submission.userID}>{submission.userID}</Link></p>{/* User data should be given with the new API submission.user.* */}
+				<p>Submitted by <Link to={"/user/"+submission.user.ID}>{submission.user.name}</Link></p>
 				<Loading<Course>
 					loader={getCourse}
-					params={[submission.courseID!]}
-					component={course => <p>In course <Link to={"/course/"+course.courseID}>{course.name}</Link></p>}
+					params={[submission.references.courseID]}
+					component={course => <p>In course <Link to={"/course/"+course.ID}>{course.name}</Link></p>}
 				/>
 				<p>Just now</p>
 				<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
@@ -43,18 +43,18 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<File[]>
 						loader={getFiles}
 						params={[submissionId]}
-						component={files => files.map(file => <DataItem text={FileNameHelper.fromPath(file.pathname!)} transport={submissionPath + "/" + file.fileID + "/code"}/>)}
+						component={files => files.map(file => <DataItem text={FileNameHelper.fromPath(file.name)} transport={submissionPath + "/" + file.ID + "/code"}/>)}
 					/>
 				</DataList>
 				<DataList header="Comments">
-					<Loading<ExtendedThread[]>
+					<Loading<CommentThread[]>
 						loader={getProjectComments}
 						params={[submissionId]}
 						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>
 				</DataList>
 				<DataList header="Recent">
-					<Loading<ExtendedThread[]>
+					<Loading<CommentThread[]>
 						loader={getRecentComments}
 						params={[submissionId]}
 						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}

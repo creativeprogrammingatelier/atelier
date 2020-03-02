@@ -12,11 +12,10 @@ import {FileSnippet} from "./submission/CodeTab";
 import {Editor} from "codemirror";
 import {WriteComment} from "./submission/comment/WriteComment";
 import { Button } from 'react-bootstrap';
-
-import {ExtendedThread} from "../../../models/database/Thread";
 import { JsonFetchError } from '../../helpers/FetchHelper';
 import { getFileComments, createFileCommentThread } from '../../helpers/APIHelper';
 import { Range, getRanges } from "../helpers/HighlightingHelper";
+import {CommentThread} from "../../../models/api/CommentThread";
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -30,7 +29,7 @@ type CodeViewer2State = {
 	commentSelection : string,
 
 	snippets : FileSnippet[],
-	commentThreads : ExtendedThread[],
+	commentThreads : CommentThread[],
 
 	commentStartLine : number,
 	commentStartCharacter : number,
@@ -80,17 +79,17 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
             const threads = await getFileComments(this.props.fileID);
             console.log(threads);
             const snippets : FileSnippet[] = [];
-            threads.map((commentThread : ExtendedThread) => {
+            threads.map((commentThread : CommentThread) => {
                 if (commentThread.snippet !== undefined) {
                     const snippet = commentThread.snippet;
                     snippets.push({
-                        startLine : snippet.lineStart,
-                        startCharacter : snippet.charStart,
-                        endLine : snippet.lineEnd,
-                        endCharacter : snippet.charEnd,
-                        onClick : () => console.log(`Clicked snippet: ${snippet.snippetID}`),
-                        snippetID : snippet.snippetID,
-                        commentThreadID : commentThread.commentThreadID === undefined ? "" : commentThread.commentThreadID
+                        startLine : snippet.start.line,
+                        startCharacter : snippet.start.character,
+                        endLine : snippet.end.line,
+                        endCharacter : snippet.end.character,
+                        onClick : () => console.log(`Clicked snippet: ${snippet.ID}`),
+                        snippetID : snippet.ID,
+						commentThreadID : commentThread.ID
                     });
                 }
             });
@@ -163,47 +162,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 				);
 			}
 		}
-
-		/** Highlight based on character*/
-		/*if (this.state.snippets != undefined) {
-			let highlights = new Map();
-			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.snippets) {
-				if (startLine == undefined) continue;
-
-				for (let lineNumber = startLine; lineNumber <= endLine; lineNumber++) {
-					const line : string = this.codeMirror.getDoc().getLine(lineNumber);
-					const length : number = line.length;
-
-					let startChar = (lineNumber == startLine) ? startCharacter : 0;
-					const endChar = (lineNumber == endLine) ? endCharacter : length;
-
-					for (; startChar <= endChar; startChar += 1) {
-						const location = `${lineNumber}-${startChar}`;
-						const currentHighlights = highlights.get(location);
-						const updatedHighlights = (currentHighlights == undefined) ? 1 : currentHighlights + 1;
-
-						highlights.set(location, updatedHighlights);
-					}
-				}
-			}
-
-			for (const entry of highlights.entries()) {
-				const [line, ch] : string[] = entry[0].split("-");
-
-				const startLocation : {line : number, ch : number} = {line : parseInt(line), ch : parseInt(ch)};
-				const endLocation : {line : number, ch : number} = { line : startLocation.line, ch : startLocation.ch + 1};
-
-				const highlights = Math.min(entry[1], opacityRange.length - 1);
-				const opacity = opacityRange[highlights];
-
-				this.codeMirror.markText(
-					startLocation,
-					endLocation,
-					{
-						css: `background-color: ${color}${opacity};`}
-				);
-			}
-		}*/
 	}
 
 	/**

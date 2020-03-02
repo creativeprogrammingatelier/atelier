@@ -4,71 +4,49 @@
 
 import express, {Response, Request} from 'express';
 import {SubmissionDB} from "../database/SubmissionDB";
-import {Submission} from "../../../models/database/Submission";
+import {Submission} from "../../../models/api/Submission";
 import {UUIDHelper} from "../helpers/UUIDHelper";
+import {capture} from "../helpers/ErrorHelper";
 
 export const submissionRouter = express.Router();
 
-/** Get submissions of a course
- * @type: get
- * @url: /api/submissions/course/:courseId
- * @return: submissions of a certain course
+/**
+ * Get submissions of a course
  */
-submissionRouter.get('/course/:courseID',
-    (request: Request, result: Response) => {
-        const courseID = request.params.courseID;
-        SubmissionDB.getSubmissionsByCourse(courseID)
-            .then((submissions : Submission[]) => {
-                result.send(submissions);
-            })
-            .catch((error: any) => result.status(500).send({error: error}));
-    });
+submissionRouter.get('/course/:courseID', capture(async(request: Request, response: Response) => {
+    const courseID : string = request.params.courseID;
+    // TODO database does not give back correct Submission
+    // const submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+    // response.status(200).send(submissions);
+}));
 
 
 
-/** Get submissions of a user
- * @type get
- * @url: /api/submissions/:userID
- * @param userID : id of the user
- * @param limit? : limit to submissions in the body
- * @return submissions of a user
+/**
+ * Get submissions of a user
  */
-submissionRouter.get('/user/:userID',
-    (request: Request, result: Response) => {
-        const userID : string = request.params.userID;
-        const limit : number | undefined = request.body.limit;
+submissionRouter.get('/user/:userID', capture(async(request: Request, response: Response) => {
+    const userID : string = request.params.userID;
+    // TODO database does not give back correct Submission
+    // const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
+    // response.status(200).send(submissions);
+}));
 
-        SubmissionDB.getUserSubmissions(userID, limit)
-            .then((data: Submission[]) => {
-                result.send(data);
-            })
-            .catch((error : any) => result.status(500).send({error : error}));
-    });
-
-submissionRouter.get('/:submissionID', (request: Request, response: Response) => {
-    SubmissionDB.getSubmissionById(request.params.submissionID)
-        .then((data: Submission) => {response.send(data);})
-        .catch((error : any) => response.status(500).send({error : error}));
-});
-
-/** Create a new submission. Gets userId and name if logged in.
- * @type: post
- * @url /api/submission/
- * @param userId (string) : id of the user
- * @param name (string) : name of the user
+/**
+ * Get a specific submission
  */
-submissionRouter.post('/',
-    (request: Request, result: Response) => {
-        // TODO get userID from logged in user
-        // TODO get name from logged in user
-        const userID: string = "00000000-0000-0000-0000-000000000000";
-        const name = "Default user";
+submissionRouter.get('/:submissionID', capture(async(request: Request, response: Response) => {
+    const submissionID : string = request.params.submissionID;
+    // TODO database does not give back correct Submission
+    // const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
+    // response.status(200).send(submission);
+}));
 
-        SubmissionDB.addSubmission({userID: userID, name: name})
-            .then((data: any) => {
-                console.log(data);
-                result.send(data);
-            })
-            .catch((error: any) => result.status(500).send({error: error}));
-    });
+/**
+ * Create a new submission.
+ */
+submissionRouter.post('/', capture(async(request: Request, response: Response) => {
+    // TODO getUserID, name
+    // TODO create transaction for adding a submission: submission, files etc.
+}));
 

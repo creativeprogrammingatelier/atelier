@@ -1,23 +1,21 @@
 import React, {useState} from "react";
 
-import * as Models from "../../../placeholdermodels";
-
-import {Header} from "../../frame/Header";
+import {Snippet as ModelSnippet} from "../../../placeholdermodels";
 import {Comment as CommentComponent} from "./Comment";
 import {Snippet} from "./Snippet";
 import {WriteComment} from "./WriteComment";
 import {ButtonBar} from "../../general/ButtonBar";
 import { Button } from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
-import {ExtendedThread} from "../../../../../models/database/Thread";
-import {Comment} from "../../../../../models/database/Comment";
+import { CommentThread } from "../../../../../models/api/CommentThread";
+import { Comment } from "../../../../../models/api/Comment";
 import { JsonFetchError } from "../../../../helpers/FetchHelper";
 import { createComment } from "../../../../helpers/APIHelper";
-import {File} from "../../../../../models/database/File";
+import {File} from "../../../../../models/api/File";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
-	thread : ExtendedThread,
+	thread : CommentThread,
 	file? : File,
 	body? : string
 	// Maybe also find a way to include the topic, so it can be shown immediately
@@ -37,29 +35,19 @@ const LARGE_SNIPPET_LINES_ABOVE = 0;
 const LARGE_SNIPPET_LINES_BELOW = 0;
 
 export function CommentThread({thread, body, file}: CommentThreadProperties) {
-    // Load comments in the thread
-	const currentComments : Models.Comment[] = thread.comments
-		.map((comment : Comment) => {
-			return {
-				text : comment.body == undefined ? "" : comment.body,
-				author : comment.userID == undefined ? "" : comment.userID ,
-				time : comment.date == undefined ? new Date() : comment.date
-			}
-		});
-
 	const [opened, setOpened] = useState(false);
-	const [comments, updateComments] = useState(currentComments);
+	const [comments, updateComments] = useState(thread.comments);
 
-	let snippet : Models.Snippet | undefined = undefined;
-	if (body != undefined && thread.snippet != undefined) {
+	let snippet : ModelSnippet | undefined = undefined;
+	if (thread.snippet != undefined && body != undefined && file != undefined) {
 		// Parse body into lines
 		const fileContent : string[] = body.replace('\r', '').split('\n');
 		const totalLines : number = fileContent.length;
 
 		// Get snippet data
 		const threadSnippet = thread.snippet;
-		const lineStart : number = threadSnippet.lineStart;
-		const lineEnd : number = threadSnippet.lineEnd;
+		const lineStart : number = threadSnippet.start.line;
+		const lineEnd : number = threadSnippet.end.line;
 
 		// Get margins for the snippet
 		const snippetLength : number = (lineEnd - lineStart + 1);
@@ -80,7 +68,7 @@ export function CommentThread({thread, body, file}: CommentThreadProperties) {
 		snippet = {
 			fullText : fileContent.slice(fileLineStart, fileLineEnd),
 			mainLines : [mainLineStart, mainLineEnd],
-			fileId : file!.fileID!,
+			fileId : file.ID,
 			fileLines : [fileLineStart, fileLineEnd]
 		};
 	}
@@ -88,13 +76,13 @@ export function CommentThread({thread, body, file}: CommentThreadProperties) {
 
 	const newComment = async (text: string) => {
         try {
-            const comment = await createComment(thread.commentThreadID!, {
+            const comment = await createComment(thread.ID, {
                 body : text
             });
-            console.log(comment);
+            console.log('added comment response' + comment);
             updateComments(comments => [
                 ...comments,
-                {text : comment.body, author : comment.userID, time : comment.date} as Models.Comment
+				comment
             ]);
         } catch (err) {
             if (err instanceof JsonFetchError) {
