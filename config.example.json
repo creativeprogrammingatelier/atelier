@@ -11,7 +11,8 @@
         {
             "type": "builtin",
             "id": "atelier",
-            "name": "Atelier"
+            "name": "Atelier",
+            "register": true
         }
     ],
     "database": {

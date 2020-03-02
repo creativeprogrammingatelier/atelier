@@ -17,7 +17,9 @@ export interface SamlLoginConfiguration extends LoginConfiguration {
 
 /** Use the built in login system */
 export interface BuiltinLoginConfiguration extends LoginConfiguration {
-    type: "builtin"
+    type: "builtin",
+    /** Whether unauthenticated users are allowed to register accounts or not */
+    register: boolean
 }
 
 export interface Configuration {
@@ -55,7 +57,8 @@ export const config: Configuration = {
         {
             type: "builtin",
             id: "atelier",
-            name: "Atelier"
+            name: "Atelier",
+            register: true
         }
     ],
     database: {
