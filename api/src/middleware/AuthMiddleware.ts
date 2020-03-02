@@ -16,7 +16,7 @@ export class AuthMiddleware {
         if (request.cookies.atelierToken) {
             const token = await verifyToken(request.cookies.atelierToken);
             // The JWT expiration is stored in seconds, Date.now() in milliseconds
-            if (token.iat * 1000 + 60000 < Date.now()) {
+            if (token.iat * 1000 + 600000 < Date.now()) {
                 await setTokenCookie(response, token.userID);
             }
         }
