@@ -13,7 +13,7 @@ export function Homepage() {
 	}
 
 	return (
-		<Frame title="Homepage" user={{id:"1", name:"John Doe"}} sidebar>
+		<Frame title="Homepage" sidebar>
 			<p></p>
             <Loading<Course[]>
                 loader={getCourses}

@@ -15,7 +15,7 @@ interface CourseOverviewProps {
 
 export function CourseOverview({match}: CourseOverviewProps) {
 	return (
-		<Frame title="Course" user={{id: "0", name: "John Doe"}} sidebar search={"/course/../search"}>
+		<Frame title="Course" sidebar search={"/course/../search"}>
 			<h1>Course overview</h1>
 				<Loading<Submission[]>
                     loader={getCourseSubmissions}

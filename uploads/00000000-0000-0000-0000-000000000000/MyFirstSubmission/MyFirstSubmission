@@ -2,9 +2,9 @@
 //
 // Sun and mercury textures from http://planetpixelemporium.com
 // Star field picture from http://www.galacticimages.com/
-
+// Another comment was here so filling this up
 PImage starfield;
-
+// Also filling this for example
 PShape sun;
 PImage suntex;
 
