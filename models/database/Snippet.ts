@@ -1,39 +1,50 @@
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
-import {Snippet as SnippetAPI } from "../api/Snippet"
+import {Snippet as APISnippet } from "../api/Snippet"
 import { fileToAPI, DBAPIFile } from "./File"
-export interface Snippet {
+import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB"
+export interface Snippet extends DBTools{
 	snippetID?: string,
+	fileID?: string,
+	commentThreadID?:string,
+	submissionID?:string,
+	courseID?:string,
 	lineStart?: number,
 	lineEnd?: number,
 	charStart?: number,
 	charEnd?: number,
-	fileID?: string
+	body?: string
 }
 
 export interface DBSnippet {
 	snippetid: string,
+	fileid: string,
+	commentthreadid: string,
+	submissionid: string,
+	courseid: string,
 	linestart: number,
 	lineend: number,
 	charstart: number,
 	charend: number,
-	fileid: string
+	body: string
+
 }
 
-export interface DBAPISnippet extends DBSnippet, DBAPIFile {
-	courseid: string,
-	submissionid: string,
-	threadid: string
-}
+export {APISnippet}
 
-const keys = ['snippetid', 'linestart', 'lineend', 'charstart', 'charend', 'fileid']
+export type DBAPISnippet = DBSnippet & DBAPIFile 
+
 export function convertSnippet(db : DBSnippet) : Snippet {
 	const ret = {
 		snippetID: UUIDHelper.fromUUID(db.snippetid),
+		fileID: UUIDHelper.fromUUID(db.fileid),
+		commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
+		submissionID: UUIDHelper.fromUUID(db.submissionid),
+		courseID: UUIDHelper.fromUUID(db.courseid),
 		lineStart: db.linestart,
 		lineEnd: db.lineend,
 		charStart: db.charstart,
 		charEnd: db.charend,
-		fileID: UUIDHelper.fromUUID(db.fileid)
+		body: db.body
 	}
 	// for (const key in db){
 	// 	if (key in keys) continue
@@ -41,7 +52,8 @@ export function convertSnippet(db : DBSnippet) : Snippet {
 	// }
 	return ret
 }
-export function snippetToAPI(db : DBAPISnippet) : SnippetAPI {
+export function snippetToAPI(db : DBAPISnippet) : APISnippet {
+	checkAvailable(["snippetid", "linestart", "charstart", "lineend", "charend", "body", "courseid", "submissionid", "commentthreadid"], db)
 	return {
 		ID: UUIDHelper.fromUUID(db.snippetid),
 		file: fileToAPI(db),
@@ -53,6 +65,7 @@ export function snippetToAPI(db : DBAPISnippet) : SnippetAPI {
 			line: db.lineend,
 			character: db.charend
 		},
+		body : db.body,
 		references: {
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),
