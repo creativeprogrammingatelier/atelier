@@ -14,11 +14,9 @@ import {localRole} 			from '../../../enums/localRoleEnum'
 import {submissionStatus}	from '../../../enums/submissionStatusEnum'
 import {threadState}		from '../../../enums/threadStateEnum'
 
-import {Course}				from '../../../models/database/Course'
-import {CourseRegistration}	from '../../../models/database/CourseRegistration'
-import {File}				from '../../../models/database/File'
 import {Snippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
+import { deepEqual, notDeepEqual, equal } from 'assert'
 
 const all = true;
 
@@ -27,7 +25,7 @@ function log<T>(a : string, b ?:T) : void {
 		const reducer = (accumulated : string, next : string) : string => {
 			return accumulated+next+'\n'
 		}
-		const tbp = a + JSON.stringify(b,null,4);
+		const tbp = a + (b===undefined?'':JSON.stringify(b,null,4));
 		if (all) {
 			console.log(tbp);
 		} else {
@@ -117,50 +115,57 @@ async function submissionHelper(){
 async function fileHelper(){
 	log("\n\nFILEHELPER\n\n")
 	
-	await promise(FH.getAllFiles(), 'getAllFiles')
+	const list = await promise(FH.getAllFiles(), 'getAllFiles')
 	await promise(FH.getFilesBySubmission(uuid), 'getFilesBySubmission')
+	await promise(FH.getFilesBySubmissionIDS(list.map(x=>x.references.submissionID)), 'filesMap')
 	await promise(FH.getFileByID(uuid), 'getFileByID')
 	const file = {fileID:undefined, submissionID:uuid, pathname:'some/path/to/the/file', type:'pde'}
 	const res1 = await promise(FH.addFile(file), 'addFile')
-	if (res1.fileID===undefined) throw new Error("bs1")
-	const file2 = {fileID:res1.fileID, pathname:'new/path/to/file', type:'dir'}
+	if (res1.ID===undefined) throw new Error("bs1")
+	const file2 = {fileID:res1.ID, pathname:'new/path/to/file', type:'dir'}
 	const res2 = await promise(FH.updateFile(file2), 'updateFile')
-	if (res2.fileID===undefined) throw new Error("bs2")
-	await promise(FH.deleteFile(res2.fileID), "deleteFile")
+	if (res2.ID===undefined) throw new Error("bs2")
+	await promise(FH.deleteFile(res2.ID), "deleteFile")
 }
 
 async function snippetHelper(){
 	log("\n\nSNIPPETHELPER\n\n")
 	await promise(SPH.getAllSnippets(), 'getAllSnippets')
 	await promise(SPH.getSnippetsByFile(uuid), 'getSnippetsByFile')
-	await promise(SPH.getSnippetByID(uuid), 'getSubmissionById')
-
-	const snip1 = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, fileID:uuid}
-	const snip2 = {snippetID:"",lineStart:1, lineEnd:5, charStart:12, charEnd:12, fileID:uuid}
-	const res = await promise(SPH.addSnippet(snip1), 'addSnippet')
-	snip2.snippetID = res.snippetID!
+	const snip = await promise(SPH.getSnippetByID(uuid), 'getSubmissionById')
+	const snip2 : Snippet = {snippetID: snip.ID, body:snip.body+"AB"}
 	const res2 = await promise(SPH.updateSnippet(snip2), "updateSnippet")
-	await promise(SPH.deleteSnippet(res2.snippetID!), "deleteSnippet")
+
+	const snip1 = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, body:"this is the body"}
+	
+	const res = await promise(SPH.addSnippet(snip1), 'addSnippet')
+	await promise(SPH.deleteSnippet(res.snippetID!), "deleteSnippet")
 
 }
 
 async function ThreadHelper() {
 	log("\n\nTHREADHELPER\n\n")
 	const T0={submissionID:uuid, fileID:uuid, snippetID: uuid, visibilityState:threadState.public}
-	await promise(TH.getAllThreads(), "getAllThreads")
-	await promise(TH.getThreadsLimit(1), "getThreadsLimit")
+	const items = await promise(TH.getAllThreads(), "getAllThreads")
+	const i0 = await promise(TH.getAllThreads({limit:1}), "getThreadsLimit")
+	const i1 = await promise(TH.getAllThreads({limit:1,offset:1}), "getThreadsLimitOffset")
+	equal(i0.length, 1, "limit 1 did not give 1 result")
+	deepEqual(i0[0], items[0], "ordering differs")
+	deepEqual(i1[0], items[1], "offset did not give second result")
+	deepEqual(i1[0], items[1], "ordering differs 2nd item")
 	await promise(TH.getThreadByID(uuid), "getThredByID")
-
-	await promise(TH.addComments(TH.getAllThreads()), "addComments")
-	await promise(TH.addComments(TH.getThreadsLimit(1)), "addComments2")
+	const com1 = await promise(TH.filterThread({addComments:true}), "addComments")
+	const com2 = await promise(TH.addComments(TH.filterThread({})), "addComments2")
+	console.log(com1, com2)
+	deepEqual(com2, com1, "adding comments manually is not the same...")
 	await promise(TH.addCommentSingle(TH.getThreadByID(uuid)), "addCommentSingle")
 
 	await promise(TH.getThreadsBySubmission(uuid), "getThreadsBySubmission")
 	await promise(TH.getThreadsByFile(uuid), "getThreadsByFile")
 	const T1 = await promise(TH.addThread(T0), "addThread")
-	const T2 = {commentThreadID:T1.commentThreadID, visibilityState:threadState.private}
+	const T2 = {commentThreadID:T1.ID, visibilityState:threadState.private}
 	await promise(TH.updateThread(T2), "updateThread")
-	await promise(TH.deleteThread(T1.commentThreadID!), "deleteThread")
+	await promise(TH.deleteThread(T1.ID), "deleteThread")
 }
 
 async function commentHelper(){
@@ -169,9 +174,9 @@ async function commentHelper(){
 	await promise(C.getCommentByID(uuid), "getCommentByID")
 	await promise(C.getCommentsByThread(uuid), "getCommentsBySubmission")
 	const C1 = await promise(C.addComment({commentThreadID:uuid, userID:uuid, body:"this is a comment i just made!"}), 'addComment')
-	await promise(C.updateComment({commentID:C1.commentID, body: "this is an edited comment"}), "updateComment")
-	await promise(C.deleteComment(C1.commentID!), "deleteComment")
-	await promise(C.textSearch('comment'), "textSearch")
+	await promise(C.updateComment({commentID:C1.ID, body: "this is an edited comment"}), "updateComment")
+	await promise(C.deleteComment(C1.ID), "deleteComment")
+	await promise(C.filterComment({body:'comment'}), "textSearch")
 }
 
 function finish(){
@@ -179,13 +184,23 @@ function finish(){
 	console.log('\n\n-----------------',OK? 'all OK' : 'there were errors')
 	if (!OK) console.log(stored)
 }
-setTimeout(usersHelper, 0)
-setTimeout(coursesHelper,200)
-setTimeout(rolesHelper, 400)
-setTimeout(courseRegistrationHelper, 600)
-setTimeout(submissionHelper, 800)
-setTimeout(fileHelper, 1000)
-setTimeout(snippetHelper, 1200)
-setTimeout(ThreadHelper, 1400)
-setTimeout(commentHelper, 1600)
-setTimeout(finish, 1800)
+
+function run(interval : number, ...funs : Function[]){
+	for (let i=0;i<funs.length; i++){
+		setTimeout(funs[i], i*interval)
+	}
+}
+
+// setTimeout(usersHelper, 0)
+// setTimeout(coursesHelper,200)
+// setTimeout(rolesHelper, 400)
+// setTimeout(courseRegistrationHelper, 600)
+// setTimeout(submissionHelper, 800)
+
+run(200, 
+	commentHelper, 
+	snippetHelper, 
+	fileHelper, 
+	ThreadHelper,
+
+	finish)

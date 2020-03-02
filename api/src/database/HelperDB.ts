@@ -14,6 +14,10 @@ export const pool = new pg.Pool({
 export const end = pool.end.bind(pool);
 export const getClient : () => Promise<pg.PoolClient> = pool.connect.bind(pool);
 
+export function isPool(obj : pgDB) : obj is pg.Pool {
+	return Object.is(obj, pool);
+}
+
 export function toBin(n : number | undefined){
 	if (n === undefined) return undefined
 	return n.toString(2).padStart(40, '0')
@@ -31,11 +35,14 @@ export function keyInMap<T>(key : string, map : object) : key is keyof typeof ma
 	}
 	return true
 }
-
-export function searchify(input : string){
+export function searchify(input : undefined) : undefined
+export function searchify(input : string) : string
+export function searchify(input : string | undefined) : string | undefined
+export function searchify(input : string | undefined){
+	if (input === undefined) return undefined
 	return '%'+input.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')+'%'
 }
-export function extract<T>(result : {rows:T[]}){
+export function extract<T>(result : pg.QueryResult<T>){
 	return result.rows;
 }
 export function one<T>(result : T[]) {
@@ -70,4 +77,10 @@ export function funmap3<A,a,B,b,C,c>(
 		return {...funA(element), ...funB(element),...funC(element)}
 	}
 	return map(union)
+}
+
+export interface DBTools {
+	limit?: number,
+	offset?: number,
+	client?: pgDB
 }

@@ -1,9 +1,12 @@
-import {pool, extract, map, one, pgDB, funmap, checkAvailable, keyInMap } from "./HelperDB";
-import {Thread, DBThread, convertThread, APIThread} from '../../../models/database/Thread';
+import {pool, extract, map, one, pgDB, funmap, checkAvailable, keyInMap, DBTools } from "./HelperDB";
+import {Thread, DBThread, convertThread, APIThread, threadToAPI} from '../../../models/database/Thread';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 import { Comment, convertComment, APIComment } from "../../../models/database/Comment";
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { CommentDB } from "./CommentDB";
+import { Snippet } from "../../../models/database/Snippet";
+import { File } from "../../../models/database/File";
+import { AssertionError } from "assert";
 
 /**
  * commentThreadID, submissionID, fileID, snippetID, visibilityState
@@ -12,62 +15,108 @@ import { CommentDB } from "./CommentDB";
 
 export class ThreadDB {
 
-	static async APIfilterThread(thread : Thread, limit : number | undefined, DB : pgDB = pool) : Promise<Thread[]> {
+	static async filterThreadExtended(filterObj : Thread & Snippet & File) {// : Promise<Thread[]> {
 		const {
+			//ids
 			commentThreadID= undefined, 
 			submissionID = undefined,
+			courseID = undefined,
 			fileID = undefined, 
 			snippetID = undefined, 
-			visibilityState = undefined
-		} = thread
+			//thread-specific
+			visibilityState = undefined,
+			addComments = false,
+			//snippet-specific
+			lineStart = undefined,
+			lineEnd = undefined,
+			charStart = undefined,
+			charEnd = undefined,
+			body = undefined,
+			//file-specific
+			pathname = undefined,
+			type = undefined,
+			//extra params
+			limit = undefined,
+			offset = undefined,
+			client = pool
+		} = filterObj
 		const commentThreadid = UUIDHelper.toUUID(commentThreadID),
 			submissionid = UUIDHelper.toUUID(submissionID),
 			fileid = UUIDHelper.toUUID(fileID),
-			snippetid = UUIDHelper.toUUID(snippetID)
-		const commentThreadIDPresent = commentThreadid !== undefined,
-			submissionIDPresent = submissionid !== undefined,
-			filePresent = fileid !== undefined,
-			snippetPresent = snippetid !== undefined,
-			visibilityStatePresent = visibilityState !==undefined
+			snippetid = UUIDHelper.toUUID(snippetID),
+			courseid = UUIDHelper.toUUID(courseID)
 
-		if (limit && limit < 0) limit = undefined
+		const query =  client.query(`SELECT * FROM "CommentThreadView"
+			WHERE 
+				($1::uuid IS NULL OR commentThreadID = $1)
+			AND ($2::uuid IS NULL OR submissionID = $2)
+			AND ($3::uuid IS NULL OR courseID = $3)
+			AND ($4::uuid IS NULL OR fileID = $4)
+			AND ($5::uuid IS NULL OR snippetID = $5)
+			--thread
+			AND ($6::text IS NULL OR visibilityState = $6)
+			--file
+			AND ($7::text IS NULL OR pathname ILIKE $7)
+			AND ($8::text IS NULL OR type ILIKE $8)
+			--snippet
+			AND ($9::text IS NULL OR body ILIKE $9)
+			AND ($10::integer IS NULL OR lineStart = $10)
+			AND ($11::integer IS NULL OR lineEnd = $11)
+			AND ($12::integer IS NULL OR charStart = $12)
+			AND ($13::integer IS NULL OR charEnd = $13)
 
-		return DB.query(`SELECT * FROM "CommentThread" 
-			WHERE
-				((NOT $2::bool) OR commentThreadID = $1)
-			AND ((NOT $4::bool) OR submissionID = $3)
-			AND ((NOT $6::bool) OR fileID = $5)
-			AND ((NOT $8::bool) OR snippetID = $7)
-			AND ((NOT $10::bool) OR visibilityState = $9)
-			LIMIT $11
-				`, [commentThreadid, commentThreadIDPresent,
-					submissionid, submissionIDPresent,
-					fileid, filePresent, 
-					snippetid, snippetPresent, 
-					visibilityState, visibilityStatePresent,
-					limit
+			ORDER BY commentThreadID -- make sure it is always ordered the same
+			LIMIT $14
+			OFFSET $15
+				`, [
+					//ids
+					commentThreadid,
+					submissionid, 
+					courseid, 
+					fileid,  
+					snippetid, 
+					//thread
+					visibilityState,
+					//file
+					pathname,
+					type,
+					//snippet
+					body,
+					lineStart,
+					lineEnd,
+					charStart,
+					charEnd,
+					//extra params
+					limit,
+					offset
 				])
-		.then(extract).then(map(convertThread))
+		.then(extract).then(map(threadToAPI))
+
+		if (addComments){
+			return ThreadDB.addComments(query, client);
+		} else {
+			return query;
+		}
 	}
 
 
-	static async addCommentSingle(firstQuery : Promise<APIThread>, DB : pgDB = pool) : Promise<APIThread>{
+	static async addCommentSingle(firstQuery : Promise<APIThread>, client : pgDB = pool) : Promise<APIThread>{
 		//receive first result, modify it to accomodate for comments.
 		const res : APIThread = {...(await firstQuery), comments:[]}
 		//retrieve the threadID we need comments for
 		const ID = res.ID
 		const id = UUIDHelper.toUUID(ID)
 		//request comments from database
-		const comments = await CommentDB.APIgetCommentsByThreads([id], DB)
+		const comments = await CommentDB.APIgetCommentsByThreads([id], client)
 		//make sure each comment is valid
 		//since these are all comments for one thread, we simply assign it.
 		if (!(id in comments)){
 			throw new Error("concurrentModificationException")
 		}
-		res.comments=comments.get(id);
+		res.comments=comments[id];
 		return res;
 	}
-	private static async addComments(firstQuery : Promise<APIThread[]>, DB : pgDB = pool) : Promise<APIThread[]>{
+	static async addComments(firstQuery : Promise<APIThread[]>, client : pgDB = pool) : Promise<APIThread[]>{
 		//receive first result, modify the incomming result to be of type ExtendedThread
 		const res : APIThread[] = (await firstQuery)
 		//create a mapping to later quickly insert comments
@@ -78,9 +127,9 @@ export class ThreadDB {
 			mapping[element.ID] = element;
 		});
 		//retrieve the IDS we neeed to get comments for
-		const ids = res.map((el : Thread) => UUIDHelper.toUUID(el.commentThreadID!))
+		const ids = res.map((el : APIThread) => el.ID)
 		//query database
-		const comments = await CommentDB.APIgetCommentsByThreads(ids, DB)
+		const comments = await CommentDB.APIgetCommentsByThreads(ids, client)
 		//insert each Comment object at the right commentThread object using the map
 		ids.forEach(id  => {
 			//sanity checks
@@ -93,49 +142,46 @@ export class ThreadDB {
 		return res;
 	}
 
-
-	/** all stuff below here is for backend, not api */
-	static async getAllThreads(DB : pgDB = pool) : Promise<Thread[]> {
-		return ThreadDB.getThreadsLimit(undefined)
+	static async getAllThreads(params : DBTools = {}) : Promise<APIThread[]> {
+		return ThreadDB.filterThread(params)
 	}
 
-	static async getThreadsLimit(limit : number | undefined, DB : pgDB = pool) : Promise<Thread[]>{
-		return ThreadDB.filterThread({}, limit)
+	static async getThreadByID(commentThreadID : string, params : DBTools = {}) : Promise<APIThread> {
+		return ThreadDB.filterThread({...params, commentThreadID}).then(one)
 	}
 
-	static async getThreadByID(commentThreadID : string, DB : pgDB = pool) : Promise<Thread> {
-		return ThreadDB.filterThread({commentThreadID}, 1).then(one)
+	static async getThreadsBySubmission(submissionID : string, params : DBTools = {}) : Promise<APIThread[]> {
+		return ThreadDB.filterThread({...params, submissionID})
 	}
 
-	static async getThreadsBySubmission(submissionID : string, DB : pgDB = pool) : Promise<Thread[]> {
-		return ThreadDB.filterThread({submissionID}, undefined)
+	static async getThreadsByFile(fileID : string, params : DBTools = {}) : Promise<APIThread[]> {
+		return ThreadDB.filterThread({...params, fileID})
 	}
 
-	static async getThreadsByFile(fileID : string, DB : pgDB = pool) : Promise<Thread[]> {
-		return ThreadDB.filterThread({fileID}, undefined)
-	}
-
-	static async filterThread(thread : Thread, limit : number | undefined, DB : pgDB = pool) : Promise<Thread[]> {
+	static async filterThread(thread : Thread) : Promise<APIThread[]> {
+		return ThreadDB.filterThreadExtended(thread);
 		const {
 			commentThreadID = undefined, 
 			submissionID = undefined, 
+			courseID = undefined,
 			fileID = undefined, 
 			snippetID = undefined, 
-			visibilityState = undefined
+			visibilityState = undefined,
+
+			addComments = false,
+
+			limit = undefined,
+			offset = undefined,
+			client = pool
 		} = thread
 		const commentThreadid = UUIDHelper.toUUID(commentThreadID),
 			submissionid = UUIDHelper.toUUID(submissionID),
+			courseid = UUIDHelper.toUUID(courseID),
 			fileid = UUIDHelper.toUUID(fileID),
 			snippetid = UUIDHelper.toUUID(snippetID)
-		const commentThreadIDPresent = commentThreadid !== undefined,
-			submissionIDPresent = submissionid !== undefined,
-			filePresent = fileid !== undefined,
-			snippetPresent = snippetid !== undefined,
-			visibilityStatePresent = visibilityState !==undefined
 
-		if (limit && limit < 0) limit = undefined
 
-		return DB.query(`SELECT * FROM "CommentThread" 
+		const query = client.query(`SELECT * FROM "CommentThread" 
 			WHERE
 				((NOT $2::bool) OR commentThreadID = $1)
 			AND ((NOT $4::bool) OR submissionID = $3)
@@ -143,61 +189,145 @@ export class ThreadDB {
 			AND ((NOT $8::bool) OR snippetID = $7)
 			AND ((NOT $10::bool) OR visibilityState = $9)
 			LIMIT $11
-				`, [commentThreadid, commentThreadIDPresent,
-					submissionid, submissionIDPresent,
-					fileid, filePresent, 
-					snippetid, snippetPresent, 
-					visibilityState, visibilityStatePresent,
-					limit
+				`, [commentThreadid,
+					submissionid,
+					courseid,
+					fileid, 
+					snippetid, 
+					visibilityState,
+					limit,
+					offset
 				])
-		.then(extract).then(map(convertThread))
+		.then(extract).then(map(threadToAPI))
+		if (addComments){
+			return ThreadDB.addComments(query, client)
+		} else {
+			return query
+		}
 	}
 
-	static async addThread(thread : Thread, DB : pgDB = pool) : Promise<Thread> {
+	static async addThread(thread : Thread) : Promise<APIThread> {
 		checkAvailable(['submissionID', 'fileID', 'snippetID','visibilityState'], thread)
 		const {
-			// commentThreadID, 
 			submissionID, 
 			fileID, 
 			snippetID, 
-			visibilityState
+			visibilityState,
+
+			addComments = false,
+
+			client = pool
 		} = thread
 		const submissionid = UUIDHelper.toUUID(submissionID),
 			fileid = UUIDHelper.toUUID(fileID),
 			snippetid = UUIDHelper.toUUID(snippetID);
-		return DB.query(`INSERT INTO "CommentThread" 
+		const query = client.query(`
+		WITH insert AS (
+			INSERT INTO "CommentThread" 
 			VALUES (DEFAULT, $1, $2, $3, $4) 
-			RETURNING *`, [submissionid, fileid, snippetid, visibilityState])
-		.then(extract).then(map(convertThread)).then(one)
+			RETURNING *
+		)
+		-- this is the commentThreadView, but the system has not yet been updated
+		SELECT 
+			sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
+			ct.visibilityState,
+			sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
+			fv.pathname, fv.type
+		FROM insert as ct, "SubmissionsRefs" as sr, "SnippetsView" as sv, "FilesView" as fv
+		WHERE ct.submissionID = sr.submissionID
+		AND ct.snippetID = sv.snippetID
+		AND fv.fileID = ct.fileID
+			`, [submissionid, fileid, snippetid, visibilityState])
+		.then(extract).then(map(threadToAPI)).then(one)
+		if (addComments){
+			return ThreadDB.addCommentSingle(query, client)
+		} else {
+			return query;
+		}
 	}
-	static async updateThread(thread : Thread, DB : pgDB = pool) {
+	
+
+	static async updateThread(thread : Thread) {
 		checkAvailable(['commentThreadID'], thread)
 		const {
 			commentThreadID, 
 			submissionID = undefined, 
 			fileID = undefined, 
 			snippetID = undefined, 
-			visibilityState = undefined
+			visibilityState = undefined,
+
+			addComments = false,
+
+			client = pool
 		} = thread
 		const commentThreadid = UUIDHelper.toUUID(commentThreadID),
 			submissionid = UUIDHelper.toUUID(submissionID),
 			fileid = UUIDHelper.toUUID(fileID),
 			snippetid = UUIDHelper.toUUID(snippetID)
-		return DB.query(`UPDATE "CommentThread" SET
+		const query =  client.query(`
+		WITH update AS (
+			UPDATE "CommentThread" SET
 			submissionID = COALESCE($2, submissionID),
 			fileID = COALESCE($3, fileID),
 			snippetID = COALESCE($4, snippetID),
 			visibilityState = COALESCE($5, visibilityState)
 			WHERE commentThreadID = $1
-			RETURNING *`, [commentThreadid, submissionid, fileid, snippetid, visibilityState])
-		.then(extract).then(map(convertThread)).then(one)
+			RETURNING *
+		)
+		SELECT 
+			sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
+			ct.visibilityState,
+			sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
+			fv.pathname, fv.type
+		FROM "CommentThread" as ct, "SubmissionsRefs" as sr, "SnippetsView" as sv, "FilesView" as fv
+		WHERE ct.submissionID = sr.submissionID
+			AND ct.snippetID = sv.snippetID
+			AND fv.fileID = ct.fileID
+		`, [commentThreadid, submissionid, fileid, snippetid, visibilityState])
+		.then(extract).then(map(threadToAPI)).then(one)
+
+		if (addComments){
+			return ThreadDB.addCommentSingle(query, client)
+		} else {
+			return query
+		}
+
 	}
-	static async deleteThread(commentThreadID : string, DB : pgDB = pool) {
+	/**
+	 * This delete will bring down all comments and with this thread.
+	 * After this call is made, the copmments can no longer be retrieved, except the snippet
+	 * though the snippet and file are still send back.
+	 * @param commentThreadID 
+	 * @param client 
+	 */
+	static async deleteThread(commentThreadID : string, client : pgDB = pool) {
 		const commentThreadid = UUIDHelper.toUUID(commentThreadID)
-		return DB.query(`DELETE FROM "CommentThread" 
-			WHERE commentThreadID = $1 
-			RETURNING *`, [commentThreadid])
+		return client.query(`
+		WITH delete AS (
+			DELETE FROM "CommentThread" 
+			WHERE commentThreadID = $1
+		)
+		SELECT *
+		FROM "CommentThreadView"
+		WHERE commentThreadID=$1
+		`, [commentThreadid])
 		.then(extract).then(map(convertThread)).then(one)
 	}
 	
 }
+/*
+pool.query(`
+SELECT * FROM "SnippetsView" where snippetID = (
+	DELETE FROM "CommentThread" 
+	WHERE commentThreadID = $1 
+	RETURNING snippetID
+)`,['41a6340a-7465-420f-83a9-1227cf6f1640',]).then(res=>console.log(res.rows)).catch(console.error)
+
+
+    
+    
+    '5193250c-b69b-4b48-9ca6-2aab4f52e1fe',
+    '8f94e215-d610-401a-9c35-43b61b0089a0',
+    '9463450f-78c3-4df2-bd68-de3f97e5cfb6',
+    '7fce2c67-fb9f-4033-84c7-2753b0fa66c0',
+*/

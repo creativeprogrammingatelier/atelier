@@ -1,17 +1,19 @@
 import {threadState, checkEnum} from '../../enums/threadStateEnum'
-import {Comment} from './Comment'
 import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
 import {CommentThread as APIThread} from '../api/CommentThread'
 import { fileToAPI, DBAPIFile } from './File'
 import { snippetToAPI, DBAPISnippet } from './Snippet'
+import { DBTools, checkAvailable } from '../../api/src/database/HelperDB'
 
-export interface Thread {
+export interface Thread extends DBTools{
 	commentThreadID?: string,
 	submissionID?: string,
 	courseID?: string,
 	fileID?: string,
 	snippetID?: string,
-	visibilityState?: threadState
+	visibilityState?: threadState,
+	//requires extra database call
+	addComments?:boolean,
 }
 export interface DBThread {
 	commentthreadid: string,
@@ -40,18 +42,20 @@ export function convertThread(db : DBThread) : Thread {
 	}
 }
 export function threadToAPI(db : DBAPIThread) : APIThread{
+	checkAvailable(["commentthreadid", "visibilitystate", "courseid", "submissionid"], db)
 	if (!(checkEnum(db.visibilitystate))) {
 		throw new Error("enum from database not recognized on server"+db.visibilitystate)
 	}
 	return {
 		ID: UUIDHelper.fromUUID(db.commentthreadid),
-		submissionID: UUIDHelper.fromUUID(db.submissionid),
 		file: fileToAPI(db),
 		snippet: snippetToAPI(db),
 		visibility: db.visibilitystate,
 		comments: [],
 		references:{
-			courseID: UUIDHelper.fromUUID(db.courseid)
+			courseID: UUIDHelper.fromUUID(db.courseid),
+			submissionID: UUIDHelper.fromUUID(db.submissionid),
+
 		}
 	}
 }

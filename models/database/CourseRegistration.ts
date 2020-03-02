@@ -1,7 +1,8 @@
 import {localRole, checkEnum} from "../../enums/localRoleEnum"
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Permission as APICourseRegistration} from '../api/Permission'
-export interface CourseRegistration {
+import { DBTools, checkAvailable } from "../../api/src/database/HelperDB"
+export interface CourseRegistration extends DBTools {
 	courseID? : string,
 	userID? : string,
 	role? : localRole,
@@ -31,6 +32,7 @@ export function convertCourseReg(db :DBCourseRegistration) : CourseRegistration 
 }
 
 export function courseRegToAPI(db : DBAPICourseRegistration) : APICourseRegistration {
+	checkAvailable(["courserole", "permission"], db)
 	return {
 		role: db.courserole,
 		permissions: db.permission

@@ -4,8 +4,9 @@ import { Course as APICourse } from "../api/Course"
 import { DBAPIUser, userToAPI} from "./User"
 import { DBAPICourseRegistration } from "./CourseRegistration"
 import { courseRegToAPI } from "./CourseRegistration"
+import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB"
 
-export interface Course {
+export interface Course extends DBTools {
 	courseID?:string,
 	name?: string,
 	creatorID?: string,
@@ -14,7 +15,7 @@ export interface Course {
 
 export interface DBCourse {
 	courseid:string,
-	name: string,
+	coursename: string,
 	creatorid: string,
 	state:string
 }
@@ -30,18 +31,19 @@ export function convertCourse(db : DBCourse) : Course {
 	}
 	return {
 		courseID:UUIDHelper.fromUUID(db.courseid),
-		name:db.name,
+		name:db.coursename,
 		creatorID:UUIDHelper.fromUUID(db.creatorid),
 		state:courseState[db.state]
 	}
 }
-export function convertToAPI(db : DBAPICourse) : APICourse {
+export function courseToAPI(db : DBAPICourse) : APICourse {
+	checkAvailable(["courseid", "coursename", "state"], db)
 	if (!checkEnum(db.state)){
 		throw new Error('non-existent enum type from db: '+db.state)
 	}
 	return {
 		ID: UUIDHelper.fromUUID(db.courseid),
-		name: db.name,
+		name: db.coursename,
 		state: db.state,
 		creator: userToAPI(db),
 		currentUserPermission: courseRegToAPI(db)

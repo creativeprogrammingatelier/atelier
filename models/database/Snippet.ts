@@ -1,7 +1,8 @@
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import {Snippet as APISnippet } from "../api/Snippet"
 import { fileToAPI, DBAPIFile } from "./File"
-export interface Snippet {
+import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB"
+export interface Snippet extends DBTools{
 	snippetID?: string,
 	fileID?: string,
 	commentThreadID?:string,
@@ -25,6 +26,7 @@ export interface DBSnippet {
 	charstart: number,
 	charend: number,
 	body: string
+
 }
 
 export {APISnippet}
@@ -51,6 +53,7 @@ export function convertSnippet(db : DBSnippet) : Snippet {
 	return ret
 }
 export function snippetToAPI(db : DBAPISnippet) : APISnippet {
+	checkAvailable(["snippetid", "linestart", "charstart", "lineend", "charend", "body", "courseid", "submissionid", "commentthreadid"], db)
 	return {
 		ID: UUIDHelper.fromUUID(db.snippetid),
 		file: fileToAPI(db),
