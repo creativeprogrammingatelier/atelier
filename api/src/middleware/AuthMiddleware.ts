@@ -15,7 +15,8 @@ export class AuthMiddleware {
     static refreshCookieToken: RequestHandler = captureNext(async (request, response, next) => {
         if (request.cookies.atelierToken) {
             const token = await verifyToken(request.cookies.atelierToken);
-            if (token.iat + 60000 < Date.now()) {
+            // The JWT expiration is stored in seconds, Date.now() in milliseconds
+            if (token.iat * 1000 + 60000 < Date.now()) {
                 await setTokenCookie(response, token.userID);
             }
         }

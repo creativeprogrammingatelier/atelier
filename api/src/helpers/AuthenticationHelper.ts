@@ -56,14 +56,13 @@ export async function getCurrentUserID(request: Request) {
 export async function setTokenCookie(response: Response, userID: string) {
     const options: CookieOptions = { 
         secure: config.env === "production",
-        sameSite: "strict",
-        path: "/api"
+        sameSite: "strict"
     };
     const token = issueToken(userID);
     const exp = (await verifyToken(token)).exp;
     return response
         .cookie("atelierTokenExp", exp, options)
-        .cookie("atelierToken", issueToken(userID), { ...options, httpOnly: true });
+        .cookie("atelierToken", issueToken(userID), { ...options, httpOnly: true, path: "/api" });
 }
 
 export function clearTokenCookie(response: Response) {

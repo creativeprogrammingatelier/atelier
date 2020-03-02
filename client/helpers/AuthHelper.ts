@@ -71,7 +71,8 @@ export default class AuthHelper {
                 .map(c => c.trim())
                 .find(c => c.startsWith("atelierTokenExp"))
                 ?.split("=")[1];
-        return exp !== undefined && Number(exp) > Date.now();
+        // The JWT expiration is stored in seconds, Date.now() in milliseconds
+        return exp !== undefined && Number(exp) * 1000 > Date.now();
 	};
 
 	static logout = () => {
