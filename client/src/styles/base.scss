@@ -58,6 +58,9 @@ textarea:focus, textarea:active {
 	top: 0;
 	z-index: 1040;
 }
+.navbar.position-absolute {
+	z-index: 1040;
+}
 .navbar.navbar-small {
 	height: unset;
 
@@ -313,7 +316,9 @@ textarea:focus, textarea:active {
 }
 
 .contentPage .jumbotron:first-child {
-	padding-top: calc(1rem + #{$headerHeight});
+	//padding-top: calc(1rem + #{$headerHeight});
+	padding-top: calc(#{$headerHeight} - 10px);
+	//padding-top: $headerHeight;
 	//margin: -1rem -1.5rem 1rem;
 	//box-shadow: $shadowMedium;
 }

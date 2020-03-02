@@ -1,11 +1,11 @@
 import React from "react";
 import {FiActivity, FiHome, FiLogOut, FiSettings, FiUser, FiX} from "react-icons/fi";
-import {Header} from "./Header";
 import {Logo} from "./Logo";
 import {SidebarEntry} from "./SidebarEntry";
-import {Loading} from "../general/Loading";
+import {Loading} from "../general/loading/Loading";
 import {User} from "../../../../models/api/User";
 import {getCurrentUser} from "../../../helpers/APIHelper";
+import {Heading} from "../general/Heading";
 
 interface SidebarProperties {
 	user?: {
@@ -18,7 +18,7 @@ interface SidebarProperties {
 export function Sidebar({position, close}: SidebarProperties) {
 	return (
 		<div className="sidebar col-10 col-sm-8 col-md-5 col-lg-3 col-xl-2 p-0" style={{left: position}}>
-			<Header transparent leftButton={{icon: FiX, click: close}}/>
+			<Heading transparent large leftButton={{icon: FiX, click: close}}/>
 			<div className="sidebarContent p-0">
 				<Logo/>
 				<hr/>

@@ -1,7 +1,6 @@
-import React from 'react';
-import {Navbar} from 'react-bootstrap';
-import {HeaderButton} from './HeaderButton';
+import React, {useEffect, useState} from "react";
 import {IconType} from "react-icons";
+import {Heading} from "../general/Heading";
 
 interface HeaderProperties {
 	title?: string,
@@ -16,15 +15,20 @@ interface HeaderProperties {
 		click: React.MouseEventHandler
 	}
 }
-export function Header({ title, transparent, fixed, leftButton, rightButton}: HeaderProperties) {
-	return (
-		<div className="fluid-container">
-			<Navbar className={"row no-gutters" + (transparent ? " bg-transparent" : "") + (fixed ? " position-fixed" : "")}>
-				{(leftButton || rightButton) && <div className="col-2 text-left">{leftButton && <HeaderButton icon={leftButton.icon} onClick={leftButton.click}/>}</div>}
-				{(leftButton || rightButton) && <div className="col-8 text-center">{title && <h3>{title}</h3>}</div>}
-				{(leftButton || rightButton) && <div className="col-2 text-right">{rightButton && <HeaderButton icon={rightButton.icon} onClick={rightButton.click} right/>}</div>}
-				{!(leftButton || rightButton) && <div className="col-12 text-center"><h3>{title}</h3></div>}
-			</Navbar>
-		</div>
-	);
+export function Header({ title, leftButton, rightButton}: HeaderProperties) {
+	const [position, setPosition] = useState(0);
+
+	const scrollListener = () => setPosition(window.pageYOffset);
+
+	useEffect(() => {
+		window.addEventListener("scroll", scrollListener);
+		return () => {
+			window.removeEventListener("scroll", scrollListener);
+		};
+	});
+
+	return position < 100 ?
+		<Heading large transparent position="absolute" leftButton={leftButton} rightButton={rightButton}/>
+		:
+		<Heading large position="fixed" title={title} leftButton={leftButton} rightButton={rightButton}/>
 }
