@@ -5,6 +5,7 @@ import {Loading} from "./general/loading/Loading";
 import {AddCourse} from "./course/AddCourse";
 import {Course} from "../../../models/database/Course";
 import { getCourses } from '../../helpers/APIHelper';
+import {Button, Jumbotron} from "react-bootstrap";
 
 export function Homepage() {
 
@@ -13,12 +14,18 @@ export function Homepage() {
 	}
 
 	return (
-		<Frame title="Homepage" sidebar>
+		<Frame title="Home" sidebar search="/search">
+			<Jumbotron>
+				<h1>Home</h1>
+				<p>Welcome to this amazing website!</p>
+				<Button>Have a button!</Button>
+			</Jumbotron>
             <Loading<Course[]>
                 loader={getCourses}
                 component={courses => 
                     <div className="m-3">
-                        {courses.map((course: Course) => <PanelButton
+                        {courses.map((course: Course) =>
+	                        <PanelButton
 	                            display={course.name === undefined ? "" : course.name}
 	                            location={`/course/${course.courseID}`}
 	                            icon=''

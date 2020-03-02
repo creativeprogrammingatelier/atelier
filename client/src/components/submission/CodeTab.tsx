@@ -1,9 +1,6 @@
-import React, {useState} from "react";
+import React from "react";
 import {File} from "../../../../models/database/File";
 import CodeViewer2 from "../CodeViewer2";
-import {OpenFileResponse} from "../../helpers/DatabaseResponseInterface";
-import {Loading} from "../general/loading/Loading";
-import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 export interface FileComment {
 	startLine: number,
@@ -35,7 +32,6 @@ export function CodeTab({file, body, submissionID} : CodeProperties) {
 
 
 	return <div className="contentTab">
-		<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
 		<CodeViewer2 submissionID={submissionID} fileID={file.fileID!} fileContents={body} />
         {/*<Loading<string>*/}
         {/*    loader={getFileContents}*/}
