@@ -92,7 +92,7 @@ INSERT INTO "Courses" VALUES
 
 
 CREATE TABLE "CourseRegistration" (
-     courseID       uuid NOT NULL REFERENCES "Courses"(courseID),
+     courseID       uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE,
      userID         uuid NOT NULL REFERENCES "Users"(userID),
      courseRole     text NOT NULL REFERENCES "CourseRolePermissions"(courseRoleID),
      permission     bit(40) NOT NULL,
@@ -104,7 +104,7 @@ INSERT INTO "CourseRegistration" VALUES
 
 CREATE TABLE "Submissions" (
      submissionID   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-     courseID       uuid NOT NULL REFERENCES "Courses"(courseID),
+     courseID       uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE,
      userID         uuid NOT NULL REFERENCES "Users"(userID),
      title           text NOT NULL CHECK (title <> ''),
      date           timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -115,13 +115,13 @@ INSERT INTO "Submissions" VALUES
 
 CREATE TABLE "Files" (
      fileID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-     submissionID   uuid NOT NULL REFERENCES "Submissions"(submissionID),
+     submissionID   uuid NOT NULL REFERENCES "Submissions"(submissionID) ON DELETE CASCADE,
      pathname       text NOT NULL,
      type           text NOT NULL DEFAULT 'unsupported'
 );
 INSERT INTO "Files" VALUES
      ('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
-     ('ffffffff-ffff-ffff-ffff-ffffffffffff', (SELECT submissionID from "Submissions" LIMIT 1), '', '');
+     ('ffffffff-ffff-ffff-ffff-ffffffffffff', (SELECT submissionID from "Submissions" LIMIT 1), '', 'undefined/undefined');
 
 CREATE TABLE "Snippets" (
      snippetID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -144,7 +144,7 @@ INSERT INTO "Snippets" VALUES
 
 CREATE TABLE "CommentThread" (
      commentThreadID   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-     submissionID      uuid NOT NULL REFERENCES "Submissions"(submissionID),
+     submissionID      uuid NOT NULL REFERENCES "Submissions"(submissionID) ON DELETE CASCADE,
      fileID            uuid NOT NULL REFERENCES "Files"(fileID),
      snippetID         uuid NOT NULL REFERENCES "Snippets"(snippetID),
      visibilityState   text NOT NULL DEFAULT 'public'
@@ -166,7 +166,23 @@ INSERT INTO "Comments" VALUES
 	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a multi\\nline comment!'),
 	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a comment about nothing at all..');
 
--- ALTER TABLE "Snippets" ADD CONSTRAINT "Snippets_commentthreadid_fkey" FOREIGN KEY (commentThreadID) REFERENCES "CommentThread"(commentThreadID);
+CREATE OR REPLACE FUNCTION delSnippet() 
+     returns trigger AS
+     $$ 
+     begin
+          DELETE FROM "Snippets" 
+          WHERE snippetID = old.snippetID;
+
+          return null;
+     end;
+     $$
+     LANGUAGE plpgsql;
+
+CREATE TRIGGER DEL_SNIPPET
+     AFTER DELETE ON "CommentThread"
+     FOR EACH ROW
+     EXECUTE FUNCTION delSnippet();
+
 
 CREATE VIEW "SubmissionsRefs" AS (
      SELECT courseID, submissionID

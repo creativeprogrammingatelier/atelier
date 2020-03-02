@@ -77,6 +77,27 @@ export class FileDB {
 		.then(extract).then(map(fileToAPI))
 	}
 
+	static async getNullFileID(submissionID : string, params : DBTools = {}){
+		const submissionid = UUIDHelper.toUUID(submissionID);
+		const {client =pool} = params
+		return client.query(`
+		SELECT fileID
+		FROM "Files"
+		WHERE submissionID = $1
+		  AND type = 'undefined/undefined'
+		`, [submissionid]).then(extract).then(one).then(res => res.fileID)
+	}
+
+	static async createNullFile(submissionID : string, params : DBTools = {}){
+		const submissionid = UUIDHelper.toUUID(submissionID);
+		const {client =pool} = params
+		return client.query(`
+		INSERT INTO "Files"
+		VALUES (DEFAULT, $1, '', 'undefined/undefined') 
+		RETURNING *
+		`, [submissionid]).then(extract).then(one).then(res => UUIDHelper.fromUUID(res.fileid as string))
+	}
+
 	static async addFile(file : File) {
 		checkAvailable(['submissionID','pathname','type'],file)
 		const {

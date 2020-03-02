@@ -16,9 +16,9 @@ import {threadState}		from '../../../enums/threadStateEnum'
 
 import {Snippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
-import { deepEqual, notDeepEqual, equal } from 'assert'
+import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
 
-const all = true;
+const all = false;
 
 let stored = '';
 function log<T>(a : string, b ?:T) : void {
@@ -63,11 +63,11 @@ async function coursesHelper() {
 	const course = {name:"cname",creator:uuid,state:courseState.open}
 	const course2 = {name:"newname",creator:undefined,state:courseState.hidden}
 	await promise(CH.getAllCourses(), 'getAllCourses')
-	const {courseID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
-	await promise(CH.getCourseByID(courseID), 'getCourseByID')
-	await promise(CH.updateCourse({courseID}), "updateCourse1")
-	await promise(CH.updateCourse({...course2, courseID}), "updateCourse2")
-	await promise(CH.deleteCourseByID(courseID), 'delete')
+	const {ID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
+	await promise(CH.getCourseByID(ID), 'getCourseByID')
+	await promise(CH.updateCourse({courseID:ID}), "updateCourse1")
+	await promise(CH.updateCourse({...course2, courseID:ID}), "updateCourse2")
+	await promise(CH.deleteCourseByID(ID), 'delete')
 }
 
 async function rolesHelper(){
@@ -104,12 +104,12 @@ async function submissionHelper(){
 	await promise(SH.getSubmissionById(uuid), 'getSubmissionById')
 	await promise(SH.getUserSubmissions(uuid), 'getUserSubmissions')
 	await promise(SH.getSubmissionsByCourse(uuid), 'getSubmissionsByCourse')
-	const sub = {submissionID: undefined, courseID: uuid, name: "myProject", userID:uuid, date:undefined, state: submissionStatus.new}
-	const sub2 = {submissionID: undefined, name: "mySecondProject", userID:uuid, date:undefined, state: submissionStatus.closed}
+	const sub = {submissionID: undefined, courseID: uuid, title: "myProject", userID:uuid, date:undefined, state: submissionStatus.new}
+	const sub2 = {submissionID: undefined, title: "mySecondProject", userID:uuid, date:undefined, state: submissionStatus.closed}
 	const res = await promise(SH.addSubmission(sub), 'addSubmission')
-	if (res.submissionID===undefined) throw new Error("no submissionid")
-	await promise(SH.updateSubmission({...sub2, submissionID:res.submissionID}), 'updateSubmission')
-	await promise(SH.deleteSubmission(res.submissionID), "deleteSubmission")
+	if (res.ID===undefined) throw new Error("no submissionid")
+	await promise(SH.updateSubmission({...sub2, submissionID:res.ID}), 'updateSubmission')
+	await promise(SH.deleteSubmission(res.ID), "deleteSubmission")
 }
 
 async function fileHelper(){
@@ -138,14 +138,17 @@ async function snippetHelper(){
 
 	const snip1 = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, body:"this is the body"}
 	
-	const res = await promise(SPH.addSnippet(snip1), 'addSnippet')
-	await promise(SPH.deleteSnippet(res.snippetID!), "deleteSnippet")
+	const id = await promise(SPH.addSnippet(snip1), 'addSnippet')
+	await promise(SPH.deleteSnippet(id), "deleteSnippet")
 
 }
 
 async function ThreadHelper() {
 	log("\n\nTHREADHELPER\n\n")
-	const T0={submissionID:uuid, fileID:uuid, snippetID: uuid, visibilityState:threadState.public}
+	const snippetID = await promise(SPH.createNullSnippet(), "addSnippet")
+	const fileID = await promise(FH.createNullFile(uuid), "createNULL")
+	notEqual(fileID, undefined, "fileID not null"+fileID )
+	const T0={submissionID:uuid, fileID, snippetID, visibilityState:threadState.public}
 	const items = await promise(TH.getAllThreads(), "getAllThreads")
 	const i0 = await promise(TH.getAllThreads({limit:1}), "getThreadsLimit")
 	const i1 = await promise(TH.getAllThreads({limit:1,offset:1}), "getThreadsLimitOffset")
@@ -156,16 +159,18 @@ async function ThreadHelper() {
 	await promise(TH.getThreadByID(uuid), "getThredByID")
 	const com1 = await promise(TH.filterThread({addComments:true}), "addComments")
 	const com2 = await promise(TH.addComments(TH.filterThread({})), "addComments2")
-	console.log(com1, com2)
 	deepEqual(com2, com1, "adding comments manually is not the same...")
 	await promise(TH.addCommentSingle(TH.getThreadByID(uuid)), "addCommentSingle")
 
 	await promise(TH.getThreadsBySubmission(uuid), "getThreadsBySubmission")
 	await promise(TH.getThreadsByFile(uuid), "getThreadsByFile")
 	const T1 = await promise(TH.addThread(T0), "addThread")
+	equal("snippet" in T1, false, "undefined snippet is still returned")
+	equal("file" in T1, false, "file is still returned")
 	const T2 = {commentThreadID:T1.ID, visibilityState:threadState.private}
 	await promise(TH.updateThread(T2), "updateThread")
 	await promise(TH.deleteThread(T1.ID), "deleteThread")
+	await promise(FH.deleteFile(fileID), "deleteNullFile")
 }
 
 async function commentHelper(){
@@ -182,7 +187,7 @@ async function commentHelper(){
 function finish(){
 	end()
 	console.log('\n\n-----------------',OK? 'all OK' : 'there were errors')
-	if (!OK) console.log(stored)
+	// if (!OK) console.log(stored)
 }
 
 function run(interval : number, ...funs : Function[]){
@@ -202,5 +207,6 @@ run(200,
 	snippetHelper, 
 	fileHelper, 
 	ThreadHelper,
+	submissionHelper,
 
 	finish)

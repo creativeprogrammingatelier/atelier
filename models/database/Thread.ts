@@ -46,7 +46,7 @@ export function threadToAPI(db : DBAPIThread) : APIThread{
 	if (!(checkEnum(db.visibilitystate))) {
 		throw new Error("enum from database not recognized on server"+db.visibilitystate)
 	}
-	return {
+	const obj = {
 		ID: UUIDHelper.fromUUID(db.commentthreadid),
 		file: fileToAPI(db),
 		snippet: snippetToAPI(db),
@@ -58,4 +58,11 @@ export function threadToAPI(db : DBAPIThread) : APIThread{
 
 		}
 	}
+	if (obj.snippet.start.line === -1){
+		delete obj.snippet
+		if (obj.file.type==="undefined/undefined"){
+			delete obj.file
+		}
+	}
+	return obj;
 }

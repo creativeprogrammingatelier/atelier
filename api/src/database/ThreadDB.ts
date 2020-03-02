@@ -7,6 +7,7 @@ import { CommentDB } from "./CommentDB";
 import { Snippet } from "../../../models/database/Snippet";
 import { File } from "../../../models/database/File";
 import { AssertionError } from "assert";
+import { FileDB } from "./FileDB";
 
 /**
  * commentThreadID, submissionID, fileID, snippetID, visibilityState
@@ -231,12 +232,12 @@ export class ThreadDB {
 		SELECT 
 			sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
 			ct.visibilityState,
-			sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
-			fv.pathname, fv.type
-		FROM insert as ct, "SubmissionsRefs" as sr, "SnippetsView" as sv, "FilesView" as fv
+			s.body, s.lineStart, s.charStart, s.lineEnd, s.charEnd,
+			f.pathname, f.type
+		FROM insert as ct, "SubmissionsRefs" as sr, "Snippets" as s, "Files" as f
 		WHERE ct.submissionID = sr.submissionID
-		AND ct.snippetID = sv.snippetID
-		AND fv.fileID = ct.fileID
+		AND ct.snippetID = s.snippetID
+		AND f.fileID = ct.fileID
 			`, [submissionid, fileid, snippetid, visibilityState])
 		.then(extract).then(map(threadToAPI)).then(one)
 		if (addComments){

@@ -8,7 +8,7 @@ export interface Submission extends DBTools{
 	submissionID?: string;
 	courseID?: string;
 	userID?: string;
-	name?: string;
+	title?: string;
 	date?: Date;
 	state?: submissionStatus,
 	//requires extra database call
@@ -37,7 +37,7 @@ export function convertSubmission(db : DBSubmission) : Submission {
 		submissionID: UUIDHelper.fromUUID(db.submissionid),
 		courseID: UUIDHelper.fromUUID(db.courseid),
 		userID: UUIDHelper.fromUUID(db.userid),
-		name: db.title,
+		title: db.title,
 		date: db.date,
 		state: submissionStatus[db.state]
 	}
