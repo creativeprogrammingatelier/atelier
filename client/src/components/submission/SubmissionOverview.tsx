@@ -31,17 +31,13 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		component={
 			submission => <Frame title={submission.name} sidebar search={submissionPath + "/search"}>
 				<h1>{submission.name}</h1>
-
-				<p>
-					Uploaded by <Link to={"/user/"+submission.user.ID}>{submission.user.ID}</Link>, for {/* User data should be given with the new API submission.user.* */}
-					<Loading<Course>
-						loader={getCourse}
-						params={[submission.references.courseID]}
-						component={course => <Link to={"/course/"+course.ID}>{course.name}</Link>}
-					/>
-					<br/>
-					<small className="text-muted">{submission.date}</small>
-				</p>
+				<p>Submitted by <Link to={"/user/"+submission.user.ID}>{submission.user.name}</Link></p>
+				<Loading<Course>
+					loader={getCourse}
+					params={[submission.references.courseID]}
+					component={course => <p>In course <Link to={"/course/"+course.ID}>{course.name}</Link></p>}
+				/>
+				<p>Just now</p>
 				<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
 				<DataList header="Files">
 					<Loading<File[]>

@@ -1,3 +1,4 @@
+import AuthHelper from './AuthHelper';
 import { ServerError } from '../../models/api/ServerError';
 
 export class Fetch {
@@ -19,7 +20,13 @@ export class Fetch {
      * Throws a `FetchError` if the request was not succesful.
      */
     static async fetch(url: RequestInfo, options: RequestInit = {}) {
-        const res = await fetch(url, options);
+        const headers: HeadersInit = {};
+        if (AuthHelper.loggedIn()) {
+            const token = AuthHelper.getToken();
+            if (token) headers["Authorization"] = token;
+        }
+
+        const res = await fetch(url, Fetch.combineHeaders(options, headers));
 
         if (res.ok) {
             return res;
@@ -34,7 +41,8 @@ export class Fetch {
      */
     static async fetchJson<T>(url: RequestInfo, options: RequestInit = {}): Promise<T> {
         const headers = {
-            "Accept": "application/json"
+            "Accept": "application/json",
+            "Content-Type": "application/json"
         };
 
         try {

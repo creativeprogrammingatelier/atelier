@@ -30,6 +30,13 @@ export default class AuthHelper {
 		});
 	}
 
+	private domain: string;
+	// Initializing important variables
+	constructor(domain: string) {
+		//THIS LINE IS ONLY USED WHEN YOU'RE IN PRODUCTION MODE!
+		this.domain = domain || 'http://localhost:3000'; // API server domain
+	}
+
 	static register(email: string, password: string, role: string, onSuccess: Function, onFailure: Function) {
 		Fetch.fetchJson('/api/auth/register', {
 			method: 'POST',
@@ -39,6 +46,7 @@ export default class AuthHelper {
 				role
 			})
 		}).then((res: any) => {
+            this.setToken(res.token); // Setting the token in localStorage
             onSuccess();
 		}).catch((e: any) => {
 			console.log(e), onFailure();
@@ -47,13 +55,14 @@ export default class AuthHelper {
 
 	static login(email: string, password: string, onSuccess: Function, onFailure: Function) {
 		// Get a token from api server using the fetch api
-		Fetch.fetchJson(`/api/auth/atelier/login`, {
+		Fetch.fetchJson(`/api/auth/login`, {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
 				password
 			})
 		}).then((res: any) => {
+            this.setToken(res.token); // Setting the token in localStorage
             onSuccess();
 		}).catch((e: any) => {
 			console.log(e), onFailure();
@@ -61,22 +70,37 @@ export default class AuthHelper {
     };
 
 	static loggedIn(): boolean {
-        // The backend sets two cookies: atelierToken and atelierTokenExp
-        // The first one contains the token and is HTTP-Only (for security reasons)
-        // The second contains the expiration timestamp for the token and is readable in JS
-        // We are logged in if this cookie exists and the time is in the future
-        const exp =
-            document.cookie
-                .split(";")
-                .map(c => c.trim())
-                .find(c => c.startsWith("atelierTokenExp"))
-                ?.split("=")[1];
-        // The JWT expiration is stored in seconds, Date.now() in milliseconds
-        return exp !== undefined && Number(exp) * 1000 > Date.now();
+		const token = AuthHelper.getToken(); // Getting token from localstorage
+		return !!token && !AuthHelper.isTokenExpired(token); // handwaiving here
+	};
+
+	static isTokenExpired(token: string): boolean {
+		const decoded: any = decode(token);
+		try {
+			if (decoded.exp < Date.now() / 1000) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (err) {
+			console.log('Token expired check failed!');
+			return false;
+		}
+	}
+
+    /** Save token to local storage */
+	static setToken(idToken: string) {
+		localStorage.setItem('id_token', idToken);
+	};
+
+    /** Retrieve current token from storage */
+	static getToken() {
+		return localStorage.getItem('id_token');
 	};
 
 	static logout = () => {
-		Fetch.fetch("/api/auth/logout");
+		// Clear user token and profile data from localStorage
+		localStorage.removeItem('id_token');
 	};
 
 	static _checkStatus = (response: {status: number; statusText: string;}) => {

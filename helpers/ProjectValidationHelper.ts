@@ -36,24 +36,6 @@ interface ProjectFile<T> {
 /** Is some sort of file */
 type Fileish<T> = ProjectFile<T> | Express.Multer.File | File;
 
-// Helpers
-//////////
-/** Error that can be thrown if the project has validation errors */
-export class ProjectValidationError<T extends Fileish<T>> extends Error {
-    validation: ProjectValidation<T>
-
-    constructor(validation: ProjectValidation<T>, originalFiles: Array<ProjectFile<T>>) {
-        const message = "This project is not valid: " + [ 
-            validation.containsNoCodeFiles ? "it contains no code files" : undefined,
-            validation.invalidProjectName ? "it has no file with the name of the project" : undefined,
-            validation.projectTooLarge ? `it is larger than ${MAX_PROJECT_SIZE} bytes` : undefined,
-            validation.acceptableFiles.length !== originalFiles.length ? `it contains files that are larger than ${MAX_FILE_SIZE} bytes` : undefined
-        ].filter(x => x !== undefined).join(", ");
-        super(message);
-        this.validation = validation;
-    }
-}
-
 // Validation checks
 ////////////////////
 function containsNoCodeFiles<T>(files: Array<ProjectFile<T>>) {
@@ -85,23 +67,17 @@ function validateProjectInternal<T extends Fileish<T>>(projectName: string, file
     }
 }
 
-/** Execute all checks with files as they are modeled on the server, throwing an error if it is invalid */
+/** Execute all checks with files as they are modeled on the server */
 export function validateProjectServer(projectName: string, files: Express.Multer.File[]) {
     const filesInternal = files.map(f => ({ 
         original: f,
         pathInProject: f.originalname,
         size: f.size
     }));
-    const validation = validateProjectInternal(projectName, filesInternal);
-    if (validation.containsNoCodeFiles
-        || validation.invalidProjectName
-        || validation.projectTooLarge
-        || validation.acceptableFiles.length !== files.length) {
-        throw new ProjectValidationError(validation, filesInternal);
-    }
+    return validateProjectInternal(projectName, filesInternal);
 }
 
-/** Execute all checks with files as they are modeled on the client, returning the validation result */
+/** Execute all checks with files as they are modeled on the client */
 export function validateProjectClient(projectName: string, files: File[]) {
     const filesInternal = files.map(f => ({ 
         original: f,

@@ -6,7 +6,7 @@ import archiver, { ArchiverError } from 'archiver';
 import { randomBytes } from 'crypto';
 
 import { UPLOADS_PATH } from '../lib/constants';
-import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE } from '../../../helpers/Constants';
+import { CODEFILE_EXTENSIONS } from '../../../helpers/Constants';
 
 /** A version of `express.Request` that keeps the location where files are stored. */
 export type FileUploadRequest = Request & { fileLocation?: string };
@@ -39,15 +39,6 @@ export const projectStorageEngine = multer.diskStorage({
     },
     filename: (_, file, callback) => {
         callback(null, path.basename(file.originalname));
-    }
-});
-
-/** Middleware that uses the projectStorageEngine to store uploaded file */
-export const uploadMiddleware = multer({
-    preservePath: true,
-    storage: projectStorageEngine,
-    limits: {
-        fileSize: MAX_FILE_SIZE
     }
 });
 

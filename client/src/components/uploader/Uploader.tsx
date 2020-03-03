@@ -3,21 +3,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 import '../../../../helpers/Extensions';
+import FileHelper from '../../../helpers/FileHelper';
 import { DirectoryViewer } from './DirectoryViewer';
 import { FileSelectionViewer } from './FileSelectionViewer';
 import { defaultValidation, validateProjectClient } from '../../../../helpers/ProjectValidationHelper';
 
 import '../../styles/file-uploader.scss';
 import { MAX_PROJECT_SIZE } from '../../../../helpers/Constants';
-import { JsonFetchError } from '../../../helpers/FetchHelper';
-import { createSubmission } from '../../../helpers/APIHelper';
-import { Submission } from '../../../../models/database/Submission';
+import { FetchError } from '../../../helpers/FetchHelper';
 
 interface UploaderProperties {
-    /** The courseId to upload the submission to */
-    courseId: string,
     /** Callback to call when uploading is finished */
-    onUploadComplete: (submission: Submission) => void
+    onUploadComplete: () => void
 }
 
 /** If the browser supports uploading directories, the component
@@ -25,7 +22,7 @@ interface UploaderProperties {
  *  If folder upload is not supported, the user may choose multiple files
  *  to upload and choose the main file to use for the project name.
  */
-export function Uploader({ courseId, onUploadComplete }: UploaderProperties) {
+export function Uploader({ onUploadComplete }: UploaderProperties) {
     const [folderName, updateFolderName] = useState("");
     const [selectedFiles, updateSelectedFiles] = useState([] as File[]);
     const [uploadableFiles, updateUploadableFiles] = useState([] as File[]);
@@ -34,7 +31,7 @@ export function Uploader({ courseId, onUploadComplete }: UploaderProperties) {
     const [validation, updateValidation] = useState(defaultValidation<File>([]));
     const uploadPrevented = () => validation.containsNoCodeFiles || validation.invalidProjectName;
 
-    const [errors, updateErrors] = useState({ upload: false as false | string });
+    const [errors, updateErrors] = useState({ upload: false as boolean | number });
 
     let fileInputRef = null as HTMLInputElement | null;
 
@@ -51,25 +48,23 @@ export function Uploader({ courseId, onUploadComplete }: UploaderProperties) {
         event.preventDefault();
         if (!uploadPrevented()) {
             updateUploading(true);
-            createSubmission(courseId, folderName, uploadableFiles)
-            .then(handleUploadComplete)
-            .catch(handleUploadError);
+            FileHelper.uploadFolder(folderName, validation.acceptableFiles, handleUploadComplete, handleUploadError);
         }
     };
 
-    function handleUploadComplete(submission: Submission) {
+    function handleUploadComplete() {
         updateUploading(false);
         updateErrors(prev => ({ ...prev, upload: false }));
         if (fileInputRef) {
             fileInputRef.value = "";
         }
         updateSelectedFiles([]);
-        onUploadComplete(submission);
+        onUploadComplete();
     }
 
-    function handleUploadError(error: JsonFetchError) {
-        console.log(`Error uploading folder: ${error.message}`);
-        updateErrors(prev => ({ ...prev, upload: error.message }));
+    function handleUploadError(error: FetchError) {
+        console.log(`Error uploading folder: ${error}`);
+        updateErrors(prev => ({ ...prev, upload: (error.response?.status || true) }));
         updateUploading(false);
     }
 
@@ -134,7 +129,7 @@ export function Uploader({ courseId, onUploadComplete }: UploaderProperties) {
                 <ul>
                     {validation.invalidProjectName && <li>Project should contain a file called {folderName}.pde.</li>}
                     {validation.containsNoCodeFiles && <li>Project should contain at least one code file.</li>}
-                    {errors.upload && <li>Something went wrong while uploading: {errors.upload}</li>}
+                    {errors.upload && <li>Something went wrong while uploading{errors.upload !== true && `, got status ${errors.upload}`}. Please try again.</li>}
                 </ul>
                 {selectedFiles.length > 0 &&
                     <div>

@@ -13,7 +13,7 @@ export function Homepage() {
 	}
 
 	return (
-		<Frame title="Homepage" sidebar>
+		<Frame title="Homepage" user={{id:"1", name:"John Doe"}} sidebar>
             <Loading<Course[]>
                 loader={getCourses}
                 component={courses => 
