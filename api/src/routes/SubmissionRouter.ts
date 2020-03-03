@@ -15,10 +15,8 @@ export const submissionRouter = express.Router();
  */
 submissionRouter.get('/course/:courseID', capture(async(request: Request, response: Response) => {
     const courseID : string = request.params.courseID;
-    // TODO database does not give back correct Submission
-    // const submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
-    // response.status(200).send(submissions);
-    response.status(200).send({});
+    const submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+    response.status(200).send(submissions);
 }));
 
 
@@ -28,10 +26,8 @@ submissionRouter.get('/course/:courseID', capture(async(request: Request, respon
  */
 submissionRouter.get('/user/:userID', capture(async(request: Request, response: Response) => {
     const userID : string = request.params.userID;
-    // TODO database does not give back correct Submission
-    // const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
-    // response.status(200).send(submissions);
-    response.status(200).send({});
+    const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
+    response.status(200).send(submissions);
 }));
 
 /**
@@ -39,10 +35,8 @@ submissionRouter.get('/user/:userID', capture(async(request: Request, response: 
  */
 submissionRouter.get('/:submissionID', capture(async(request: Request, response: Response) => {
     const submissionID : string = request.params.submissionID;
-    // TODO database does not give back correct Submission
-    // const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
-    // response.status(200).send(submission);
-    response.status(200).send({});
+    const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
+    response.status(200).send(submission);
 }));
 
 /**

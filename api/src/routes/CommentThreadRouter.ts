@@ -2,16 +2,15 @@
  * Api routes relating to comment threads
  */
 
-import express, { Response, Request } from 'express';
+import express, {Request, Response} from 'express';
 import {threadState} from "../../../enums/threadStateEnum";
 import {ThreadDB} from "../database/ThreadDB";
 import {SnippetDB} from "../database/SnippetDB";
-import {CommentDB} from "../database/CommentDB";
 
 import {CommentThread} from "../../../models/api/CommentThread";
 import {capture} from "../helpers/ErrorHelper";
-import {DBTools, getClient} from "../database/HelperDB";
-import {Snippet} from "../../../models/api/Snippet";
+import {getClient} from "../database/HelperDB";
+import {FileDB} from "../database/FileDB";
 
 export const commentThreadRouter = express.Router();
 
@@ -40,7 +39,8 @@ commentThreadRouter.get('/file/:fileID', capture(async (request: Request, respon
  */
 commentThreadRouter.get('/submission/:submissionID', capture(async (request: Request, response: Response) => {
     const submissionID: string = request.params.submissionID;
-    const commentThreads: CommentThread[] = await ThreadDB.getThreadsBySubmission(submissionID);
+    const nullFileID = await FileDB.getNullFileID(submissionID);
+    const commentThreads : CommentThread[] = await ThreadDB.getThreadsByFile(nullFileID);
     response.status(200).send(commentThreads);
 }));
 
@@ -49,12 +49,8 @@ commentThreadRouter.get('/submission/:submissionID', capture(async (request: Req
  */
 commentThreadRouter.get('/submission/:submissionID/recent', capture(async (request: Request, response: Response) => {
     const submissionID = request.params.submissionID;
-
-    // TODO create DBTools object with limit, offset
-    const limit = request.params.limit;
-    const offset = request.params.offset;
-
-    const commentThreads : CommentThread[] = await ThreadDB.getThreadsBySubmission(submissionID);
+    const limit : number | undefined = request.headers.limit as unknown as number;
+    const commentThreads : CommentThread[] = await ThreadDB.getThreadsBySubmission(submissionID, {limit : limit});
     response.status(200).send(commentThreads);
 }));
 
@@ -64,22 +60,8 @@ commentThreadRouter.get('/submission/:submissionID/recent', capture(async (reque
  * Create comment thread on a submission. General comment thread.
  */
 commentThreadRouter.post('/submission/:submissionID', capture( async(request : Request, response : Response) => {
-    const submissionID : string = request.params.submissionID;
-
-    // TODO wait for database support: cannot pass parameters to ThreadDB.addThread
-    // const client = await getClient();
-    // try {
-    //     await client.query('BEGIN');
-    //     await ThreadDB.addThread({
-    //
-    //     }, {client : client});
-    //     await client.query('COMMIT');
-    // } catch (e) {
-    //     await client.query('ROLLBACK');
-    //     throw e;
-    // } finally {
-    //     client.release();
-    // }
+    // TODO create NullSnippet
+    // TODO add thread with null snippet
 
     response.status(200).send({});
 }));
@@ -88,32 +70,46 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
  * Create comment thread on a file.
  */
 commentThreadRouter.post('/file/:fileID', capture(async (request : Request, response : Response) => {
-
-    // Get url parameters
-    const fileID = request.params.fileID;
-
-    // Get body parameters
-    const submissionID = request.body.submissionID;
-
-    const lineStart = request.body.lineStart;
-    const lineEnd = request.body.lineEnd;
-    const charStart = request.body.charStart;
-    const charEnd = request.body.charEnd;
-
-    const body = request.body.body;
-
-    console.log("Creating comment thread");
-    console.log(`fileID:${fileID}`);
-    console.log(`submissionID:${submissionID}`);
-    console.log(`lineStart:${lineStart}`);
-    console.log(`lineEnd:${lineEnd}`);
-    console.log(`charStart:${charStart}`);
-    console.log(`charEnd:${charEnd}`);
-    console.log(`body:${body}`);
-
-    // TODO create snippet
-    // TODO create thread
-    // TODO add comment
+    // const client = await getClient();
+    // try {
+    //     await client.query('BEGIN');
+    //
+    //     // Create snippet
+    //     const body = request.body.body;
+    //     const lineStart = request.body.lineStart;
+    //     const lineEnd = request.body.lineEnd;
+    //     const charStart = request.body.charStart;
+    //     const charEnd = request.body.charEnd;
+    //
+    //     // TODO pass client when possible
+    //     const snippetID : string = await SnippetDB.addSnippet({
+    //         lineStart,
+    //         lineEnd,
+    //         charStart,
+    //         charEnd,
+    //         body
+    //     });
+    //
+    //     // Create Thread
+    //     const submissionID : string = request.body.submissionID;
+    //     const fileID : string = request.params.fileID;
+    //
+    //     const thread : CommentThread = await ThreadDB.addThread({
+    //         submissionID = submissionID,
+    //         fileID = fileID,
+    //         snippetID = snippetID,
+    //         visibilityState = threadState.public,
+    //     });
+    //
+    //     // Create Comment
+    //     // TODO
+    //     await client.query('COMMIT');
+    // } catch (e) {
+    //     await client.query('ROLLBACK');
+    //     throw e;
+    // } finally {
+    //     client.release();
+    // }
 
     response.status(200).send({});
 }));

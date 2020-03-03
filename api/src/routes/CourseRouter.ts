@@ -5,7 +5,6 @@
 import express, {Response, Request} from "express";
 import {CourseDB} from "../database/CourseDB";
 import {Course} from "../../../models/api/Course";
-import {courseState} from "../../../enums/courseStateEnum";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {capture} from "../helpers/ErrorHelper";
 
