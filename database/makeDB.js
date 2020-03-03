@@ -52,7 +52,7 @@ DROP VIEW IF EXISTS
      "UsersView", "CoursesView",
      "SubmissionsView", "FilesView",
      "SnippetsView", "CommentsView",
-     "CommentThreadView";
+     "CommentThreadView", "CourseRegistrationView";
 
 DROP TABLE IF EXISTS 
      "CourseRolePermissions", "Users", 
@@ -199,9 +199,20 @@ CREATE VIEW "UsersView" AS (
      SELECT userID, userName, globalRole, email
      FROM "Users"
 );
+CREATE VIEW "CourseRegistrationView" AS (
+     SELECT
+          userID, 
+          courseID, 
+          courseRole, 
+          permission | (SELECT permission 
+                         FROM "CourseRolePermissions" 
+                         WHERE courseRoleID=courseRole
+                         ) AS permission
+     FROM "CourseRegistration"
+);
 
 CREATE VIEW "CoursesView" AS (
-     SELECT c.*, u.userName, u.globalrole, u.email
+     SELECT c.*, u.userName, u.globalrole, u.email, u.userID
      FROM "Courses" as c, "UsersView" u
      where c.creator = u.userID
 );

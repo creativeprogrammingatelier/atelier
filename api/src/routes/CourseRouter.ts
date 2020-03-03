@@ -29,7 +29,7 @@ courseRouter.post('/',
 
         console.log(name, state, creatorID);
 
-        CourseDB.addCourse({ name, state, creatorID  })
+        CourseDB.addCourse({ courseName: name, state, creatorID  })
             .then((course : Course) => {
                 result.send(course)
             })

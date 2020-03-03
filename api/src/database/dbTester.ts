@@ -17,8 +17,9 @@ import {threadState}		from '../../../enums/threadStateEnum'
 import {Snippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
 import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
+import { Course } from '../../../models/database/Course'
 
-const all = false;
+const all = true;
 
 let stored = '';
 function log<T>(a : string, b ?:T) : void {
@@ -60,8 +61,8 @@ async function usersHelper() {
 
 async function coursesHelper() {
 	log("\n\nCOURSESHELPER\n\n")
-	const course = {name:"cname",creator:uuid,state:courseState.open}
-	const course2 = {name:"newname",creator:undefined,state:courseState.hidden}
+	const course : Course= {courseName:"cname",creatorID:uuid,state:courseState.open}
+	const course2 = {courseName:"newname",creatorID:uuid,state:courseState.hidden}
 	await promise(CH.getAllCourses(), 'getAllCourses')
 	const {ID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
 	await promise(CH.getCourseByID(ID), 'getCourseByID')
@@ -89,9 +90,10 @@ async function courseRegistrationHelper(){
 	const newEntry = {userID:uuid, courseID:uuid, role:localRole.teacher,permission:1024}
 	await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid), 'getEntriesByCourse')
-	await promise(CRH.getEntriesByUser(uuid), 'getEntriesByUser')
+	
 	const res = await promise(CRH.addEntry(newEntry), 'addEntry')
 	const upd = {userID:res.userID, courseID:res.courseID, role:localRole.TA}
+	await promise(CRH.getEntriesByUser(uuid), 'getEntriesByUser')
 	await promise(CRH.updateRole(upd), 'updateRole')
 	await promise(CRH.addPermission({...newEntry, permission:2048}), "addPermission")
 	await promise(CRH.removePermission({...newEntry, permission:2048}), "removePermsision")
@@ -208,5 +210,7 @@ run(200,
 	fileHelper, 
 	ThreadHelper,
 	submissionHelper,
+	courseRegistrationHelper,
+	coursesHelper,
 
 	finish)

@@ -23,7 +23,7 @@ coursesRouter.get('/',
             .then((courses : Course[]) => courses.map((course : Course) => {
                 return {
                    courseID : course.courseID,
-                   name : course.name,
+                   name : course.courseName,
                    state : course.state,
                    creator : course.creatorID
                 }
