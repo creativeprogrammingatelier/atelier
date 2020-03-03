@@ -1,6 +1,7 @@
 import {pool, extract, map, one, checkAvailable, pgDB, DBTools } from "./HelperDB";
 import {Course, convertCourse, APICourse, courseToAPI, DBAPICourse} from '../../../models/database/Course';
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import { FileDB } from "./FileDB";
 
 /**
  * @Author Rens Leendertz
@@ -53,7 +54,7 @@ export class CourseDB {
 	/**
 	 * One
 	 */
-	static async addCourse(course : Course) : Promise<Course>{
+	static async addCourse(course : Course) : Promise<APICourse>{
 		checkAvailable(['name','state'], course)
 		const {
 			name,
@@ -65,7 +66,11 @@ export class CourseDB {
 		return client.query(`INSERT INTO "Courses" 
 			VALUES (DEFAULT, $1, $2, $3) 
 			RETURNING *`, [name, state, creatorid])
-		.then(extract).then(map(convertCourse)).then(one)
+		.then(extract).then(map(courseToAPI)).then(one)
+		.then(res => {
+			FileDB.createNullFile(res.ID);
+			return  res
+		})
 	}
 
 	/**

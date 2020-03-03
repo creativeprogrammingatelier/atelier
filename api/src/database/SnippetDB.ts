@@ -63,8 +63,17 @@ export class SnippetDB {
 		.then(extract).then(map(snippetToAPI))
 	}
 
-	static async addSnippet(snippet : Snippet){
-		console.log("this function only adds a single snippet. you might want to use a function that also makes the thread immediately.")
+	static async createNullSnippet(params : DBTools = {}){
+		const {client =pool} = params
+		return client.query(`
+		INSERT INTO "Snippets"
+		VALUES (DEFAULT, -1, -1, -1, -1, '') 
+		RETURNING *
+		`).then(extract).then(one).then(convertSnippet).then(res => res.snippetID)
+	}
+
+	static async addSnippet(snippet : Snippet) : Promise<string>{
+		// console.log("this function only adds a single snippet. you might want to use a function that also makes the thread immediately.")
 		checkAvailable(['lineStart','lineEnd','charStart','charEnd', 'body'], snippet)
 		const {
 			lineStart,
@@ -74,13 +83,12 @@ export class SnippetDB {
 			body,
 			client =pool
 		} = snippet
-		return client.query(
-			`
+		return client.query(`
 			INSERT INTO "Snippets"
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
-			RETURNING *
+			RETURNING snippetID
 			`, [lineStart, lineEnd, charStart, charEnd, body])
-		.then(extract).then(res => {console.log(res);return res}).then(map(convertSnippet)).then(one)
+		.then(extract).then(one).then(res => UUIDHelper.fromUUID(res.snippetID as string))
 	}
 
 	static async updateSnippet(snippet : Snippet, DB : pgDB = pool){
@@ -110,14 +118,21 @@ export class SnippetDB {
 			WHERE ctr.snippetID = s.snippetID
 			  AND fv.fileID = ctr.fileID
 			`, [snippetid, lineStart, lineEnd, charStart, charEnd, body])
-		.then(extract).then(res=>{console.log(res);return res}).then(map(snippetToAPI)).then(one)
+		.then(extract).then(map(snippetToAPI)).then(one)
 	}
 
 	static async deleteSnippet(snippetID : string, client : pgDB = pool){
 		const snippetid = UUIDHelper.toUUID(snippetID);
-		return client.query(`DELETE FROM "Snippets" 
+		return client.query(`
+		WITH delete AS (
+			DELETE FROM "Snippets" 
 			WHERE snippetID = $1 
-			RETURNING *`, [snippetid])
-		.then(extract).then(map(convertSnippet)).then(one)
+			RETURNING *
+		)
+		SELECT s.*, fv.*, ctr.commentThreadID
+		FROM delete as s, "CommentThreadRefs" as ctr, "FilesView" as fv
+		WHERE ctr.snippetID = s.snippetID
+		AND fv.fileID = ctr.fileID`, [snippetid])
+		.then(extract).then(map(snippetToAPI)).then(one)
 	}
 }
