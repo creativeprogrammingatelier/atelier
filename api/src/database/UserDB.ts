@@ -59,7 +59,7 @@ export class UserDB {
 			email,
 			password,
 			role,
-			name
+			userName: name
 		} = user;
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
 		return DB.query(`INSERT INTO "Users" 
@@ -79,7 +79,7 @@ export class UserDB {
 			email = undefined,
 			password = undefined,
 			role = undefined,
-			name = undefined
+			userName: name = undefined
 		} = user
 		const userid = UUIDHelper.toUUID(userID);
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password)

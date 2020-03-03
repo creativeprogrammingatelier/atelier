@@ -4,7 +4,7 @@ import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB";
 
 export interface User extends DBTools {
 	userID?: ID64;
-	name?: string;
+	userName?: string;
 	email?: string;
 	role?: string;
 	password?: string,
@@ -26,7 +26,7 @@ export type DBAPIUser = DBUser
 export function convertUser(db : DBUser) : User{
 	return {
 		userID:UUIDHelper.fromUUID(db.userid),
-		name:db.username,
+		userName:db.username,
 		email:db.email,
 		role:db.globalrole
 	}

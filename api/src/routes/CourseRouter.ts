@@ -37,12 +37,16 @@ courseRouter.get("/:courseID", capture(async(request: Request, response: Respons
 /**
  * Create a course
  */
-courseRouter.post("/",capture(async(request: Request, response: Response) => {
-	const name : string = request.body.name;
-
-	// TODO get user
-	// TODO create course
-
-	response.status(200).send({});
+courseRouter.post('/',capture(async(request : Request, result : Response) => {
+    // const name : string = request.body.name;
+    // const state : courseState = request.body.state;
+    // const creatorID : string | undefined = request.body.creatorID;
+    //
+    // console.log(name, state, creatorID);
+    //
+    // CourseDB.addCourse({ courseName: name, state, creatorID  })
+    //     .then((course : Course) => {
+    //         result.send(course)
+    //     })
+    //     .catch((error : Error) => result.status(500).send({error}));
 }));
-
