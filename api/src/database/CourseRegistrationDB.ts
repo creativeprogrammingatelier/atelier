@@ -14,7 +14,7 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 
  export class CourseRegistrationDB {
 
-	static async addPermissionsCourse(partials : CoursePartial[], user: User, params : DBTools){
+	static async addPermissionsCourse(partials : CoursePartial[], user: User, params : DBTools = {}){
 		checkAvailable(['userID'], user)
 		const courseIDs = partials.map(part => part.ID)
 		//this object is used as a map.
@@ -24,16 +24,16 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 			userID,
 			client = pool
 		} = user
-		const userid = UUIDHelper.toUUID(userID)
 		const result = await CourseRegistrationDB.getSubset(courseIDs, [userID!], params)
 		result.forEach(item => {
 			const id = item.courseID;
 			const obj :APICourseRegistration= {role:item.role, permissions:item.permission}
 			mapping[id] = obj
 		});
+		console.log(userID, result, mapping, partials);
 		const total : APICourse[] = partials.map(part => {
 			if (!(part.ID in mapping)){
-				throw new Error("concurrentModificationException")
+				return coursePartialToAPI(part, {role:'unauthorised', permissions:0})
 			}
 			return coursePartialToAPI(part, mapping[part.ID] as APIPermission)
 		})

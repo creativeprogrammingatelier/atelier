@@ -85,7 +85,7 @@ export class FileDB {
 		FROM "Files"
 		WHERE submissionID = $1
 		  AND type = 'undefined/undefined'
-		`, [submissionid]).then(extract).then(one).then(res => res.fileID)
+		`, [submissionid]).then(extract).then(one).then(res => UUIDHelper.fromUUID(res.fileid))	
 	}
 
 	static async createNullFile(submissionID : string, params : DBTools = {}){
@@ -94,8 +94,8 @@ export class FileDB {
 		return client.query(`
 		INSERT INTO "Files"
 		VALUES (DEFAULT, $1, '', 'undefined/undefined') 
-		RETURNING *
-		`, [submissionid]).then(extract).then(one).then(res => UUIDHelper.fromUUID(res.fileid as string))
+		RETURNING fileID
+		`, [submissionid]).then(extract).then(one).then((res : DBFile)=>UUIDHelper.fromUUID(res.fileid))
 	}
 
 	static async addFile(file : File) {
