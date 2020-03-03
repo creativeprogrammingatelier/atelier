@@ -34,8 +34,7 @@ export class Fetch {
      */
     static async fetchJson<T>(url: RequestInfo, options: RequestInit = {}): Promise<T> {
         const headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Accept": "application/json"
         };
 
         try {
