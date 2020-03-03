@@ -183,6 +183,25 @@ CREATE TRIGGER DEL_SNIPPET
      FOR EACH ROW
      EXECUTE FUNCTION delSnippet();
 
+CREATE OR REPLACE FUNCTION defaultFile()
+     returns TRIGGER AS
+     $$
+     BEGIN
+          INSERT INTO "Files" VALUES (
+               DEFAULT, 
+               (SELECT new.submissionID),
+               '',
+               'undefined/undefined'
+          );
+          return null;
+     END;
+     $$
+     LANGUAGE plpgsql;
+
+CREATE TRIGGER DEFAULT_FILE
+     AFTER INSERT ON "Submissions"
+     FOR EACH ROW
+     EXECUTE FUNCTION defaultFile();
 
 CREATE VIEW "SubmissionsRefs" AS (
      SELECT courseID, submissionID

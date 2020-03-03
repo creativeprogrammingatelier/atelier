@@ -63,7 +63,8 @@ async function coursesHelper() {
 	log("\n\nCOURSESHELPER\n\n")
 	const course : Course= {courseName:"cname",creatorID:uuid,state:courseState.open}
 	const course2 = {courseName:"newname",creatorID:uuid,state:courseState.hidden}
-	await promise(CH.getAllCourses(), 'getAllCourses')
+	const res = await promise(CH.getAllCourses(), 'getAllCourses')
+	await promise(CRH.addPermissionsCourse(res, {userID:uuid}), "addPermissions")
 	const {ID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
 	await promise(CH.getCourseByID(ID), 'getCourseByID')
 	await promise(CH.updateCourse({courseID:ID}), "updateCourse1")
@@ -116,7 +117,7 @@ async function submissionHelper(){
 
 async function fileHelper(){
 	log("\n\nFILEHELPER\n\n")
-	
+	await promise(FH.getNullFileID(uuid), 'nullfile')
 	const list = await promise(FH.getAllFiles(), 'getAllFiles')
 	await promise(FH.getFilesBySubmission(uuid), 'getFilesBySubmission')
 	await promise(FH.getFilesBySubmissionIDS(list.map(x=>x.references.submissionID)), 'filesMap')

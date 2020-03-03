@@ -94,8 +94,8 @@ export class CourseDB {
 		`, [courseName, state, creatorid])
 		.then(extract).then(map(courseToAPIPartial)).then(one)
 		.then(res => {
-			FileDB.createNullFile(res.ID);
-			return  res
+			
+			return res
 		})
 	}
 
