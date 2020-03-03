@@ -1,7 +1,5 @@
 import React from 'react';
 import {DataTableRowMapping} from "../components/general/DataTable";
-import {FileResponse} from "./DatabaseResponseInterface";
-import {submissionRendering} from "./SubmissionHelpers";
 
 /**
  * Example of what the databaseRoutes query could return.
@@ -28,15 +26,15 @@ export const codeData = [{
  *
  * User and code entries link to /user and /submissionOverview
  */
-export const codeRendering : DataTableRowMapping<FileResponse>[] = [
-    [
-        'User',
-        ({userName} : FileResponse) => userName,
-        ({userId} : FileResponse) => {return `/user/${userId}`}
-    ],
-    [
-        'Code',
-        ({snippet} : FileResponse) => snippet,
-        ({submissionId, fileId}) => `/submission/${submissionId}/code/${fileId}`
-    ]
-];
+// export const codeRendering : DataTableRowMapping<FileResponse>[] = [
+//     [
+//         'User',
+//         ({userName} : FileResponse) => userName,
+//         ({userId} : FileResponse) => {return `/user/${userId}`}
+//     ],
+//     [
+//         'Code',
+//         ({snippet} : FileResponse) => snippet,
+//         ({submissionId, fileId}) => `/submission/${submissionId}/code/${fileId}`
+//     ]
+// ];

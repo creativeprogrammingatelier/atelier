@@ -43,5 +43,7 @@ courseRouter.post("/",capture(async(request: Request, response: Response) => {
 
 	// TODO get user
 	// TODO create course
+
+	response.status(200).send({});
 }));
 

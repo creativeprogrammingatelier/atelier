@@ -1,5 +1,5 @@
 import React, {MouseEvent} from 'react';
-import {User} from '../../../../models/database/User';
+import {User} from '../../../../models/api/User';
 import {FormGroup, Button, FormControl, Modal, ModalProps, FormLabel, Form} from 'react-bootstrap';
 import UserHelper from '../../../helpers/UserHelper';
 import {FiUserX, FiTrash2} from 'react-icons/fi';
@@ -12,7 +12,7 @@ class EditUserModal extends React.Component<EditUserModalProps, EditUserModalSta
 	constructor(props: EditUserModalProps) {
 		super(props);
 		this.state = {
-			role: (this.props.user) ? this.props.user.role! : '',
+			role: (this.props.user) ? this.props.user.permission.role : '',
 			password: 'newPassword123',
 			updated: false
 		};
@@ -20,7 +20,7 @@ class EditUserModal extends React.Component<EditUserModalProps, EditUserModalSta
 
 	deleteUser = (e: MouseEvent, user: User) => {
 		e.preventDefault();
-		UserHelper.deleteUser(user.userID, () => (this.props && this.props.onHide) ? this.props.onHide() : null, () => console.log('delete failed'));
+		UserHelper.deleteUser(user.ID, () => (this.props && this.props.onHide) ? this.props.onHide() : null, () => console.log('delete failed'));
 	};
 
 	updateUser = (e: MouseEvent, user: User) => {

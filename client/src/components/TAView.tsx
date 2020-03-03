@@ -2,8 +2,8 @@ import * as React from 'react';
 import UserHelper from '../../helpers/UserHelper';
 import FileViewer from './FileViewer';
 import FileHelper from '../../helpers/FileHelper';
-import {User} from '../../../models/database/User';
-import {File} from '../../../models/database/File';
+import {User} from '../../../models/api/User';
+import {File} from '../../../models/api/File';
 
 class TAView extends React.Component {
 	state: {students: any[], currentStudent: User | null};

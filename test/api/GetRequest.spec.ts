@@ -140,17 +140,17 @@ function instanceOfUser(object: any): object is User {
 }
 
 /** ---------- Test Course ---------- */
-getFetch(`/api/course/`)
-    .then((result: Course[]) => {
-        assert(result.every(instanceOfCourse));
-    })
-    .catch((error: any) => console.log(error));
-
-getFetch(`/api/course/${DEFAULT_ID}`)
-    .then((result: Course) => {
-        assert(instanceOfCourse(result), 'getCourse returns a course object');
-    })
-    .catch((error: any) => console.log(error));
+// getFetch(`/api/course/`)
+//     .then((result: Course[]) => {
+//         assert(result.every(instanceOfCourse));
+//     })
+//     .catch((error: any) => console.log(error));
+//
+// getFetch(`/api/course/${DEFAULT_ID}`)
+//     .then((result: Course) => {
+//         assert(instanceOfCourse(result), 'getCourse returns a course object');
+//     })
+//     .catch((error: any) => console.log(error));
 
 /** ---------- Test Comment Thread ---------- */
 getFetch(`/api/commentThread/${DEFAULT_ID}`)
@@ -171,12 +171,11 @@ getFetch(`/api/commentThread/submission/${DEFAULT_ID}`)
     })
     .catch((error: any) => console.log(error));
 
-// TODO API support
-// getFetch(`/api/commentThread/submission/${DEFAULT_ID}/recent`)
-//     .then((result : CommentThread[]) => {
-//         assert(result.every(instanceOfCommentThread))
-//     })
-//     .catch((error : any) => console.log(error));
+getFetch(`/api/commentThread/submission/${DEFAULT_ID}/recent`)
+    .then((result : CommentThread[]) => {
+        assert(result.every(instanceOfCommentThread))
+    })
+    .catch((error : any) => console.log(error));
 
 /** ---------- Test File ---------- */
 getFetch(`/api/file/${DEFAULT_ID}`)
@@ -192,11 +191,11 @@ getFetch(`/api/file/submission/${DEFAULT_ID}`)
     .catch((error: any) => console.log(error));
 
 /** ---------- Test Search ---------- */
-getFetch(`/api/search/a`)
-    .then((result : any) => {
-        assert(instanceOfSearch(result));
-    })
-    .catch((error : any) => console.log(error));
+// getFetch(`/api/search/a`)
+//     .then((result : any) => {
+//         assert(instanceOfSearch(result));
+//     })
+//     .catch((error : any) => console.log(error));
 
 /** ---------- Test Submission ---------- */
 getFetch(`/api/submission/course/${DEFAULT_ID}`)

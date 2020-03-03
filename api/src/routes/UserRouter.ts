@@ -22,6 +22,7 @@ userRouter.get('/:userID', capture(async(request : Request, response : Response)
 	// TODO database does not give back correct User
 	// const user : User = UserDB.getUserByID(userID);
 	// response.status(200).send(user);
+	response.status(200).send({});
 }));
 
 /**
@@ -32,4 +33,5 @@ userRouter.get('/', capture(async(request : Request, response : Response) => {
 	// TODO database does not give back correct User
 	// const user : User = await UserDB.getUserByID(userID);
 	// response.status(200).send(user);
+	response.status(200).send({});
 }));

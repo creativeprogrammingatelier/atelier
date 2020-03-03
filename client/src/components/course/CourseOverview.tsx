@@ -2,7 +2,7 @@ import React from 'react';
 import {Frame} from '../frame/Frame';
 import {DataBlockList} from '../general/DataBlockList';
 import {Loading} from '../general/Loading';
-import {Submission} from "../../../../models/database/Submission";
+import {Submission} from "../../../../models/api/Submission";
 import { getCourseSubmissions } from '../../../helpers/APIHelper';
 
 interface CourseOverviewProps {
@@ -26,11 +26,11 @@ export function CourseOverview({match}: CourseOverviewProps) {
                             list={submissions.map(submission => {
                                 console.log(submission);
                                 return {
-                                    transport: `/submission/${submission.submissionID}`,
-                                    title: submission.name === undefined ? "" : submission.name,
-                                    text: submission.name === undefined ? "" : submission.name,
-                                    time: submission.date === undefined ? new Date() : new Date(submission.date),
-                                    tags : []
+                                    transport: `/submission/${submission.ID}`,
+									title : submission.name,
+									text : submission.name,
+									time : new Date(submission.date),
+									tags : []
                                     //tags: submission.tags
                                 };
                             })}

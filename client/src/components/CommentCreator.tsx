@@ -1,12 +1,8 @@
 import * as React from 'react';
-import {Route, Switch} from 'react-router-dom';
-import PrivateRoute from './PrivateRoute';
-import {throws} from 'assert';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSave} from '@fortawesome/free-solid-svg-icons';
 import CommentHelper from '../../helpers/CommentHelper';
 import '../styles/comment-creator.scss';
-import { Comment } from '../../../models/database/Comment';
 
 
 type CommentCreatorProps = {currentLineNumber: number, onSuccess: Function, fileId: String};

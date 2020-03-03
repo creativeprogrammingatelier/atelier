@@ -1,6 +1,5 @@
 import React from 'react';
-import {DataTableProperties, DataTableRowMapping} from "../components/general/DataTable";
-import {CommentResponse} from "./DatabaseResponseInterface";
+import {DataTableRowMapping} from "../components/general/DataTable";
 
 /**
  * Example of what the databaseRoutes query could return.
@@ -39,20 +38,20 @@ export const commentData = [{
  *
  * User and submission go to /user and /submissionOverview
  */
-export const commentRendering : DataTableRowMapping<CommentResponse>[] = [
-    [
-        'User',
-        ({author} : CommentResponse) => author,
-        ({userId} : CommentResponse) => { return `/user/${userId}`}
-    ],
-    [
-        'Submission',
-        ({submissionName }: CommentResponse) => submissionName,
-        ({submissionId} : CommentResponse) => `/submission/${submissionId}`
-    ],
-    [
-        'Line Number',
-        ({startLine, endLine} : CommentResponse) => {return `Lines: ${startLine}-${endLine}`},
-        ({submissionId, fileId,startLine} : CommentResponse) => {return `/submission/${submissionId}/code/${fileId}#${startLine}`}
-    ]
-];
+// export const commentRendering : DataTableRowMapping<CommentResponse>[] = [
+//     [
+//         'User',
+//         ({author} : CommentResponse) => author,
+//         ({userId} : CommentResponse) => { return `/user/${userId}`}
+//     ],
+//     [
+//         'Submission',
+//         ({submissionName }: CommentResponse) => submissionName,
+//         ({submissionId} : CommentResponse) => `/submission/${submissionId}`
+//     ],
+//     [
+//         'Line Number',
+//         ({startLine, endLine} : CommentResponse) => {return `Lines: ${startLine}-${endLine}`},
+//         ({submissionId, fileId,startLine} : CommentResponse) => {return `/submission/${submissionId}/code/${fileId}#${startLine}`}
+//     ]
+// ];

@@ -3,11 +3,9 @@ import {FiActivity, FiHome, FiLogOut, FiSearch, FiSettings, FiUser, FiX} from "r
 import {Header} from './Header';
 import {Logo} from './Logo';
 import {SidebarEntry} from './SidebarEntry';
-import {Course} from "../../../../models/database/Course";
-import {PanelButton} from "../general/PanelButton";
 import {Loading} from "../general/Loading";
 import {User} from "../../../../models/api/User";
-import { getCurrentUser } from './../../../helpers/APIHelper';
+import { getCurrentUser } from '../../../helpers/APIHelper';
 
 interface SidebarProperties {
 	user?: {
@@ -29,7 +27,7 @@ export function Sidebar({position, close}: SidebarProperties) {
 				<SidebarEntry location="/settings" icon={FiSettings}>Settings</SidebarEntry>
 				<Loading<User>
 					loader={getCurrentUser}
-					component={user => <SidebarEntry location={"/user/" + user.id} icon={FiUser}>{user.name}</SidebarEntry>
+					component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser}>{user.name}</SidebarEntry>
 					}
 				/>
 				<SidebarEntry location="/logout" icon={FiLogOut}>Logout</SidebarEntry>

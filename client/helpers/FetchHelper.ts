@@ -1,5 +1,5 @@
 import AuthHelper from './AuthHelper';
-import { ServerError } from './../../models/api/ServerError';
+import { ServerError } from '../../models/api/ServerError';
 
 export class Fetch {
     /** 

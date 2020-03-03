@@ -4,8 +4,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faFileDownload, faEye, faTrash} from '@fortawesome/free-solid-svg-icons';
 import FileHelper from '../../helpers/FileHelper';
 import CommentsViewer from './CommentsViewer';
-import {useRef} from 'react';
-import {File} from '../../../models/database/File';
+import {File} from '../../../models/api/File';
 
 class FileViewer extends React.Component<{files: File[], update: Function}> {
 	state: {viewedFile: File | null, currentLineNumber: number};
@@ -23,20 +22,20 @@ class FileViewer extends React.Component<{files: File[], update: Function}> {
 		let rows = [];
 		if (this.props.files && this.props.files[0] != undefined) {
 			for (let file of this.props.files) {
-				rows.push(<tr key={file.fileID} className={this.state.viewedFile != null && this.state.viewedFile.fileID != null && this.state.viewedFile.fileID == file.fileID ? 'table-active' : ''}>
-					<td>{file.pathname}</td>
+				rows.push(<tr key={file.ID} className={this.state.viewedFile != null && this.state.viewedFile.ID != null && this.state.viewedFile.ID == file.ID ? 'table-active' : ''}>
+					<td>{file.name}</td>
 					<td>
-						<button key={`download-${file.fileID}`} onClick={() => FileHelper.downloadFile(file.fileID!, () => {
+						<button key={`download-${file.ID}`} onClick={() => FileHelper.downloadFile(file.ID, () => {
 							alert('Failed to download file');
 						})}><FontAwesomeIcon icon={faFileDownload}/></button>
 					</td>
 					<td>
-						<button key={`view-${file.fileID}`} onClick={() => FileHelper.getFile(file.fileID!, (file: File) => {
+						<button key={`view-${file.ID}`} onClick={() => FileHelper.getFile(file.ID, (file: File) => {
 							this.setState({viewedFile: file});
 						}, () => alert('Failed to get file'))}><FontAwesomeIcon icon={faEye}/></button>
 					</td>
 					<td>
-						<button key={`view-${file.fileID}`} onClick={() => FileHelper.deleteFile(file.fileID!, () => this.props.update(), () => alert('File deletion has failed'))}><FontAwesomeIcon
+						<button key={`view-${file.ID}`} onClick={() => FileHelper.deleteFile(file.ID, () => this.props.update(), () => alert('File deletion has failed'))}><FontAwesomeIcon
 							icon={faTrash}/></button>
 					</td>
 				</tr>);

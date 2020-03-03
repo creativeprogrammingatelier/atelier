@@ -18,6 +18,7 @@ submissionRouter.get('/course/:courseID', capture(async(request: Request, respon
     // TODO database does not give back correct Submission
     // const submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
     // response.status(200).send(submissions);
+    response.status(200).send({});
 }));
 
 
@@ -30,6 +31,7 @@ submissionRouter.get('/user/:userID', capture(async(request: Request, response: 
     // TODO database does not give back correct Submission
     // const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
     // response.status(200).send(submissions);
+    response.status(200).send({});
 }));
 
 /**
@@ -40,6 +42,7 @@ submissionRouter.get('/:submissionID', capture(async(request: Request, response:
     // TODO database does not give back correct Submission
     // const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
     // response.status(200).send(submission);
+    response.status(200).send({});
 }));
 
 /**
@@ -48,5 +51,6 @@ submissionRouter.get('/:submissionID', capture(async(request: Request, response:
 submissionRouter.post('/', capture(async(request: Request, response: Response) => {
     // TODO getUserID, name
     // TODO create transaction for adding a submission: submission, files etc.
+    response.status(200).send({});
 }));
 

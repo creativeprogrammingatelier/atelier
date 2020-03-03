@@ -80,6 +80,8 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
     // } finally {
     //     client.release();
     // }
+
+    response.status(200).send({});
 }));
 
 /**
@@ -112,6 +114,8 @@ commentThreadRouter.post('/file/:fileID', capture(async (request : Request, resp
     // TODO create snippet
     // TODO create thread
     // TODO add comment
+
+    response.status(200).send({});
 }));
 
 

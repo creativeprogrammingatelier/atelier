@@ -6,7 +6,7 @@ import {TabBar} from "../general/TabBar";
 import {CodeTab} from "./CodeTab";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
-import {File} from "../../../../models/database/File";
+import {File} from "../../../../models/api/File";
 import {Loading} from "../general/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import { getFile, getFileContents } from "../../../helpers/APIHelper";
@@ -52,7 +52,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 			loader={getFile}
 			params={[fileId]}
 			component={
-				file => <Frame title={FileNameHelper.fromPath(file.pathname!)} sidebar search={filePath + "/search"}>
+				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={filePath + "/search"}>
 					<Loading<[File, string]>
 						loader={(fileId : string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
 						params={[fileId]}

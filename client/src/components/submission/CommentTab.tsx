@@ -1,4 +1,4 @@
-import React, {Fragment} from "react";
+import React from "react";
 
 import {CommentThread} from "./comment/CommentThread";
 import {File} from "../../../../models/api/File";

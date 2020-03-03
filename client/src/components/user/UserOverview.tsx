@@ -1,14 +1,9 @@
 import React, {useState, useEffect} from "react";
 import {DataTable} from "../general/DataTable";
 import {Frame} from "../frame/Frame";
-import {
-	CommentThreadResponse,
-	SubmissionResponse,
-	UserResponse
-} from "../../helpers/DatabaseResponseInterface";
 import {Loading} from "../general/Loading";
-import {User} from "../../../../models/database/User";
-import {Submission} from "../../../../models/database/Submission";
+import {User} from "../../../../models/api/User";
+import {Submission} from "../../../../models/api/Submission";
 import { getUserSubmissions, getUser } from "../../../helpers/APIHelper";
 
 interface UserOverviewProperties {
@@ -27,8 +22,8 @@ export function UserOverview({match: { params: { userId } } }: UserOverviewPrope
 			component={user =>
 				<Frame
 					title={user.name === undefined ? "Undefined" : user.name}
-					user={{id: ""+user.userID, name: user.name === undefined ? "Undefined" : user.name}}
-					sidebar search={`/user/${user.userID}/search`}>
+					user={{id: user.ID, name: user.name}}
+					sidebar search={`/user/${user.ID}/search`}>
 					<p>Introduction section</p>
 					{/*<DataTable
 						title="Recent"
@@ -39,13 +34,13 @@ export function UserOverview({match: { params: { userId } } }: UserOverviewPrope
 						]}/>*/}
 					<Loading<Submission[]>
 						loader={getUserSubmissions}
-						params={[user.userID!]}
+						params={[user.ID]}
 						component={submissions =>
 							<DataTable
 								title="Projects"
 								data={submissions}
 								table={[
-									["Project", x => x.name!, x => `/submission/${x.submissionID}`],
+									["Project", x => x.name!, x => `/submission/${x.ID}`],
 									["Date", x => new Date(x.date!).toLocaleString()]
 								]} />} />
 					{/*<DataTable

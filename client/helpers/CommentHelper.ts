@@ -1,5 +1,5 @@
 import { Fetch } from './FetchHelper';
-import {Comment} from '../../models/database/Comment';
+import { Comment } from '../../models/api/Comment';
 
 /**
  * Helpers for request for files

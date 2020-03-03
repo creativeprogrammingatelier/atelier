@@ -18,19 +18,11 @@ export function Snippet({snippet}: SnippetProperties) {
 	const mainLines = snippet.fullText.slice(begin, end);
 	const postLines = snippet.fullText.slice(end);
 
-	const highlightStyle: React.CSSProperties =
-		expanded
-			? {}
-			: {};
-	// TODO: previously mainlines had a styling, however main lines are only what we show. The actual snippet is usually
-	// the whole snippet except 0/2 lines on the bottom/top. Do we want to do highlighting for all these lines or
-	// keep it without highlighting? Highlighting looked weird now since almost all lines are highlighted then.
-
 	return (
 		<div className="snippet">
             <pre className="m-0 px-2 py-1">
                 {expanded && preLines.join("\n") + "\n"}
-	            <span style={highlightStyle}>{mainLines.join("\n")}</span>
+	            <span>{mainLines.join("\n")}</span>
 	            {expanded && "\n" + postLines.join("\n")}
             </pre>
 			<ButtonBar align="right">
