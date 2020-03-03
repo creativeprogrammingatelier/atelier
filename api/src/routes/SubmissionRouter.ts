@@ -40,7 +40,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     // TODO: create a single transaction, including filesystem things
     const submission = await SubmissionDB.addSubmission({ 
         name: request.body["project"], 
-        courseID: request.params.couresID, 
+        courseID: request.params.courseID, 
         userID 
     });
 
