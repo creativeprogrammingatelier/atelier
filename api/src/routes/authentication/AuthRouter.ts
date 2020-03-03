@@ -36,7 +36,7 @@ for (const loginConfig of config.loginProviders) {
 /** Get list of login providers, to let the user choose how to login */
 authRouter.get('/providers', capture(async (request, response) => {
     const providers: LoginProvider[] = 
-        config.loginProviders.map(lc => ({ name: lc.name, url: `/auth/${lc.id}/login` }));
+        config.loginProviders.map(lc => ({ name: lc.name, url: `/api/auth/${lc.id}/login` }));
     response.status(200).send(providers);
 }));
 
