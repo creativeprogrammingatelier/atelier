@@ -4,9 +4,11 @@
 
 import express, {Response, Request} from "express";
 import {CourseDB} from "../database/CourseDB";
-import {Course} from "../../../models/api/Course";
+import {Course, CoursePartial} from "../../../models/api/Course";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {capture} from "../helpers/ErrorHelper";
+import {courseState} from "../../../enums/courseStateEnum";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 
 export const courseRouter = express.Router();
 
@@ -19,8 +21,8 @@ courseRouter.use(AuthMiddleware.requireAuth);
  * Get user courses
  */
 courseRouter.get("/", capture(async(request: Request, response: Response) => {
-	const courses : Course[] = await CourseDB.getAllCourses();
-	response.status(200).send(courses);
+    const courses : CoursePartial[] = await CourseDB.getAllCourses();
+    response.status(200).send(courses);
 }));
 
 /**
@@ -28,7 +30,7 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
  */
 courseRouter.get("/:courseID", capture(async(request: Request, response: Response) => {
 	const courseID : string = request.params.courseID;
-	const course : Course = await CourseDB.getCourseByID(courseID);
+	const course : CoursePartial = await CourseDB.getCourseByID(courseID);
 	response.status(200).send(course);
 }));
 
@@ -37,16 +39,20 @@ courseRouter.get("/:courseID", capture(async(request: Request, response: Respons
 /**
  * Create a course
  */
-courseRouter.post('/',capture(async(request : Request, result : Response) => {
-    // const name : string = request.body.name;
-    // const state : courseState = request.body.state;
-    // const creatorID : string | undefined = request.body.creatorID;
-    //
-    // console.log(name, state, creatorID);
-    //
-    // CourseDB.addCourse({ courseName: name, state, creatorID  })
-    //     .then((course : Course) => {
-    //         result.send(course)
-    //     })
-    //     .catch((error : Error) => result.status(500).send({error}));
+courseRouter.post('/', capture(async(request : Request, response : Response) => {
+    const name : string = request.body.name;
+    const state : courseState = request.body.state;
+    const userID : string = await getCurrentUserID(request);
+    console.log(name);
+    console.log(state);
+    console.log(userID);
+
+    const course : CoursePartial = await CourseDB.addCourse({
+        courseName : name,
+        state : state,
+        creatorID : userID
+    });
+    console.log(course);
+
+    response.status(200).send(course);
 }));

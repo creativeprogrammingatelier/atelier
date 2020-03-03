@@ -28,11 +28,11 @@ export function Snippet({snippet}: SnippetProperties) {
 			<ButtonBar align="right">
 				<Button>
 					<Link to={`/files/${snippet.fileId}#line=${snippet.fileLines[0]}-${snippet.fileLines[1]}`}>
-						<FiCode/>
+						<FiCode size={14} color="#FFFFFF"/>
 					</Link>
 				</Button>
 				<Button onClick={() => updateExpanded(expanded => !expanded)}>
-					{expanded ? <FiChevronUp color="#FFFFFF"/> : <FiChevronDown color="#FFFFFF"/>}
+					{expanded ? <FiChevronUp size={14} color="#FFFFFF"/> : <FiChevronDown size={14} color="#FFFFFF"/>}
 				</Button>
 			</ButtonBar>
 		</div>

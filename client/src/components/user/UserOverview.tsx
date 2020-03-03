@@ -22,7 +22,6 @@ export function UserOverview({match: { params: { userId } } }: UserOverviewPrope
 			component={user =>
 				<Frame
 					title={user.name === undefined ? "Undefined" : user.name}
-					user={{id: user.ID, name: user.name}}
 					sidebar search={`/user/${user.ID}/search`}>
 					<p>Introduction section</p>
 					{/*<DataTable

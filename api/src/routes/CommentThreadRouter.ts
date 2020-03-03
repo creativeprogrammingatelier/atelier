@@ -38,8 +38,8 @@ commentThreadRouter.get('/file/:fileID', capture(async (request: Request, respon
  * Get comment threads of a submission (general project comments)
  */
 commentThreadRouter.get('/submission/:submissionID', capture(async (request: Request, response: Response) => {
-    const submissionID: string = request.params.submissionID;
-    const nullFileID = await FileDB.getNullFileID(submissionID);
+    const submissionID : string = request.params.submissionID;
+    const nullFileID : string = await FileDB.getNullFileID(submissionID) as unknown as string; // TODO expect back a string, but typescript thinks is undefined. Maybe due to PromiseLike<string>?
     const commentThreads : CommentThread[] = await ThreadDB.getThreadsByFile(nullFileID);
     response.status(200).send(commentThreads);
 }));
