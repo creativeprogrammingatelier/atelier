@@ -39,7 +39,7 @@ commentThreadRouter.get('/file/:fileID', capture(async (request: Request, respon
  */
 commentThreadRouter.get('/submission/:submissionID', capture(async (request: Request, response: Response) => {
     const submissionID: string = request.params.submissionID;
-    const nullFileID = await FileDB.getNullFileID(submissionID);
+    const nullFileID : string = await FileDB.getNullFileID(submissionID) as unknown as string;
     const commentThreads : CommentThread[] = await ThreadDB.getThreadsByFile(nullFileID);
     response.status(200).send(commentThreads);
 }));
