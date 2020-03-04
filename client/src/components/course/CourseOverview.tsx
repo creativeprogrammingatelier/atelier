@@ -1,7 +1,7 @@
 import React from 'react';
 import {Frame} from '../frame/Frame';
-import {DataBlockList} from '../general/DataBlockList';
-import {Loading} from '../general/Loading';
+import {DataBlockList} from '../general/data/DataBlockList';
+import {Loading} from '../general/loading/Loading';
 import {Submission} from "../../../../models/database/Submission";
 import { getCourseSubmissions } from '../../../helpers/APIHelper';
 import { Uploader } from '../uploader/Uploader';

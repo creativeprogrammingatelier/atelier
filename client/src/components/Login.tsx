@@ -4,7 +4,7 @@ import {withRouter, Redirect, Link} from 'react-router-dom';
 import '../styles/login.scss';
 import {User} from '../../../models/database/User';
 import {Form, Button} from 'react-bootstrap';
-import { Loading } from './general/Loading';
+import { Loading } from './general/loading/Loading';
 import { getLoginProviders } from '../../helpers/APIHelper';
 import { LoginProvider } from '../../../models/api/LoginProvider';
 
