@@ -1,6 +1,6 @@
 # Configuration
 
-Atelier is configured using configuration files in the JSON format. The files are located in the root of the application and named `config.environment.json`, where `environment` is the value of the `NODE_ENV` environment variable. The value is assumed to be `development` by default; on production servers it should be set to `production`. The file `config.example.json` shows an example configuration for development purposes.
+Atelier is configured using configuration files in the JSON format. The files are located in a folder called `config` and named `environment.json`, where `environment` is the value of the `NODE_ENV` environment variable. The value is assumed to be `development` by default; on production servers it should be set to `production`. The file `config/example.json` shows an example configuration for development purposes.
 
 The configuration file specifies all environment dependent variables for the project, so no source code changes should be needed to get it running. Here follows a description of all values that can be specified in the configuration file.
 
@@ -83,7 +83,7 @@ Atelier requires access to a PostgreSQL database with its table structure set up
 
 Atelier can also read configuration values from your environment variables or files on disk. This can be useful when the values are also needed by other processes, for example in the case of a database password. 
 
-To use an environment variable, set the property in your `config.env.json` to `ENV::VARIABLE_NAME`. When reading the configuration, the value of this field will then be looked for in an environment variable called `VARIABLE_NAME`. In the following case, the field `port` will be read from the `PORT` environment variable:
+To use an environment variable, set the property in your `config/env.json` to `ENV::VARIABLE_NAME`. When reading the configuration, the value of this field will then be looked for in an environment variable called `VARIABLE_NAME`. In the following case, the field `port` will be read from the `PORT` environment variable:
 
 ```json
 "port": "ENV::PORT"

@@ -24,8 +24,8 @@ database/log
 database/data
 **/.DS_Store
 
-config.*.json
-!config.example.json
+config/
+!config/example.json
 
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

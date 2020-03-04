@@ -56,7 +56,7 @@ export class ConfigurationError extends Error {
 }
 
 const env = process.env.NODE_ENV || "development";
-const file = fs.readFileSync(`config.${env}.json`, 'utf8');
+const file = fs.readFileSync(`config/${env}.json`, 'utf8');
 const json = JSON.parse(file);
 
 /** Helper method that reads out a leaf property in the configuration */
