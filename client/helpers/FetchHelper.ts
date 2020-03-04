@@ -18,9 +18,11 @@ export class Fetch {
 	/**
 	 * Generic fetch, requesting JSON content from the server,
 	 * using the authentication token if the user is logged in.
-	 * Throws a `FetchError` if the request was not succesful.
+	 * An extra handler function can be given to transform the data before caching
+	 * Throws a `FetchError` if the request was not successful.
 	 */
 	static async fetch<T>(url: RequestInfo, options: RequestInit = {}, handler?: (response: Response) => T) {
+		// TODO: This method looks like a mess, how can it be improved
 		const headers: HeadersInit = {};
 		if (AuthHelper.loggedIn()) {
 			const token = AuthHelper.getToken();
@@ -28,13 +30,11 @@ export class Fetch {
 		}
 
 		const doCache: boolean = options.method === undefined || options.method === "GET";
-
 		if (doCache && cache.has(url)) {
 			return cache.get(url);
 		}
 
 		const response = await fetch(url, Fetch.combineHeaders(options, headers));
-
 		if (response.ok) {
 			if (handler) {
 				const data = handler(response);
@@ -54,7 +54,7 @@ export class Fetch {
 
 	/**
 	 * Do a fetch and convert the result into a JSON object.
-	 * Throws a `JsonFetchError` if the request was not succesful.
+	 * Throws a `JsonFetchError` if the request was not successful.
 	 */
 	static async fetchJson<T>(url: RequestInfo, options: RequestInit = {}): Promise<T> {
 		const headers = {
@@ -89,7 +89,7 @@ export class Fetch {
 	}
 }
 
-/** Error thrown on an unsuccesful fetch */
+/** Error thrown on an unsuccessful fetch */
 export class FetchError extends Error {
 	/** The response sent by the server */
 	response: Response;
@@ -100,7 +100,7 @@ export class FetchError extends Error {
 	}
 }
 
-/** Error thrown on an unsuccesful fetch when requesting json data */
+/** Error thrown on an unsuccessful fetch when requesting json data */
 export class JsonFetchError extends FetchError {
 	error: string;
 
