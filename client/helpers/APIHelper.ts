@@ -7,6 +7,7 @@ import { Submission } from '../../models/api/Submission';
 import { User } from '../../models/api/User';
 import { Comment } from "../../models/api/Comment";
 import { File } from "../../models/api/File";
+import {threadState} from "../../enums/threadStateEnum";
 
 // TODO: Fix all anys to be the correct model
 
@@ -60,10 +61,26 @@ export const getProjectComments = (submissionID: string) =>
 export const getRecentComments = (submissionID: string) => 
     Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
 
-export const createFileCommentThread = (fileID: string, thread: any) => 
+interface createCommentThread {
+    snippetBody? : string,
+    lineStart? : number,
+    charStart? : number,
+    lineEnd? : number,
+    charEnd? : number,
+    visibilityState? : threadState,
+    commentBody : string,
+    submissionID : string
+}
+export const createFileCommentThread = (fileID: string, thread: createCommentThread) =>
     Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, {
         method : 'POST',
         body : JSON.stringify(thread)
+    });
+
+export const createSubmissionCommentThread = (submissionID : string, body : {commentBody : string}) =>
+    Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, {
+        method : 'POST',
+        body : JSON.stringify(body)
     });
 
 export const createComment = (commentThreadID: string, comment : {commentBody : string}) =>

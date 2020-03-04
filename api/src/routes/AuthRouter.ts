@@ -29,7 +29,7 @@ authRouter.post('/login', async (req, res, next) => {
 authRouter.post('/register', async (req, res) => {
     try {
         const user = await UserDB.createUser(req.body);
-        const token = issueToken(user.userID!);
+        const token = issueToken(user.ID);
         res.status(200).json({ token });
     } catch (err) {
         res.status(500).json(err);

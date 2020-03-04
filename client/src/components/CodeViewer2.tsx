@@ -274,15 +274,25 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	async addComment(comment : string) {
 		const fileID = this.props.fileID;
 		const submissionID = this.props.submissionID;
+		const snippetBody : string | undefined = (this.state.commentSelection == "") ? undefined : this.state.commentSelection;
+
+		console.log("Snippet body: " + snippetBody);
+		console.log("Line start: " + this.state.commentStartLine);
+		console.log("Line end: " + this.state.commentEndLine);
+		console.log("Char start: " + this.state.commentStartCharacter);
+		console.log("Char end: " + this.state.commentEndCharacter);
+		console.log("Comment body: " + comment);
+		console.log("SubmissionID: " + submissionID);
         
         try {
 		    await createFileCommentThread(fileID, {
-                submissionID,
+                snippetBody : snippetBody,
                 lineStart : this.state.commentStartLine,
                 lineEnd : this.state.commentEndLine,
                 charStart : this.state.commentStartCharacter,
                 charEnd : this.state.commentEndCharacter,
-                body : comment
+				commentBody : comment,
+				submissionID : submissionID
             });
         } catch (err) {
             if (err instanceof JsonFetchError) {
