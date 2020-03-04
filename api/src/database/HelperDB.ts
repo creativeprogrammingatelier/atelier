@@ -13,7 +13,7 @@ export const pool = new pg.Pool({
 	max: 1
 });
 export const end = pool.end.bind(pool);
-export const getClient : () => Promise<pgDB> = pool.connect.bind(pool);
+export const getClient : () => Promise<pg.PoolClient> = pool.connect.bind(pool);
 
 export function isPool(obj : pgDB) : obj is pg.Pool {
 	return Object.is(obj, pool);
