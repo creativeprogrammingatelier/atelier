@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from "react";
 import {Frame} from '../frame/Frame';
 import {DataBlockList} from '../general/data/DataBlockList';
 import {Loading} from '../general/loading/Loading';
@@ -16,6 +16,7 @@ interface CourseOverviewProps {
 }
 
 export function CourseOverview({match}: CourseOverviewProps) {
+	const [ reload, updateReload ] = useState(0);
 	return (
 		<Frame title="Course" sidebar search={"/course/../search"}>
 			<Jumbotron>
