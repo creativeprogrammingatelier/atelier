@@ -1,11 +1,11 @@
-import {pool, extract, map, one, searchify, pgDB, checkAvailable } from "./HelperDB";
-import {User, DBUser, convertUser} from '../../../models/database/User';
+import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools } from "./HelperDB";
+import {User, DBUser, convertUser, userToAPI} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
- * userID, name, role, email
+ * userID, userName, role, email
  * @Author Rens Leendertz
  */
 
@@ -13,39 +13,54 @@ export class UserDB {
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
-	static async getAllStudents(DB : pgDB = pool) {
-		return DB.query(`SELECT userID, name, globalRole, email 
-			FROM "Users" 
-			WHERE globalRole = 'user'`)
-			.then(extract).then(map(convertUser))
+	static async getAllStudents(params : DBTools = {}) {
+		return UserDB.filterUser({...params, role:'user'})
 	}
 
 	/**
 	 * calls onSuccess() with all users in the system.
 	 */
-	static async getAllUsers(DB : pgDB = pool) {
-		return DB.query(`SELECT userID, name, globalRole, email FROM "Users"`)
-			.then(extract).then(map(convertUser))
+	static async getAllUsers(params : DBTools = {}) {
+		return UserDB.filterUser(params)
 	}
 
 	/**
-	 * calls onSuccess() with a student based on its userID, without password hash
+	 * returns a student based on its userID, without password hash
 	 */
-	static async getUserByID(userID : string, DB : pgDB = pool) {
-		const userid = UUIDHelper.toUUID(userID);
-		return DB.query(`SELECT userID, name, globalRole, email 
-			FROM "Users" where userID = $1`, [userid])
-			.then(extract).then(map(convertUser)).then(one)
+	static async getUserByID(userID : string, params : DBTools = {}) {
+		return UserDB.filterUser({...params, userID}).then(one)
 	}
 
-	static async searchUser(searchString : string, limit? : number, DB : pgDB = pool){
-		if (limit === undefined || limit < 0) limit=undefined
-		searchString = searchify(searchString)
-		return DB.query(`SELECT userID, name, globalRole, email
-			FROM "Users"
-			WHERE name ILIKE $1
-			LIMIT $2`, [searchString, limit])
-			.then(extract).then(map(convertUser))
+	static async searchUser(searchString : string, params : DBTools ={}){
+		return UserDB.filterUser({...params, userName:searchString})
+	}
+
+	static async filterUser(user : User){
+		const {
+			userID = undefined,
+			userName = undefined,
+			email = undefined,
+			role = undefined,
+
+			limit = undefined,
+			offset = undefined,
+			client = pool
+		} = user
+		const userid = UUIDHelper.toUUID(userID),
+			username = searchify(userName)
+		return client.query(`
+		SELECT *
+		FROM "UsersView"
+		WHERE
+			($1::uuid IS NULL OR userID = $1)
+		AND ($2::text IS NULL OR userName ILIKE $2)
+		AND ($3::text IS NULL OR email = $3)
+		AND ($4::text IS NULL OR globalrole = $4)
+		ORDER BY userName, email --email is unique, so unique ordering
+		LIMIT $5
+		OFFSET $6
+		`, [userid, username, email, role, limit, offset])
+		.then(extract).then(map(userToAPI))
 	}
 
 	/**
@@ -53,45 +68,51 @@ export class UserDB {
 	 * All fields but userID are required
 	 * if a userID is present, it will be ignored.
 	 */
-	static async createUser(user : User, DB : pgDB = pool) {
-		checkAvailable(['email','password','role','name'], user)
+	static async createUser(user : User) {
+		checkAvailable(['email','password','role','userName'], user)
 		const {
 			email,
 			password,
 			role,
-			userName: name
+			userName,
+			client = pool
 		} = user;
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
-		return DB.query(`INSERT INTO "Users" 
-			VALUES (DEFAULT, $1, $2, $3, $4) 
-			RETURNING *`, [name, role, email, password])
-			.then(extract).then(map(convertUser)).then(one)
+		return client.query(`
+				INSERT INTO "Users" 
+				VALUES (DEFAULT, $1, $2, $3, $4) 
+				RETURNING userID, userName, globalRole, email
+			`, [userName, role, email, password])
+			.then(extract).then(map(userToAPI)).then(one)
 	}
 	/**
 	 * update a user using the @param user.
 	 * userID is required to identify the user.
 	 * all other fields may or may not be present and will be updated accordingly.
 	 */
-	static async updateUser(user: User, DB : pgDB = pool) {
+	static async updateUser(user: User) {
 		checkAvailable(['userID'], user)
 		const {
 			userID, //primary key is required
 			email = undefined,
 			password = undefined,
 			role = undefined,
-			userName: name = undefined
+			userName = undefined,
+
+			client = pool
 		} = user
 		const userid = UUIDHelper.toUUID(userID);
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password)
-		return DB.query(`UPDATE "Users"
+		return client.query(`UPDATE "Users"
 			SET 
 			email = COALESCE($2, email),
 			hash = COALESCE($3, hash),
 			globalRole = COALESCE($4, globalRole),
-			name = COALESCE($5, name)
+			userName = COALESCE($5, userName)
 			WHERE userID = $1
-			RETURNING * `, [userid, email, hash, role, name])
-			.then(extract).then(map(convertUser)).then(one)
+			RETURNING userID, userName, globalRole, email 
+			`, [userid, email, hash, role, userName])
+			.then(extract).then(map(userToAPI)).then(one)
 	}
 
 	/**
@@ -99,10 +120,12 @@ export class UserDB {
 	 */
 	static async deleteUser(userID: string, DB : pgDB = pool) {
 		const userid = UUIDHelper.toUUID(userID);
-		return DB.query(`DELETE FROM "Users" 
+		return DB.query(`
+			DELETE FROM "Users" 
 			WHERE userID = $1 
-			RETURNING *`, [userid])
-			.then(extract).then(map(convertUser)).then(one)
+			RETURNING userID, userName, globalRole, email
+			`, [userid])
+			.then(extract).then(map(userToAPI)).then(one)
 	}
 
 	/**
@@ -115,12 +138,12 @@ export class UserDB {
 		onSuccess: (userID : string) => void, 
 		onUnauthorised: () => void, 
 		onFailure : (error : Error) => void,
-		DB : pgDB = pool) {
+		client : pgDB = pool) {
 		const {
 			email,
 			password
 		} = loginRequest;
-		const res = await DB.query<DBUser, [string]>(`SELECT * 
+		const res = await client.query<DBUser, [string]>(`SELECT * 
 			FROM "Users" 
 			WHERE email = $1`, [email])
 			.then(extract).then(one).catch((error : Error) => {

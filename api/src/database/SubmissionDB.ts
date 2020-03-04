@@ -178,6 +178,7 @@ export class SubmissionDB {
 		SELECT s.*, u.userName, u.globalrole, u.email
 		FROM "Submissions" as s, "UsersView" as u
 		WHERE s.userID = u.userID
+		  AND submissionID = $1
 		`, [submissionid])
 			.then(extract).then(map(submissionToAPI)).then(one)
 			.then(partial => {

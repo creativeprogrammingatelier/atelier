@@ -88,8 +88,9 @@ export class SnippetDB {
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
 			RETURNING snippetID
 			`, [lineStart, lineEnd, charStart, charEnd, body])
-		.then(extract).then(one).then(res => UUIDHelper.fromUUID(res.snippetID as string))
+		.then(extract).then(one).then(res => UUIDHelper.fromUUID(res.snippetid as string))
 	}
+	
 
 	static async updateSnippet(snippet : Snippet, DB : pgDB = pool){
 		checkAvailable(['snippetID'], snippet)
@@ -124,15 +125,10 @@ export class SnippetDB {
 	static async deleteSnippet(snippetID : string, client : pgDB = pool){
 		const snippetid = UUIDHelper.toUUID(snippetID);
 		return client.query(`
-		WITH delete AS (
-			DELETE FROM "Snippets" 
-			WHERE snippetID = $1 
-			RETURNING *
-		)
-		SELECT s.*, fv.*, ctr.commentThreadID
-		FROM delete as s, "CommentThreadRefs" as ctr, "FilesView" as fv
-		WHERE ctr.snippetID = s.snippetID
-		AND fv.fileID = ctr.fileID`, [snippetid])
-		.then(extract).then(map(snippetToAPI)).then(one)
+		DELETE FROM "Snippets" 
+		WHERE snippetID = $1 
+		RETURNING *
+		`, [snippetid])
+		.then(extract).then(map(convertSnippet)).then(one)
 	}
 }
