@@ -17,7 +17,7 @@ interface CourseOverviewProps {
 
 export function CourseOverview({match}: CourseOverviewProps) {
 	const [reload, updateReload] = useState(0);
-	
+
 	return (
 		<Frame title="Course" sidebar search={"/course/../search"}>
 			<Jumbotron>
