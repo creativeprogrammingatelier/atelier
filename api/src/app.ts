@@ -80,7 +80,7 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
         response.status(404).send({ error: "item.notfound", message: "The requested item could not be found." });
     } else if (error instanceof ProjectValidationError) {
         response.status(400).send({ error: "project.invalid", message: error.message });
-    } else if (isPostgresError(error)) {
+    } else if (error instanceof Error && isPostgresError(error)) {
         const code = parsePostgresErrorCode(error as PostgresError);
         response.status(500).send({ error: code, message: "Something went wrong while connecting to the database." });
     } else {
@@ -93,3 +93,5 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
 process.on('unhandledRejection', error => {
     console.log('\x1b[31mCRITICAL (Unhandled rejection): ', error);
 });
+
+console.log("Server started.");
