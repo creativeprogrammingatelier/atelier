@@ -1,17 +1,17 @@
 import * as pg from "pg"
 import { NotFoundDatabaseError } from "./DatabaseErrors";
+import { config } from "../helpers/ConfigurationHelper";
 console.log("helper startup")
 
 export type pgDB = pg.Pool | pg.Client
 
 export const pool = new pg.Pool({
-	user: 'assistantassistant',
-	host: 'localhost',
-	database: 'assistantassistant',
-	password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
-	port: 5432,
+	...config.database,
 	max: 1
 });
+
+pool.on("connect", () => console.log("Connected to the database."));
+
 export const end = pool.end.bind(pool);
 export const getClient : () => Promise<pg.PoolClient> = pool.connect.bind(pool);
 
