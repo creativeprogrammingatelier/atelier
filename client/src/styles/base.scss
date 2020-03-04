@@ -286,6 +286,15 @@ textarea:focus, textarea:active {
 		border-radius: 50%;
 	}
 }
+.buttonList {
+	.btn {
+		width: 100%;
+		display: block;
+	}
+	.btn:not(:last-child) {
+		margin-bottom: 1rem;
+	}
+}
 
 .comment {
 	box-shadow: $shadowSmallDown;
@@ -349,5 +358,16 @@ textarea:focus, textarea:active {
 	}
 	.btn:hover {
 		background-color: $colorOffWhite;
+	}
+}
+.cover {
+	width: 100vw;
+	min-height: 100vh;
+	padding: 2rem;
+	background: $gradientVertical;
+
+	hr {
+		margin: 1rem 0;
+		border-color: $colorWhite;
 	}
 }

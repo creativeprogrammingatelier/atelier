@@ -3,12 +3,49 @@ import AuthHelper from '../../helpers/AuthHelper';
 import {withRouter, Redirect, Link} from 'react-router-dom';
 import '../styles/login.scss';
 import {User} from '../../../models/database/User';
-import {Form, Button} from 'react-bootstrap';
+import {Form, Button, Jumbotron} from "react-bootstrap";
 import { Loading } from './general/loading/Loading';
 import { getLoginProviders } from '../../helpers/APIHelper';
 import { LoginProvider } from '../../../models/api/LoginProvider';
+import {Logo} from "./frame/Logo";
 
-class Login extends Component {
+interface LoginRedirectProperties {
+	state: {
+		from: string
+	}
+}
+interface LoginProperties {
+	onLogin: (email: string) => void,
+	location?: LoginRedirectProperties
+}
+export function Login({onLogin, location}: LoginProperties) {
+	if (AuthHelper.loggedIn() && location && location.state && location.state.from) {
+		return <Redirect to={location.state.from}/>
+	}
+
+	return <Jumbotron className="cover">
+		<Logo/>
+		<div className="text-center buttonList">
+			<p>Select a login method</p>
+			<hr/>
+			<Loading<LoginProvider[]>
+				loader={getLoginProviders}
+				component={providers => {
+					if (providers.length > 1) {
+						return providers.map(provider => <Button size="lg"><a href={provider.url}>{provider.name}</a></Button>);
+					} else if (providers.length > 0) {
+						window.location.href = providers[0].url;
+						return <p>Redirecting to {providers[0].name}</p>;
+					} else {
+						return <p>There are no login providers configured. If you are the administrator of this installation, please configure a login provider in the configuration files.</p>;
+					}
+				}}
+			/>
+		</div>
+	</Jumbotron>
+}
+
+class LoginLegacy extends Component {
 	state: {email: string, password: string, user: User | null, response: string, redirectToReferrer: boolean};
 	props: any;
 	constructor(props: any) {
@@ -115,5 +152,3 @@ class Login extends Component {
 	}
 
 }
-
-export default Login;
