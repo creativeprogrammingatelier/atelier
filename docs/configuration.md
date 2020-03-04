@@ -78,3 +78,23 @@ Atelier requires access to a PostgreSQL database with its table structure set up
 - `user`: the user that connects to the database
 - `password`: the password of the user connecting to the database
 - `database`: the name of the database Atelier should connect to
+
+## Using environment variables or files
+
+Atelier can also read configuration values from your environment variables or files on disk. This can be useful when the values are also needed by other processes, for example in the case of a database password. 
+
+To use an environment variable, set the property in your `config.env.json` to `ENV::VARIABLE_NAME`. When reading the configuration, the value of this field will then be looked for in an environment variable called `VARIABLE_NAME`. In the following case, the field `port` will be read from the `PORT` environment variable:
+
+```json
+"port": "ENV::PORT"
+```
+
+To read a file from disk, set the property to `FILE::/path/to/file`. The value for this field will then be read from the specified file. In this example, the database password is read from a Docker secret file:
+
+```json
+"database": {
+    "password": "FILE::/run/secrets/db_password"
+}
+```
+
+Note that it is only possible to set values in your configuration that would be strings, numbers or booleans this way. Reading objects from environment variables or files is not supported.
