@@ -34,7 +34,9 @@ export function Homepage() {
                     </div>
                 }
             />
-			<AddCourse handleResponse = {updateCourse} />
+            <div className="m-3">
+	            <AddCourse handleResponse = {updateCourse} />
+            </div>
 
 		</Frame>
 	)
