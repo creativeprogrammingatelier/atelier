@@ -6,7 +6,8 @@
 import { config } from './helpers/ConfigurationHelper';
 
 import express, { Request, Response, NextFunction } from 'express';
-import { Socket } from 'socket.io';
+import http from 'http';
+import socketio, { Socket } from 'socket.io';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
@@ -36,9 +37,9 @@ app.use(express.urlencoded({
 }));
 
 //Socket io
-const http = require('http').createServer(app);
-http.listen(config.port, '127.0.0.1');
-const socket: Socket = require('socket.io')(http);
+const server = http.createServer(app);
+server.listen(config.port, config.hostname);
+const socket = socketio(server);
 app.set('socket-io', socket);
 
 socket.on('connect', (socket: Socket) => {

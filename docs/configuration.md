@@ -7,10 +7,16 @@ The configuration file specifies all environment dependent variables for the pro
 ## Host and port
 
 ```json
-"host": "http://localhost:5000"
+"urlBase": "http://localhost:5000"
 ```
 
 The start of the url where the application will be accessible. It should include the preferred protocol for accessing the application (which should be `https://` in production environments) and has no trailing slash.
+
+```json
+"hostname": "0.0.0.0"
+```
+
+The hostname the server should listen on. In production environments the default is 0.0.0.0, in development it defaults to 127.0.0.1 (localhost).
 
 ```json
 "port": 5000

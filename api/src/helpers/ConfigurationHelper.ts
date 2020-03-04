@@ -29,7 +29,9 @@ export interface Configuration {
     /** Value of the NODE_ENV environment variable */
     env: string,
     /** The domain where the application is hosted, including the preferred protocol */
-    host: string,
+    baseUrl: string,
+    /** The hostname the server should listen on */
+    hostname: string,
     /** The port to start the server on */
     port: number,
     /** 
@@ -84,7 +86,8 @@ function prop<T extends string | number | boolean>(name: string, value: T | unde
 // Because the optional fields may be leaf nodes, we have to dig in to all structures
 export const config: Configuration = {
     env,
-    host: prop("host", json.host),
+    baseUrl: prop("baseUrl", json.baseUrl),
+    hostname: prop("hostname", json.hostname, env === "production" ? "0.0.0.0" : "127.0.0.1"),
     port: prop("port", json.port, 5000),
     loginProviders: 
         json.loginProviders 
