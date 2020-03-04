@@ -77,7 +77,7 @@ export function CommentThread({thread, body, file}: CommentThreadProperties) {
 	const newComment = async (text: string) => {
         try {
             const comment = await createComment(thread.ID, {
-                body : text
+                commentBody : text
             });
             console.log('added comment response' + comment);
             updateComments(comments => [

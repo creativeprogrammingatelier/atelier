@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {PanelButton} from './general/PanelButton'
 import {Frame} from './frame/Frame';
 import {Loading} from "./general/Loading";
@@ -9,7 +9,7 @@ import { getCourses } from '../../helpers/APIHelper';
 export function Homepage() {
 
 	function updateCourse(course : Course) {
-		// TODO: create new course in the api
+		// TODO course added, but should be in the loading component
 	}
 
 	return (

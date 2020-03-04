@@ -66,7 +66,7 @@ export const createFileCommentThread = (fileID: string, thread: any) =>
         body : JSON.stringify(thread)
     });
 
-export const createComment = (commentThreadID: string, comment : {body : string}) =>
+export const createComment = (commentThreadID: string, comment : {commentBody : string}) =>
     Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, {
         method : 'PUT',
         body : JSON.stringify(comment)

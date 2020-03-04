@@ -56,7 +56,7 @@ export function submissionToAPI(db : DBAPISubmission) : APISubmission {
 		state: db.state,
 		files: [],
 		references:{
-			courseID:db.courseid
+			courseID: UUIDHelper.fromUUID(db.courseid)
 		}
 	}
 }

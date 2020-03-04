@@ -43,9 +43,6 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 	const name : string = request.body.name;
 	const state : courseState = request.body.state;
 	const userID : string = await getCurrentUserID(request);
-	console.log(name);
-	console.log(state);
-	console.log(userID);
 
 	const course : CoursePartial = await CourseDB.addCourse({
 		courseName : name,
