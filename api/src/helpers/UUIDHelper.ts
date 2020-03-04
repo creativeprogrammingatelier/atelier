@@ -1,9 +1,16 @@
+export class UUIDError extends Error {
+    constructor(id: string) {
+        super(`${id} is not a valid base64 representation of a UUID.`);
+    }
+}
+
 export class UUIDHelper {
 	static toUUID(id: ID64) : UUID;
 	static toUUID(id : undefined) : undefined;
 	static toUUID(id : ID64 | undefined) : UUID | undefined;
 	static toUUID(id : ID64 | undefined) : UUID | undefined {
-		if (id === undefined || id === null) return undefined
+        if (id === undefined || id === null) return undefined
+        if (id.length !== 22) throw new UUIDError(id);
 		/*
 			Convert a 22-character base 64 ID to the database internal UUID.
 			We use _ instead of the base 64 /

@@ -1,9 +1,10 @@
 import React from 'react';
 import {Frame} from '../frame/Frame';
-import {DataBlockList} from '../general/data/DataBlockList';
-import {Loading} from '../general/loading/Loading';
+import {DataBlockList} from '../general/DataBlockList';
+import {Loading} from '../general/Loading';
 import {Submission} from "../../../../models/database/Submission";
 import { getCourseSubmissions } from '../../../helpers/APIHelper';
+import { Uploader } from '../uploader/Uploader';
 import {Jumbotron} from "react-bootstrap";
 
 interface CourseOverviewProps {
@@ -21,6 +22,10 @@ export function CourseOverview({match}: CourseOverviewProps) {
 				<h1>Long Course Name Here</h1>
 				<p>Created by someone?</p>
 			</Jumbotron>
+			<Uploader
+				courseId={match.params.courseId}
+				onUploadComplete={() => updateReload(rel => rel + 1)}
+			/>
 			<Loading<Submission[]>
                 loader={getCourseSubmissions}
                 params={[match.params.courseId]}
@@ -38,7 +43,9 @@ export function CourseOverview({match}: CourseOverviewProps) {
                                 //tags: submission.tags
                             };
                         })}
-                    />} />
+                    />
+                }
+			/>
 		</Frame>
 	);
 }

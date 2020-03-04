@@ -5,7 +5,8 @@ import { ExtendedThread } from '../../models/database/Thread';
 import { Course } from '../../models/database/Course';
 import { Submission } from '../../models/database/Submission';
 import { User } from '../../models/api/User';
-import { Comment } from "../../models/database/Comment";
+import { Comment } from '../../models/database/Comment';
+import { LoginProvider } from '../../models/api/LoginProvider';
 
 // TODO: Fix all anys to be the correct model
 
@@ -18,8 +19,9 @@ export const getCourse = (courseID: string) =>
     
 export const createCourse = (course: Course) => 
     Fetch.fetchJson<Course>('/api/course', {
-        method : 'POST',
-        body : JSON.stringify(course)
+        method: 'POST',
+        body: JSON.stringify(course),
+        headers: { "Content-Type": "application/json" }
     });
 
 // Users
@@ -38,6 +40,21 @@ export const getUserSubmissions = (userId: string) =>
 
 export const getSubmission = (submissionID: string) => 
     Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);
+
+export const createSubmission = (courseId: string, projectName: string, files: File[]) => {
+    const form = new FormData();
+    form.append('project', projectName);
+    for (const file of files) {
+        form.append('files', file);
+    }
+
+    return Fetch.fetchJson<Submission>(`/api/submission/course/${courseId}`, {
+        method: 'POST',
+        body: form
+        // Don't set the Content-Type header, it is automatically done by using FormData
+        // and it breaks if you set it manually, as the boundaries will not be added
+    });
+}
 
 // Files
 export const getFiles = (submissionID: string) => 
@@ -61,16 +78,22 @@ export const getRecentComments = (submissionID: string) =>
 
 export const createFileCommentThread = (fileID: string, thread: any) => 
     Fetch.fetchJson<ExtendedThread>(`/api/commentThread/file/${fileID}`, {
-        method : 'POST',
-        body : JSON.stringify(thread)
+        method: 'POST',
+        body: JSON.stringify(thread),
+        headers: { "Content-Type": "application/json" }
     });
 
 export const createComment = (commentThreadID: string, comment: Comment) =>
     Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, {
-        method : 'PUT',
-        body : JSON.stringify(comment)
+        method: 'PUT',
+        body: JSON.stringify(comment),
+        headers: { "Content-Type": "application/json" }
     });
 
 // Search
 export const search = (term: string) =>
     Fetch.fetchJson<any>(`/api/search?q=${term}`);
+
+// Auth
+export const getLoginProviders = () =>
+    Fetch.fetchJson<LoginProvider[]>('/api/auth/providers');
