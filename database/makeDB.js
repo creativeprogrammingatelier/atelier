@@ -72,14 +72,15 @@ INSERT INTO "CourseRolePermissions" VALUES
 
 CREATE TABLE "Users" (
      userID       uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     samlID       char(39) UNIQUE, --can be null
      userName     text NOT NULL CHECK (userName <> ''),
      globalRole   text NOT NULL DEFAULT 'user',
      email        text NOT NULL UNIQUE CHECK (email <> ''),
      hash         char(60) NOT NULL
 );
 INSERT INTO "Users" VALUES
-     (DEFAULT, 'Caaas', DEFAULT, 'Cas@Caaas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-	('00000000-0000-0000-0000-000000000000', 'Cas', DEFAULT, 'Cas@Cas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu');
+     (DEFAULT, '', 'Caaas', DEFAULT, 'Cas@Caaas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
+	('00000000-0000-0000-0000-000000000000', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ','Cas', DEFAULT, 'Cas@Cas', '');
 
 CREATE TABLE "Courses" (
      courseID    uuid PRIMARY KEY DEFAULT uuid_generate_v4(),

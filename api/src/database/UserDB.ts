@@ -2,6 +2,7 @@ import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools } from
 import {User, DBUser, convertUser, userToAPI} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import e from "express";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
@@ -75,14 +76,15 @@ export class UserDB {
 			password,
 			role,
 			userName,
+			samlID = undefined,
 			client = pool
 		} = user;
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
 		return client.query(`
 				INSERT INTO "Users" 
-				VALUES (DEFAULT, $1, $2, $3, $4) 
+				VALUES (DEFAULT, $1, $2, $3, $4, $5) 
 				RETURNING userID, userName, globalRole, email
-			`, [userName, role, email, password])
+			`, [samlID, userName, role, email, password])
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	/**
@@ -168,6 +170,37 @@ export class UserDB {
 		}
 	}
 
+	static async loginSAML(
+		loginRequest : {email:string, samlID:string},
+		onSucces : (userID : string) => void,
+		onUnauthorised : () => void,
+		onFailure : (error : Error) => void,
+		client : pgDB = pool) {
+			const {
+				email,
+				samlID
+			} = loginRequest
+			let res : DBUser
+			try {
+				res = await client.query(`
+				SELECT *
+				FROM "Users"
+				WHERE email = $1`, [email]).then(extract).then(one)
+			} catch (error) {
+				return onFailure(new Error("user not found"))
+			}
+			if (res === undefined) return onUnauthorised()
+			if (!res.samlid || !res.userid) return onFailure(new Error("the database is fkin"))
+			const {samlid, userid} = res
+			const userID = UUIDHelper.fromUUID(userid)
+			if (samlid === samlID) {
+				onSucces(userID)
+		 	} else {
+				onUnauthorised()
+			}
+
+		}
+
 	/**
 	 * 2 private methods to handle password hashing and comparing.
 	 */
@@ -177,5 +210,11 @@ export class UserDB {
 	private static hashPassword(plain: string): string {
 		const saltRounds=10;
 		return bcrypt.hashSync(plain, saltRounds);
+	}
+	/**
+	 * generate an invalid password, making sure noone can login through the normal route.
+	 */
+	static invalidPassword(){
+		return '                                        '
 	}
 }
