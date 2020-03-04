@@ -40,7 +40,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
         if (activeTab === "code") {
             return <CodeTab body={body} file={file} submissionID={submissionId} />;
         } else if (activeTab === "comments") {
-            return <CommentTab body={body} file={file} />;
+            return <CommentTab body={body} file={file} submissionID={submissionId} />;
         } else if (activeTab === "share") {
             return <ShareTab file={file} url={window.location.origin + filePath} />;
         }

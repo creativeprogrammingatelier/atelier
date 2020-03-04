@@ -27,7 +27,7 @@ export function Snippet({snippet}: SnippetProperties) {
             </pre>
 			<ButtonBar align="right">
 				<Button>
-					<Link to={`/files/${snippet.fileId}#line=${snippet.fileLines[0]}-${snippet.fileLines[1]}`}>
+					<Link to={`/submission/${snippet.submissionId}/${snippet.fileId}/code#${snippet.fileLines[0]}`}>
 						<FiCode/>
 					</Link>
 				</Button>

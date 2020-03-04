@@ -9,16 +9,23 @@ import { getFileComments } from "../../../helpers/APIHelper";
 
 interface CommentTabProperties {
     body : string,
+    submissionID : string,
     file: File
 }
 
 // TODO sort threads once new interface is implemented. Useful for switch between code and comment threads.
-export function CommentTab({ file , body}: CommentTabProperties) {
+export function CommentTab({ submissionID,file , body}: CommentTabProperties) {
 	return <div className="contentTab">
 		<h1>{FileNameHelper.fromPath(file.name)}</h1>
         <Loading<ICommentThread[]>
             loader={getFileComments}
             params={[file.ID]}
-            component={threads => threads.map(thread => <CommentThread thread={thread} file={file} body={body} />)} />
+            component={threads => threads.map(thread =>
+                <CommentThread
+                    thread={thread}
+                    file={file}
+                    body={body}
+                    submissionID={submissionID}
+                />)} />
     </div>
 }

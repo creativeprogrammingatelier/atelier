@@ -16,6 +16,7 @@ import { JsonFetchError } from '../../helpers/FetchHelper';
 import { getFileComments, createFileCommentThread } from '../../helpers/APIHelper';
 import { Range, getRanges } from "../helpers/HighlightingHelper";
 import {CommentThread} from "../../../models/api/CommentThread";
+import { withRouter } from 'react-router-dom';
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -87,7 +88,14 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                         startCharacter : snippet.start.character,
                         endLine : snippet.end.line,
                         endCharacter : snippet.end.character,
-                        onClick : () => console.log(`Clicked snippet: ${snippet.ID}`),
+                        onClick : () => {
+                        	console.log("clicked comment");
+							const submissionID : string = this.props.submissionID;
+							const fileID : string = this.props.fileID;
+							const threadID : string = commentThread.ID;
+							const path : string = `/submission/${submissionID}/${fileID}/comments#${threadID}`;
+							console.log("Going to comment thread from code: " + path);
+						},
                         snippetID : snippet.ID,
 						commentThreadID : commentThread.ID
                     });

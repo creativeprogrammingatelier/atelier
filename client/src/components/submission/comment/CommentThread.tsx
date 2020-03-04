@@ -16,6 +16,7 @@ import {File} from "../../../../../models/api/File";
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
 	thread : CommentThread,
+	submissionID? : string,
 	file? : File,
 	body? : string
 	// Maybe also find a way to include the topic, so it can be shown immediately
@@ -34,7 +35,7 @@ const LARGE_SNIPPET_LINES_ABOVE = 0;
 /** Amount of context lines to show below for a small snippet */
 const LARGE_SNIPPET_LINES_BELOW = 0;
 
-export function CommentThread({thread, body, file}: CommentThreadProperties) {
+export function CommentThread({submissionID, thread, body, file}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(false);
 	const [comments, updateComments] = useState(thread.comments);
 
@@ -66,6 +67,7 @@ export function CommentThread({thread, body, file}: CommentThreadProperties) {
 		const mainLineEnd = topMargin + Math.min(MINIMIZED_LINES, snippetLength);
 
 		snippet = {
+			submissionId : submissionID,
 			fullText : fileContent.slice(fileLineStart, fileLineEnd),
 			mainLines : [mainLineStart, mainLineEnd],
 			fileId : file.ID,
@@ -96,7 +98,7 @@ export function CommentThread({thread, body, file}: CommentThreadProperties) {
 
 	//console.log(thread, snippet);
 	return (
-		<div className="commentThread">
+		<div id={thread.ID} className="commentThread">
 			<div> {/* Assuming loading is always successful, obviously */}
                 {snippet && <Snippet snippet={snippet}/>}
                 {opened ? <div>

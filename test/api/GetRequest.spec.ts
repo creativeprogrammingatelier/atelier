@@ -12,7 +12,7 @@
 import {assert} from 'chai';
 
 /** Interfaces the API should match */
-import {Course} from "../../models/api/Course";
+import {Course, CoursePartial} from "../../models/api/Course";
 import {Comment} from "../../models/api/Comment";
 import {CommentThread} from "../../models/api/CommentThread";
 import {File} from "../../models/api/File";
@@ -41,14 +41,13 @@ function getFetch(extension: string, data: any = {}) {
 }
 
 /** Interface type checking, because this is not built in... */
-function instanceOfCourse(object: any): object is Course {
+function instanceOfCourse(object: any): object is CoursePartial {
     return (
         'ID' in object
         && 'name' in object
         && 'state' in object
         && 'creator' in object
         && instanceOfUser(object.creator)
-        && 'currentUserPermission' in object
     )
 }
 
@@ -66,7 +65,6 @@ function instanceOfComment(object: any): object is Comment {
 function instanceOfCommentThread(object: any): object is CommentThread {
     return (
         'ID' in object
-        && 'submissionID' in object
         && 'visibility' in object
         && 'comments' in object
         && object.comments.every(instanceOfComment)
@@ -88,7 +86,7 @@ function instanceOfFile(object: any): object is File {
 function instanceOfPermission(object: any): object is Permission {
     return (
         'role' in object
-        && 'permission' in object
+        && 'permissions' in object
     )
 }
 
@@ -140,53 +138,54 @@ function instanceOfUser(object: any): object is User {
 }
 
 /** ---------- Test Course ---------- */
-// getFetch(`/api/course/`)
-//     .then((result: Course[]) => {
-//         assert(result.every(instanceOfCourse));
-//     })
-//     .catch((error: any) => console.log(error));
-//
-// getFetch(`/api/course/${DEFAULT_ID}`)
-//     .then((result: Course) => {
-//         assert(instanceOfCourse(result), 'getCourse returns a course object');
-//     })
-//     .catch((error: any) => console.log(error));
+getFetch(`/api/course/`)
+    .then((result: Course[]) => {
+
+        assert(result.every(instanceOfCourse), "/api/course/");
+    })
+    .catch((error: any) => console.log(error));
+
+getFetch(`/api/course/${DEFAULT_ID}`)
+    .then((result: Course) => {
+        assert(instanceOfCourse(result), "/api/course/ID");
+    })
+    .catch((error: any) => console.log(error));
 
 /** ---------- Test Comment Thread ---------- */
 getFetch(`/api/commentThread/${DEFAULT_ID}`)
     .then((result: CommentThread) => {
-        assert(instanceOfCommentThread(result));
+        assert(instanceOfCommentThread(result), "/api/commentThread/ID");
     })
     .catch((error: any) => console.log(error));
 
 getFetch(`/api/commentThread/file/${DEFAULT_ID}`)
     .then((result: CommentThread[]) => {
-        assert(result.every(instanceOfCommentThread));
+        assert(result.every(instanceOfCommentThread), "/api/commentThread/file/ID");
     })
     .catch((error: any) => console.log(error));
 
 getFetch(`/api/commentThread/submission/${DEFAULT_ID}`)
     .then((result: CommentThread[]) => {
-        assert(result.every(instanceOfCommentThread));
+        assert(result.every(instanceOfCommentThread), "/api/commentThread/submission/ID");
     })
     .catch((error: any) => console.log(error));
 
 getFetch(`/api/commentThread/submission/${DEFAULT_ID}/recent`)
     .then((result : CommentThread[]) => {
-        assert(result.every(instanceOfCommentThread))
+        assert(result.every(instanceOfCommentThread), "/api/commentThread/submission/ID/recent")
     })
     .catch((error : any) => console.log(error));
 
 /** ---------- Test File ---------- */
 getFetch(`/api/file/${DEFAULT_ID}`)
     .then((result: File) => {
-        assert(instanceOfFile(result));
+        assert(instanceOfFile(result), "/api/file/ID");
     })
     .catch((error: any) => console.log(error));
 
 getFetch(`/api/file/submission/${DEFAULT_ID}`)
     .then((result: File[]) => {
-        assert(result.every(instanceOfFile));
+        assert(result.every(instanceOfFile), "/api/file/ID");
     })
     .catch((error: any) => console.log(error));
 
@@ -200,25 +199,25 @@ getFetch(`/api/file/submission/${DEFAULT_ID}`)
 /** ---------- Test Submission ---------- */
 getFetch(`/api/submission/course/${DEFAULT_ID}`)
     .then((result: Submission[]) => {
-        assert(result.every(instanceOfSubmission));
+        assert(result.every(instanceOfSubmission), "/api/submission/course/ID");
     })
     .catch((error: any) => console.log(error));
 
 getFetch(`/api/submission/user/${DEFAULT_ID}`)
     .then((result: Submission[]) => {
-        assert(result.every(instanceOfSubmission))
+        assert(result.every(instanceOfSubmission), "/api/submission/user/ID")
     })
     .catch((error: any) => console.log(error));
 
 getFetch(`/api/submission/${DEFAULT_ID}`)
     .then((result: Submission) => {
-        assert(instanceOfSubmission(result));
+        assert(instanceOfSubmission(result), "/api/submission/ID");
     })
     .catch((error: any) => console.log(error));
 
 /** ---------- Test User ---------- */
 getFetch(`/api/user/${DEFAULT_ID}`)
     .then((result: User) => {
-        assert(instanceOfUser(result));
+        assert(instanceOfUser(result), "/api/user/ID");
     })
     .catch((error: any) => console.log(error));
