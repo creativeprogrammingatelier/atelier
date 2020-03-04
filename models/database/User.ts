@@ -41,7 +41,7 @@ export function userToAPI(db : DBAPIUser) : APIUser {
 		//@TODO? this is not supported by the database whatsoever, maybe change it to more accurately represent it.
 		permission: { 
 			role:db.globalrole,
-			permissions: 2**41-1
+			permissions: 2**40-1
 		}
 	}
 }

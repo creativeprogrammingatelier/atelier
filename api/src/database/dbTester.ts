@@ -50,11 +50,11 @@ function promise<T>(pr : Promise<T>, s : string) : Promise<T>{
 }
 async function usersHelper() {
 	log("\n\nUSERSHELPER\n\n")
-	const user = {name:"C", email:"C@CAA", role:'admin',password:"C"}
+	const user = {userName:"C", email:"C@CAA", role:'admin',password:"C"}
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
 	await promise(UH.getUserByID(uuid), 'getUserById')
-	const {userID} = await promise(UH.createUser(user), 'createUser')
+	const {ID:userID} = await promise(UH.createUser(user), 'createUser')
 	await promise(UH.updateUser({userID, role:'user'}), 'updateUser')
 	await promise(UH.deleteUser(userID!), 'deleteUser')
 }
@@ -199,19 +199,16 @@ function run(interval : number, ...funs : Function[]){
 	}
 }
 
-// setTimeout(usersHelper, 0)
-// setTimeout(coursesHelper,200)
 // setTimeout(rolesHelper, 400)
-// setTimeout(courseRegistrationHelper, 600)
-// setTimeout(submissionHelper, 800)
 
 run(200, 
-	commentHelper, 
+	// commentHelper, 
 	snippetHelper, 
-	fileHelper, 
-	ThreadHelper,
+	// fileHelper, 
+	// ThreadHelper,
 	submissionHelper,
-	courseRegistrationHelper,
-	coursesHelper,
+	// courseRegistrationHelper,
+	// coursesHelper,
+	usersHelper,
 
 	finish)
