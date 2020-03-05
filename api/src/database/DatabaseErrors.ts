@@ -1,5 +1,5 @@
 export class NotFoundDatabaseError extends Error {
-    constructor() {
-        super("The requested item could not be found.");
+    constructor(message = "The requested item could not be found.") {
+        super(message);
     }
 }

@@ -52,7 +52,7 @@ export function submissionToAPI(db : DBAPISubmission) : APISubmission {
 		ID: UUIDHelper.fromUUID(db.submissionid),
 		name: db.title,
 		user: userToAPI(db),
-		date: db.date.toLocaleDateString(),
+		date: db.date.toISOString(),
 		state: db.state,
 		files: [],
 		references:{

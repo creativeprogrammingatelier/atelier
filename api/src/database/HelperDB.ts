@@ -47,6 +47,10 @@ export function extract<T>(result : pg.QueryResult<T>){
 	return result.rows;
 }
 export function one<T>(result : T[]) {
+	if (result.length !== 1){
+		console.log(result)
+		throw new NotFoundDatabaseError('not unique')
+	}
 	const one = result[0];
     if (one === undefined) {
         throw new NotFoundDatabaseError();

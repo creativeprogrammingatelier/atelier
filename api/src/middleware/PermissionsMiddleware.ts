@@ -64,7 +64,7 @@ export default class PermissionsMiddleware {
         const userID = await getCurrentUserID(request);
         const user = await UserDB.getUserByID(userID);
         const teacherString = 'teacher';
-        if (user.role!.toLowerCase() === teacherString) {
+        if (user.permission.role.toLowerCase() === teacherString) {
             onSuccess();
         } else {
             result.status(401).send();
@@ -75,7 +75,7 @@ export default class PermissionsMiddleware {
 		const userID = await getCurrentUserID(request);
         const user = await UserDB.getUserByID(userID);
         const adminString = 'admin';
-        if (user.role!.toLowerCase() === adminString) {
+        if (user.permission.role.toLowerCase() === adminString) {
             onSuccess();
         } else {
             result.status(401).send();

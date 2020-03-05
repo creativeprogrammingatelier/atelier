@@ -40,7 +40,7 @@ export class AuthMiddleware {
         const handler: RequestHandler = captureNext(async (request, response, next) => {
             const userID = await getCurrentUserID(request);
             const user = await UserDB.getUserByID(userID);
-            if (roles.includes(user.role!)) {
+            if (roles.includes(user.permission.role)) {
                 next();
             } else {
                 next(new AuthError("role.notAllowed", "You're not qualified to access this information."));
