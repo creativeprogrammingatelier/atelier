@@ -14,7 +14,7 @@ export function PanelButton({display, location, icon}: CourseButtonProperties) {
 				<h3>{display}</h3>
 			</div>
 			<div className="panelBottom text-right">
-				<FiChevronsRight size={32}/>
+				<FiChevronsRight size={32} strokeWidth={1.5}/>
 			</div>
 		</Link>
 	</div>

@@ -1,4 +1,4 @@
-import { Course } from "../models/api/Course";
+import { Course, CoursePartial } from "../models/api/Course";
 import { Comment } from "../models/api/Comment";
 import { CommentThread } from "../models/api/CommentThread";
 import { File } from "../models/api/File";
@@ -105,4 +105,16 @@ export function instanceOfUser(object: any): object is User {
         && typeof object.ID === 'string'
         && 'permission' in object
         && instanceOfPermission(object.permission));
+}
+
+export function instanceOfCoursePartial(object: any) : object is CoursePartial {
+    return ('ID' in object
+        && typeof object.ID === 'string'
+        && 'name' in object
+        && typeof object.name === 'string'
+        && 'state' in object
+        && typeof object.state === 'string'
+        && 'creator' in object
+        && instanceOfUser(object.creator)
+    )
 }

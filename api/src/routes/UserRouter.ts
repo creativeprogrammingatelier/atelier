@@ -19,10 +19,8 @@ userRouter.use(AuthMiddleware.requireAuth);
  */
 userRouter.get('/:userID', capture(async(request : Request, response : Response) => {
 	const userID : string = request.params.userID;
-	// TODO database does not give back correct User
-	// const user : User = UserDB.getUserByID(userID);
-	// response.status(200).send(user);
-	response.status(200).send({});
+	const user : User = await UserDB.getUserByID(userID);
+	response.status(200).send(user);
 }));
 
 /**
@@ -30,8 +28,6 @@ userRouter.get('/:userID', capture(async(request : Request, response : Response)
  */
 userRouter.get('/', capture(async(request : Request, response : Response) => {
 	const userID : string = await getCurrentUserID(request);
-	// TODO database does not give back correct User
-	// const user : User = await UserDB.getUserByID(userID);
-	// response.status(200).send(user);
-	response.status(200).send({});
+	const user : User = await UserDB.getUserByID(userID);
+	response.status(200).send(user);
 }));

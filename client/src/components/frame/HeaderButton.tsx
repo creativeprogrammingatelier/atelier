@@ -1,10 +1,15 @@
 import React from 'react';
+import {IconType} from "react-icons";
 
 interface HeaderButtonProperties {
-	icon?: JSX.Element,
+	icon?: IconType,
 	onClick?: React.MouseEventHandler,
 	right?: boolean
 }
 export function HeaderButton({icon, onClick, right}: HeaderButtonProperties) {
-	return <div className={right ? "float-right" : ""} onClick={onClick}>{icon}</div>
+	if (icon) {
+		const ICON: IconType = icon;
+		return <div className={right ? "float-right" : ""} onClick={onClick}>{icon && <ICON size={38} strokeWidth={1.5} color="#FFFFFF"/>}</div>
+	}
+	return <div/>
 }

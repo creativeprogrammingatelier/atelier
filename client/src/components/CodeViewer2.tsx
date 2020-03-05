@@ -16,6 +16,7 @@ import { JsonFetchError } from '../../helpers/FetchHelper';
 import { getFileComments, createFileCommentThread } from '../../helpers/APIHelper';
 import { Range, getRanges } from "../helpers/HighlightingHelper";
 import {CommentThread} from "../../../models/api/CommentThread";
+import { withRouter } from 'react-router-dom';
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -31,6 +32,7 @@ type CodeViewer2State = {
 	snippets : FileSnippet[],
 	commentThreads : CommentThread[],
 
+    commentText : string
 	commentStartLine : number,
 	commentStartCharacter : number,
 	commentEndLine : number,
@@ -52,6 +54,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 			snippets : [],
 			commentThreads : [],
 
+            commentText : "",
 			commentStartLine : 0,
 			commentStartCharacter : 0,
 			commentEndLine : 0,
@@ -77,7 +80,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	async getCommentThreads() {
         try {
             const threads = await getFileComments(this.props.fileID);
-            console.log(threads);
             const snippets : FileSnippet[] = [];
             threads.map((commentThread : CommentThread) => {
                 if (commentThread.snippet !== undefined) {
@@ -87,7 +89,15 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                         startCharacter : snippet.start.character,
                         endLine : snippet.end.line,
                         endCharacter : snippet.end.character,
-                        onClick : () => console.log(`Clicked snippet: ${snippet.ID}`),
+                        onClick : () => {
+                        	console.log("clicked comment");
+							const submissionID : string = this.props.submissionID;
+							const fileID : string = this.props.fileID;
+							const threadID : string = commentThread.ID;
+							const path : string = `/submission/${submissionID}/${fileID}/comments#${threadID}`;
+							// @ts-ignore It actually is there
+							this.props.history.push(path);
+						},
                         snippetID : snippet.ID,
 						commentThreadID : commentThread.ID
                     });
@@ -99,7 +109,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
             });
         } catch (err) {
             if (err instanceof JsonFetchError) {
-                // TODO: Handle error for the user
                 console.log(err);
             } else {
                 throw err;
@@ -271,18 +280,28 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	/**
 	 * Create a comment
 	 */
-	async addComment(comment : string) {
+	async addComment() {
 		const fileID = this.props.fileID;
 		const submissionID = this.props.submissionID;
+		const snippetBody : string | undefined = (this.state.commentSelection == "") ? undefined : this.state.commentSelection;
+
+		console.log("Snippet body: " + snippetBody);
+		console.log("Line start: " + this.state.commentStartLine);
+		console.log("Line end: " + this.state.commentEndLine);
+		console.log("Char start: " + this.state.commentStartCharacter);
+		console.log("Char end: " + this.state.commentEndCharacter);
+		console.log("Comment body: " + this.state.commentText);
+		console.log("SubmissionID: " + submissionID);
         
         try {
 		    await createFileCommentThread(fileID, {
-                submissionID,
+                snippetBody : snippetBody,
                 lineStart : this.state.commentStartLine,
                 lineEnd : this.state.commentEndLine,
                 charStart : this.state.commentStartCharacter,
                 charEnd : this.state.commentEndCharacter,
-                body : comment
+				commentBody : this.state.commentText,
+				submissionID : submissionID
             });
         } catch (err) {
             if (err instanceof JsonFetchError) {
@@ -327,7 +346,11 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 							<Button id='cancelComment' onClick={() => this.setSelecting(false)}>Cancel</Button>
 							<h4>Code Snippet</h4>
 							<textarea value={this.state.commentSelection} />
-							<WriteComment placeholder="Write a comment" newCommentCallback={(text : string) => this.addComment(text)}/>
+                            <WriteComment 
+                                placeholder="Write a comment" 
+                                text={this.state.commentText} 
+                                updateText={commentText => this.setState({ commentText })} />
+                            <Button onClick={this.addComment}>Submit</Button>
 						</div>
 						:
 						<div>
@@ -339,4 +362,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	}
 }
 
-export default CodeViewer2;
+//@ts-ignore If someone knows how to fix this for typescript, pls do
+const CodeViewer2WithRouter = withRouter(CodeViewer2);
+export default CodeViewer2WithRouter;

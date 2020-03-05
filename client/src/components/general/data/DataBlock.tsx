@@ -1,6 +1,6 @@
 import React from "react";
 import {Toast, ToastBody, ToastHeader} from "react-bootstrap";
-import {TimeHelper} from "../../../helpers/TimeHelper";
+import {TimeHelper} from "../../../../helpers/TimeHelper";
 import {Link} from "react-router-dom";
 import {DataTag, DataTagProperties} from "./DataTag";
 

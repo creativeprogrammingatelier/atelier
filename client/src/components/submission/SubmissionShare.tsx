@@ -1,6 +1,8 @@
 import React from 'react';
 import {Frame} from '../frame/Frame';
 import {Sharing} from "../general/Sharing";
+import {Jumbotron} from "react-bootstrap";
+import {Link} from "react-router-dom";
 
 interface SubmissionShareProperties {
 	match: {
@@ -14,8 +16,13 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
 	const submissionURL = window.location.origin + submissionPath;
 	const projectName = "MyFirstProject";
 
-	return <Frame title={projectName} user={{id:"1", name:"John Doe"}} sidebar>
-		<h1>Share me!</h1>
-		<Sharing url={submissionURL}/>
+	return <Frame title={projectName} sidebar>
+		<Jumbotron>
+			<h1>Share me!</h1>
+			<p>Back to submission <Link to={submissionPath}>MyFirstSubmission</Link></p>
+		</Jumbotron>
+		<div className="m-3">
+			<Sharing url={submissionURL}/>
+		</div>
 	</Frame>
 }

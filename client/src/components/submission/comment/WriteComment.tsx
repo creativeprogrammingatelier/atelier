@@ -1,32 +1,19 @@
 import React, {useState, useEffect, useRef} from "react";
-import {FiNavigation} from "react-icons/fi";
 
 import {MentionSuggestions} from "./MentionSuggestions";
 
 interface WriteCommentProperties {
 	placeholder: string,
-	/** This function will be called when a new comment is created */
-	newCommentCallback: (text: string) => void
+    text: string,
+    updateText: (text: string) => void
 }
 
-export function WriteComment({placeholder, newCommentCallback}: WriteCommentProperties) {
-	const [text, updateText] = useState("");
+export function WriteComment({placeholder, text, updateText}: WriteCommentProperties) {
 	const [caretPosition, updateCaretPosition] = useState(0);
 	const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
 	const [suggestionBase, updateSuggestionBase] = useState("");
 
 	const textarea = useRef(null as (HTMLTextAreaElement | null));
-
-	const handleSubmit = (event: React.FormEvent) => {
-		if (text !== null && text.trim() !== "") {
-			// TODO: submit comment to server
-			if (newCommentCallback) {
-				newCommentCallback(text);
-			}
-			updateText("");
-		}
-		event.preventDefault();
-	};
 
 	// Poll every 100ms for the location of the caret in the textarea and update
 	// the caretPosition property
@@ -75,21 +62,19 @@ export function WriteComment({placeholder, newCommentCallback}: WriteCommentProp
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form className="position-relative" id="commentCreator">
             <textarea
 	            className="px-2 py-1"
 				name="text"
 				value={text}
 	            placeholder={placeholder}
 				onChange={e => updateText(e.target.value)}
-				ref={textarea}/>
-			{/*<button className="btn">*/}
-			{/*	<FiNavigation/>*/}
-			{/*</button>*/}
-			<button className="btn">Submit</button>
+				ref={textarea}
+            />
 			<MentionSuggestions
 				suggestionBase={suggestionBase}
-				onSelected={handleMentionSelected}/>
+				onSelected={handleMentionSelected}
+			/>
 		</form>
 	);
 }

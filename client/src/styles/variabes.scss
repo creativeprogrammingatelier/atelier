@@ -5,9 +5,13 @@
 $primaryColor: #7da888;
 $primaryColor: #d18636;
 $primaryColor: #56c3d6;
+$primaryColor: #3fdac1;
 $secondaryColor: #709178;
 $secondaryColor: #b36e39;
 $secondaryColor: #4ca1b0;
+$secondaryColor: #509899;
+$secondaryColor: #3ea39c;
+$tertiaryColor: #2c7a74;
 
 $backgroundColor: #f4f5f5;
 $colorWhite: #FFFFFF;
@@ -16,6 +20,11 @@ $colorOffWhite: #EEEEEE;
 $colorOffWhite: #e9eaea;
 $colorBlack: #000000;
 $colorOffBlack: #212529;
+
+$gradientVertical: linear-gradient(147deg, $secondaryColor 0%, $primaryColor 100%);
+$gradientHorizontal: linear-gradient(118deg, $secondaryColor 31%, $primaryColor 100%);
+$gradientHorizontal: linear-gradient(171deg, $secondaryColor 0%, $primaryColor 54%);
+$gradientSecondary: linear-gradient(147deg, $tertiaryColor 0%, $secondaryColor 100%);
 
 $fontTitle: 'Fredoka One', cursive;
 

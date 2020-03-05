@@ -20,7 +20,7 @@ import {
 } from "react-bootstrap";
 
 export function Bootstrap() {
-	return <Frame title="Bootstrap test" user={{id: "1", name: "John Doe"}} sidebar={false}>
+	return <Frame title="Bootstrap test" sidebar={false}>
 		<div className="pb-4">
 			<h2>Alerts</h2>
 			<div>
@@ -466,7 +466,7 @@ export function Bootstrap() {
 			</div>
 			<h2>Jumbotron</h2>
 			<div>
-				<Jumbotron>
+				<Jumbotron fluid>
 					<h1>Hello, world!</h1>
 					<p>
 						This is a simple hero unit, a simple jumbotron-style component for calling

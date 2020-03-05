@@ -1,5 +1,5 @@
 import React from 'react';
-import {DataTableRowMapping} from "../components/general/DataTable";
+import {DataTableRowMapping} from "../components/general/data/DataTable";
 
 /**
  * Example of what the databaseRoutes query could return.

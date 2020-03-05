@@ -1,18 +1,18 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import {Button} from "react-bootstrap";
+import {Button, Jumbotron} from "react-bootstrap";
 
 import {Frame} from "../frame/Frame";
 import {File} from "../../../../models/api/File";
-import {Loading} from "../general/Loading";
-import { CommentThread } from "../../../../models/api/CommentThread";
-import { CommentThread as CommentThreadComponent} from "./comment/CommentThread";
+import {Loading} from "../general/loading/Loading";
+import {CommentThread} from "../../../../models/api/CommentThread";
+import {CommentThread as CommentThreadComponent} from "./comment/CommentThread";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {Submission} from "../../../../models/api/Submission";
-import {DataList} from "../general/DataList";
-import {DataItem} from "../general/DataItem";
-import { Course } from "../../../../models/api/Course";
-import { getSubmission, getCourse, getFiles, getProjectComments, getRecentComments } from "../../../helpers/APIHelper";
+import {DataList} from "../general/data/DataList";
+import {DataItem} from "../general/data/DataItem";
+import {Course} from "../../../../models/api/Course";
+import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -29,16 +29,21 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		loader={getSubmission}
 		params={[submissionId]}
 		component={
-			submission => <Frame title={submission.name} sidebar search={submissionPath + "/search"}>
-				<h1>{submission.name}</h1>
-				<p>Submitted by <Link to={"/user/"+submission.user.ID}>{submission.user.name}</Link></p>
-				<Loading<Course>
-					loader={getCourse}
-					params={[submission.references.courseID]}
-					component={course => <p>In course <Link to={"/course/"+course.ID}>{course.name}</Link></p>}
-				/>
-				<p>Just now</p>
-				<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
+				<Jumbotron>
+					<h1>{submission.name}</h1>
+					<p>
+						Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.ID}</Link>, for {/* User data should be given with the new API submission.user.* */}
+						<Loading<Course>
+							loader={getCourse}
+							params={[submission.references.courseID]}
+							component={course => <Link to={"/course/" + course.ID}>{course.name}</Link>}
+						/>
+						<br/>
+						<small className="text-light">{submission.date}</small>
+					</p>
+					<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+				</Jumbotron>
 				<DataList header="Files">
 					<Loading<File[]>
 						loader={getFiles}
@@ -50,14 +55,14 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<CommentThread[]>
 						loader={getProjectComments}
 						params={[submissionId]}
-						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+						component={threads => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>
 				</DataList>
 				<DataList header="Recent">
 					<Loading<CommentThread[]>
 						loader={getRecentComments}
 						params={[submissionId]}
-						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+						component={threads => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>
 				</DataList>
 

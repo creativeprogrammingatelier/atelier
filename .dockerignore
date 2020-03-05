@@ -1,0 +1,16 @@
+node_modules/
+package-lock.json
+.gitignore
+
+api/keys/
+build/
+config/
+database/
+design/
+docs/
+test/
+uploads/
+
+**/.DS_Store
+.vscode/
+.idea/

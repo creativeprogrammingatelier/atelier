@@ -1,14 +1,18 @@
-import React from 'react';
+import React, {FormEvent, useState} from "react";
 import {InputField} from '../general/InputField';
 import {Course} from '../../../../models/api/Course';
 import { createCourse } from '../../../helpers/APIHelper';
 import { courseState } from '../../../../enums/courseStateEnum';
+import {Button, FormControl, InputGroup, Form} from "react-bootstrap";
+import {FiClipboard} from "react-icons/all";
 
 interface AddCourseProps {
     handleResponse? : (course : Course) => void
 }
 
 export function AddCourse({handleResponse} : AddCourseProps) {
+    const [courseName, setCourseName] = useState("");
+
     // Create course
     async function handleSubmission(courseName : string) {
         try {
@@ -27,10 +31,15 @@ export function AddCourse({handleResponse} : AddCourseProps) {
 
     return (
         <div className="addCourse">
-            <InputField
-                callBack={handleSubmission}
-                buttonText={"Create Course"}
-            />
+            <Form>
+                <InputGroup>
+                    <Form.Control type="text" placeholder="Course name" onChange={(event: React.FormEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value)}/>
+                    <InputGroup.Append>
+                        <Button onClick={() => handleSubmission(courseName)}>Create Course</Button>
+                    </InputGroup.Append>
+                </InputGroup>
+                {courseName}
+            </Form>
         </div>
     )
 }

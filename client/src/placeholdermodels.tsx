@@ -39,6 +39,8 @@ export enum LoadingState {
 
 /** Part of a code file that a comment is made on */
 export interface Snippet {
+    /** Links to the submission of which this snippet is a part */
+    submissionId? : string,
     /** Full code of the snippet, as an array of lines, which may
      *  include more context code than the user has selected
      */

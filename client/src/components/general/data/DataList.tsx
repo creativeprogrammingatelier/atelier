@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Header} from '../frame/Header';
-import {DataTagProperties} from "./DataTag";
-import {DataItem} from "./DataItem";
+import React from 'react';
+import {Heading} from "../Heading";
 
 interface DataItemListProperties {
 	header: string,
@@ -9,8 +7,8 @@ interface DataItemListProperties {
 }
 export function DataList({header, children}: DataItemListProperties) {
 	return <div className="list">
-		<Header title={header}/>
-		<div className="mt-3">
+		{children && <Heading title={header}/>}
+		<div className="m-3">
 			{children}
 		</div>
 	</div>

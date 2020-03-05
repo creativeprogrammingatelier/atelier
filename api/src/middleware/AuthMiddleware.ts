@@ -5,12 +5,24 @@
  */
 
 import jwt from 'jsonwebtoken';
-import { getCurrentUserID, verifyToken, getToken, AuthError } from '../helpers/AuthenticationHelper';
+import { getCurrentUserID, verifyToken, getToken, AuthError, setTokenCookie } from '../helpers/AuthenticationHelper';
 import { RequestHandler } from 'express';
 import { UserDB } from '../database/UserDB';
 import { captureNext } from '../helpers/ErrorHelper';
 
 export class AuthMiddleware {
+    /** Middleware function that will refresh tokens in cookies */
+    static refreshCookieToken: RequestHandler = captureNext(async (request, response, next) => {
+        if (request.cookies.atelierToken) {
+            const token = await verifyToken(request.cookies.atelierToken);
+            // The JWT expiration is stored in seconds, Date.now() in milliseconds
+            if (token.iat * 1000 + 600000 < Date.now()) {
+                await setTokenCookie(response, token.userID);
+            }
+        }
+        next();
+    });
+
     /** Middleware function that will block all non-authenticated requests */
 	static requireAuth: RequestHandler = captureNext(async (request, _response, next) => {
 		const token = getToken(request);

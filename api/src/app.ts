@@ -3,14 +3,17 @@
  * @author Andrew Heath
  */
 
+import { config } from './helpers/ConfigurationHelper';
+
 import express, { Request, Response, NextFunction } from 'express';
-import { Socket } from 'socket.io';
+import http from 'http';
+import socketio, { Socket } from 'socket.io';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 // API routes
-import { authRouter } from './routes/AuthRouter';
+import { authRouter } from './routes/authentication/AuthRouter';
 import { courseRouter } from './routes/CourseRouter';
 import { fileRouter } from './routes/FileRouter';
 import { indexRouter } from './routes/IndexRouter';
@@ -22,6 +25,8 @@ import { commentRouter } from "./routes/CommentRouter";
 import { NotFoundDatabaseError } from './database/DatabaseErrors';
 import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
 import { AuthError } from './helpers/AuthenticationHelper';
+import { AuthMiddleware } from './middleware/AuthMiddleware';
+import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -32,9 +37,9 @@ app.use(express.urlencoded({
 }));
 
 //Socket io
-const http = require('http').createServer(app);
-http.listen(5000, '127.0.0.1');
-const socket: Socket = require('socket.io')(http);
+const server = http.createServer(app);
+server.listen(config.port, config.hostname);
+const socket = socketio(server);
 app.set('socket-io', socket);
 
 socket.on('connect', (socket: Socket) => {
@@ -42,6 +47,8 @@ socket.on('connect', (socket: Socket) => {
 });
 
 app.use(cookieParser());
+
+app.use(AuthMiddleware.refreshCookieToken);
 
 // Serve static files from the client directory
 app.use(express.static(path.join(__dirname, '../../client/')));
@@ -71,7 +78,9 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
         response.status(401).send({ error: error.reason, message: error.message });
     } else if (error instanceof NotFoundDatabaseError) {
         response.status(404).send({ error: "item.notfound", message: "The requested item could not be found." });
-    } else if (isPostgresError(error)) {
+    } else if (error instanceof ProjectValidationError) {
+        response.status(400).send({ error: "project.invalid", message: error.message });
+    } else if (error instanceof Error && isPostgresError(error)) {
         const code = parsePostgresErrorCode(error as PostgresError);
         response.status(500).send({ error: code, message: "Something went wrong while connecting to the database." });
     } else {
@@ -84,3 +93,5 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
 process.on('unhandledRejection', error => {
     console.log('\x1b[31mCRITICAL (Unhandled rejection): ', error);
 });
+
+console.log("Server started.");

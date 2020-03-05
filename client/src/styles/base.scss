@@ -10,6 +10,12 @@ html, body {
 a {
 	color: $colorWhite;
 }
+p a {
+	color: $primaryColor;
+}
+p a:hover {
+	color: $secondaryColor;
+}
 thead {
 	padding: 1rem;
 	color: $colorWhite;
@@ -36,12 +42,14 @@ textarea:focus, textarea:active {
 	height: $headerHeight;
 	margin: 0 !important;
 	background-color: $primaryColor;
+	//background: $gradientHorizontal;
 
 	h1, h2, h3, h4, h5, h6 {
 		margin: 0 !important;
 		line-height: $headerHeight !important;
-		white-space: nowrap;
+		font-weight: 300;
 		color: $colorWhite;
+		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
@@ -49,6 +57,18 @@ textarea:focus, textarea:active {
 .navbar.position-fixed {
 	top: 0;
 	z-index: 1040;
+}
+.navbar.position-absolute {
+	z-index: 1040;
+}
+.navbar.navbar-small {
+	height: unset;
+
+	h1, h2, h3, h4, h5, h6 {
+		padding: 0;
+		line-height: unset !important;
+		font-size: 1.75rem;
+	}
 }
 .nav {
 	background-color: $secondaryColor;
@@ -61,11 +81,8 @@ textarea:focus, textarea:active {
 }
 
 .sidebar {
-	top: 0;
 	height: 100vh;
-	position: fixed !important;
-	background-color: $secondaryColor;
-	z-index: 1050;
+	background: $gradientVertical;
 	box-shadow: $shadowLarge; // TODO: Only for mobile
 }
 .sidebarContent {
@@ -79,6 +96,16 @@ textarea:focus, textarea:active {
 		margin: 1rem;
 		border-color: $colorWhite;
 	}
+}
+.sidebarContainer {
+	top: 0;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 1050;
+}
+.sidebarOutside {
+	height: 100vh;
 }
 .logo {
 	font-family: $fontTitle;
@@ -118,10 +145,10 @@ textarea:focus, textarea:active {
 }
 
 .content {
-	margin-top: $headerHeight;
+	//margin-top: $headerHeight;
 }
 .contentPage {
-	padding: 1rem 1.5rem 0 !important;
+	//padding: 1rem 1.5rem 0 !important;
 }
 .contentTab {
 	padding-bottom: calc(28px + 1rem);
@@ -130,7 +157,7 @@ textarea:focus, textarea:active {
 .panel {
 	width: 20rem;
 	max-width: 100%;
-	margin: 0 1rem 1rem 0;
+	margin: 0;
 	position: relative;
 	display: inline-block;
 	background-color: $primaryColor;
@@ -144,6 +171,7 @@ textarea:focus, textarea:active {
 
 			h1, h2, h3, h4, h5, h6 {
 				margin: 0 0.5rem;
+				font-weight: 300;
 			}
 		}
 		.panelBottom {
@@ -156,12 +184,16 @@ textarea:focus, textarea:active {
 .panel:hover {
 	a {
 		text-decoration: none;
-		color: $colorOffWhite;
+		//color: $colorOffWhite;
 
 		.panelBottom {
+			background: $gradientSecondary;
 			box-shadow: $shadowSmallUp;
 		}
 	}
+}
+.panel:not(:last-child) {
+	margin: 0 1rem 1rem 0;
 }
 
 .dataItem, .dataBlock {
@@ -221,13 +253,23 @@ textarea:focus, textarea:active {
 .input-group {
 	background-color: $colorWhite;
 }
+.form-control {
+	padding: 0.25rem 0.5rem;
+	border: none;
+	border-radius: 0;
+}
+.form-control:focus {
+	outline: 0;
+	box-shadow: none;
+}
 .form-control-plaintext {
-	padding: 0.25rem;
+	padding: 0.25rem 0.5rem;
 	color: $colorOffBlack;
 	border: 0;
 }
 .form-control-plaintext:focus {
 	outline: 0;
+	box-shadow: none;
 }
 
 .btn {
@@ -260,6 +302,15 @@ textarea:focus, textarea:active {
 		border-radius: 50%;
 	}
 }
+.buttonList {
+	a, .btn {
+		width: 100%;
+		display: block;
+	}
+	a:not(:last-child) {
+		margin-bottom: 1rem;
+	}
+}
 
 .comment {
 	box-shadow: $shadowSmallDown;
@@ -274,4 +325,67 @@ textarea:focus, textarea:active {
 }
 .commentThread:not(:last-child) {
 	margin-bottom: 1rem;
+}
+
+.mention {
+	padding: 0.1rem 0.5rem;
+	color: $colorWhite;
+	background-color: $primaryColor;
+	border-radius: 1rem;
+}
+.mention:not(:last-child) {
+	margin-right: 0.25rem;
+	margin-bottom: 0.25rem;
+}
+.mention:hover {
+	color: $colorOffWhite;
+	background-color: $secondaryColor;
+	box-shadow: $shadowSmall;
+}
+
+.contentPage .jumbotron:first-child {
+	padding-top: calc(#{$headerHeight} - 10px);
+}
+.jumbotron {
+	margin: 0;
+	padding: 1rem 1.5rem;
+	color: $colorWhite;
+	background: $gradientSecondary;
+	border-radius: 0;
+
+	* {
+		font-weight: 300;
+	}
+	p:last-child {
+		margin: 0;
+	}
+	a {
+		color: $primaryColor;
+
+	}
+	a:hover {
+		text-decoration: none;
+
+		.btn {
+			background-color: $colorOffWhite;
+		}
+	}
+	.btn {
+		color: $primaryColor;
+		background-color: $colorWhite;
+	}
+	.btn:hover {
+		background-color: $colorOffWhite;
+	}
+}
+.cover {
+	width: 100vw;
+	min-height: 100vh;
+	padding: 2rem;
+	background: $gradientVertical;
+
+	hr {
+		margin: 1rem 0;
+		border-color: $colorWhite;
+	}
 }

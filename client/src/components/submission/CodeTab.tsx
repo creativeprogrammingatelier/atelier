@@ -30,14 +30,13 @@ interface CodeProperties {
 }
 
 export function CodeTab({file, body, submissionID} : CodeProperties) {
-
-
 	return <div className="contentTab">
-		<h1>{FileNameHelper.fromPath(file.name)}</h1>
-		<CodeViewer2 submissionID={submissionID} fileID={file.ID} fileContents={body} />
-        {/*<Loading<string>*/}
-        {/*    loader={getFileContents}*/}
-        {/*    component={fileContents =>*/}
-		{/*        <CodeViewer2 fileContents={body} submissionID={submissionID} fileID={file.fileID!} />} />*/}
+		<div className="m-3">
+			<CodeViewer2
+				submissionID={submissionID}
+				fileID={file.ID}
+				fileContents={body}
+			/>
+		</div>
 	</div>
 }

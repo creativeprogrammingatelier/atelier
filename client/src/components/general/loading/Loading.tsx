@@ -2,7 +2,7 @@ import React, {useState, useEffect, Fragment} from "react";
 import {Spinner} from "react-bootstrap";
 
 // TODO: Define this locally, as it will be the only place it should be used
-import {LoadingState} from "./../../placeholdermodels";
+import {LoadingState} from "../../../placeholdermodels";
 import {LoadingIcon} from "./LoadingIcon";
 
 // Disable the warning, it's how you define a generic function in TypeScript

@@ -9,7 +9,8 @@ interface ShareProperties {
 }
 export function ShareTab({file, url}: ShareProperties) {
 	return <div className="contentTab">
-		<h1>{FileNameHelper.fromPath(file.name)}</h1>
-		<Sharing url={url}/>
+		<div className="m-3">
+			<Sharing url={url}/>
+		</div>
 	</div>;
 }

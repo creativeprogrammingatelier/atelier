@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FiCode, FiFolder, FiMessageSquare, FiShare2} from "react-icons/all";
+import {FiCode, FiMessageSquare, FiShare2} from "react-icons/all";
 
 import {Frame} from "../frame/Frame";
 import {TabBar} from "../general/TabBar";
@@ -7,9 +7,11 @@ import {CodeTab} from "./CodeTab";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/api/File";
-import {Loading} from "../general/Loading";
+import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import { getFile, getFileContents } from "../../../helpers/APIHelper";
+import {getFile, getFileContents} from "../../../helpers/APIHelper";
+import {Jumbotron} from "react-bootstrap";
+import {Link} from "react-router-dom";
 
 export interface FileProperties {
 	id: string,
@@ -34,18 +36,19 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 		setActiveTab(tab);
 	}, [tab]);
 
-	const filePath = "/submission/" + submissionId + "/" + fileId;
-    
-    function renderTabContents([file, body] : [File, string]) {
-        if (activeTab === "code") {
-            return <CodeTab body={body} file={file} submissionID={submissionId} />;
-        } else if (activeTab === "comments") {
-            return <CommentTab body={body} file={file} />;
-        } else if (activeTab === "share") {
-            return <ShareTab file={file} url={window.location.origin + filePath} />;
-        }
-        return <div><h1>Tab not found!</h1></div>;
-    }
+	const submissionPath = "/submission/" + submissionId;
+	const filePath = submissionPath + "/" + fileId;
+
+	function renderTabContents([file, body]: [File, string]) {
+		if (activeTab === "code") {
+			return <CodeTab body={body} file={file} submissionID={submissionId}/>;
+		} else if (activeTab === "comments") {
+			return <CommentTab body={body} file={file} submissionID={submissionId}/>;
+		} else if (activeTab === "share") {
+			return <ShareTab file={file} url={window.location.origin + filePath}/>;
+		}
+		return <div><h1>Tab not found!</h1></div>;
+	}
 
 	return (
 		<Loading<File>
@@ -53,10 +56,15 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 			params={[fileId]}
 			component={
 				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={filePath + "/search"}>
+					<Jumbotron>
+						<h1>{FileNameHelper.fromPath(file.name)}</h1>
+						<p>In submission <Link to={submissionPath}>some course</Link></p>
+					</Jumbotron>
 					<Loading<[File, string]>
-						loader={(fileId : string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
+						loader={(fileId: string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
 						params={[fileId]}
-						component={renderTabContents} />
+						component={renderTabContents}
+					/>
 					<TabBar
 						tabs={[{
 							id: "code",

@@ -4,12 +4,16 @@ import {RouteComponentProps} from 'react-router';
 
 import AuthHelper from '../../helpers/AuthHelper';
 
+interface LocationProperties {
+	pathname: string
+}
 interface AuthenticatedRouteProperties<T> {
 	path: string,
 	component: React.ComponentType<RouteComponentProps<T>> | React.ComponentType<T>,
-	roles?: string[]
+	roles?: string[],
+	location?: LocationProperties
 }
-export function AuthenticatedRoute<T>({path, component, roles}: AuthenticatedRouteProperties<T>) {
+export function AuthenticatedRoute<T>({path, component, roles, location}: AuthenticatedRouteProperties<T>) {
 	const [authenticated, setAuthenticated] = useState(undefined as boolean | undefined);
 
 	useEffect(() => {
@@ -29,7 +33,7 @@ export function AuthenticatedRoute<T>({path, component, roles}: AuthenticatedRou
 		if (AuthHelper.loggedIn()) {
 			return <Redirect to="/"/>
 		}
-		return <Redirect to={{pathname: '/login', state: {from: path}}}/>
+		return <Redirect to={{pathname: '/login', state: {from: location ? location.pathname : path}}}/>
 	}
 	return <p>Waiting</p> // TODO: Make more user friendly
 }
