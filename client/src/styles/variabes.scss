@@ -1,4 +1,3 @@
-// Bootstrap variables
 
 
 // Custom variables
@@ -21,10 +20,22 @@ $colorOffWhite: #e9eaea;
 $colorBlack: #000000;
 $colorOffBlack: #212529;
 
+$colorPrimary: $primaryColor;
+$colorSecondary: $secondaryColor;
+$colorSuccess: green;
+$colorDanger: #ce3b33;
+$colorDangerAlternate: #ca4b25;
+$colorWarning: yellow;
+$colorInfo: blue;
+$colorLight: $colorOffWhite;
+$colorDark: $colorOffBlack;
+
 $gradientVertical: linear-gradient(147deg, $secondaryColor 0%, $primaryColor 100%);
 $gradientHorizontal: linear-gradient(118deg, $secondaryColor 31%, $primaryColor 100%);
 $gradientHorizontal: linear-gradient(171deg, $secondaryColor 0%, $primaryColor 54%);
 $gradientSecondary: linear-gradient(147deg, $tertiaryColor 0%, $secondaryColor 100%);
+
+$gradientDanger: linear-gradient(147deg, $colorDangerAlternate 0%, $colorDanger 100%);
 
 $fontTitle: 'Fredoka One', cursive;
 
@@ -35,3 +46,11 @@ $shadowSmallUp: 0 -5px 10px 0 #b1b1b121;
 $shadowSmallDown: 0 5px 10px 0 #b1b1b121;
 $shadowMedium: 0 0 10px 0 #47474740;
 $shadowLarge: 0 0 100px 20px #00000085;
+
+
+// Bootstrap variables
+
+//https://github.com/twbs/bootstrap/blob/master/scss/_variables.scss
+
+//$red: $colorDanger;
+//$alert-bg-level: 0;

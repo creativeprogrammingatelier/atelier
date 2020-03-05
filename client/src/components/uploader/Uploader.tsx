@@ -16,6 +16,7 @@ import {Button, Form, FormControl, InputGroup} from "react-bootstrap";
 import {FileInput} from "../input/FileInput";
 import {FakeButton} from "../input/fake/FakeButton";
 import {FakeReadOnlyInput} from "../input/fake/FakeReadOnlyInput";
+import {FeedbackError} from "../feedback/FeedbackError";
 
 interface UploaderProperties {
 	/** The courseId to upload the submission to */
@@ -135,12 +136,12 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 						<FakeReadOnlyInput>{selectedFiles ? (selectedFiles.length === 1 ? selectedFiles[0].name : (selectedFiles.length + " files selected")) : "No files selected"}</FakeReadOnlyInput>
 					</InputGroup>
 				</FileInput>
+				<div>
+					{validation.invalidProjectName && <FeedbackError>Project should contain a file called {folderName}.pde.</FeedbackError>}
+					{validation.containsNoCodeFiles && <FeedbackError>Project should contain at least one code file.</FeedbackError>}
+					{errors.upload && <FeedbackError>Something went wrong while uploading: {errors.upload}</FeedbackError>}
+				</div>
 			</Form.Group>
-			<ul>
-				{validation.invalidProjectName && <li>Project should contain a file called {folderName}.pde.</li>}
-				{validation.containsNoCodeFiles && <li>Project should contain at least one code file.</li>}
-				{errors.upload && <li>Something went wrong while uploading: {errors.upload}</li>}
-			</ul>
 			{selectedFiles.length > 0 &&
 			<div>
 				{folderUploadSupported

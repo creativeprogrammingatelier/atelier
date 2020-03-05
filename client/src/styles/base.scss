@@ -16,6 +16,9 @@ p a {
 p a:hover {
 	color: $secondaryColor;
 }
+button:focus {
+	outline: none;
+}
 thead {
 	padding: 1rem;
 	color: $colorWhite;
@@ -388,4 +391,30 @@ textarea:focus, textarea:active {
 		margin: 1rem 0;
 		border-color: $colorWhite;
 	}
+}
+
+.close {
+	font-weight: 300;
+	color: $colorOffWhite;
+	text-shadow: none;
+	opacity: 1;
+}
+.close:hover {
+	color: $colorOffWhite;
+}
+.alert {
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0;
+}
+.alert-dismissible {
+	padding-right: 3rem;
+
+	.close {
+		padding: 0.5rem 1rem;
+	}
+}
+.alert-danger {
+	color: $colorWhite;
+	background: $gradientDanger;
 }

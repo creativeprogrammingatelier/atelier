@@ -22,7 +22,7 @@ export function FileInput({children, folders, handleElement, handleSelected}: Fi
 					handleElement(element);
 				}
 				if (element && folders) {
-					element.webkitdirectory = true;
+					// element.webkitdirectory = true;
 				}
 			}}
 			onChange={handleSelected}
