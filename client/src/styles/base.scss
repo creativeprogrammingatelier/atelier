@@ -287,11 +287,11 @@ textarea:focus, textarea:active {
 	}
 }
 .buttonList {
-	.btn {
+	a, .btn {
 		width: 100%;
 		display: block;
 	}
-	.btn:not(:last-child) {
+	a:not(:last-child) {
 		margin-bottom: 1rem;
 	}
 }
@@ -348,13 +348,20 @@ textarea:focus, textarea:active {
 	p:last-child {
 		margin: 0;
 	}
+	a {
+		color: $primaryColor;
+
+	}
+	a:hover {
+		text-decoration: none;
+
+		.btn {
+			background-color: $colorOffWhite;
+		}
+	}
 	.btn {
 		color: $primaryColor;
 		background-color: $colorWhite;
-
-		a {
-			color: $primaryColor;
-		}
 	}
 	.btn:hover {
 		background-color: $colorOffWhite;

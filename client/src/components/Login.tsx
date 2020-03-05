@@ -32,7 +32,7 @@ export function Login({onLogin, location}: LoginProperties) {
 				loader={getLoginProviders}
 				component={providers => {
 					if (providers.length > 1) {
-						return providers.map(provider => <Button size="lg"><a href={provider.url}>{provider.name}</a></Button>);
+						return providers.map(provider => <a href={provider.url}><Button size="lg">{provider.name}</Button></a>);
 					} else if (providers.length > 0) {
 						window.location.href = providers[0].url;
 						return <p>Redirecting to {providers[0].name}</p>;
