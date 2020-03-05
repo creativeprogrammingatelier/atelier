@@ -78,7 +78,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	async getCommentThreads() {
         try {
             const threads = await getFileComments(this.props.fileID);
-            console.log(threads);
             const snippets : FileSnippet[] = [];
             threads.map((commentThread : CommentThread) => {
                 if (commentThread.snippet !== undefined) {
@@ -94,7 +93,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 							const fileID : string = this.props.fileID;
 							const threadID : string = commentThread.ID;
 							const path : string = `/submission/${submissionID}/${fileID}/comments#${threadID}`;
-							console.log("Going to comment thread from code: " + path);
+							// @ts-ignore It actually is there
+							this.props.history.push(path);
 						},
                         snippetID : snippet.ID,
 						commentThreadID : commentThread.ID
@@ -107,7 +107,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
             });
         } catch (err) {
             if (err instanceof JsonFetchError) {
-                // TODO: Handle error for the user
                 console.log(err);
             } else {
                 throw err;
@@ -357,4 +356,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	}
 }
 
-export default CodeViewer2;
+//@ts-ignore If someone knows how to fix this for typescript, pls do
+const CodeViewer2WithRouter = withRouter(CodeViewer2);
+export default CodeViewer2WithRouter;
