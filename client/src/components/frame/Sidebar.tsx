@@ -3,7 +3,7 @@ import {FiActivity, FiHome, FiLogOut, FiSettings, FiUser, FiX} from "react-icons
 import {Logo} from "./Logo";
 import {SidebarEntry} from "./SidebarEntry";
 import {Loading} from "../general/loading/Loading";
-import {User} from "../../../../models/database/User";
+import {User} from "../../../../models/api/User";
 import {getCurrentUser} from "../../../helpers/APIHelper";
 import {Heading} from "../general/Heading";
 
@@ -31,7 +31,7 @@ export function Sidebar({position, close}: SidebarProperties) {
 						component={user => {
 							console.log("Loaded user");
 							console.log(user);
-							return <SidebarEntry location={"/user/" + user.userID} icon={FiUser}>{user.name!}</SidebarEntry>
+							return <SidebarEntry location={"/user/" + user.ID} icon={FiUser}>{user.name}</SidebarEntry>
 						}}
 					/>
 					<SidebarEntry location="/logout" icon={FiLogOut}>Logout</SidebarEntry>

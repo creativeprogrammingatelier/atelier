@@ -1,12 +1,7 @@
 import React, {useState} from 'react';
 
 import {SearchBar} from './SearchBar';
-import {DataTable} from "../general/data/DataTable";
-import {submissionData, submissionRendering} from "../../helpers/SubmissionHelpers";
-import {codeData, codeRendering} from "../../helpers/CodeHelpers";
-import {commentData, commentRendering} from "../../helpers/CommentHelper";
 import {Frame} from '../frame/Frame';
-import {Loading} from "../general/Loading";
 import { search } from '../../../helpers/APIHelper';
 
 

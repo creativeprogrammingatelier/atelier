@@ -20,18 +20,20 @@ export function Homepage() {
 				<p>Welcome to this amazing website!</p>
 				<Button>Have a button!</Button>
 			</Jumbotron>
-			<Loading<Course[]>
-				loader={getCourses}
-				component={courses =>
-					<div>
-						{courses.map((course: Course) => <PanelButton
-							display={course.name}
-							location={`/course/${course.ID}`}
-							icon=''
-						/>)}
-					</div>
-				}
-			/>
+			<div className="m-3">
+				<Loading<Course[]>
+					loader={getCourses}
+					component={courses =>
+						<div>
+							{courses.map((course: Course) => <PanelButton
+								display={course.name}
+								location={`/course/${course.ID}`}
+								icon=''
+							/>)}
+						</div>
+					}
+				/>
+			</div>
 			<div className="m-3">
 				<AddCourse handleResponse={updateCourse}/>
 			</div>

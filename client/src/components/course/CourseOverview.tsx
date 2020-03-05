@@ -1,10 +1,11 @@
 import React, {useState} from "react";
 import {Frame} from "../frame/Frame";
-import {DataBlockList} from "../general/DataBlockList";
-import {Loading} from "../general/Loading";
+import {DataBlockList} from "../general/data/DataBlockList";
+import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
 import {getCourseSubmissions} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
+import {Jumbotron} from "react-bootstrap";
 
 interface CourseOverviewProps {
 	match: {

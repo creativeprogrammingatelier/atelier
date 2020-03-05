@@ -5,14 +5,14 @@ import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
-import { ExtendedThread } from "../../../../models/api/CommentThread";
-import { CommentThread as CommentThreadComponent} from "./comment/CommentThread";
+import {CommentThread} from "../../../../models/api/CommentThread";
+import {CommentThread as CommentThreadComponent} from "./comment/CommentThread";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {Submission} from "../../../../models/api/Submission";
 import {DataList} from "../general/data/DataList";
 import {DataItem} from "../general/data/DataItem";
-import { Course } from "../../../../models/api/Course";
-import { getSubmission, getCourse, getFiles, getProjectComments, getRecentComments } from "../../../helpers/APIHelper";
+import {Course} from "../../../../models/api/Course";
+import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -33,11 +33,11 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				<Jumbotron>
 					<h1>{submission.name}</h1>
 					<p>
-						Uploaded by <Link to={"/user/"+submission.user.ID}>{submission.user.ID}</Link>, for {/* User data should be given with the new API submission.user.* */}
+						Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.ID}</Link>, for {/* User data should be given with the new API submission.user.* */}
 						<Loading<Course>
 							loader={getCourse}
 							params={[submission.references.courseID]}
-							component={course => <Link to={"/course/"+course.ID}>{course.name}</Link>}
+							component={course => <Link to={"/course/" + course.ID}>{course.name}</Link>}
 						/>
 						<br/>
 						<small className="text-light">{submission.date}</small>
@@ -55,14 +55,14 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<CommentThread[]>
 						loader={getProjectComments}
 						params={[submissionId]}
-						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+						component={threads => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>
 				</DataList>
 				<DataList header="Recent">
 					<Loading<CommentThread[]>
 						loader={getRecentComments}
 						params={[submissionId]}
-						component={threads =>threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+						component={threads => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>
 				</DataList>
 

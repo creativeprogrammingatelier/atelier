@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FiCode, FiFolder, FiMessageSquare, FiShare2} from "react-icons/all";
+import {FiCode, FiMessageSquare, FiShare2} from "react-icons/all";
 
 import {Frame} from "../frame/Frame";
 import {TabBar} from "../general/TabBar";
@@ -10,6 +10,8 @@ import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {getFile, getFileContents} from "../../../helpers/APIHelper";
+import {Jumbotron} from "react-bootstrap";
+import {Link} from "react-router-dom";
 
 export interface FileProperties {
 	id: string,
@@ -34,7 +36,8 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 		setActiveTab(tab);
 	}, [tab]);
 
-	const filePath = "/submission/" + submissionId + "/" + fileId;
+	const submissionPath = "/submission/" + submissionId;
+	const filePath = submissionPath + "/" + fileId;
 
 	function renderTabContents([file, body]: [File, string]) {
 		if (activeTab === "code") {
@@ -54,7 +57,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 			component={
 				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={filePath + "/search"}>
 					<Jumbotron>
-						<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
+						<h1>{FileNameHelper.fromPath(file.name)}</h1>
 						<p>In submission <Link to={submissionPath}>some course</Link></p>
 					</Jumbotron>
 					<Loading<[File, string]>
