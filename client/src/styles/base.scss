@@ -81,12 +81,8 @@ textarea:focus, textarea:active {
 }
 
 .sidebar {
-	top: 0;
 	height: 100vh;
-	position: fixed !important;
-	//background-color: $secondaryColor;
 	background: $gradientVertical;
-	z-index: 1050;
 	box-shadow: $shadowLarge; // TODO: Only for mobile
 }
 .sidebarContent {
@@ -100,6 +96,16 @@ textarea:focus, textarea:active {
 		margin: 1rem;
 		border-color: $colorWhite;
 	}
+}
+.sidebarContainer {
+	top: 0;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 1050;
+}
+.sidebarOutside {
+	height: 100vh;
 }
 .logo {
 	font-family: $fontTitle;

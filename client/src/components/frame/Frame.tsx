@@ -11,13 +11,15 @@ interface FrameProperties {
 	search?: string,
 }
 export function Frame({children, title, sidebar, search}: FrameProperties) {
-	const [sidebarPosition, setSidebarPosition] = useState("-150vw");
+	const sidebarPositionOpened = "0vw";
+	const sidebarPositionClosed = "-150vw";
+	const [sidebarPosition, setSidebarPosition] = useState(sidebarPositionClosed);
 
 	function sidebarOpen() {
-		setSidebarPosition(() => "0vw");
+		setSidebarPosition(() => sidebarPositionOpened);
 	}
 	function sidebarClose() {
-		setSidebarPosition(() => "-150vw");
+		setSidebarPosition(() => sidebarPositionClosed);
 	}
 	function searchClick() {
 		window.location.href = search ? search : "#";

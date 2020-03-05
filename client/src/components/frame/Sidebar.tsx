@@ -8,7 +8,7 @@ import {getCurrentUser} from "../../../helpers/APIHelper";
 import {Heading} from "../general/Heading";
 
 interface SidebarProperties {
-	user?: {
+	user?: { // TODO: Remove this and make sure nothing breaks
 		id: string,
 		name: string
 	},
@@ -17,24 +17,27 @@ interface SidebarProperties {
 }
 export function Sidebar({position, close}: SidebarProperties) {
 	return (
-		<div className="sidebar col-10 col-sm-8 col-md-5 col-lg-3 col-xl-2 p-0" style={{left: position}}>
-			<Heading transparent large leftButton={{icon: FiX, click: close}}/>
-			<div className="sidebarContent p-0">
-				<Logo/>
-				<hr/>
-				<SidebarEntry location="/" icon={FiHome}>Home</SidebarEntry>
-				<SidebarEntry location="/activity" icon={FiActivity}>Activity</SidebarEntry>
-				<SidebarEntry location="/settings" icon={FiSettings}>Settings</SidebarEntry>
-				<Loading<User>
-					loader={getCurrentUser}
-					component={user => {
-						console.log("Loaded user");
-						console.log(user);
-						return <SidebarEntry location={"/user/" + user.userID} icon={FiUser}>{user.name!}</SidebarEntry>
-					}}
-				/>
-				<SidebarEntry location="/logout" icon={FiLogOut}>Logout</SidebarEntry>
+		<div className="sidebarContainer row no-gutters" style={{left: position}}>
+			<div className="sidebar col-10 col-sm-8 col-md-5 col-lg-3 col-xl-2 p-0">
+				<Heading transparent large leftButton={{icon: FiX, click: close}}/>
+				<div className="sidebarContent p-0">
+					<Logo/>
+					<hr/>
+					<SidebarEntry location="/" icon={FiHome}>Home</SidebarEntry>
+					<SidebarEntry location="/activity" icon={FiActivity}>Activity</SidebarEntry>
+					<SidebarEntry location="/settings" icon={FiSettings}>Settings</SidebarEntry>
+					<Loading<User>
+						loader={getCurrentUser}
+						component={user => {
+							console.log("Loaded user");
+							console.log(user);
+							return <SidebarEntry location={"/user/" + user.userID} icon={FiUser}>{user.name!}</SidebarEntry>
+						}}
+					/>
+					<SidebarEntry location="/logout" icon={FiLogOut}>Logout</SidebarEntry>
+				</div>
 			</div>
+			<div className="sidebarOutside col-2 col-sm-4 col-md-7 col-lg-9 col-xl-10" onClick={close}/>
 		</div>
 	)
 }
