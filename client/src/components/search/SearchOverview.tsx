@@ -18,7 +18,7 @@ export function SearchOverview() {
 
     // TODO add tables for search
     return (
-        <Frame title="Search" user={{id:"1", name:"John Doe"}} sidebar>
+        <Frame title="Search" sidebar>
             <h1>Search Overview Page</h1>
             <SearchBar handleSearch={updateSearchTerm} />
 

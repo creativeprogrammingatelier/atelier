@@ -1,4 +1,3 @@
-import AuthHelper from './AuthHelper';
 import fileDownload from 'js-file-download';
 import { Fetch } from './FetchHelper';
 
@@ -94,12 +93,6 @@ export default class FileHelper {
         for (const file of files) {
             formData.append('files', file);
         }
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': AuthHelper.getToken()
-            }
-        };
         Fetch.fetch('/files/', {
             method: 'PUT',
             body: formData, 

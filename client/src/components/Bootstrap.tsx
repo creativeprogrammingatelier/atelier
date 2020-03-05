@@ -20,7 +20,7 @@ import {
 } from "react-bootstrap";
 
 export function Bootstrap() {
-	return <Frame title="Bootstrap test" user={{id: "1", name: "John Doe"}} sidebar={false}>
+	return <Frame title="Bootstrap test" sidebar={false}>
 		<div className="pb-4">
 			<h2>Alerts</h2>
 			<div>

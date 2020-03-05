@@ -14,7 +14,7 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
 	const submissionURL = window.location.origin + submissionPath;
 	const projectName = "MyFirstProject";
 
-	return <Frame title={projectName} user={{id:"1", name:"John Doe"}} sidebar>
+	return <Frame title={projectName} sidebar>
 		<h1>Share me!</h1>
 		<Sharing url={submissionURL}/>
 	</Frame>
