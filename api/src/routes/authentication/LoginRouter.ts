@@ -29,7 +29,7 @@ loginRouter.post('/login', capture(async (request, response) => {
 loginRouter.post('/register', capture(async (request, response) => {
     try {
         const user = await UserDB.createUser(request.body);
-        const token = issueToken(user.userID!);
+        const token = issueToken(user.ID);
         response.status(200).json({ token });
     } catch (err) {
         response.status(500).json(err);
