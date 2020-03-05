@@ -1,17 +1,14 @@
 import React, {useState, useEffect, useRef} from "react";
 
 import {MentionSuggestions} from "./MentionSuggestions";
-import {Button} from "react-bootstrap";
 
 interface WriteCommentProperties {
 	placeholder: string,
-	internalButton?: boolean,
-	/** This function will be called when a new comment is created */
-	newCommentCallback: (text: string) => void
+    text: string,
+    updateText: (text: string) => void
 }
 
-export function WriteComment({placeholder, internalButton, newCommentCallback}: WriteCommentProperties) {
-	const [text, updateText] = useState("");
+export function WriteComment({placeholder, text, updateText}: WriteCommentProperties) {
 	const [caretPosition, updateCaretPosition] = useState(0);
 	const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
 	const [suggestionBase, updateSuggestionBase] = useState("");
@@ -47,17 +44,6 @@ export function WriteComment({placeholder, internalButton, newCommentCallback}: 
 		}
 	}, [caretPosition]);
 
-	const handleSubmit = (event: React.FormEvent) => {
-		if (text !== null && text.trim() !== "") {
-			// TODO: submit comment to server
-			if (newCommentCallback) {
-				newCommentCallback(text);
-			}
-			updateText("");
-		}
-		event.preventDefault();
-	};
-
 	function handleMentionSelected(name: string) {
 		if (mentionIndex !== undefined) {
 			const textWithMention = text.substring(0, mentionIndex + 1) + name + " ";
@@ -76,7 +62,7 @@ export function WriteComment({placeholder, internalButton, newCommentCallback}: 
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className="position-relative" id="commentCreator">
+		<form className="position-relative" id="commentCreator">
             <textarea
 	            className="px-2 py-1"
 				name="text"
@@ -85,7 +71,6 @@ export function WriteComment({placeholder, internalButton, newCommentCallback}: 
 				onChange={e => updateText(e.target.value)}
 				ref={textarea}
             />
-			{(internalButton === undefined || internalButton) && <Button>Submit</Button>}
 			<MentionSuggestions
 				suggestionBase={suggestionBase}
 				onSelected={handleMentionSelected}

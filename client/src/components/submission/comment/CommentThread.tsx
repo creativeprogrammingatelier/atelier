@@ -8,7 +8,6 @@ import {ButtonBar} from "../../general/ButtonBar";
 import { Button } from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
 import { CommentThread } from "../../../../../models/api/CommentThread";
-import { Comment } from "../../../../../models/api/Comment";
 import { JsonFetchError } from "../../../../helpers/FetchHelper";
 import { createComment } from "../../../../helpers/APIHelper";
 import {File} from "../../../../../models/api/File";
@@ -37,7 +36,8 @@ const LARGE_SNIPPET_LINES_BELOW = 0;
 
 export function CommentThread({submissionID, thread, body, file}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(false);
-	const [comments, updateComments] = useState(thread.comments);
+    const [comments, updateComments] = useState(thread.comments);
+    const [newCommentText, updateNewCommentText] = useState("");
 
 	let snippet : ModelSnippet | undefined = undefined;
 	if (thread.snippet != undefined && body != undefined && file != undefined) {
@@ -76,22 +76,25 @@ export function CommentThread({submissionID, thread, body, file}: CommentThreadP
 	}
 
 
-	const newComment = async (text: string) => {
-        try {
-            const comment = await createComment(thread.ID, {
-                commentBody : text
-            });
-            console.log('added comment response' + comment);
-            updateComments(comments => [
-                ...comments,
-				comment
-            ]);
-        } catch (err) {
-            if (err instanceof JsonFetchError) {
-                // TODO: handle error for user
-                console.log(err);
-            } else {
-                throw err;
+	const handleNewComment = async () => {
+        if (newCommentText !== null && newCommentText.trim() !== "") {
+            try {
+                const comment = await createComment(thread.ID, {
+                    commentBody : newCommentText
+                });
+                console.log('added comment response' + comment);
+                updateComments(comments => [
+                    ...comments,
+                    comment
+                ]);
+                updateNewCommentText("");
+            } catch (err) {
+                if (err instanceof JsonFetchError) {
+                    // TODO: handle error for user
+                    console.log(err);
+                } else {
+                    throw err;
+                }
             }
         }
 	};
@@ -103,9 +106,9 @@ export function CommentThread({submissionID, thread, body, file}: CommentThreadP
                 {snippet && <Snippet snippet={snippet}/>}
                 {opened ? <div>
                         {comments.map(comment => <CommentComponent comment={comment}/>)}
-                        <WriteComment placeholder="Reply..." newCommentCallback={newComment}/>
+                        <WriteComment placeholder="Reply..." text={newCommentText} updateText={updateNewCommentText} />
                         <ButtonBar align="right">
-                            <Button><FiSend size={14} color="#FFFFFF"/></Button>
+                            <Button onClick={handleNewComment}><FiSend size={14} color="#FFFFFF"/></Button>
                             <Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>
                         </ButtonBar>
                     </div>
