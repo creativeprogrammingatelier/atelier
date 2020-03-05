@@ -91,13 +91,15 @@ interface createCommentThread {
 export const createFileCommentThread = (fileID: string, thread: createCommentThread) =>
     Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, {
         method : 'POST',
-        body : JSON.stringify(thread)
+        body : JSON.stringify(thread),
+        headers: { "Content-Type": "application/json" }
     });
 
 export const createSubmissionCommentThread = (submissionID : string, body : {commentBody : string}) =>
     Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, {
         method : 'POST',
-        body : JSON.stringify(body)
+        body : JSON.stringify(body),
+        headers: { "Content-Type": "application/json" }
     });
 
 export const createComment = (commentThreadID: string, comment : {commentBody : string}) =>

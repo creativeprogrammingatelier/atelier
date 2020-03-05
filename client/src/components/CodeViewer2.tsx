@@ -32,6 +32,7 @@ type CodeViewer2State = {
 	snippets : FileSnippet[],
 	commentThreads : CommentThread[],
 
+    commentText : string
 	commentStartLine : number,
 	commentStartCharacter : number,
 	commentEndLine : number,
@@ -53,6 +54,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 			snippets : [],
 			commentThreads : [],
 
+            commentText : "",
 			commentStartLine : 0,
 			commentStartCharacter : 0,
 			commentEndLine : 0,
@@ -278,7 +280,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	/**
 	 * Create a comment
 	 */
-	async addComment(comment : string) {
+	async addComment() {
 		const fileID = this.props.fileID;
 		const submissionID = this.props.submissionID;
 		const snippetBody : string | undefined = (this.state.commentSelection == "") ? undefined : this.state.commentSelection;
@@ -288,7 +290,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		console.log("Line end: " + this.state.commentEndLine);
 		console.log("Char start: " + this.state.commentStartCharacter);
 		console.log("Char end: " + this.state.commentEndCharacter);
-		console.log("Comment body: " + comment);
+		console.log("Comment body: " + this.state.commentText);
 		console.log("SubmissionID: " + submissionID);
         
         try {
@@ -298,7 +300,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                 lineEnd : this.state.commentEndLine,
                 charStart : this.state.commentStartCharacter,
                 charEnd : this.state.commentEndCharacter,
-				commentBody : comment,
+				commentBody : this.state.commentText,
 				submissionID : submissionID
             });
         } catch (err) {
@@ -344,7 +346,11 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 							<Button id='cancelComment' onClick={() => this.setSelecting(false)}>Cancel</Button>
 							<h4>Code Snippet</h4>
 							<textarea value={this.state.commentSelection} />
-							<WriteComment placeholder="Write a comment" newCommentCallback={(text : string) => this.addComment(text)}/>
+                            <WriteComment 
+                                placeholder="Write a comment" 
+                                text={this.state.commentText} 
+                                updateText={commentText => this.setState({ commentText })} />
+                            <Button onClick={this.addComment}>Submit</Button>
 						</div>
 						:
 						<div>
