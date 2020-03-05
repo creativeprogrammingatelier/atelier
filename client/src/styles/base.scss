@@ -247,13 +247,23 @@ textarea:focus, textarea:active {
 .input-group {
 	background-color: $colorWhite;
 }
+.form-control {
+	padding: 0.25rem 0.5rem;
+	border: none;
+	border-radius: 0;
+}
+.form-control:focus {
+	outline: 0;
+	box-shadow: none;
+}
 .form-control-plaintext {
-	padding: 0.25rem;
+	padding: 0.25rem 0.5rem;
 	color: $colorOffBlack;
 	border: 0;
 }
 .form-control-plaintext:focus {
 	outline: 0;
+	box-shadow: none;
 }
 
 .btn {
