@@ -328,17 +328,12 @@ textarea:focus, textarea:active {
 }
 
 .contentPage .jumbotron:first-child {
-	//padding-top: calc(1rem + #{$headerHeight});
 	padding-top: calc(#{$headerHeight} - 10px);
-	//padding-top: $headerHeight;
-	//margin: -1rem -1.5rem 1rem;
-	//box-shadow: $shadowMedium;
 }
 .jumbotron {
 	margin: 0;
 	padding: 1rem 1.5rem;
 	color: $colorWhite;
-	//background-color: $secondaryColor;
 	background: $gradientSecondary;
 	border-radius: 0;
 
