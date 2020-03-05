@@ -24,10 +24,6 @@ export function CourseOverview({match}: CourseOverviewProps) {
 				<h1>Long Course Name Here</h1>
 				<p>Created by someone?</p>
 			</Jumbotron>
-			<Uploader
-				courseId={match.params.courseId}
-				onUploadComplete={() => updateReload(rel => rel + 1)}
-			/>
 			<Loading<Submission[]>
 				loader={getCourseSubmissions}
 				params={[match.params.courseId]}
@@ -48,6 +44,12 @@ export function CourseOverview({match}: CourseOverviewProps) {
 					/>
 				}
 			/>
+			<div className="m-3">
+				<Uploader
+					courseId={match.params.courseId}
+					onUploadComplete={() => updateReload(rel => rel + 1)}
+				/>
+			</div>
 		</Frame>
 	);
 }
