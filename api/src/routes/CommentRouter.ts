@@ -4,31 +4,22 @@
 
 import express, { Response, Request } from 'express';
 import {CommentDB} from "../database/CommentDB";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {capture} from "../helpers/ErrorHelper";
+import {Comment} from "../../../models/api/Comment";
 
 export const commentRouter = express.Router();
 
-commentRouter.put('/:commentThreadID',
-    (request : Request, result : Response) => {
+/** ---------- PUT REQUESTS ---------- */
+
+commentRouter.put('/:commentThreadID',capture(async(request : Request, response : Response) => {
         const commentThreadID = request.params.commentThreadID;
-
-        // TODO userID from token
-        const userID = "00000000-0000-0000-0000-000000000000";
-        const body = request.body.body;
-
-        CommentDB.addComment({
+        const userID : string = await getCurrentUserID(request);
+        const commentBody = request.body.commentBody;
+        const comment : Comment = await CommentDB.addComment({
             commentThreadID : commentThreadID,
             userID : userID,
-            body : body
-        })
-            .then((data : any) => {
-                result.send(data);
-            })
-            .catch((error : any) => result.status(500).send({error : error}));
-});
-
-commentRouter.get('/file/:fileID',
-    (request : Request, result : Response) => {
-        const fileID = request.params.fileID;
-
-        // TODO get comments by file?
-});
+            body : commentBody
+        });
+        response.status(200).send(comment);
+}));

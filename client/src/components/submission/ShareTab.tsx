@@ -1,6 +1,7 @@
 import React from "react";
 import {Sharing} from "../general/Sharing";
-import {File} from "../../../../models/database/File";
+import {File} from "../../../../models/api/File";
+import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 interface ShareProperties {
 	file: File,

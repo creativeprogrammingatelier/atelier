@@ -1,4 +1,4 @@
-import {User} from '../../models/database/User';
+import {User} from '../../models/api/User';
 import { Fetch } from './FetchHelper';
 
 /**

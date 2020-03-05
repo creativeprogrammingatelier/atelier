@@ -1,9 +1,8 @@
 import * as React from 'react';
 import FileViewer from './FileViewer';
 import { Uploader } from './uploader/Uploader';
-import AuthHelper from '../../helpers/AuthHelper';
 import FileHelper from '../../helpers/FileHelper';
-import {File} from '../../../models/database/File';
+import {File} from '../../../models/api/File';
 
 class StudentView extends React.Component {
 	state: {files: File[]};

@@ -1,10 +1,13 @@
-import {extract, map, one, pool, pgDB, checkAvailable  } from "./HelperDB";
-import {Submission, DBSubmission, convertSubmission} from '../../../models/database/Submission';
+import {extract, map, one, pool, pgDB, checkAvailable, DBTools  } from "./HelperDB";
+import {Submission, DBSubmission, convertSubmission, submissionToAPI, APISubmission} from '../../../models/database/Submission';
 import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import { User } from "../../../models/database/User";
+import { FileDB } from "./FileDB";
+import { APIFile } from "../../../models/database/File";
 
 /**
- * submissionID, userID, name, date, state
+ * submissionID, userID, title, date, state
  * @Author Rens Leendertz
  */
 
@@ -13,15 +16,15 @@ export class SubmissionDB {
 	 * return all submissions in the database
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	 */
-	static async getAllSubmissions(limit?: number, DB : pgDB = pool) {
-		return SubmissionDB.getRecents({}, limit !== undefined && limit >= 0 ? limit : undefined)
+	static async getAllSubmissions(params : DBTools = {}) {
+		return SubmissionDB.getRecents(params)
 	}
 	/*
 	 * get all submissions of a user.
 	 * if limit is specified and >= 0, that number of occurences will be send back.
 	*/
-	static async getUserSubmissions(userID: string, limit?: number, DB : pgDB = pool) {
-		return SubmissionDB.getRecents({ userID }, limit !== undefined && limit >= 0 ? limit : undefined)
+	static async getUserSubmissions(userID: string, params : DBTools = {}) {
+		return SubmissionDB.getRecents({...params, userID })
 
 	}
 
@@ -29,8 +32,8 @@ export class SubmissionDB {
 	 * return a submission in the database
 	 * undefined if specified id does not exist
 	 */
-	static async getSubmissionById(submissionID: string, DB : pgDB = pool) {
-		return SubmissionDB.getRecents({ submissionID }, 1)
+	static async getSubmissionById(submissionID: string, params : DBTools = {}) {
+		return SubmissionDB.getRecents({...params, submissionID })
 			.then(one)
 	}
 	/**
@@ -38,8 +41,8 @@ export class SubmissionDB {
 	 * @param submission 
 	 * @param limit 
 	 */
-	static async getSubmissionsByCourse(courseID: string, DB : pgDB = pool) {
-		return SubmissionDB.getRecents({ courseID }, undefined);
+	static async getSubmissionsByCourse(courseID: string, params : DBTools = {}) {
+		return SubmissionDB.getRecents({...params, courseID });
 	}
 	/*
 	 * Give a submission object, all fields can be null
@@ -51,31 +54,83 @@ export class SubmissionDB {
 	 * The parameter date will be treated differently:
 	 * if set, only submissions that are more recent will be displayed.
 	 */
-	static async getRecents(submission: Submission, limit: number | undefined, DB : pgDB = pool) {
+	static async getRecents(submission: Submission & User) {
 		const {
 			submissionID = undefined,
 			courseID = undefined,
 			userID = undefined,
-			name = undefined,
+			//submission
+			title = undefined,
 			date = undefined,
-			state = undefined
+			state = undefined,
+			//user
+			userName: name = undefined,
+			email = undefined,
+			role = undefined,
+
+			limit = undefined,
+			offset = undefined,
+			client = pool,
+
+			addFiles = false,
 		} = submission
 		const submissionid = UUIDHelper.toUUID(submissionID),
 			courseid = UUIDHelper.toUUID(courseID),
 			userid = UUIDHelper.toUUID(userID);
-		if (limit && limit < 0) limit = undefined
-		return DB.query(`SELECT * 
-			FROM "Submissions" 
+		const query = pool.query(`SELECT * 
+			FROM "SubmissionsView" 
 			WHERE 
 					($1::uuid IS NULL OR submissionID=$1)
 				AND ($2::uuid IS NULL OR courseID=$2)
 				AND ($3::uuid IS NULL OR userID=$3)
-				AND ($4::text IS NULL OR name=$4)
+				--submission
+				AND ($4::text IS NULL OR title=$4)
 				AND ($5::timestamp IS NULL OR date <= $5)
 				AND ($6::text IS NULL OR state=$6)
+				--user
+				AND ($7::text IS NULL OR userName=$7)
+				AND ($8::text IS NULL OR email=$8)
+				AND ($9::text IS NULL OR globalrole=$9)
 			ORDER BY date DESC
-			LIMIT $7`, [submissionid, courseid, userid, name, date, state, limit])
-			.then(extract).then(map(convertSubmission))
+			LIMIT $10
+			OFFSET $11
+			`, [submissionid, courseid, userid, 
+				title, date, state, 
+				name, email, role,
+				limit, offset])
+			.then(extract).then(map(submissionToAPI))
+			if (addFiles){
+				return SubmissionDB.addFiles(query, client)
+			} else {
+				return query
+			}
+		
+	}
+	static async addFileSingle(query : Promise<APISubmission>, client : pgDB = pool){
+		return SubmissionDB.addFiles(query.then(one => [one]), client).then(one)
+	}
+
+	static async addFiles(query : Promise<APISubmission[]>, client : pgDB = pool){
+		const partials = await query
+		return this._addFiles(partials)
+	}
+	static async _addFiles(partials : APISubmission[], client : pgDB = pool){
+		//the mapping object is used as a map. this is fine
+		// tslint:disable-next-line: no-any
+		const mapping : any = {}
+		partials.forEach(item => {
+			mapping[item.ID] = item
+		});
+		const ids : string[] = partials.map(item => item.ID)
+		
+		const files = await FileDB.getFilesBySubmissionIDS(ids, {client})
+		ids.forEach(id =>{
+			if (!(id in files)){
+				throw new Error("concurrentModificationException")
+			}
+			(mapping[id] as APISubmission).files = files[id]
+		})
+		return partials
 	}
 
 	/**
@@ -85,34 +140,54 @@ export class SubmissionDB {
 	 * When not given, each of these columns will default to their standard value
 	 */
 	static async addSubmission(submission: Submission, DB : pgDB = pool) {
-		checkAvailable(['courseID','userID','name'], submission)
+		checkAvailable(['courseID','userID','title'], submission)
 		const {
 			courseID,
 			userID,
-			name,
+			title,
 			date = new Date(),
 			state = submissionStatus.new
 		} = submission
 		const courseid = UUIDHelper.toUUID(courseID),
 			userid = UUIDHelper.toUUID(userID);
-		return DB.query(`INSERT INTO "Submissions" 
+		return DB.query(`
+		WITH insert AS (
+			INSERT INTO "Submissions" 
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
-			RETURNING *`, [courseid, userid, name, date, state])
-			.then(extract).then(map(convertSubmission)).then(one)
+			RETURNING *
+		)
+		SELECT s.*, u.userName, u.globalrole, u.email
+		FROM insert as s, "UsersView" as u
+		WHERE s.userID = u.userID
+		`, [courseid, userid, title, date, state])
+			.then(extract).then(map(submissionToAPI)).then(one)
 	}
 
 	/**
 	 *  delete an submission from the database.
+	 * This adds the files associated with this submission to the response
 	 */
-	static async deleteSubmission(submissionID: string, DB : pgDB = pool) {
+	static async deleteSubmission(submissionID: string, client : pgDB = pool) {
 		const submissionid = UUIDHelper.toUUID(submissionID);
-		return DB.query(`DELETE FROM "Submissions" 
+		const files : APIFile[] = (await FileDB.getFilesBySubmissionIDS([submissionID], {client}))[submissionID]
+		return client.query(`
+		WITH delete AS (
+			DELETE FROM "Submissions" 
 			WHERE submissionID=$1 
-			RETURNING *`, [submissionid])
-			.then(extract).then(map(convertSubmission)).then(one)
+		)
+		SELECT s.*, u.userName, u.globalrole, u.email
+		FROM "Submissions" as s, "UsersView" as u
+		WHERE s.userID = u.userID
+		  AND submissionID = $1
+		`, [submissionid])
+			.then(extract).then(map(submissionToAPI)).then(one)
+			.then(partial => {
+				partial.files = files
+				return partial
+			})
 	}
 	/*
-	 * update a submission submissionid is required, all others are optional.
+	 * update a submission. submissionid is required, all others are optional.
 	 * params not given will be left unchanged.
 	 */
 	static async updateSubmission(submission: Submission, DB : pgDB = pool) {
@@ -121,22 +196,28 @@ export class SubmissionDB {
 			submissionID,
 			courseID = undefined,
 			userID = undefined,
-			name = undefined,
+			title = undefined,
 			date = undefined,
 			state = undefined
 		} = submission
 		const submissionid = UUIDHelper.toUUID(submissionID),
 			courseid = UUIDHelper.toUUID(courseID),
 			userid = UUIDHelper.toUUID(userID);
-		return DB.query(`UPDATE "Submissions" SET
-			courseID = COALESCE($2, courseID),
-			userid = COALESCE($3, userid),
-			name = COALESCE($4, name),
-			date = COALESCE($5, date),
-			state = COALESCE($6, state)
-			WHERE submissionID=$1
-			RETURNING *`
-			, [submissionid, courseid, userid, name, date, state])
-			.then(extract).then(map(convertSubmission)).then(one)
+		return DB.query(`
+			WITH update AS (
+				UPDATE "Submissions" SET
+				courseID = COALESCE($2, courseID),
+				userid = COALESCE($3, userid),
+				title = COALESCE($4, title),
+				date = COALESCE($5, date),
+				state = COALESCE($6, state)
+				WHERE submissionID=$1
+				RETURNING *
+			)
+			SELECT s.*, u.userName, u.globalrole, u.email
+			FROM update as s, "UsersView" as u
+			WHERE s.userID = u.userID`
+			, [submissionid, courseid, userid, title, date, state])
+			.then(extract).then(map(submissionToAPI)).then(one)
 	}
 }

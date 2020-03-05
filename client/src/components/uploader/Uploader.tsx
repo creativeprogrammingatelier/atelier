@@ -11,7 +11,7 @@ import '../../styles/file-uploader.scss';
 import { MAX_PROJECT_SIZE } from '../../../../helpers/Constants';
 import { JsonFetchError } from '../../../helpers/FetchHelper';
 import { createSubmission } from '../../../helpers/APIHelper';
-import { Submission } from '../../../../models/database/Submission';
+import { Submission } from '../../../../models/api/Submission';
 
 interface UploaderProperties {
     /** The courseId to upload the submission to */

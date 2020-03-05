@@ -5,6 +5,5 @@ export interface File {
 	references: {
 		courseID: string,
 		submissionID: string,
-		commentThreadID: string
 	}
 }

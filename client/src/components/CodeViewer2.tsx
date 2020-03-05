@@ -12,10 +12,11 @@ import {FileSnippet} from "./submission/CodeTab";
 import {Editor} from "codemirror";
 import {WriteComment} from "./submission/comment/WriteComment";
 import { Button } from 'react-bootstrap';
-
-import {ExtendedThread} from "../../../models/database/Thread";
 import { JsonFetchError } from '../../helpers/FetchHelper';
 import { getFileComments, createFileCommentThread } from '../../helpers/APIHelper';
+import { Range, getRanges } from "../helpers/HighlightingHelper";
+import {CommentThread} from "../../../models/api/CommentThread";
+import { withRouter } from 'react-router-dom';
 
 type CodeViewer2Props = {
 	submissionID : string,
@@ -29,8 +30,9 @@ type CodeViewer2State = {
 	commentSelection : string,
 
 	snippets : FileSnippet[],
-	commentThreads : ExtendedThread[],
+	commentThreads : CommentThread[],
 
+    commentText : string
 	commentStartLine : number,
 	commentStartCharacter : number,
 	commentEndLine : number,
@@ -52,6 +54,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 			snippets : [],
 			commentThreads : [],
 
+            commentText : "",
 			commentStartLine : 0,
 			commentStartCharacter : 0,
 			commentEndLine : 0,
@@ -77,19 +80,26 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	async getCommentThreads() {
         try {
             const threads = await getFileComments(this.props.fileID);
-            console.log(threads);
             const snippets : FileSnippet[] = [];
-            threads.map((commentThread : ExtendedThread) => {
+            threads.map((commentThread : CommentThread) => {
                 if (commentThread.snippet !== undefined) {
                     const snippet = commentThread.snippet;
                     snippets.push({
-                        startLine : snippet.lineStart,
-                        startCharacter : snippet.charStart,
-                        endLine : snippet.lineEnd,
-                        endCharacter : snippet.charEnd,
-                        onClick : () => console.log(`Clicked snippet: ${snippet.snippetID}`),
-                        snippetID : snippet.snippetID,
-                        commentThreadID : commentThread.commentThreadID === undefined ? "" : commentThread.commentThreadID
+                        startLine : snippet.start.line,
+                        startCharacter : snippet.start.character,
+                        endLine : snippet.end.line,
+                        endCharacter : snippet.end.character,
+                        onClick : () => {
+                        	console.log("clicked comment");
+							const submissionID : string = this.props.submissionID;
+							const fileID : string = this.props.fileID;
+							const threadID : string = commentThread.ID;
+							const path : string = `/submission/${submissionID}/${fileID}/comments#${threadID}`;
+							// @ts-ignore It actually is there
+							this.props.history.push(path);
+						},
+                        snippetID : snippet.ID,
+						commentThreadID : commentThread.ID
                     });
                 }
             });
@@ -99,7 +109,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
             });
         } catch (err) {
             if (err instanceof JsonFetchError) {
-                // TODO: Handle error for the user
                 console.log(err);
             } else {
                 throw err;
@@ -138,40 +147,25 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		let color = '#dc3339';
 		const opacityRange = ['00', '6F', 'BF', 'FF'];
 
+		/** Highlight based on ranges*/
 		if (this.state.snippets != undefined) {
-			let highlights = new Map();
-			for (const {startLine, startCharacter, endLine, endCharacter} of this.state.snippets) {
-				if (startLine == undefined) continue;
-
-				for (let lineNumber = startLine; lineNumber <= endLine; lineNumber++) {
-					const line : string = this.codeMirror.getDoc().getLine(lineNumber);
-					const length : number = line.length;
-
-					let startChar = (lineNumber == startLine) ? startCharacter : 0;
-					const endChar = (lineNumber == endLine) ? endCharacter : length;
-
-					for (; startChar <= endChar; startChar += 1) {
-						const location = `${lineNumber}-${startChar}`;
-						const currentHighlights = highlights.get(location);
-						const updatedHighlights = (currentHighlights == undefined) ? 1 : currentHighlights + 1;
-
-						highlights.set(location, updatedHighlights);
-					}
+			const ranges : Range[] = this.state.snippets.map(snippet => {
+				return {
+					startLine : snippet.startLine,
+					startChar : snippet.startCharacter,
+					endLine : snippet.endLine,
+					endChar : snippet.endCharacter,
+					overlap : 1
 				}
-			}
+			});
 
-			for (const entry of highlights.entries()) {
-				const [line, ch] : string[] = entry[0].split("-");
-
-				const startLocation : {line : number, ch : number} = {line : parseInt(line), ch : parseInt(ch)};
-				const endLocation : {line : number, ch : number} = { line : startLocation.line, ch : startLocation.ch + 1};
-
-				const highlights = Math.min(entry[1], opacityRange.length - 1);
-				const opacity = opacityRange[highlights];
+			const highlightRanges : Range[] = getRanges(ranges);
+			for (const {startLine, startChar, endLine, endChar, overlap} of highlightRanges) {
+				const opacity = opacityRange[Math.min(overlap, opacityRange.length - 1)];
 
 				this.codeMirror.markText(
-					startLocation,
-					endLocation,
+					{line : startLine, ch : startChar},
+					{line : endLine, ch : endChar},
 					{
 						css: `background-color: ${color}${opacity};`}
 				);
@@ -286,18 +280,28 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	/**
 	 * Create a comment
 	 */
-	async addComment(comment : string) {
+	async addComment() {
 		const fileID = this.props.fileID;
 		const submissionID = this.props.submissionID;
+		const snippetBody : string | undefined = (this.state.commentSelection == "") ? undefined : this.state.commentSelection;
+
+		console.log("Snippet body: " + snippetBody);
+		console.log("Line start: " + this.state.commentStartLine);
+		console.log("Line end: " + this.state.commentEndLine);
+		console.log("Char start: " + this.state.commentStartCharacter);
+		console.log("Char end: " + this.state.commentEndCharacter);
+		console.log("Comment body: " + this.state.commentText);
+		console.log("SubmissionID: " + submissionID);
         
         try {
 		    await createFileCommentThread(fileID, {
-                submissionID,
+                snippetBody : snippetBody,
                 lineStart : this.state.commentStartLine,
                 lineEnd : this.state.commentEndLine,
                 charStart : this.state.commentStartCharacter,
                 charEnd : this.state.commentEndCharacter,
-                body : comment
+				commentBody : this.state.commentText,
+				submissionID : submissionID
             });
         } catch (err) {
             if (err instanceof JsonFetchError) {
@@ -325,7 +329,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 							this.initialize();
 						}
 					}
-					onBeforeChange={(editor, data, value) => {
+					onBeforeChange={() => {
 						// uncomment if we allow changes to be made
 						/*this.setState({
 						 formattedCode : value
@@ -334,7 +338,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 					onSelection={this.onSelection}
 					onMouseDown={this.onClick}
 					onTouchStart={this.onClick}
-					onChange={(editor, data, value) => {}}
+					onChange={() => {}}
 				/>
 				{
 					this.state.selecting ?
@@ -342,7 +346,11 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 							<Button id='cancelComment' onClick={() => this.setSelecting(false)}>Cancel</Button>
 							<h4>Code Snippet</h4>
 							<textarea value={this.state.commentSelection} />
-							<WriteComment placeholder="Write a comment" newCommentCallback={(text : string) => this.addComment(text)}/>
+                            <WriteComment 
+                                placeholder="Write a comment" 
+                                text={this.state.commentText} 
+                                updateText={commentText => this.setState({ commentText })} />
+                            <Button onClick={this.addComment}>Submit</Button>
 						</div>
 						:
 						<div>
@@ -354,4 +362,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	}
 }
 
-export default CodeViewer2;
+//@ts-ignore If someone knows how to fix this for typescript, pls do
+const CodeViewer2WithRouter = withRouter(CodeViewer2);
+export default CodeViewer2WithRouter;

@@ -4,8 +4,9 @@
 
 import express, {Response, Request} from 'express';
 import {SubmissionDB} from "../database/SubmissionDB";
-import {Submission} from "../../../models/database/Submission";
-import { capture } from '../helpers/ErrorHelper';
+import {Submission} from "../../../models/api/Submission";
+import {UUIDHelper} from "../helpers/UUIDHelper";
+import {capture} from "../helpers/ErrorHelper";
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware } from '../helpers/FilesystemHelper';
 import { validateProjectServer } from '../../../helpers/ProjectValidationHelper';
@@ -13,23 +14,16 @@ import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { FileDB } from '../database/FileDB';
 
 export const submissionRouter = express.Router();
-
 submissionRouter.use(AuthMiddleware.requireAuth);
 
-/** Get submissions of a course
- * @type: get
- * @url: /api/submissions/course/:courseId
- * @return: submissions of a certain course
+/**
+ * Get submissions of a course
  */
-submissionRouter.get('/course/:courseID',
-    (request: Request, result: Response) => {
-        const courseID = request.params.courseID;
-        SubmissionDB.getSubmissionsByCourse(courseID)
-            .then((submissions : Submission[]) => {
-                result.send(submissions);
-            })
-            .catch((error: any) => result.status(500).send({error: error}));
-    });
+submissionRouter.get('/course/:courseID', capture(async(request: Request, response: Response) => {
+    const courseID : string = request.params.courseID;
+    const submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+    response.status(200).send(submissions);
+}));
 
 /** Create a new submission containing the files submitted in the body of the request */
 submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capture(async (request, response) => {
@@ -39,16 +33,16 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
 
     // TODO: create a single transaction, including filesystem things
     const submission = await SubmissionDB.addSubmission({ 
-        name: request.body["project"], 
+        title : request.body["project"],
         courseID: request.params.courseID, 
-        userID 
+        userID : userID
     });
 
     await Promise.all(files.map(file => 
         FileDB.addFile({
             pathname: file.path,
             type: file.mimetype,
-            submissionID: submission.submissionID
+            submissionID: submission.ID
         })
     ));
 
@@ -58,27 +52,20 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     response.send(submission);
 }));
 
-/** Get submissions of a user
- * @type get
- * @url: /api/submissions/:userID
- * @param userID : id of the user
- * @param limit? : limit to submissions in the body
- * @return submissions of a user
+/**
+ * Get submissions of a user
  */
-submissionRouter.get('/user/:userID',
-    (request: Request, result: Response) => {
-        const userID : string = request.params.userID;
-        const limit : number | undefined = request.body.limit;
+submissionRouter.get('/user/:userID', capture(async(request: Request, response: Response) => {
+    const userID : string = request.params.userID;
+    const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
+    response.status(200).send(submissions);
+}));
 
-        SubmissionDB.getUserSubmissions(userID, limit)
-            .then((data: Submission[]) => {
-                result.send(data);
-            })
-            .catch((error : any) => result.status(500).send({error : error}));
-    });
-
-submissionRouter.get('/:submissionID', (request: Request, response: Response) => {
-    SubmissionDB.getSubmissionById(request.params.submissionID)
-        .then((data: Submission) => {response.send(data);})
-        .catch((error : any) => response.status(500).send({error : error}));
-});
+/**
+ * Get a specific submission
+ */
+submissionRouter.get('/:submissionID', capture(async(request: Request, response: Response) => {
+    const submissionID : string = request.params.submissionID;
+    const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
+    response.status(200).send(submission);
+}));

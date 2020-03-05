@@ -1,6 +1,6 @@
 import React, {FormEvent, useState} from "react";
 import {InputField} from '../general/InputField';
-import {Course} from '../../../../models/database/Course';
+import {Course} from '../../../../models/api/Course';
 import { createCourse } from '../../../helpers/APIHelper';
 import { courseState } from '../../../../enums/courseStateEnum';
 import {Button, FormControl, InputGroup, Form} from "react-bootstrap";
@@ -16,7 +16,7 @@ export function AddCourse({handleResponse} : AddCourseProps) {
     // Create course
     async function handleSubmission(courseName : string) {
         try {
-            const course = await createCourse({
+            const course : Course = await createCourse({
                 name : courseName,
                 state : courseState.open
             });

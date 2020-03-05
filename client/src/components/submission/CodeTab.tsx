@@ -1,6 +1,7 @@
-import React from "react";
-import {File} from "../../../../models/database/File";
+import React, {useState} from "react";
+import {File} from "../../../../models/api/File";
 import CodeViewer2 from "../CodeViewer2";
+import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 export interface FileComment {
 	startLine: number,
@@ -29,13 +30,12 @@ interface CodeProperties {
 }
 
 export function CodeTab({file, body, submissionID} : CodeProperties) {
-
-
 	return <div className="contentTab">
-		<CodeViewer2 submissionID={submissionID} fileID={file.fileID!} fileContents={body} />
-        {/*<Loading<string>*/}
-        {/*    loader={getFileContents}*/}
-        {/*    component={fileContents =>*/}
-		{/*        <CodeViewer2 fileContents={body} submissionID={submissionID} fileID={file.fileID!} />} />*/}
+		<h1>{FileNameHelper.fromPath(file.name)}</h1>
+		<CodeViewer2
+			submissionID={submissionID}
+			fileID={file.ID}
+			fileContents={body}
+		/>
 	</div>
 }

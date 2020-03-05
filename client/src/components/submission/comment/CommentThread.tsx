@@ -1,22 +1,22 @@
 import React, {useState} from "react";
 
-import * as Models from "../../../placeholdermodels";
-
-import {Header} from "../../frame/Header";
+import {Snippet as ModelSnippet} from "../../../placeholdermodels";
 import {Comment as CommentComponent} from "./Comment";
 import {Snippet} from "./Snippet";
 import {WriteComment} from "./WriteComment";
 import {ButtonBar} from "../../general/ButtonBar";
 import { Button } from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiSend} from "react-icons/all";
-import {ExtendedThread} from "../../../../../models/database/Thread";
-import {Comment} from "../../../../../models/database/Comment";
+import { CommentThread } from "../../../../../models/api/CommentThread";
 import { JsonFetchError } from "../../../../helpers/FetchHelper";
 import { createComment } from "../../../../helpers/APIHelper";
+import {File} from "../../../../../models/api/File";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
-	thread : ExtendedThread,
+	thread : CommentThread,
+	submissionID? : string,
+	file? : File,
 	body? : string
 	// Maybe also find a way to include the topic, so it can be shown immediately
 }
@@ -34,30 +34,21 @@ const LARGE_SNIPPET_LINES_ABOVE = 0;
 /** Amount of context lines to show below for a small snippet */
 const LARGE_SNIPPET_LINES_BELOW = 0;
 
-export function CommentThread({thread, body}: CommentThreadProperties) {
-    // Load comments in the thread
-	const currentComments : Models.Comment[] = thread.comments
-		.map((comment : Comment) => {
-			return {
-				text : comment.body == undefined ? "" : comment.body,
-				author : comment.userID == undefined ? "" : comment.userID ,
-				time : comment.date == undefined ? new Date() : comment.date
-			}
-		});
-
+export function CommentThread({submissionID, thread, body, file}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(false);
-	const [comments, updateComments] = useState(currentComments);
+    const [comments, updateComments] = useState(thread.comments);
+    const [newCommentText, updateNewCommentText] = useState("");
 
-	let snippet : Models.Snippet | undefined = undefined;
-	if (body != undefined && thread.snippet != undefined) {
+	let snippet : ModelSnippet | undefined = undefined;
+	if (thread.snippet != undefined && body != undefined && file != undefined) {
 		// Parse body into lines
 		const fileContent : string[] = body.replace('\r', '').split('\n');
 		const totalLines : number = fileContent.length;
 
 		// Get snippet data
 		const threadSnippet = thread.snippet;
-		const lineStart : number = threadSnippet.lineStart;
-		const lineEnd : number = threadSnippet.lineEnd;
+		const lineStart : number = threadSnippet.start.line;
+		const lineEnd : number = threadSnippet.end.line;
 
 		// Get margins for the snippet
 		const snippetLength : number = (lineEnd - lineStart + 1);
@@ -75,52 +66,49 @@ export function CommentThread({thread, body}: CommentThreadProperties) {
 		const mainLineStart = topMargin;
 		const mainLineEnd = topMargin + Math.min(MINIMIZED_LINES, snippetLength);
 
-		console.log("--- " + lineStart + " " + lineEnd + "---");
-		console.log("File: " + fileContent.slice(fileLineStart, fileLineEnd));
-		console.log("Main: " + mainLineStart + " " + mainLineEnd);
-		console.log("FileLine: " + fileLineStart + " " + (fileLineEnd));
-
-		// Define snippet for render
-		// TODO fileID
 		snippet = {
+			submissionId : submissionID,
 			fullText : fileContent.slice(fileLineStart, fileLineEnd),
 			mainLines : [mainLineStart, mainLineEnd],
-			fileId : "00000000-0000-0000-0000-000000000000",
+			fileId : file.ID,
 			fileLines : [fileLineStart, fileLineEnd]
 		};
 	}
 
 
-	const newComment = async (text: string) => {
-        try {
-            const comment = await createComment(thread.commentThreadID!, {
-                body : text
-            });
-            console.log(comment);
-            updateComments(comments => [
-                ...comments,
-                {text : comment.body, author : comment.userID, time : comment.date} as Models.Comment
-            ]);
-        } catch (err) {
-            if (err instanceof JsonFetchError) {
-                // TODO: handle error for user
-                console.log(err);
-            } else {
-                throw err;
+	const handleNewComment = async () => {
+        if (newCommentText !== null && newCommentText.trim() !== "") {
+            try {
+                const comment = await createComment(thread.ID, {
+                    commentBody : newCommentText
+                });
+                console.log('added comment response' + comment);
+                updateComments(comments => [
+                    ...comments,
+                    comment
+                ]);
+                updateNewCommentText("");
+            } catch (err) {
+                if (err instanceof JsonFetchError) {
+                    // TODO: handle error for user
+                    console.log(err);
+                } else {
+                    throw err;
+                }
             }
         }
 	};
 
 	//console.log(thread, snippet);
 	return (
-		<div className="commentThread">
+		<div id={thread.ID} className="commentThread">
 			<div> {/* Assuming loading is always successful, obviously */}
                 {snippet && <Snippet snippet={snippet}/>}
                 {opened ? <div>
                         {comments.map(comment => <CommentComponent comment={comment}/>)}
-                        <WriteComment placeholder="Reply..." newCommentCallback={newComment}/>
+                        <WriteComment placeholder="Reply..." text={newCommentText} updateText={updateNewCommentText} />
                         <ButtonBar align="right">
-                            <Button><FiSend size={14} color="#FFFFFF"/></Button>
+                            <Button onClick={handleNewComment}><FiSend size={14} color="#FFFFFF"/></Button>
                             <Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>
                         </ButtonBar>
                     </div>

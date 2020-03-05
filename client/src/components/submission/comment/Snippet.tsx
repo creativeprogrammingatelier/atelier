@@ -18,21 +18,16 @@ export function Snippet({snippet}: SnippetProperties) {
 	const mainLines = snippet.fullText.slice(begin, end);
 	const postLines = snippet.fullText.slice(end);
 
-	const highlightStyle: React.CSSProperties =
-		expanded
-			? {backgroundColor: "#eee"}
-			: {};
-
 	return (
 		<div className="snippet">
             <pre className="m-0 px-2 py-1">
                 {expanded && preLines.join("\n") + "\n"}
-	            <span style={highlightStyle}>{mainLines.join("\n")}</span>
+	            <span>{mainLines.join("\n")}</span>
 	            {expanded && "\n" + postLines.join("\n")}
             </pre>
 			<ButtonBar align="right">
 				<Button>
-					<Link to={`/files/${snippet.fileId}#line=${snippet.fileLines[0]}-${snippet.fileLines[1]}`}>
+					<Link to={`/submission/${snippet.submissionId}/${snippet.fileId}/code#${snippet.fileLines[0]}`}>
 						<FiCode size={14} color="#FFFFFF"/>
 					</Link>
 				</Button>

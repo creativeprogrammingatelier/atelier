@@ -1,5 +1,4 @@
-import React, {Component, ReactElement} from 'react';
-import AuthHelper from '../../helpers/AuthHelper';
+import React from 'react';
 import CommentHelper from '../../helpers/CommentHelper';
 import CommentView from './CommentView';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -7,8 +6,8 @@ import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import CommentCreator from './CommentCreator';
 //@ts-ignore
 import io from 'socket.io-client';
-import { Comment } from '../../../models/database/Comment';
-import {File} from '../../../models/database/File';
+import { Comment } from '../../../models/api/Comment';
+import {File} from '../../../models/api/File';
 
 type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: File}
 type CommentsViewerState = {file: File, currentLineNumber: number, comments: Comment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function}
@@ -64,7 +63,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 	static removeComment(comments: Comment[], commentToRemove: Comment) {
 		for (let index = 0; index < comments.length; index++) {
 			const comment = comments[index];
-			if (comment.commentID === commentToRemove.commentID) {
+			if (comment.ID === commentToRemove.ID) {
 				comments.splice(index, 1);
 				return comments;
 			}
@@ -92,7 +91,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 	};
 
 	fetchComments = (hideCommentCreator?: boolean) => {
-		CommentHelper.getFileComments(this.state.file.fileID!, (comments: Comment[]) => {
+		CommentHelper.getFileComments(this.state.file.ID, (comments: Comment[]) => {
 				let sortedComments = comments.sort(CommentsViewer.sortComments);
 				this.setState({
 					comments: sortedComments,
@@ -119,7 +118,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 		if (this.state.comments != null) {
 			for (const comment of this.state.comments) {
 				comments.push(
-					<li className="list-group-item" key={comment.commentID}><CommentView updateCurrentLineNumber={this.state.updateCurrentLineNumber} comment={comment} deleteComment={this.deleteComment}/>
+					<li className="list-group-item" key={comment.ID}><CommentView updateCurrentLineNumber={this.state.updateCurrentLineNumber} comment={comment} deleteComment={this.deleteComment}/>
 					</li>
 				);
 			}
@@ -135,7 +134,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
                 })}><FontAwesomeIcon icon={faPlus}/> New Comment</span>
 				<div>
 					{(this.state.commentCreatorToggle ?
-						<CommentCreator currentLineNumber={this.state.currentLineNumber} onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.fileID!}/> : null)}
+						<CommentCreator currentLineNumber={this.state.currentLineNumber} onSuccess={this.fetchCommentsHideCommentCreator} fileId={this.props.file.ID}/> : null)}
 				</div>
 				<ul className="list-group">
 					{this.populate()}

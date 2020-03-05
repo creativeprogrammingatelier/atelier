@@ -4,12 +4,12 @@ import {File} from "./File";
 
 export interface CommentThread {
 	ID: string,
-	submissionID : string,
 	visibility: string,
 	file?: File,
 	snippet?: Snippet,
-	comments: Comment[]
+	comments: Comment[],
 	references: {
-		courseID: string
+		courseID: string,
+		submissionID : string,
 	}
 }

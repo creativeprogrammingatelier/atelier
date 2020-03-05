@@ -1,6 +1,8 @@
-import {pool, extract, map, one, checkAvailable, pgDB } from "./HelperDB";
-import {Course, convertCourse} from '../../../models/database/Course';
+import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify } from "./HelperDB";
+import {Course, courseToAPIPartial, DBAPICourse} from '../../../models/database/Course';
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import { FileDB } from "./FileDB";
+import { User } from "../../../models/database/User";
 
 /**
  * @Author Rens Leendertz
@@ -9,87 +11,139 @@ import { UUIDHelper } from "../helpers/UUIDHelper";
 export class CourseDB {
 	
 	/**
-	 * Many
+	 * get a list of all courses
+	 * @param params optional; send some extra info, such as limit and offset.
 	 */
-	static async getAllCourses(DB : pgDB = pool) : Promise<Course[]> {
-		return CourseDB.filterCourse({});
+	static async getAllCourses(params : DBTools = {}) {
+		return CourseDB.filterCourse(params);
 	}
 
 	/**
 	 * One
 	 */
-	static async getCourseByID(courseID : string, DB : pgDB = pool) : Promise<Course>{
-		return CourseDB.filterCourse({courseID}, undefined, DB).then(one)
+	static async getCourseByID(courseID : string, client : pgDB = pool) {
+		return CourseDB.filterCourse({courseID, client}).then(one)
 	}
 
-	static async filterCourse(course : Course, limit? : number, DB : pgDB = pool) : Promise<Course[]>{
+	static async filterCourse(course : Course & User) {
 		const {
 			courseID = undefined,
-			name = undefined,
+			courseName = undefined,
 			creatorID = undefined,
-			state = undefined
+			state = undefined,
+			//creator
+			userName = undefined,
+			email = undefined,
+			role = undefined,
+			//dbtools
+			limit = undefined,
+			offset = undefined,
+			client = pool,
 		} = course;
 		const courseid = UUIDHelper.toUUID(courseID),
 			creatorid = UUIDHelper.toUUID(creatorID);
-			limit = limit===undefined || limit<0? undefined : limit
-		return DB.query(`SELECT * FROM "Courses"
+		const 
+			searchCourse = searchify(courseName),
+			searchUser = searchify(userName)
+
+		const args = [	courseid, creatorid, //ids
+						searchCourse, state, //course
+						searchUser, email, role, //creator
+						limit, offset
+					]
+		type argType = typeof args;
+		return client.query<DBAPICourse, argType>(`SELECT * FROM "CoursesView"
 			WHERE
 				($1::uuid IS NULL OR courseID=$1)
-			AND ($2::text IS NULL OR name=$2)
-			AND ($3::uuid IS NULL OR creator=$3)
+			AND ($2::uuid IS NULL OR creator=$2)
+			--course
+			AND ($3::text IS NULL OR courseName ILIKE $3)
 			AND ($4::text IS NULL OR state=$4)
-			LIMIT $5`, [courseid, name, creatorid, state, limit])
-			.then(extract).then(map(convertCourse))
+			--creator
+			AND ($5::text IS NULL OR userName ILIKE $5)
+			AND ($6::text IS NULL OR email ILIKE $6)
+			AND ($7::text IS NULL OR globalRole=$7)
+
+			ORDER BY state, courseName, courseID
+			LIMIT $8
+			OFFSET $9`, args)
+			.then(extract).then(map(courseToAPIPartial))
 	}
 
 	/**
 	 * One
 	 */
-	static async addCourse(course : Course, DB : pgDB = pool) : Promise<Course>{
-		checkAvailable(['name','state'], course)
+	static async addCourse(course : Course) {
+		checkAvailable(['courseName','state','creatorID'], course)
 		const {
-			name,
+			courseName,
 			state,
-			creatorID = undefined
+			creatorID,
+			client = pool
 		} = course;
 		const creatorid = UUIDHelper.toUUID(creatorID);
-		return DB.query(`INSERT INTO "Courses" 
+		return client.query(`
+		WITH insert as (
+			INSERT INTO "Courses" 
 			VALUES (DEFAULT, $1, $2, $3) 
-			RETURNING *`, [name, state, creatorid])
-		.then(extract).then(map(convertCourse)).then(one)
+			RETURNING *
+		)
+		SELECT c.*, u.userName, u.globalrole, u.email, u.userid
+		FROM insert as c, "UsersView" u
+		WHERE c.creator = u.userID
+		`, [courseName, state, creatorid])
+		.then(extract).then(map(courseToAPIPartial)).then(one)
+		.then(res => {
+			
+			return res
+		})
 	}
 
 	/**
 	 * One
 	 */
-	static async deleteCourseByID(courseID : string, DB : pgDB = pool) : Promise<Course>{
+	static async deleteCourseByID(courseID : string, client : pgDB = pool) {
 		const courseid = UUIDHelper.toUUID(courseID);
-		return DB.query(`DELETE FROM "Courses" 
-		WHERE courseID=$1 
-		RETURNING *`,[courseid])
-		.then(extract).then(map(convertCourse)).then(one)
+		return client.query(`
+		WITH delete AS (
+			DELETE FROM "Courses" 
+			WHERE courseID=$1 
+			RETURNING *
+		)
+		SELECT c.*, u.userName, u.globalrole, u.email, u.userid
+		FROM delete as c, "UsersView" u
+		WHERE c.creator = u.userID`,[courseid])
+		.then(extract).then(map(courseToAPIPartial)).then(one)
 	}
 
 	/**
 	 * One
 	 */
-	static async updateCourse(course : Course, DB : pgDB = pool) : Promise<Course>{
+	static async updateCourse(course : Course) {
 		checkAvailable(['courseID'], course)
 		const {
 			courseID,
-			name = undefined,
+			courseName = undefined,
 			state = undefined,
-			creatorID = undefined
+			creatorID = undefined,
+			client =pool
 		} = course;
 		const courseid = UUIDHelper.toUUID(courseID),
 			creatorid = UUIDHelper.toUUID(creatorID);
-		return DB.query(`UPDATE "Courses" SET 
-			name=COALESCE($2, name),
+		return client.query(`
+		WITH update AS (
+			UPDATE "Courses" SET 
+			courseName=COALESCE($2, courseName),
 			state=COALESCE($3,state),
 			creator=COALESCE($4,creator)
 			WHERE courseID=$1
-			RETURNING *`,
-			[courseid, name, state, creatorid])
-		.then(extract).then(map(convertCourse)).then(one)
+			RETURNING *
+		)
+		SELECT c.*, u.userName, u.globalrole, u.email, u.userid
+		FROM update as c, "UsersView" u
+		WHERE c.creator = u.userID
+		`,
+			[courseid, courseName, state, creatorid])
+		.then(extract).then(map(courseToAPIPartial)).then(one)
 	}
 }

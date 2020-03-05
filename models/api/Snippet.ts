@@ -10,7 +10,8 @@ export interface Snippet {
 	end: {
 		line: number,
 		character: number
-	}
+	},
+	body :string,
 	references: {
 		courseID: string,
 		submissionID: string,

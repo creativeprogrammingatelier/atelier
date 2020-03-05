@@ -1,19 +1,23 @@
 import * as pg from "pg"
 import { NotFoundDatabaseError } from "./DatabaseErrors";
+import { config } from "../helpers/ConfigurationHelper";
 console.log("helper startup")
 
-export type pgDB = pg.Pool | pg.Client
+export type pgDB = pg.Pool | pg.PoolClient
 
 export const pool = new pg.Pool({
-	user: 'assistantassistant',
-	host: 'localhost',
-	database: 'assistantassistant',
-	password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
-	port: 5432,
+	...config.database,
 	max: 1
 });
+
+pool.on("connect", () => console.log("Connected to the database."));
+
 export const end = pool.end.bind(pool);
 export const getClient : () => Promise<pg.PoolClient> = pool.connect.bind(pool);
+
+export function isPool(obj : pgDB) : obj is pg.Pool {
+	return Object.is(obj, pool);
+}
 
 export function toBin(n : number | undefined){
 	if (n === undefined) return undefined
@@ -26,15 +30,24 @@ export function checkAvailable(required : string[], obj : {}){
 		}
 	});
 }
-
-export function searchify(input : string){
+export function keyInMap<T>(key : string, map : object) : key is keyof typeof map  {
+	if (!(key in map)){
+		throw new Error("key "+key+" not found in map");
+	}
+	return true
+}
+export function searchify(input : undefined) : undefined
+export function searchify(input : string) : string
+export function searchify(input : string | undefined) : string | undefined
+export function searchify(input : string | undefined){
+	if (input === undefined) return undefined
 	return '%'+input.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')+'%'
 }
-export function extract<T>(result : {rows:T[]}){
+export function extract<T>(result : pg.QueryResult<T>){
 	return result.rows;
 }
 export function one<T>(result : T[]) {
-    const one = result[0];
+	const one = result[0];
     if (one === undefined) {
         throw new NotFoundDatabaseError();
     } else {
@@ -70,4 +83,10 @@ export function funmap3<A,a,B,b,C,c>(
 		return {...funA(element), ...funB(element),...funC(element)}
 	}
 	return map(union)
+}
+
+export interface DBTools {
+	limit?: number,
+	offset?: number,
+	client?: pgDB
 }

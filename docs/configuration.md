@@ -1,16 +1,22 @@
 # Configuration
 
-Atelier is configured using configuration files in the JSON format. The files are located in the root of the application and named `config.environment.json`, where `environment` is the value of the `NODE_ENV` environment variable. The value is assumed to be `development` by default; on production servers it should be set to `production`. The file `config.example.json` shows an example configuration for development purposes.
+Atelier is configured using configuration files in the JSON format. The files are located in a folder called `config` and named `environment.json`, where `environment` is the value of the `NODE_ENV` environment variable. The value is assumed to be `development` by default; on production servers it should be set to `production`. The file `config/example.json` shows an example configuration for development purposes.
 
 The configuration file specifies all environment dependent variables for the project, so no source code changes should be needed to get it running. Here follows a description of all values that can be specified in the configuration file.
 
 ## Host and port
 
 ```json
-"host": "http://localhost:5000"
+"urlBase": "http://localhost:5000"
 ```
 
 The start of the url where the application will be accessible. It should include the preferred protocol for accessing the application (which should be `https://` in production environments) and has no trailing slash.
+
+```json
+"hostname": "0.0.0.0"
+```
+
+The hostname the server should listen on. In production environments the default is 0.0.0.0, in development it defaults to 127.0.0.1 (localhost).
 
 ```json
 "port": 5000
@@ -78,3 +84,23 @@ Atelier requires access to a PostgreSQL database with its table structure set up
 - `user`: the user that connects to the database
 - `password`: the password of the user connecting to the database
 - `database`: the name of the database Atelier should connect to
+
+## Using environment variables or files
+
+Atelier can also read configuration values from your environment variables or files on disk. This can be useful when the values are also needed by other processes, for example in the case of a database password. 
+
+To use an environment variable, set the property in your `config/env.json` to `ENV::VARIABLE_NAME`. When reading the configuration, the value of this field will then be looked for in an environment variable called `VARIABLE_NAME`. In the following case, the field `port` will be read from the `PORT` environment variable:
+
+```json
+"port": "ENV::PORT"
+```
+
+To read a file from disk, set the property to `FILE::/path/to/file`. The value for this field will then be read from the specified file. In this example, the database password is read from a Docker secret file:
+
+```json
+"database": {
+    "password": "FILE::/run/secrets/db_password"
+}
+```
+
+Note that it is only possible to set values in your configuration that would be strings, numbers or booleans this way. Reading objects from environment variables or files is not supported.

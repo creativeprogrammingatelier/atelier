@@ -6,12 +6,10 @@ import {TabBar} from "../general/TabBar";
 import {CodeTab} from "./CodeTab";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
-import {File} from "../../../../models/database/File";
+import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import { getFile, getFileContents } from "../../../helpers/APIHelper";
-import {Button, Jumbotron} from "react-bootstrap";
-import {Link} from "react-router-dom";
+import {getFile, getFileContents} from "../../../helpers/APIHelper";
 
 export interface FileProperties {
 	id: string,
@@ -36,34 +34,34 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 		setActiveTab(tab);
 	}, [tab]);
 
-	const submissionPath = "/submission/" + submissionId;
-	const filePath = submissionPath + "/" + fileId;
-    
-    function renderTabContents([file, body] : [File, string]) {
-        if (activeTab === "code") {
-            return <CodeTab body={body} file={file} submissionID={submissionId} />;
-        } else if (activeTab === "comments") {
-            return <CommentTab body={body} file={file} />;
-        } else if (activeTab === "share") {
-            return <ShareTab file={file} url={window.location.origin + filePath} />;
-        }
-        return <div><h1>Tab not found!</h1></div>;
-    }
+	const filePath = "/submission/" + submissionId + "/" + fileId;
+
+	function renderTabContents([file, body]: [File, string]) {
+		if (activeTab === "code") {
+			return <CodeTab body={body} file={file} submissionID={submissionId}/>;
+		} else if (activeTab === "comments") {
+			return <CommentTab body={body} file={file} submissionID={submissionId}/>;
+		} else if (activeTab === "share") {
+			return <ShareTab file={file} url={window.location.origin + filePath}/>;
+		}
+		return <div><h1>Tab not found!</h1></div>;
+	}
 
 	return (
 		<Loading<File>
 			loader={getFile}
 			params={[fileId]}
 			component={
-				file => <Frame title={FileNameHelper.fromPath(file.pathname!)} sidebar search={filePath + "/search"}>
+				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={filePath + "/search"}>
 					<Jumbotron>
 						<h1>{FileNameHelper.fromPath(file.pathname!)}</h1>
 						<p>In submission <Link to={submissionPath}>some course</Link></p>
 					</Jumbotron>
 					<Loading<[File, string]>
-						loader={(fileId : string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
+						loader={(fileId: string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
 						params={[fileId]}
-						component={renderTabContents} />
+						component={renderTabContents}
+					/>
 					<TabBar
 						tabs={[{
 							id: "code",

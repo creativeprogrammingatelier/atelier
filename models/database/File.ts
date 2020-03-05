@@ -1,14 +1,16 @@
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import {File as APIFile} from "../api/File"
+import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB";
 /**
  * Modeling the file object
  * Author: Andrew Heath
  * Date created: 15/08/19
  */
 
-export interface File {
+export interface File extends DBTools {
 	fileID? : string,
 	submissionID? : string,
+	courseID? : string,
 	pathname? : string,
 	type? : string
 }
@@ -16,25 +18,27 @@ export interface File {
 export interface DBFile {
 	fileid : string,
 	submissionid : string,
+	courseid: string,
 	pathname : string,
 	type : string
 }
-export interface DBAPIFile extends DBFile{
-	courseid: string,
-	commentthreadid: string
-}
 
+export {APIFile}
+
+export type DBAPIFile = DBFile
 
 export function convertFile(db : DBFile) : File {
 	return {
 		fileID: UUIDHelper.fromUUID(db.fileid),
 		submissionID: UUIDHelper.fromUUID(db.submissionid),
+		courseID: UUIDHelper.fromUUID(db.courseid),
 		pathname: db.pathname,
 		type: db.type
 	}
 }
 
 export function fileToAPI(db :DBAPIFile) : APIFile {
+	checkAvailable(["fileid", "pathname", "type", "courseid", "submissionid"], db)
 	return {
 		ID:UUIDHelper.fromUUID(db.fileid),
 		name: db.pathname,
@@ -42,7 +46,6 @@ export function fileToAPI(db :DBAPIFile) : APIFile {
 		references:{
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),
-			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid)
 		}
 	}
 }

@@ -4,64 +4,52 @@
 
 import express, {Response, Request} from "express";
 import {CourseDB} from "../database/CourseDB";
-import {Course} from "../../../models/database/Course";
-import {courseState} from "../../../enums/courseStateEnum";
+import {Course, CoursePartial} from "../../../models/api/Course";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {capture} from "../helpers/ErrorHelper";
+import {courseState} from "../../../enums/courseStateEnum";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 
 export const courseRouter = express.Router();
 
 // Authentication is required for all endpoints
 courseRouter.use(AuthMiddleware.requireAuth);
 
+/** ---------- GET REQUESTS ---------- */
+
 /**
- * /api/courses/
- * @return, list of courses
+ * Get user courses
  */
-courseRouter.get("/",
-	async(request: Request, result: Response) => {
-		CourseDB.getAllCourses()
-			.then((courses: Course[]) => courses.map((course: Course) => {
-				return {
-					courseID: course.courseID,
-					name: course.name,
-					state: course.state,
-					creator: course.creatorID
-				};
-			}))
-			.then(data => result.send(data))
-			.catch((error => result.status(500).send({error: "internal", message: "Internal server error", details: error})));
-	});
+courseRouter.get("/", capture(async(request: Request, response: Response) => {
+	const courses : CoursePartial[] = await CourseDB.getAllCourses();
+	response.status(200).send(courses);
+}));
 
-/** Add a course. Pass parameters as json in the body.
- * @type: post
- * @url: /api/course
- * @param name (string): course name
- * @param state (courseState): state of the course
- * @param creatorID (string): userID of the creator
- * @return course created
+/**
+ * Get a specific course
  */
-courseRouter.post("/",
-	(request: Request, result: Response) => {
-		const name: string = request.body.name;
-		const state: courseState = request.body.state;
-		const creatorID: string | undefined = request.body.creatorID;
+courseRouter.get("/:courseID", capture(async(request: Request, response: Response) => {
+	const courseID : string = request.params.courseID;
+	const course : CoursePartial = await CourseDB.getCourseByID(courseID);
+	response.status(200).send(course);
+}));
 
-		console.log(name, state, creatorID);
+/** ---------- POST REQUESTS ---------- */
 
-		CourseDB.addCourse({name, state, creatorID})
-			.then((course: Course) => {
-				result.send(course);
-			})
-			.catch((error: Error) => result.status(500).send({error}));
+/**
+ * Create a course
+ */
+courseRouter.post('/', capture(async(request : Request, response : Response) => {
+	const name : string = request.body.name;
+	const state : courseState = request.body.state;
+	const userID : string = await getCurrentUserID(request);
+
+	const course : CoursePartial = await CourseDB.addCourse({
+		courseName : name,
+		state : state,
+		creatorID : userID
 	});
+	console.log(course);
 
-courseRouter.get("/:courseID", async(request: Request, response: Response) => {
-	const courseID = request.params.courseID;
-
-	try {
-		const course: Course = await CourseDB.getCourseByID(courseID);
-		response.send(course);
-	} catch (error) {
-		response.status(500).send({error: "internal", message: "Could not retrieve course details", details: error});
-	}
-});
+	response.status(200).send(course);
+}));

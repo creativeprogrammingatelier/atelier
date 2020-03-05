@@ -1,4 +1,4 @@
-import {ServerError} from "../../models/api/ServerError";
+import {ServerError} from "./../../models/api/ServerError";
 import {cache} from "./FetchCache";
 
 export class Fetch {
@@ -17,47 +17,30 @@ export class Fetch {
 	/**
 	 * Generic fetch, requesting JSON content from the server,
 	 * using the authentication token if the user is logged in.
-	 * An extra handler function can be given to transform the data before caching
-	 * Throws a `FetchError` if the request was not successful.
+	 * Throws a `FetchError` if the request was not succesful.
 	 */
-	static async fetch<T>(url: RequestInfo, options: RequestInit = {}, handler?: (response: Response) => T) {
-		// TODO: This method looks like a mess, how can it be improved
-		const doCache: boolean = options.method === undefined || options.method === "GET";
-		if (doCache && cache.has(url)) {
-			return cache.get(url);
-		}
+	static async fetch(url: RequestInfo, options: RequestInit = {}) {
+		const res = await fetch(url, options);
 
-		const response = await fetch(url, options);
-
-		if (response.ok) {
-			if (handler) {
-				const data = handler(response);
-				if (doCache) {
-					cache.register(url, data);
-				}
-				return data;
-			}
-			if (doCache) {
-				cache.register(url, response);
-			}
-			return response;
+		if (res.ok) {
+			return res;
 		} else {
-			throw new FetchError(response);
+			throw new FetchError(res);
 		}
 	}
 
 	/**
 	 * Do a fetch and convert the result into a JSON object.
-	 * Throws a `JsonFetchError` if the request was not successful.
+	 * Throws a `JsonFetchError` if the request was not succesful.
 	 */
 	static async fetchJson<T>(url: RequestInfo, options: RequestInit = {}): Promise<T> {
 		const headers = {
-			"Accept": "application/json",
-			"Content-Type": "application/json"
+			"Accept": "application/json"
 		};
 
 		try {
-			return await Fetch.fetch(url, Fetch.combineHeaders(options, headers), (response) => response.json());
+			const res = await Fetch.fetch(url, Fetch.combineHeaders(options, headers));
+			return res.json();
 		} catch (err) {
 			if (err instanceof FetchError) {
 				throw await JsonFetchError.create(err.response);
@@ -69,7 +52,8 @@ export class Fetch {
 
 	/** Do a fetch of binary data, returning the blob */
 	static async fetchBlob(url: RequestInfo, options: RequestInit = {}) {
-		return Fetch.fetch(url, options, (response) => response.blob());
+		const res = await Fetch.fetch(url, options);
+		return res.blob();
 	}
 
 	/** Do a fetch for textual data and return the content as a string */
@@ -79,11 +63,12 @@ export class Fetch {
 			"Accept": "text/*"
 		};
 
-		return Fetch.fetch(url, Fetch.combineHeaders(options, headers), (response) => response.text());
+		const res = await Fetch.fetch(url, Fetch.combineHeaders(options, headers));
+		return res.text();
 	}
 }
 
-/** Error thrown on an unsuccessful fetch */
+/** Error thrown on an unsuccesful fetch */
 export class FetchError extends Error {
 	/** The response sent by the server */
 	response: Response;
@@ -94,7 +79,7 @@ export class FetchError extends Error {
 	}
 }
 
-/** Error thrown on an unsuccessful fetch when requesting json data */
+/** Error thrown on an unsuccesful fetch when requesting json data */
 export class JsonFetchError extends FetchError {
 	error: string;
 

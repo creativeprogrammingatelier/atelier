@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import AuthHelper from '../../helpers/AuthHelper';
+import React, {Component} from "react";
+import AuthHelper from "../../helpers/AuthHelper";
 import {withRouter, Redirect, Link} from 'react-router-dom';
-import '../styles/login.scss';
-import {User} from '../../../models/database/User';
+import "../styles/login.scss";
+import {User} from "../../../models/api/User";
 import {Form, Button, Jumbotron} from "react-bootstrap";
-import { Loading } from './general/loading/Loading';
-import { getLoginProviders } from '../../helpers/APIHelper';
-import { LoginProvider } from '../../../models/api/LoginProvider';
+import {Loading} from "./general/loading/Loading";
+import {getLoginProviders} from "../../helpers/APIHelper";
+import {LoginProvider} from "../../../models/api/LoginProvider";
 import {Logo} from "./frame/Logo";
 
 interface LoginRedirectProperties {
@@ -20,7 +20,7 @@ interface LoginProperties {
 }
 export function Login({onLogin, location}: LoginProperties) {
 	if (AuthHelper.loggedIn() && location && location.state && location.state.from) {
-		return <Redirect to={location.state.from}/>
+		return <Redirect to={location.state.from}/>;
 	}
 
 	return <Jumbotron className="cover">
@@ -42,7 +42,7 @@ export function Login({onLogin, location}: LoginProperties) {
 				}}
 			/>
 		</div>
-	</Jumbotron>
+	</Jumbotron>;
 }
 
 class LoginLegacy extends Component {
@@ -51,10 +51,10 @@ class LoginLegacy extends Component {
 	constructor(props: any) {
 		super(props);
 		this.state = {
-			email: '',
-			password: '',
+			email: "",
+			password: "",
 			user: null,
-			response: '',
+			response: "",
 			redirectToReferrer: false
 		};
 	}
@@ -74,7 +74,7 @@ class LoginLegacy extends Component {
 				this.setState({
 					redirectToReferrer: true
 				});
-			}, () => alert('Login Failed, Please register if you have not already')
+			}, () => alert("Login Failed, Please register if you have not already")
 		);
 
 	};
@@ -128,27 +128,27 @@ class LoginLegacy extends Component {
 		// 			</Form>
 		// 		</div>
 		// 	</div>
-        // );
-        return (
-            <Loading<LoginProvider[]>
-                loader={getLoginProviders}
-                component={providers => {
-                    if (providers.length > 1) {
-                        return providers.map(provider => 
-                            <a href={provider.url}>{provider.name}</a>
-                        );
-                    } else if (providers.length > 0) {
-                        window.location.href = providers[0].url; 
-                        return (
-                           <p>Redirecting to {providers[0].name}</p>
-                        );
-                    } else {
-                        return (
-                            <p>There are no login providers configured. If you are the administrator of this installation, please configure a login provider in the configuration files.</p>
-                        );
-                    }
-                }} />
-        );
+		// );
+		return (
+			<Loading<LoginProvider[]>
+				loader={getLoginProviders}
+				component={providers => {
+					if (providers.length > 1) {
+						return providers.map(provider =>
+							<a href={provider.url}>{provider.name}</a>
+						);
+					} else if (providers.length > 0) {
+						window.location.href = providers[0].url;
+						return (
+							<p>Redirecting to {providers[0].name}</p>
+						);
+					} else {
+						return (
+							<p>There are no login providers configured. If you are the administrator of this installation, please configure a login provider in the configuration files.</p>
+						);
+					}
+				}}/>
+		);
 	}
 
 }

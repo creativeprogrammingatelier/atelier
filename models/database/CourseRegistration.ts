@@ -1,12 +1,15 @@
 import {localRole, checkEnum} from "../../enums/localRoleEnum"
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Permission as APICourseRegistration} from '../api/Permission'
-export interface CourseRegistration {
-	courseID? : string,
-	userID? : string,
-	role? : localRole,
-	permission? : number
+import { DBTools, checkAvailable } from "../../api/src/database/HelperDB"
+export interface CourseRegistrationOutput {
+	courseID : string,
+	userID: string,
+	role : localRole,
+	permission : number
 }
+export interface CourseRegistration extends DBTools, Partial<CourseRegistrationOutput>{}
+
 export interface DBCourseRegistration {
 	courseid : string,
 	userid : string,
@@ -14,11 +17,11 @@ export interface DBCourseRegistration {
 	permission : number
 }
 
-export interface DBAPICourseRegistration extends DBCourseRegistration{
+export {APICourseRegistration}
 
-}
+export type DBAPICourseRegistration = DBCourseRegistration
 
-export function convertCourseReg(db :DBCourseRegistration) : CourseRegistration {
+export function convertCourseReg(db :DBCourseRegistration) : CourseRegistrationOutput {
 	if (!checkEnum(db.courserole)){
 		throw new Error("courserole from database does not match enum on server: "+db.courserole)
 	}
@@ -31,6 +34,7 @@ export function convertCourseReg(db :DBCourseRegistration) : CourseRegistration 
 }
 
 export function courseRegToAPI(db : DBAPICourseRegistration) : APICourseRegistration {
+	checkAvailable(["courserole", "permission"], db)
 	return {
 		role: db.courserole,
 		permissions: db.permission

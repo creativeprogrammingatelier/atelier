@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {User} from '../../../../models/database/User';
+import {User} from '../../../../models/api/User';
 import {FiUserPlus, FiFilter} from 'react-icons/fi';
 
 type AdminControlProps = {}

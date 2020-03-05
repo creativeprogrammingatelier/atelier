@@ -41,7 +41,7 @@ authRouter.get('/providers', capture(async (request, response) => {
 }));
 
 /** Log out from the session */
-authRouter.get('/logout', AuthMiddleware.requireAuth, (request, response) => {
+authRouter.get('/logout', (request, response) => {
     clearTokenCookie(response).redirect('/');
 });
 

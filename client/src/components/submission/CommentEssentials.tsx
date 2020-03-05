@@ -1,12 +1,6 @@
 import React from "react";
 import {CommentEssential} from "../../helpers/DatabaseResponseInterface";
 import {Link} from "react-router-dom";
-import {Comment} from "./comment/Comment";
-import {CommentThread} from "./comment/CommentThread";
-import {MentionSuggestions} from "./comment/MentionSuggestions";
-import {Snippet} from "./comment/Snippet";
-import {WriteComment} from "./comment/WriteComment";
-//import {CommentEssential} from "../../helpers/CommentHelper";
 
 export function CommentEssentials({commentName, lastMessage, snippet}: CommentEssential) {
 	function commentCallback(comment: string) {

@@ -6,7 +6,8 @@
 import { config } from './helpers/ConfigurationHelper';
 
 import express, { Request, Response, NextFunction } from 'express';
-import { Socket } from 'socket.io';
+import http from 'http';
+import socketio, { Socket } from 'socket.io';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
@@ -36,9 +37,9 @@ app.use(express.urlencoded({
 }));
 
 //Socket io
-const http = require('http').createServer(app);
-http.listen(config.port, '127.0.0.1');
-const socket: Socket = require('socket.io')(http);
+const server = http.createServer(app);
+server.listen(config.port, config.hostname);
+const socket = socketio(server);
 app.set('socket-io', socket);
 
 socket.on('connect', (socket: Socket) => {
@@ -79,7 +80,7 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
         response.status(404).send({ error: "item.notfound", message: "The requested item could not be found." });
     } else if (error instanceof ProjectValidationError) {
         response.status(400).send({ error: "project.invalid", message: error.message });
-    } else if (isPostgresError(error)) {
+    } else if (error instanceof Error && isPostgresError(error)) {
         const code = parsePostgresErrorCode(error as PostgresError);
         response.status(500).send({ error: code, message: "Something went wrong while connecting to the database." });
     } else {
@@ -92,3 +93,5 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
 process.on('unhandledRejection', error => {
     console.log('\x1b[31mCRITICAL (Unhandled rejection): ', error);
 });
+
+console.log("Server started.");

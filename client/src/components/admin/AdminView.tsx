@@ -1,9 +1,7 @@
 import * as React from 'react';
 import UserHelper from '../../../helpers/UserHelper';
-import FileViewer from '../FileViewer';
-import FileHelper from '../../../helpers/FileHelper';
-import {User} from '../../../../models/database/User';
-import {File} from '../../../../models/database/File';
+import {User} from '../../../../models/api/User';
+import {File} from '../../../../models/api/File';
 import AuthHelper from '../../../helpers/AuthHelper';
 import AdminControl from './AdminControl';
 import EditUserModal from './EditUserModal';
@@ -35,7 +33,7 @@ class AdminView extends React.Component<AdminViewProps, AdminViewState> {
 			userRows.push(
 				<tr>
 					<td>{user.email}</td>
-					<td>{user.role}</td>
+					<td>{user.permission.role}</td>
 					<td><Button onClick={() => this.openEditModal(user)}><Octicon icon={Pencil}/></Button></td>
 				</tr>
 			);
