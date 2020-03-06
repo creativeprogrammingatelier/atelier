@@ -3,6 +3,8 @@ import path from 'path';
 import './Extensions';
 import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE, MAX_PROJECT_SIZE } from '../helpers/Constants';
 
+import './Extensions'
+
 // Interfaces
 /////////////
 /** Possible errors for invalid projects */

@@ -62,19 +62,24 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     /** Post back the SAML response to finish logging in */
     samlRouter.post('/login', capture(async (request, response) => {
         const result = await sp.parseLoginResponse(idp, 'post', request);
-        const extID = result.extract.nameID; // `${samlConfig.id}_${result.extract.nameID}` to support multiple IDPs with possibly conflicting nameIDs
+        const extID = `${samlConfig.id}_${result.extract.nameID}`;
         let user = undefined;
         try {
-            // TODO: get user by external id, not the internal id
-            user = await UserDB.getUserByID(extID);
+            user = await UserDB.getUserBySamlID(extID);
         } catch (err) {
             if (err instanceof NotFoundDatabaseError) {
                 // TODO: if we don't get information we need here from SAML attributes,
                 // then probably redirect the user to a page in the front-end where they 
-                // enter that, or find some other source for this info (e.g. Canvas)
+                // enter that
                 // If we do have the information, we can simply create the user right here
                 // and return the login flow
-                user = await UserDB.createUser({});
+                user = await UserDB.createUser({
+                    samlID: extID,
+                    userName: result.extract.nameID,
+                    email: `${extID}@example.com`,
+                    role: "user",
+                    password: UserDB.invalidPassword()
+                });
             } else {
                 throw err;
             }

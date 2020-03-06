@@ -2,6 +2,7 @@ import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools } from
 import {User, DBUser, convertUser, userToAPI} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import e from "express";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
@@ -30,6 +31,14 @@ export class UserDB {
 	static async getUserByID(userID : string, params : DBTools = {}) {
 		return UserDB.filterUser({...params, userID}).then(one)
 	}
+
+    static async getUserBySamlID(samlID: string, params : DBTools = {}) {
+        const { client = pool } = params;
+        return client.query<DBUser>(`
+                SELECT * FROM "Users"
+                WHERE samlID = $1`, [samlID])
+            .then(extract).then(map(userToAPI)).then(one);
+    }
 
 	static async searchUser(searchString : string, params : DBTools ={}){
 		return UserDB.filterUser({...params, userName:searchString})
@@ -75,14 +84,15 @@ export class UserDB {
 			password,
 			role,
 			userName,
+			samlID = undefined,
 			client = pool
 		} = user;
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
 		return client.query(`
 				INSERT INTO "Users" 
-				VALUES (DEFAULT, $1, $2, $3, $4) 
+				VALUES (DEFAULT, $1, $2, $3, $4, $5) 
 				RETURNING userID, userName, globalRole, email
-			`, [userName, role, email, password])
+			`, [samlID, userName, role, email, password])
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	/**
@@ -177,5 +187,11 @@ export class UserDB {
 	private static hashPassword(plain: string): string {
 		const saltRounds=10;
 		return bcrypt.hashSync(plain, saltRounds);
+	}
+	/**
+	 * generate an invalid password, making sure noone can login through the normal route.
+	 */
+	static invalidPassword(){
+		return '                                        '
 	}
 }

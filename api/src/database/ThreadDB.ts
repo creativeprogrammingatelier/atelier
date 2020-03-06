@@ -106,15 +106,14 @@ export class ThreadDB {
 		const res : APIThread = {...(await firstQuery), comments:[]}
 		//retrieve the threadID we need comments for
 		const ID = res.ID
-		const id = UUIDHelper.toUUID(ID)
 		//request comments from database
-		const comments = await CommentDB.APIgetCommentsByThreads([id], client)
+		const comments = await CommentDB.APIgetCommentsByThreads([(ID)], client)
 		//make sure each comment is valid
 		//since these are all comments for one thread, we simply assign it.
-		if (!(id in comments)){
+		if (!(ID in comments)){
 			throw new Error("concurrentModificationException")
 		}
-		res.comments=comments[id];
+		res.comments=comments[ID];
 		return res;
 	}
 	static async addComments(firstQuery : Promise<APIThread[]>, client : pgDB = pool) : Promise<APIThread[]>{
@@ -280,7 +279,7 @@ export class ThreadDB {
 			ct.visibilityState,
 			sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
 			fv.pathname, fv.type
-		FROM "CommentThread" as ct, "SubmissionsRefs" as sr, "SnippetsView" as sv, "FilesView" as fv
+		FROM update as ct, "SubmissionsRefs" as sr, "SnippetsView" as sv, "FilesView" as fv
 		WHERE ct.submissionID = sr.submissionID
 			AND ct.snippetID = sv.snippetID
 			AND fv.fileID = ct.fileID
