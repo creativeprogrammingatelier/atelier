@@ -43,6 +43,8 @@ SELECT c.userID, array_agg(c)
 DROP USER IF EXISTS assistantassistant;
 CREATE ROLE assistantassistant;
  */
+function makeDB(out, err)
+{
 pool.query(`
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -151,7 +153,7 @@ CREATE TABLE "CommentThread" (
      visibilityState   text NOT NULL DEFAULT 'public'
 );
 INSERT INTO "CommentThread" VALUES
-	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), (SELECT snippetID from "Snippets" LIMIT 1), DEFAULT),
+	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), '00000000-0000-0000-0000-000000000000', DEFAULT),
 	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT),
 	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT);
 
@@ -275,5 +277,11 @@ CREATE VIEW  "CommentThreadView" as (
        AND fv.fileID = ct.fileID
 );
 
-`).then(console.debug).catch(console.error).then(pool.end.bind(pool));
+`).then(out).catch(err).then(pool.end.bind(pool));
+}
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
+if (require.main === module){
+     makeDB(console.log, console.error)
+} else {
+     makeDB(()=>{console.log("made the database")}, console.error)
+}

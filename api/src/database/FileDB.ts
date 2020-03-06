@@ -1,5 +1,5 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools } from "./HelperDB";
-import {File, DBFile, convertFile, fileToAPI, APIFile} from '../../../models/database/File';
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf } from "./HelperDB";
+import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles} from '../../../models/database/File';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 
 /**
@@ -56,7 +56,9 @@ export class FileDB {
 
 			limit = undefined,
 			offset = undefined,
-			client = pool
+			client = pool,
+
+			includeNulls = false, //exclude normally
 		} = file;
 		const fileid = UUIDHelper.toUUID(fileID),
 			submissionid = UUIDHelper.toUUID(submissionID),
@@ -74,7 +76,7 @@ export class FileDB {
 			LIMIT $6
 			OFFSET $7
 			`, [fileid, submissionid, courseid, pathname, type, limit, offset])
-		.then(extract).then(map(fileToAPI))
+		.then(extract).then(map(fileToAPI)).then(filterNullFiles).then(doIf(!includeNulls, filterNullFiles))
 	}
 
 	static async getNullFileID(submissionID : string, params : DBTools = {}){
@@ -88,6 +90,11 @@ export class FileDB {
 		`, [submissionid]).then(extract).then(one).then(res => UUIDHelper.fromUUID(res.fileid))	
 	}
 
+	/**
+	 * @deprecated is now handled by a database trigger
+	 * @param submissionID 
+	 * @param params 
+	 */
 	static async createNullFile(submissionID : string, params : DBTools = {}){
 		const submissionid = UUIDHelper.toUUID(submissionID);
 		const {client =pool} = params

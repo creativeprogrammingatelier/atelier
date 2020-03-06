@@ -1,8 +1,8 @@
 import {threadState, checkEnum} from '../../enums/threadStateEnum'
 import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
 import {CommentThread as APIThread} from '../api/CommentThread'
-import { fileToAPI, DBAPIFile } from './File'
-import { snippetToAPI, DBAPISnippet } from './Snippet'
+import { fileToAPI, DBAPIFile, isNotNullFile } from './File'
+import { snippetToAPI, DBAPISnippet, isNotNullSnippet } from './Snippet'
 import { DBTools, checkAvailable } from '../../api/src/database/HelperDB'
 
 export interface Thread extends DBTools{
@@ -58,9 +58,9 @@ export function threadToAPI(db : DBAPIThread) : APIThread{
 
 		}
 	}
-	if (obj.snippet.start.line === -1){
+	if (!isNotNullSnippet(obj.snippet)){
 		delete obj.snippet
-		if (obj.file.type==="undefined/undefined"){
+		if (!isNotNullFile(obj.file)) {
 			delete obj.file
 		}
 	}
