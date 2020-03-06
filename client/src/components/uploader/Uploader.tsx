@@ -17,6 +17,8 @@ import {FileInput} from "../input/FileInput";
 import {FakeButton} from "../input/fake/FakeButton";
 import {FakeReadOnlyInput} from "../input/fake/FakeReadOnlyInput";
 import {FeedbackError} from "../feedback/FeedbackError";
+import {RadioInput} from "../input/RadioInput";
+import {FiUpload} from "react-icons/all";
 
 interface UploaderProperties {
 	/** The courseId to upload the submission to */
@@ -35,11 +37,10 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 	const [selectedFiles, updateSelectedFiles] = useState([] as File[]);
 	const [uploadableFiles, updateUploadableFiles] = useState([] as File[]);
 	const [uploading, updateUploading] = useState(false);
-
 	const [validation, updateValidation] = useState(defaultValidation<File>([]));
-	const uploadPrevented = () => validation.containsNoCodeFiles || validation.invalidProjectName;
-
 	const [errors, updateErrors] = useState({upload: false as false | string});
+
+	const uploadPrevented = () => validation.containsNoCodeFiles || validation.invalidProjectName;
 
 	let inputElement = null as HTMLInputElement | null;
 
@@ -49,6 +50,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 	const folderUploadSupported = (() => {
 		const input = document.createElement("input");
 		input.type = "file";
+		// return false // TODO: Remove temporary return to style main file selection
 		return "webkitdirectory" in input;
 	})();
 
@@ -143,36 +145,45 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 				</div>
 			</Form.Group>
 			{selectedFiles.length > 0 &&
-			<div>
-				{folderUploadSupported
-					? <div>
-						<p>These files will be uploaded:</p>
-						<DirectoryViewer filePaths={uploadableFiles.map(f => f.webkitRelativePath)}/>
-					</div>
-					: <div>
-						<p>These files will be uploaded, please select your main project file:</p>
-						<FileSelectionViewer
-							fileNames={uploadableFiles.map(f => f.name)}
-							selected={folderName + ".pde"}
-							selectedUpdated={name => updateFolderName(name.replace(".pde", ""))}/>
-					</div>}
-				{uploadableFiles.length < selectedFiles.length &&
 				<div>
-					<p>These files won't be uploaded, because they are too large
-						{validation.projectTooLarge && " or the project as a whole would be too large"}:</p>
-					<DirectoryViewer filePaths={selectedFiles.filter(f => !uploadableFiles.includes(f)).map(f => f.webkitRelativePath)}/>
-				</div>}
-			</div>}
-			{uploading
-				? <span>*Insert spinner* Uploading</span>
-				: <button
+					{folderUploadSupported ?
+						<div>
+							<p>These files will be uploaded:</p>
+							<DirectoryViewer filePaths={uploadableFiles.map(f => f.webkitRelativePath)}/>
+						</div>
+						:
+						<Form.Group>
+							<p>These files will be uploaded, please select your main project file:</p>
+							<RadioInput
+								options={uploadableFiles.map(f => f.name)}
+								selected={folderName + ".pde"}
+								onChange={value => updateFolderName(value.replace(".pde", ""))}
+							/>
+						</Form.Group>
+					}
+					{uploadableFiles.length < selectedFiles.length &&
+						<div>
+							<p>
+								These files won't be uploaded, because they are too large
+								{validation.projectTooLarge && " or the project as a whole would be too large"}:
+							</p>
+							<DirectoryViewer filePaths={selectedFiles.filter(f => !uploadableFiles.includes(f)).map(f => f.webkitRelativePath)}/>
+						</div>
+					}
+				</div>
+			}
+			{uploading ?
+				<span>*Insert spinner* Uploading</span>
+				:
+				<Button
 					className="form-control"
 					disabled={uploadPrevented() || selectedFiles.length < 1}
 					type="submit"
-					value="Submit">
-					<FontAwesomeIcon icon={faUpload}/>
-					<span>Upload</span>
-				</button>}
+					value="Submit"
+				>
+					<FiUpload/> Upload
+				</Button>
+			}
 		</Form>
 	);
 }

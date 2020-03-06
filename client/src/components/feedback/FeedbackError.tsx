@@ -1,11 +1,10 @@
 import React, {useState} from "react";
 import {Alert} from "react-bootstrap";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
-interface ErrorProperties {
-	children?: string | JSX.Element | JSX.Element[]
-}
-export function FeedbackError({children}: ErrorProperties) {
+export function FeedbackError({children}: ParentalProperties) {
 	const [visible, setVisible] = useState(true);
 
-	return visible && <Alert dismissible variant="danger" className="my-2" onClose={() => setVisible(false)}>{children}</Alert>
+	// A component must always return an element or null
+	return visible ? <Alert dismissible variant="danger" className="my-2" onClose={() => setVisible(false)}>{children}</Alert> : null
 }

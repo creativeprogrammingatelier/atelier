@@ -274,6 +274,24 @@ textarea:focus, textarea:active {
 	outline: 0;
 	box-shadow: none;
 }
+.custom-control-input {
+	z-index: 1;
+}
+.custom-control-input:focus {
+	outline: none;
+}
+.custom-control-input:focus ~ .custom-control-label::before {
+	box-shadow: none;
+ }
+.custom-control-input:checked ~ .custom-control-label::before {
+	background-color: $colorPrimary;
+}
+.custom-control-input:not(:disabled):active ~ .custom-control-label::before {
+	background-color: $colorSecondary;
+}
+.custom-control-label::before {
+	border: none;
+}
 
 .btn {
 	border: 0;
@@ -296,6 +314,9 @@ textarea:focus, textarea:active {
 }
 .btn-primary:not(:disabled):not(.disabled):active:focus {
 	box-shadow: initial;
+}
+.btn-primary:disabled {
+	background-color: gray;
 }
 .buttonBar {
 	background-color: $primaryColor;
