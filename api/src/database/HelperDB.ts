@@ -1,5 +1,5 @@
 import * as pg from "pg"
-import { NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResonseError } from "./DatabaseErrors";
+import { NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResponseError } from "./DatabaseErrors";
 import { config } from "../helpers/ConfigurationHelper";
 
 /**
@@ -97,15 +97,15 @@ export function extract<T>(result : pg.QueryResult<T>){
  */
 export function one<T>(result : T[]) {
 	if (result.length === 0) {
-		throw new InvalidDatabaseResonseError("no database output was found, but expected one")
+		throw new NotFoundDatabaseError();
 	}
 	if (result.length !== 1){
 		console.log(result)
-		throw new InvalidDatabaseResonseError('Multiple entries were returned, but expected one')
+		throw new InvalidDatabaseResponseError('Multiple entries were returned, but expected one');
 	}
 	const one = result[0];
     if (one === undefined) {
-        throw new InvalidDatabaseResonseError('database returned undefined');
+        throw new NotFoundDatabaseError();
     } else {
         return one;
     }
