@@ -20,11 +20,12 @@ import {File} from "../../models/api/File";
 import {Submission} from "../../models/api/Submission";
 import {User} from "../../models/api/User";
 import { instanceOfCommentThread, instanceOfFile, instanceOfSubmission, instanceOfUser, instanceOfCoursePartial } from '../InstanceOf';
+import { issueToken } from '../../api/src/helpers/AuthenticationHelper';
 
 /** Parameters for making requests to the API */
 const BASE_URL = "http://localhost:5000";
 const DEFAULT_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-const AUTHORIZATION_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBIiwiaWF0IjoxNTgzNDEwODI0LCJleHAiOjE1ODY4NjY4MjR9.qAN6PhVzIUOjtL79Y0PIIxdoB9-Z02EBr9BiALcnmdw"
+const AUTHORIZATION_KEY = issueToken(DEFAULT_ID);
 
 /** Fetch methods */
 const fetch = require('node-fetch');
