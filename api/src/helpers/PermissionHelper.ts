@@ -15,6 +15,15 @@ interface checkRoles {
     users? : string[]
 }
 
+/**
+ * Throws an exception if not authorized. Check if either user has any of the global roles, currentRoles or belongs
+ * to the user list of exceptions.
+ * @param userID, ID of the requesting user
+ * @param globalRoles, global roles that are allowed to make the request
+ * @param currentRoles, current roles (in course) that are allowed to make the request
+ * @param courseID, ID of the course if relevant for the current role
+ * @param users, list of user IDs that are allowed to make the request
+ */
 export async function requireRole({userID, globalRoles, currentRoles, courseID, users} : checkRoles) {
     if (globalRoles !== undefined) {
         const globalRole : string = await getGlobalRole(userID);
@@ -30,36 +39,20 @@ export async function requireRole({userID, globalRoles, currentRoles, courseID, 
     throw new AuthError("role.notAllowed", "You're not qualified to access this information");
 }
 
-
-// /**
-//  * Require a certain current role (role within a course)
-//  * @param roles, allowed roles
-//  * @param userID, ID of the user
-//  * @param courseID, ID of the course
-//  */
-// export async function requireCurrentRole(roles : string[], userID : string, courseID : string) {
-//     const courseRegistrationOutput : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-//     if (courseRegistrationOutput[0] == undefined) throw new AuthError("role.noRegistration", "You're not qualified to access this information.");
-//     if (!roles.includes(courseRegistrationOutput[0].role)) throw new AuthError("role.notAllowed", "You're not qualified to access this information.");
-//     return true;
-// }
-//
-// /**
-//  * Require a certain global role (account role)
-//  * @param roles. allowed roles
-//  * @param userID, ID of the user
-//  */
-// export async function requireGlobalRole(roles: string[], userID : string) {
-//     const user : User = await UserDB.getUserByID(userID);
-//     if (!roles.includes(user.permission.role)) throw new AuthError("role.notAllowed", "You're not qualified to access this information");
-//     return true;
-// }
-
+/**
+ * Get global role of a user
+ * @param userID, ID of the user
+ */
 export async function getGlobalRole(userID : string) {
     const user : User = await UserDB.getUserByID(userID);
     return user.permission.role;
 }
 
+/**
+ * Get current role in a course of a user
+ * @param userID, ID of the user
+ * @param courseID, ID of the course
+ */
 export async function getCurrentRole(userID : string, courseID: string) {
     const courseRegistrationOutput : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
     if (courseRegistrationOutput.length == 0) return undefined;

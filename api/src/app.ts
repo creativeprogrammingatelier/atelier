@@ -28,6 +28,7 @@ import { AuthError } from './helpers/AuthenticationHelper';
 import { AuthMiddleware } from './middleware/AuthMiddleware';
 import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
 import {permissionRouter} from "./routes/PermissionRouter";
+import {roleRouter} from "./routes/RoleRouter";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -61,6 +62,7 @@ app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/file', fileRouter);
 app.use('/api/permission', permissionRouter);
+app.use('/api/role', roleRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);
