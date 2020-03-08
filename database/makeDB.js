@@ -79,7 +79,8 @@ CREATE TABLE "Users" (
 );
 INSERT INTO "Users" VALUES
      (DEFAULT, 'Caaas', DEFAULT, 'Cas@Caaas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-	('00000000-0000-0000-0000-000000000000', 'Cas', DEFAULT, 'Cas@Cas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu');
+	('00000000-0000-0000-0000-000000000000', 'Cas', DEFAULT, 'Cas@Cas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
+	('00000000-0000-0000-0000-000000000001', 'Jarik', 'admin', 'a@a.a', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu');
 
 CREATE TABLE "Courses" (
      courseID    uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -99,7 +100,8 @@ CREATE TABLE "CourseRegistration" (
      PRIMARY KEY (courseID, userID)
 );
 INSERT INTO "CourseRegistration" VALUES
-	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40));
+	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40)),
+	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000001', 'teacher', 3::bit(40));
 
 
 CREATE TABLE "Submissions" (

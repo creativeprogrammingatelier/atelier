@@ -1,13 +1,22 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {PanelButton} from "./general/PanelButton";
 import {Frame} from "./frame/Frame";
 import {Loading} from "./general/loading/Loading";
 import {AddCourse} from "./course/AddCourse";
 import {Course} from "../../../models/api/Course";
-import {getCourses} from "../../helpers/APIHelper";
+import {getCourses, permission} from "../../helpers/APIHelper";
 import {Button, Jumbotron} from "react-bootstrap";
+import {Permission} from "../../../models/api/Permission";
+import {globalRole} from "../../../enums/roleEnum";
 
 export function Homepage() {
+	const [role, setRole] = useState(globalRole.none);
+ 	useEffect(() => {
+ 		permission()
+			.then((permission : Permission) => {
+				setRole(permission.role as globalRole);
+			});
+	}, []);
 
 	function updateCourse(course: Course) {
 		// TODO course added, but should be in the loading component
@@ -34,9 +43,15 @@ export function Homepage() {
 					}
 				/>
 			</div>
-			<div className="m-3">
-				<AddCourse handleResponse={updateCourse}/>
-			</div>
+			{
+				role === globalRole.admin ?
+					<div className="m-3">
+						<AddCourse handleResponse={updateCourse}/>
+					</div>
+						:
+					<p>To add courses you must be an admin. You are {role}.</p>
+			}
+
 		</Frame>
 	);
 }
