@@ -43,7 +43,7 @@ export function commentToAPI(db : DBAPIComment) : APIComment {
 		ID: UUIDHelper.fromUUID(db.commentid),
 		user: userToAPI(db),
 		text:db.body,
-		date:db.date.toLocaleString(),
+		date:db.date.toISOString(),
 		references: {
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),

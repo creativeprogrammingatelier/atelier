@@ -12,6 +12,11 @@ import { archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware
 import { validateProjectServer } from '../../../helpers/ProjectValidationHelper';
 import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { FileDB } from '../database/FileDB';
+import { config } from '../helpers/ConfigurationHelper';
+import { CODEFILE_EXTENSIONS } from '../../../helpers/Constants';
+import path from 'path';
+import { Hmac } from 'crypto';
+import { raiseWebhookEvent } from '../helpers/WebhookHelper';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -38,18 +43,25 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         userID : userID
     });
 
-    await Promise.all(files.map(file => 
-        FileDB.addFile({
-            pathname: file.path,
-            type: file.mimetype,
-            submissionID: submission.ID
-        })
-    ));
+    const dbFiles = await Promise.all(
+        files.map(file => 
+            FileDB.addFile({
+                pathname: file.path,
+                type: file.mimetype,
+                submissionID: submission.ID
+            }))
+    );
 
     await archiveProject((request as FileUploadRequest).fileLocation!, request.body["project"]);
     await deleteNonCodeFiles(files);
 
     response.send(submission);
+
+    await Promise.all(
+        dbFiles
+            .filter(f => CODEFILE_EXTENSIONS.includes(path.extname(f.name)))
+            .map(file => raiseWebhookEvent("submission.file", file))
+    );
 }));
 
 /**

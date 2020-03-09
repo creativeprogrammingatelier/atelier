@@ -11,20 +11,21 @@
 
 import {assert} from 'chai';
 
+
 /** Interfaces the API should match */
 import {Course, CoursePartial} from "../../models/api/Course";
 import {Comment} from "../../models/api/Comment";
 import {CommentThread} from "../../models/api/CommentThread";
 import {File} from "../../models/api/File";
-import {Permission} from "../../models/api/Permission";
-import {Snippet} from "../../models/api/Snippet";
 import {Submission} from "../../models/api/Submission";
 import {User} from "../../models/api/User";
+import { instanceOfCommentThread, instanceOfFile, instanceOfSubmission, instanceOfUser, instanceOfCoursePartial } from '../InstanceOf';
+import { issueToken } from '../../api/src/helpers/AuthenticationHelper';
 
 /** Parameters for making requests to the API */
 const BASE_URL = "http://localhost:5000";
 const DEFAULT_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-const AUTHORIZATION_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYS5hIiwiaWF0IjoxNTgyMDI5NDkyLCJleHAiOjE1ODcwNjk0OTJ9.ZiN4uRJZqLVxZ3N_UVjnIvIhgoYhM_1j3eLNqPiHMBQ";
+const AUTHORIZATION_KEY = issueToken(DEFAULT_ID);
 
 /** Fetch methods */
 const fetch = require('node-fetch');
@@ -40,114 +41,17 @@ function getFetch(extension: string, data: any = {}) {
     }).then((result: any) => result.json());
 }
 
-/** Interface type checking, because this is not built in... */
-function instanceOfCourse(object: any): object is CoursePartial {
-    return (
-        'ID' in object
-        && 'name' in object
-        && 'state' in object
-        && 'creator' in object
-        && instanceOfUser(object.creator)
-    )
-}
-
-function instanceOfComment(object: any): object is Comment {
-    return (
-        'ID' in object
-        && 'user' in object
-        && instanceOfUser(object.user)
-        && 'text' in object
-        && 'date' in object
-        && 'references' in object
-    )
-}
-
-function instanceOfCommentThread(object: any): object is CommentThread {
-    return (
-        'ID' in object
-        && 'visibility' in object
-        && 'comments' in object
-        && object.comments.every(instanceOfComment)
-        && (object.file == undefined || instanceOfFile(object.file))
-        && (object.snippet == undefined || instanceOfSnippet(object.snippet))
-        && 'references' in object
-    )
-}
-
-function instanceOfFile(object: any): object is File {
-    return (
-        'ID' in object
-        && 'name' in object
-        && 'type' in object
-        && 'references' in object
-    )
-}
-
-function instanceOfPermission(object: any): object is Permission {
-    return (
-        'role' in object
-        && 'permissions' in object
-    )
-}
-
-// TODO additional type checking depending on what search will contain
-function instanceOfSearch(object : any) {
-    return (
-        'comments' in object
-        && 'users' in object
-    )
-}
-
-function instanceOfSnippet(object: any): object is Snippet {
-    return (
-        'ID' in object
-        && 'file' in object
-        && instanceOfFile(object.file)
-        && 'start' in object
-        && 'line' in object.start
-        && 'character' in object.start
-        && 'end' in object
-        && 'line' in object.end
-        && 'character' in object.end
-        && 'references' in object
-    )
-}
-
-function instanceOfSubmission(object: any): object is Submission {
-    return (
-        'ID' in object
-        && 'name' in object
-        && 'user' in object
-        && instanceOfUser(object.user)
-        && 'date' in object
-        && 'state' in object
-        && 'files' in object
-        && object.files.every(instanceOfFile)
-        && 'references' in object
-    )
-}
-
-function instanceOfUser(object: any): object is User {
-    return (
-        'ID' in object
-        && 'name' in object
-        && 'email' in object
-        && 'permission' in object
-        && instanceOfPermission(object.permission)
-    )
-}
-
 /** ---------- Test Course ---------- */
 getFetch(`/api/course/`)
     .then((result: Course[]) => {
 
-        assert(result.every(instanceOfCourse), "/api/course/");
+        assert(result.every(instanceOfCoursePartial), "/api/course/");
     })
     .catch((error: any) => console.log(error));
 
 getFetch(`/api/course/${DEFAULT_ID}`)
     .then((result: Course) => {
-        assert(instanceOfCourse(result), "/api/course/ID");
+        assert(instanceOfCoursePartial(result), "/api/course/ID");
     })
     .catch((error: any) => console.log(error));
 

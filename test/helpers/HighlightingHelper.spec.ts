@@ -24,10 +24,12 @@ function testSplit(a : Range[]) {
     // Just manually checking if overlaps are properly detected
     // Bit too much time to write a test for this, and its easy
     // for humans to see
-    console.log(rangesToString(a));
-    console.log("-");
-    console.log(rangesToString(result));
-    console.log("----- /// -----");
+    const s1 = rangesToString(a).split('\n').join('\n\t')
+    console.log('\t'+s1);
+    console.log('\t'+"-");
+    const s2 = rangesToString(result).split('\n').join('\n\t')
+    console.log('\t'+s2);
+    console.log("\t----- /// -----");
 
     // Check whether resulting segments are indeed disjoint
     for (const [indexA, rangeA] of  result.entries()) {
@@ -62,14 +64,15 @@ ranges.push(r(4, 1, 4, 3, 1)); // 17
 ranges.push(r(4, 6, 5, 1, 1)); // 18
 ranges.push(r(4, 7, 5, 2, 1)); // 19
 ranges.push(r(5, 4, 5, 7, 1)); // 20
+describe("text test, no subtests because jarik doesn't want to", ()=>{
+    // Base cases
+    testSplit(ranges.slice(0, 2));
+    testSplit(ranges.slice(2, 4));
+    testSplit(ranges.slice(4, 6));
+    testSplit(ranges.slice(6, 8));
+    testSplit(ranges.slice(8, 10));
+    testSplit(ranges.slice(10, 13));
 
-// Base cases
-testSplit(ranges.slice(0, 2));
-testSplit(ranges.slice(2, 4));
-testSplit(ranges.slice(4, 6));
-testSplit(ranges.slice(6, 8));
-testSplit(ranges.slice(8, 10));
-testSplit(ranges.slice(10, 13));
-
-// Combined large case
-testSplit(ranges);
+    // Combined large case
+    testSplit(ranges);
+})

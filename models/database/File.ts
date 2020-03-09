@@ -12,7 +12,8 @@ export interface File extends DBTools {
 	submissionID? : string,
 	courseID? : string,
 	pathname? : string,
-	type? : string
+	type? : string,
+	includeNulls?:boolean,
 }
 
 export interface DBFile {
@@ -26,6 +27,13 @@ export interface DBFile {
 export {APIFile}
 
 export type DBAPIFile = DBFile
+
+export function filterNullFiles<T extends {type:string}>(files : T[]){
+	return files.filter(isNotNullFile)
+}
+export function isNotNullFile(file : {type:string}) {
+	return file.type !== 'undefined/undefined'
+}
 
 export function convertFile(db : DBFile) : File {
 	return {
