@@ -16,10 +16,15 @@ import {threadState}		from '../../../enums/threadStateEnum'
 
 import {Snippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
-import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
+import { deepEqual, notDeepEqual, equal, notEqual, AssertionError } from 'assert'
 import { Course } from '../../../models/database/Course'
+import { isMainThread } from 'worker_threads'
+import util from 'util'
 
-const all = true;
+const ok = "✓",
+	fail = "✖"
+
+const all = false;
 
 let stored = '';
 function log<T>(a : string, b ?:T) : void {
@@ -30,7 +35,7 @@ function log<T>(a : string, b ?:T) : void {
 		if (all) {
 			console.log(tbp);
 		} else {
-			stored+=tbp+"---------\n";
+			stored+=tbp+"\n---------\n";
 		}
 	}
 
@@ -40,17 +45,15 @@ const uuid = UUIDHelper.fromUUID("00000000-0000-0000-0000-000000000000")
 function logger<T>(pre: string) {
 	return (s: T) => {log<T>(pre, s); return s}
 }
-let OK = true;
-function error(pre:string) {
-	return (s:Error) => {OK=false; console.error(pre, s); throw s}
-}
+let errors = 0;
 
 function promise<T>(pr : Promise<T>, s : string) : Promise<T>{
-	return pr.then(logger(s)).catch(error(s))
+	return pr.then(logger(s))
 }
 async function usersHelper() {
 	log("\n\nUSERSHELPER\n\n")
 	const user = {userName:"C", email:"C@CAA", role:'admin',password:"C"}
+	const t1 = new Date()
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
 	await promise(UH.getUserByID(uuid), 'getUserById')
@@ -187,28 +190,36 @@ async function commentHelper(){
 	await promise(C.filterComment({body:'comment'}), "textSearch")
 }
 
-function finish(){
-	end()
-	console.log('\n\n-----------------',OK? 'all OK' : 'there were errors')
-	// if (!OK) console.log(stored)
-}
-
-function run(interval : number, ...funs : Function[]){
+async function run(...funs : Function[]){
 	for (let i=0;i<funs.length; i++){
-		setTimeout(funs[i], i*interval)
+		stored =''
+		try {
+			await funs[i]()
+			console.log('\t'+ok+' '+funs[i].name)
+		} catch(error){
+			const err = util.inspect(error).split('\n').map(s=>'\n\t\t'+s)
+			console.log('\t'+fail+' '+funs[i].name+err)
+			console.log(stored)
+			errors++;
+		}
 	}
+	end()
+	const s = errors === 0 ? 'all OK' : ('there were '+errors+' errors')
+	console.log('\n-----------------',errors===0? 'all OK\n' : 'there were '+errors+' error(s)\n')
+	equal(errors===0, true, s)
 }
-
-// setTimeout(rolesHelper, 400)
-
-run(200, 
-	// commentHelper, 
-	snippetHelper, 
-	// fileHelper, 
-	// ThreadHelper,
-	submissionHelper,
-	// courseRegistrationHelper,
-	// coursesHelper,
-	usersHelper,
-
-	finish)
+export async function main(){
+	await run(
+		commentHelper, 
+		snippetHelper, 
+		fileHelper, 
+		ThreadHelper,
+		submissionHelper,
+		courseRegistrationHelper,
+		coursesHelper,
+		usersHelper,
+		)
+}
+if (require.main === module){
+	main()
+}

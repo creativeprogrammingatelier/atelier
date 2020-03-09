@@ -43,6 +43,8 @@ SELECT c.userID, array_agg(c)
 DROP USER IF EXISTS assistantassistant;
 CREATE ROLE assistantassistant;
  */
+function makeDB(out, err)
+{
 pool.query(`
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -72,15 +74,15 @@ INSERT INTO "CourseRolePermissions" VALUES
 
 CREATE TABLE "Users" (
      userID       uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     samlID       char(39) UNIQUE, --can be null
      userName     text NOT NULL CHECK (userName <> ''),
      globalRole   text NOT NULL DEFAULT 'user',
      email        text NOT NULL UNIQUE CHECK (email <> ''),
      hash         char(60) NOT NULL
 );
 INSERT INTO "Users" VALUES
-     (DEFAULT, 'Caaas', DEFAULT, 'Cas@Caaas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-	('00000000-0000-0000-0000-000000000000', 'Cas', DEFAULT, 'Cas@Cas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-	('00000000-0000-0000-0000-000000000001', 'Jarik', 'admin', 'a@a.a', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu');
+     (DEFAULT, '', 'Caaas', 'admin', 'Cas@Caaas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
+	('00000000-0000-0000-0000-000000000000', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ','Cas', DEFAULT, 'Cas@Cas', '');
 
 CREATE TABLE "Courses" (
      courseID    uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -152,7 +154,7 @@ CREATE TABLE "CommentThread" (
      visibilityState   text NOT NULL DEFAULT 'public'
 );
 INSERT INTO "CommentThread" VALUES
-	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), (SELECT snippetID from "Snippets" LIMIT 1), DEFAULT),
+	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), '00000000-0000-0000-0000-000000000000', DEFAULT),
 	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT),
 	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT);
 
@@ -276,5 +278,11 @@ CREATE VIEW  "CommentThreadView" as (
        AND fv.fileID = ct.fileID
 );
 
-`).then(console.debug).catch(console.error).then(pool.end.bind(pool));
+`).then(out).catch(err).then(pool.end.bind(pool));
+}
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
+if (require.main === module){
+     makeDB(console.log, console.error)
+} else {
+     makeDB(()=>{console.log("made the database")}, console.error)
+}

@@ -6,8 +6,7 @@
 import { config } from '../../helpers/ConfigurationHelper';
 
 import express from 'express';
-import { AuthMiddleware } from '../../middleware/AuthMiddleware';
-import { issueToken, getCurrentUserID, clearTokenCookie } from '../../helpers/AuthenticationHelper';
+import { clearTokenCookie, decodeToken, getToken, AuthError, verifyToken, issueToken } from '../../helpers/AuthenticationHelper';
 import { capture } from '../../helpers/ErrorHelper';
 import { getSamlRouter } from './SamlRouter';
 import { loginRouter } from './LoginRouter';
@@ -45,12 +44,16 @@ authRouter.get('/logout', (request, response) => {
     clearTokenCookie(response).redirect('/');
 });
 
-/** Refresh the current users authentication with a new token */
-authRouter.get('/refresh', AuthMiddleware.requireAuth, capture(async (request, response) => {
-    const userID = await getCurrentUserID(request);
-    const token = issueToken(userID);
-    response.status(200).json({ token });
+/** Get an access token for a plugin */
+authRouter.get('/token', capture(async (request, response) => {
+    const token = getToken(request);
+    const { iss: userID } = decodeToken<{ iss: string }>(token);
+    const plugin = config.plugins.find(p => p.userID === userID);
+    if (plugin === undefined) throw new AuthError("plugin.unknown", "This plugin has not been registered with Atelier.");
+    const { exp, iat } = await verifyToken(token, plugin.publicKey, {
+        algorithms: [ "RS256" ],
+        issuer: userID
+    });
+    if (exp - iat > 10 * 60) throw new AuthError("token.exp", "Expiration time for this token may be a maximum of 10 minutes.");
+    response.send({ token: issueToken(userID) });
 }));
-
-/** Checks if request JWT token passed is valid using withAuth middleware method */
-authRouter.get('/token', AuthMiddleware.requireAuth, (_, res) => res.sendStatus(200));

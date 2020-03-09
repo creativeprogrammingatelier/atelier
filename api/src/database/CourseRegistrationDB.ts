@@ -30,7 +30,6 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 			const obj :APICourseRegistration= {role:item.role, permissions:item.permission}
 			mapping[id] = obj
 		});
-		console.log(userID, result, mapping, partials);
 		const total : APICourse[] = partials.map(part => {
 			if (!(part.ID in mapping)){
 				return coursePartialToAPI(part, {role:'unauthorised', permissions:0})

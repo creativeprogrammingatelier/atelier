@@ -1,5 +1,5 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify } from "./HelperDB";
-import {Snippet, snippetToAPI, convertSnippet} from '../../../models/database/Snippet';
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf } from "./HelperDB";
+import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet} from '../../../models/database/Snippet';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 
 /**
@@ -33,7 +33,8 @@ export class SnippetDB {
 			body = undefined,
 			limit = undefined,
 			offset = undefined,
-			client = pool
+			client = pool,
+			includeNulls = false //exclude them normally
 		} = snippet
 		const snippetid = UUIDHelper.toUUID(snippetID),
 			fileid = UUIDHelper.toUUID(fileID),
@@ -60,7 +61,7 @@ export class SnippetDB {
 			OFFSET $12
 			`,[snippetid, fileid, commentthreadid, submissionid, courseid, 
 				lineStart, lineEnd, charStart, charEnd, searchBody, limit, offset ])
-		.then(extract).then(map(snippetToAPI))
+		.then(extract).then(map(snippetToAPI)).then(doIf(!includeNulls, filterNullSnippet))
 	}
 
 	static async createNullSnippet(params : DBTools = {}){
@@ -83,6 +84,9 @@ export class SnippetDB {
 			body,
 			client =pool
 		} = snippet
+		if (lineStart === -1){
+			throw new Error()
+		}
 		return client.query(`
 			INSERT INTO "Snippets"
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 

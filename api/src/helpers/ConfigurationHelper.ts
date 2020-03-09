@@ -25,6 +25,15 @@ export interface BuiltinLoginConfiguration extends LoginConfiguration {
     register: boolean
 }
 
+/** Configuration for a plugin */
+export interface PluginConfiguration {
+    userID: string,
+    webhookUrl: string,
+    webhookSecret: string,
+    publicKey: string,
+    hooks: string[]
+}
+
 export interface Configuration {
     /** Value of the NODE_ENV environment variable */
     env: string,
@@ -40,6 +49,8 @@ export interface Configuration {
      * If only one is specified, the user will automatically be redirected.
      */
     loginProviders: Array<SamlLoginConfiguration | BuiltinLoginConfiguration>,
+    /** Plugins that are added to this Atelier instance */
+    plugins: PluginConfiguration[],
     /** Connection details for the external PostgreSQL database */
     database: {
         host: string,
@@ -89,6 +100,7 @@ export const config: Configuration = {
     baseUrl: prop("baseUrl", json.baseUrl),
     hostname: prop("hostname", json.hostname, env === "production" ? "0.0.0.0" : "127.0.0.1"),
     port: prop("port", json.port, 5000),
+    plugins: json.plugins || [], // TODO: this should be database, so no error checking, it's "temporary"
     loginProviders: 
         json.loginProviders 
         // tslint:disable-next-line: no-any - It's fine, this is turning JSON into typed structure

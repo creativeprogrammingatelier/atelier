@@ -14,6 +14,7 @@ import logger from 'morgan';
 
 // API routes
 import { authRouter } from './routes/authentication/AuthRouter';
+import { adminRouter } from './routes/AdminRouter';
 import { courseRouter } from './routes/CourseRouter';
 import { fileRouter } from './routes/FileRouter';
 import { indexRouter } from './routes/IndexRouter';
@@ -22,6 +23,7 @@ import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
 import { commentRouter } from "./routes/CommentRouter";
+
 import { NotFoundDatabaseError } from './database/DatabaseErrors';
 import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
 import { AuthError } from './helpers/AuthenticationHelper';
@@ -29,6 +31,7 @@ import { AuthMiddleware } from './middleware/AuthMiddleware';
 import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
 import {permissionRouter} from "./routes/PermissionRouter";
 import {roleRouter} from "./routes/RoleRouter";
+
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -57,6 +60,7 @@ app.use(express.static(path.join(__dirname, '../../client/')));
 
 // Define all API endpoints
 app.use('/api/auth', authRouter);
+app.use('/api/admin', adminRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);

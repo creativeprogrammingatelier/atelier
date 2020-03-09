@@ -12,7 +12,9 @@ export interface Snippet extends DBTools{
 	lineEnd?: number,
 	charStart?: number,
 	charEnd?: number,
-	body?: string
+	body?: string,
+	includeNulls?:boolean,
+
 }
 
 export interface DBSnippet {
@@ -32,6 +34,14 @@ export interface DBSnippet {
 export {APISnippet}
 
 export type DBAPISnippet = DBSnippet & DBAPIFile 
+
+export function filterNullSnippet(snippets : APISnippet[]){
+	return snippets.filter(isNotNullSnippet)
+}
+
+export function isNotNullSnippet(snippet : APISnippet){
+	return snippet.start.line !== -1
+}
 
 export function convertSnippet(db : DBSnippet) : Snippet {
 	const ret = {
