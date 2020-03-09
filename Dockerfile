@@ -26,9 +26,6 @@ COPY . .
 RUN npm run compile
 RUN npm run prod-build
 
-# Generate a key for signing JWT tokens
-RUN mkdir -p build/api/keys && ssh-keygen -t rsa -b 4096 -m PEM -N "" -f build/api/keys/jwtRS256.key
-
 # ----- Release -----
 FROM base AS release
 
