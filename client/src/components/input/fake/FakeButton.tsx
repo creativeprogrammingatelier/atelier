@@ -1,7 +1,7 @@
 import React from "react";
+import {ParentalProperties} from "../../../helpers/ParentHelper";
 
-interface ButtonProperties {
-	children?: string | JSX.Element | JSX.Element[],
+interface ButtonProperties extends ParentalProperties {
 	onClick?: (event: React.MouseEvent) => void
 }
 export function FakeButton({children, onClick}: ButtonProperties) {

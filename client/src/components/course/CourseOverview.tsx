@@ -1,11 +1,12 @@
-import React, {useState} from "react";
+import React, {useState, Fragment} from "react";
 import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
-import {getCourseSubmissions} from "../../../helpers/APIHelper";
+import {getCourse, getCourseSubmissions} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
+import {Course} from "../../../../models/api/Course";
 
 interface CourseOverviewProps {
 	match: {
@@ -21,8 +22,11 @@ export function CourseOverview({match}: CourseOverviewProps) {
 	return (
 		<Frame title="Course" sidebar search={"/course/../search"}>
 			<Jumbotron>
-				<h1>Long Course Name Here</h1>
-				<p>Created by someone?</p>
+				<Loading<Course>
+					loader={getCourse}
+					params={[match.params.courseId]}
+					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
+				/>
 			</Jumbotron>
 			<Loading<Submission[]>
 				loader={getCourseSubmissions}

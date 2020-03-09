@@ -1,8 +1,6 @@
 import React from "react";
+import {ParentalProperties} from "../../../helpers/ParentHelper";
 
-interface InputProperties {
-	children?: string | JSX.Element | JSX.Element[]
-}
-export function FakeReadOnlyInput({children}: InputProperties) {
+export function FakeReadOnlyInput({children}: ParentalProperties) {
 	return <p className="form-control-plaintext m-0">{children}</p>
 }

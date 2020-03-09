@@ -44,14 +44,11 @@ export function Homepage() {
 				/>
 			</div>
 			{
-				role === globalRole.admin ?
+				role === globalRole.admin &&
 					<div className="m-3">
 						<AddCourse handleResponse={updateCourse}/>
 					</div>
-						:
-					<p>To add courses you must be an admin. You are {role}.</p>
 			}
-
 		</Frame>
 	);
 }

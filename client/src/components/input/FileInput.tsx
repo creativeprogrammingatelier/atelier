@@ -1,9 +1,9 @@
 import React from "react";
 import "../../../../helpers/Extensions";
 import {Form, InputGroup} from "react-bootstrap";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
-interface FileInputProperties {
-	children?: string | JSX.Element | JSX.Element[],
+interface FileInputProperties extends ParentalProperties {
 	folders: boolean,
 	handleElement: (element: HTMLInputElement) => void,
 	handleSelected: (event: React.ChangeEvent<HTMLInputElement>) => void

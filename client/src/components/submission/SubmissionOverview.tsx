@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 
@@ -13,7 +13,7 @@ import {DataList} from "../general/data/DataList";
 import {DataItem} from "../general/data/DataItem";
 import {Course} from "../../../../models/api/Course";
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
-import {DirectoryViewer} from "../uploader/DirectoryViewer";
+import {DirectoryViewer} from "../general/DirectoryViewer";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -33,16 +33,15 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
 				<Jumbotron>
 					<h1>{submission.name}</h1>
-					<p>
-						Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.ID}</Link>, for {/* User data should be given with the new API submission.user.* */}
-						<Loading<Course>
-							loader={getCourse}
-							params={[submission.references.courseID]}
-							component={course => <Link to={"/course/" + course.ID}>{course.name}</Link>}
-						/>
-						<br/>
-						<small className="text-light">{submission.date}</small>
-					</p>
+					<Loading<Course>
+						loader={getCourse}
+						params={[submission.references.courseID]}
+						component={course => <p>
+							Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
+							<br/>
+							<small className="text-light">{submission.date}</small>
+						</p>}
+					/>
 					<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
 				</Jumbotron>
 				<DataList header="Files">
