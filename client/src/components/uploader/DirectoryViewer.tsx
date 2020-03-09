@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {DataList} from "../general/data/DataList";
 import {DataItem} from "../general/data/DataItem";
 
@@ -34,27 +34,27 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 	console.log(projectFolder);
 	console.log(projectPaths);
 
-	const topLevelFolders: {[folder: string]: TopLevelNode} = {};
+	const topLevelNodes: {[folder: string]: TopLevelNode} = {};
 	for (const path of projectPaths) {
 		const folder = path.name.split("/")[0];
 		const file = path.name.substr(folder.length + 1);
 
 		if (file.length === 0) {
-			topLevelFolders[folder] = {name: folder, paths: [], children: []};
-		} else if (topLevelFolders.hasOwnProperty(folder)) {
-			topLevelFolders[folder].paths.push({name: file, transport: path.transport});
+			topLevelNodes[folder] = {name: folder, transport: path.transport, paths: [], children: []};
+		} else if (topLevelNodes.hasOwnProperty(folder)) {
+			topLevelNodes[folder].paths.push({name: file, transport: path.transport});
 		} else {
-			topLevelFolders[folder] = {name: folder, paths: [{name: path.name.substr(folder.length + 1), transport:path.transport}], children: []};
+			topLevelNodes[folder] = {name: folder, transport: path.transport, paths: [{name: path.name.substr(folder.length + 1), transport:path.transport}], children: []};
 		}
 	}
-	for (const folder in topLevelFolders) {
+	for (const folder in topLevelNodes) {
 		// TSLint wants this check
-		if (topLevelFolders.hasOwnProperty(folder)) {
+		if (topLevelNodes.hasOwnProperty(folder)) {
 			console.log(folder);
-			console.log(topLevelFolders[folder]);
+			console.log(topLevelNodes[folder]);
 
-			for (const path of topLevelFolders[folder].paths) {
-				let current = topLevelFolders[folder] as Node;
+			for (const path of topLevelNodes[folder].paths) {
+				let current = topLevelNodes[folder] as Node;
 				for (const folder of path.name.split("/")) {
 					let next = current.children.find(child => child.name === folder);
 					if (next === undefined) {
@@ -67,16 +67,16 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 				current.transport = path.transport;
 			}
 
-			console.log(topLevelFolders[folder]);
+			console.log(topLevelNodes[folder]);
 		}
 	}
 
-	return <DataList header="Uploaded files">{Object.values(topLevelFolders).map(renderTopLevelNode)}</DataList>;
+	return <Fragment>{Object.values(topLevelNodes).map(renderTopLevelNode)}</Fragment>;
 }
 
-function renderTopLevelNode(folder: TopLevelNode) {
-	return <div className="directoryNode directoryTopLevel"><DataItem text={folder.name}/>{folder.children.map(renderNode)}</div>
+function renderTopLevelNode(node: TopLevelNode) {
+	return <div className="directoryNode directoryTopLevel"><DataItem text={node.name} transport={node.transport}/>{node.children.map(renderNode)}</div>
 }
 function renderNode(node: Node) {
-	return <div className="directoryNode"><DataItem text={node.name}/>{node.children.map(renderNode)}</div>
+	return <div className="directoryNode"><DataItem text={node.name} transport={node.transport}/>{node.children.map(renderNode)}</div>
 }

@@ -49,19 +49,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<File[]>
 						loader={getFiles}
 						params={[submissionId]}
-						component={files => files.map(file => <DataItem text={FileNameHelper.fromPath(file.name)} transport={submissionPath + "/" + file.ID + "/code"}/>)}
-					/>
-				</DataList>
-				<DataList header="Files">
-					<Loading<File[]>
-						loader={getFiles}
-						params={[submissionId]}
-						component={files => {
-							console.log("Rendering file tree");
-							console.log(files);
-							console.log(files.map(file => ({name: file.name, transport: submissionPath + "/" + file.ID + "/code"})));
-							return <DirectoryViewer filePaths={files.map(file => ({name: file.name, transport: submissionPath + "/" + file.ID + "/code"}))}/>
-						}}
+						component={files =>  <DirectoryViewer filePaths={files.map(file => ({name: file.name, transport: submissionPath + "/" + file.ID + "/code"}))}/>}
 					/>
 				</DataList>
 				<DataList header="Comments">
