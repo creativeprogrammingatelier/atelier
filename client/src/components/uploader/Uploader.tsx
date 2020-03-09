@@ -147,10 +147,10 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 			{selectedFiles.length > 0 &&
 				<div>
 					{folderUploadSupported ?
-						<div>
+						<Form.Group>
 							<p>These files will be uploaded:</p>
 							<DirectoryViewer filePaths={uploadableFiles.map(f => f.webkitRelativePath)}/>
-						</div>
+						</Form.Group>
 						:
 						<Form.Group>
 							<p>These files will be uploaded, please select your main project file:</p>
@@ -163,10 +163,10 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 					}
 					{uploadableFiles.length < selectedFiles.length &&
 						<div>
-							<p>
+							<FeedbackError>
 								These files won't be uploaded, because they are too large
 								{validation.projectTooLarge && " or the project as a whole would be too large"}:
-							</p>
+							</FeedbackError>
 							<DirectoryViewer filePaths={selectedFiles.filter(f => !uploadableFiles.includes(f)).map(f => f.webkitRelativePath)}/>
 						</div>
 					}

@@ -1,3 +1,3 @@
 export interface ParentalProperties {
-	children?: string | string[] | JSX.Element | JSX.Element[]
+	children?: boolean | boolean[] | number | number[] | string | string[] | JSX.Element | JSX.Element[] | (boolean | string)[]
 }

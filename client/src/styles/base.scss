@@ -439,3 +439,23 @@ textarea:focus, textarea:active {
 	color: $colorWhite;
 	background: $gradientDanger;
 }
+
+.directoryNode {
+	margin: 0 0 0 0.5rem;
+
+	.dataItem {
+		margin: 0;
+	}
+	.directoryNode .toast-body {
+		padding: 0.25rem 0.5rem;
+	}
+	.directoryNode:last-of-type > .dataItem .toast-body {
+		padding-bottom: 0.5rem;
+	}
+}
+.directoryTopLevel {
+	margin: 0.5rem 0;
+}
+.directoryTopLevel:last-child .toast-body {
+	padding-bottom: 0.5rem;
+}
