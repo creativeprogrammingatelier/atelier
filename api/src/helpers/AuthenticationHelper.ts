@@ -41,7 +41,7 @@ export const verifyToken = <T>(token: string, secretOrKey = AUTHSECRETKEY, optio
 
 /** Retrieve the JWT token from request headers */
 export function getToken(request: Request) {
-    return request.cookies.atelierToken?.trim() ||
+    return request.cookies?.atelierToken?.trim() ||
         request.headers?.authorization?.replace("Bearer ", "")?.trim();
 }
 
