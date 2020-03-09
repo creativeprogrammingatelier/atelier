@@ -12,6 +12,7 @@ import { archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware
 import { validateProjectServer } from '../../../helpers/ProjectValidationHelper';
 import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { FileDB } from '../database/FileDB';
+import {getCurrentRole} from "../helpers/PermissionHelper";
 import { config } from '../helpers/ConfigurationHelper';
 import { CODEFILE_EXTENSIONS } from '../../../helpers/Constants';
 import path from 'path';
@@ -25,12 +26,22 @@ submissionRouter.use(AuthMiddleware.requireAuth);
  * Get submissions of a course
  */
 submissionRouter.get('/course/:courseID', capture(async(request: Request, response: Response) => {
+    const userID : string = await getCurrentUserID(request);
     const courseID : string = request.params.courseID;
-    const submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+    const currentRole : string | undefined = await getCurrentRole(userID, courseID);
+    const viewAllRoles : string[] = ["admin", "TA", "teacher"];
+    let submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+
+    if (currentRole !== undefined && !viewAllRoles.includes(currentRole)) {
+        submissions = submissions.filter((submission : Submission) => submission.user.ID === userID);
+    }
+
     response.status(200).send(submissions);
 }));
 
-/** Create a new submission containing the files submitted in the body of the request */
+/**
+ * Create a new submission containing the files submitted in the body of the request
+ */
 submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capture(async (request, response) => {
     const files = request.files as Express.Multer.File[];
     validateProjectServer(request.body["project"], files);

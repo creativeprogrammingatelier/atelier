@@ -9,6 +9,7 @@ import { getCurrentUserID, verifyToken, getToken, AuthError, setTokenCookie } fr
 import { RequestHandler } from 'express';
 import { UserDB } from '../database/UserDB';
 import { captureNext } from '../helpers/ErrorHelper';
+import {User} from "../../../models/api/User";
 
 export class AuthMiddleware {
     /** Middleware function that will refresh tokens in cookies */
@@ -50,8 +51,8 @@ export class AuthMiddleware {
      */
     static requireRole(roles: string[]): RequestHandler {
         const handler: RequestHandler = captureNext(async (request, response, next) => {
-            const userID = await getCurrentUserID(request);
-            const user = await UserDB.getUserByID(userID);
+            const userID : string = await getCurrentUserID(request);
+            const user : User = await UserDB.getUserByID(userID);
             if (roles.includes(user.permission.role)) {
                 next();
             } else {

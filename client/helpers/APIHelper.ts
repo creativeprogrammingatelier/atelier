@@ -9,6 +9,7 @@ import { Comment } from "../../models/api/Comment";
 import { File as APIFile } from "../../models/api/File";
 import {threadState} from "../../enums/threadStateEnum";
 import { LoginProvider } from '../../models/api/LoginProvider';
+import {Permission} from "../../models/api/Permission";
 
 // TODO: Fix all anys to be the correct model
 
@@ -116,3 +117,10 @@ export const search = (term: string) =>
 // Auth
 export const getLoginProviders = () =>
     Fetch.fetchJson<LoginProvider[]>('/api/auth/providers');
+
+// Permission
+export const coursePermission = (courseID : string) =>
+    Fetch.fetchJson<Permission>(`/api/permission/course/${courseID}`);
+
+export const permission = () =>
+    Fetch.fetchJson<Permission>(`/api/permission`);

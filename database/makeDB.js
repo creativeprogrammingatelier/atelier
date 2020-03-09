@@ -102,7 +102,8 @@ CREATE TABLE "CourseRegistration" (
      PRIMARY KEY (courseID, userID)
 );
 INSERT INTO "CourseRegistration" VALUES
-	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40));
+	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40)),
+	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000001', 'teacher', 3::bit(40));
 
 
 CREATE TABLE "Submissions" (

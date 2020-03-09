@@ -7,11 +7,17 @@ import {CommentDB} from "../database/CommentDB";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {Comment} from "../../../models/api/Comment";
+import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {userRouter} from "./UserRouter";
 
 export const commentRouter = express.Router();
+commentRouter.use(AuthMiddleware.requireAuth);
 
 /** ---------- PUT REQUESTS ---------- */
 
+/**
+ * Add a comment to a comment thread
+ */
 commentRouter.put('/:commentThreadID',capture(async(request : Request, response : Response) => {
         const commentThreadID = request.params.commentThreadID;
         const userID : string = await getCurrentUserID(request);

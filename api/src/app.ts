@@ -12,12 +12,6 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
-import { AuthMiddleware } from './middleware/AuthMiddleware';
-import { NotFoundDatabaseError } from './database/DatabaseErrors';
-import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
-import { AuthError } from './helpers/AuthenticationHelper';
-import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
-
 // API routes
 import { authRouter } from './routes/authentication/AuthRouter';
 import { adminRouter } from './routes/AdminRouter';
@@ -29,6 +23,15 @@ import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
 import { commentRouter } from "./routes/CommentRouter";
+
+import { NotFoundDatabaseError } from './database/DatabaseErrors';
+import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
+import { AuthError } from './helpers/AuthenticationHelper';
+import { AuthMiddleware } from './middleware/AuthMiddleware';
+import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
+import {permissionRouter} from "./routes/PermissionRouter";
+import {roleRouter} from "./routes/RoleRouter";
+
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -62,6 +65,8 @@ app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/file', fileRouter);
+app.use('/api/permission', permissionRouter);
+app.use('/api/role', roleRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);

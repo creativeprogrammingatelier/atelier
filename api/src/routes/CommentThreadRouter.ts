@@ -15,8 +15,11 @@ import {CommentDB} from "../database/CommentDB";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {getClient, pgDB} from "../database/HelperDB";
 import * as pg from "pg";
+import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {userRouter} from "./UserRouter";
 
 export const commentThreadRouter = express.Router();
+commentThreadRouter.use(AuthMiddleware.requireAuth);
 
 /** ---------- GET REQUESTS ---------- */
 
@@ -35,7 +38,7 @@ commentThreadRouter.get('/:commentThreadID', capture(async (request: Request, re
 commentThreadRouter.get('/file/:fileID', capture(async (request: Request, response : Response) => {
     const fileID = request.params.fileID;
     const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
-    //const commentThreads : CommentThread[] = await ThreadDB.getThreadsByFile(fileID);
+    // TODO user visibility for automated comments
     response.status(200).send(commentThreads);
 }));
 
@@ -46,6 +49,7 @@ commentThreadRouter.get('/submission/:submissionID', capture(async (request: Req
     const submissionID: string = request.params.submissionID;
     const nullFileID : string = await FileDB.getNullFileID(submissionID) as unknown as string;
     const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
+    // TODO user visibility here for automated comments
     response.status(200).send(commentThreads);
 }));
 
@@ -56,10 +60,20 @@ commentThreadRouter.get('/submission/:submissionID/recent', capture(async (reque
     const submissionID = request.params.submissionID;
     const limit : number | undefined = request.headers.limit as unknown as number;
     const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit : limit}));
+    // TODO user visibility for automated comments
     response.status(200).send(commentThreads);
 }));
 
 /** ---------- POST REQUESTS ---------- */
+
+/**
+ * Create a comment thread
+ * @param snippetID, ID of the snippet
+ * @param fileID, ID of the file
+ * @param submissionID, ID of the submission
+ * @param request, request from the user
+ * @param client, database client for transaction
+ */
 async function createCommentThread(snippetID : string | undefined, fileID : string | undefined, submissionID : string | undefined, request : Request, client : pgDB) {
     const commentThread : CommentThread = await ThreadDB.addThread({
         submissionID : submissionID,
