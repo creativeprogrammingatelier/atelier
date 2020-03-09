@@ -14,24 +14,31 @@ export const fileRouter = express.Router();
 // Authentication is required for all endpoints
 fileRouter.use(AuthMiddleware.requireAuth);
 
+function normalizePath(file: File): File {
+    return { 
+        ...file, 
+        // Remove the uploads/random chars prefix from files
+        name: 
+            path.join(...path
+                    .relative(UPLOADS_PATH, file.name)
+                    .split(path.sep)
+                    .slice(1))
+                .replace(/\//g, "/")
+    }
+}
+
 /** Get information of type `File` about a file */
 fileRouter.get('/:fileID', capture(async (request, response) => {
     const fileID : string = request.params.fileID;
     const file : File = await FileDB.getFileByID(fileID);
-    response.status(200).send(file);
+    response.status(200).send(normalizePath(file));
 }));
 
 /** Get a list of files related to a submission */
 fileRouter.get('/submission/:submissionID', capture(async (request, response) => {
     const submissionID: string = request.params.submissionID;
     const files : File[] = await FileDB.getFilesBySubmission(submissionID);
-    response.status(200).send(
-        files.map(file => ({ 
-            ...file, 
-            // Remove the uploads/random chars prefix from files
-            name: path.join(...path.relative(UPLOADS_PATH, file.name).split(path.sep).slice(1)) 
-        }))
-    );
+    response.status(200).send(files.map(normalizePath));
 }));
 
 /** 
