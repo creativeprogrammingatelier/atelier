@@ -24,17 +24,24 @@ describe("AuthenticationHelper", () => {
         expect(verification).to.be.rejectedWith(jwt.TokenExpiredError);
     });
 
-    it("should retrieve the userID from a request", async () => {
+    it("should retrieve the userID from a request with Authorization header", async () => {
         const token = auth.issueToken(userID);
         const req = { headers: { authorization: token } } as Request;
         const result = await auth.getCurrentUserID(req);
         expect(result).to.equal(userID);
     });
 
-    it("should retrieve the userID from a request using a Bearer header", async () => {
+    it("should retrieve the userID from a request with Authorization Bearer header", async () => {
         const token = auth.issueToken(userID);
         const req = { headers: { authorization: `Bearer ${token}` } } as Request;
         const result = await auth.getCurrentUserID(req);
         expect(result).to.equal(userID);
     });
+
+    it("should retrieve the userID from a request with cookie", async () => {
+        const token = auth.issueToken(userID);
+        const req = { cookies: { atelierToken: token } } as Request;
+        const result = await auth.getCurrentUserID(req);
+        expect(result).to.equal(userID);
+    })
 });
