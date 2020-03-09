@@ -10,17 +10,20 @@ export {APIPermission}
 
 export interface DBRolePermission extends DBTools {
 	courseroleid : string,
-	permission : number
+	permission : number | string
 }
 export type DBAPIRolePermission = DBRolePermission
 
 export function convertRolePermission(db : DBRolePermission) : RolePermission {
+	checkAvailable(["courseroleid", "permission"], db)
 	if (!checkEnum(db.courseroleid)){
 		throw new Error("role stored in database does not match enum on server: "+ db.courseroleid)
 	}
 	return {
 		role: localRole[db.courseroleid],
-		permission: db.permission
+		//shhh: this actually comes back as a string, don't tell anyone
+		// tslint:disable-next-line: ban
+		permission: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission
 	}
 }
 export function rolePermToAPI(db : DBAPIRolePermission) : APIPermission {
@@ -30,6 +33,8 @@ export function rolePermToAPI(db : DBAPIRolePermission) : APIPermission {
 	}
 	return {
 		role: db.courseroleid,
-		permissions: db.permission
+		//shhh: this actually comes back as a string, don't tell anyone
+		// tslint:disable-next-line: ban
+		permissions: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission
 	}
 }

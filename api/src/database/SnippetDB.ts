@@ -1,6 +1,7 @@
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf } from "./HelperDB";
 import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet} from '../../../models/database/Snippet';
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import { snippetsView } from "./makeDB";
 
 /**
  * 
@@ -66,11 +67,8 @@ export class SnippetDB {
 
 	static async createNullSnippet(params : DBTools = {}){
 		const {client =pool} = params
-		return client.query(`
-		INSERT INTO "Snippets"
-		VALUES (DEFAULT, -1, -1, -1, -1, '') 
-		RETURNING *
-		`).then(extract).then(one).then(convertSnippet).then(res => res.snippetID)
+		const nullSnippet = {...params, body:'', lineStart:-1, lineEnd:-1, charEnd:-1, charStart:-1}
+		return SnippetDB.addSnippet(nullSnippet)
 	}
 
 	static async addSnippet(snippet : Snippet) : Promise<string>{
@@ -84,9 +82,9 @@ export class SnippetDB {
 			body,
 			client =pool
 		} = snippet
-		if (lineStart === -1){
-			throw new Error()
-		}
+		// if (lineStart === -1){
+		// 	throw new Error()
+		// }
 		return client.query(`
 			INSERT INTO "Snippets"
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
@@ -118,10 +116,7 @@ export class SnippetDB {
 				WHERE snippetID=$1
 				RETURNING *
 			)
-			SELECT s.*, fv.*, ctr.commentThreadID
-			FROM update as s, "CommentThreadRefs" as ctr, "FilesView" as fv
-			WHERE ctr.snippetID = s.snippetID
-			  AND fv.fileID = ctr.fileID
+			${snippetsView('update')}
 			`, [snippetid, lineStart, lineEnd, charStart, charEnd, body])
 		.then(extract).then(map(snippetToAPI)).then(one)
 	}
@@ -129,9 +124,11 @@ export class SnippetDB {
 	static async deleteSnippet(snippetID : string, client : pgDB = pool){
 		const snippetid = UUIDHelper.toUUID(snippetID);
 		return client.query(`
+		
 		DELETE FROM "Snippets" 
 		WHERE snippetID = $1 
 		RETURNING *
+	
 		`, [snippetid])
 		.then(extract).then(map(convertSnippet)).then(one)
 	}

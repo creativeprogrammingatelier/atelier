@@ -5,6 +5,7 @@ import { UUIDHelper } from "../helpers/UUIDHelper";
 import { User } from "../../../models/database/User";
 import { FileDB } from "./FileDB";
 import { APIFile } from "../../../models/database/File";
+import { submissionsView } from "./makeDB";
 
 /**
  * submissionID, userID, title, date, state
@@ -156,9 +157,7 @@ export class SubmissionDB {
 			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
 			RETURNING *
 		)
-		SELECT s.*, u.userName, u.globalrole, u.email
-		FROM insert as s, "UsersView" as u
-		WHERE s.userID = u.userID
+		${submissionsView('insert')}
 		`, [courseid, userid, title, date, state])
 			.then(extract).then(map(submissionToAPI)).then(one)
 	}
@@ -174,11 +173,9 @@ export class SubmissionDB {
 		WITH delete AS (
 			DELETE FROM "Submissions" 
 			WHERE submissionID=$1 
+			RETURNING *
 		)
-		SELECT s.*, u.userName, u.globalrole, u.email
-		FROM "Submissions" as s, "UsersView" as u
-		WHERE s.userID = u.userID
-		  AND submissionID = $1
+		${submissionsView('delete')}
 		`, [submissionid])
 			.then(extract).then(map(submissionToAPI)).then(one)
 			.then(partial => {
@@ -214,9 +211,7 @@ export class SubmissionDB {
 				WHERE submissionID=$1
 				RETURNING *
 			)
-			SELECT s.*, u.userName, u.globalrole, u.email
-			FROM update as s, "UsersView" as u
-			WHERE s.userID = u.userID`
+			${submissionsView('update')}`
 			, [submissionid, courseid, userid, title, date, state])
 			.then(extract).then(map(submissionToAPI)).then(one)
 	}

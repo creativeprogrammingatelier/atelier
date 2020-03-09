@@ -1,6 +1,7 @@
 import * as pg from "pg"
 import { NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResonseError } from "./DatabaseErrors";
 import { config } from "../helpers/ConfigurationHelper";
+import { permissionBits } from "./makeDB";
 
 /**
  * type on which queries can be run
@@ -41,13 +42,23 @@ export function doIf<S>(cond : boolean, fun : (input : S) => S) : (input : S)=>S
 	return cond? fun : data => data;
 }
 /**
+ * check if a given name is a valid table name in postgres
+ * @param name 
+ */
+export function isTableName(name : string){
+	return true
+}
+/**
  * convert a number representing a permission object into something postgres likes.
  * giving a number to the postgres query will crash, as postgres cannot implicitly convert from number to bit[n]
  * @param n the permission number
  */
-export function toBin(n : number | undefined){
+export function toBin(n : number, size?: number) : string
+export function toBin(n : undefined, size? : number) : undefined
+export function toBin(n : number | undefined, size? : number) : string | undefined
+export function toBin(n : number | undefined, size = permissionBits) {
 	if (n === undefined) return undefined
-	return n.toString(2).padStart(40, '0')
+	return n.toString(2).padStart(size, '0')
 }
 /**
  * function to make sure that an @param obj has some properties.
@@ -80,7 +91,7 @@ export function searchify(input : string) : string
 export function searchify(input : string | undefined) : string | undefined
 export function searchify(input : string | undefined){
 	if (input === undefined) return undefined
-	return '%'+input.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')+'%'
+	return '%'+input.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/\_/g, '\\_')+'%'
 }
 /**
  * extract the data from a postgres query result

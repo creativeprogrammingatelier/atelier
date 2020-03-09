@@ -44,12 +44,9 @@ export function isNotNullSnippet(snippet : APISnippet){
 }
 
 export function convertSnippet(db : DBSnippet) : Snippet {
+	checkAvailable(["snippetid", "linestart", "charstart", "lineend", "charend", "body"], db)
 	const ret = {
 		snippetID: UUIDHelper.fromUUID(db.snippetid),
-		fileID: UUIDHelper.fromUUID(db.fileid),
-		commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
-		submissionID: UUIDHelper.fromUUID(db.submissionid),
-		courseID: UUIDHelper.fromUUID(db.courseid),
 		lineStart: db.linestart,
 		lineEnd: db.lineend,
 		charStart: db.charstart,

@@ -29,6 +29,7 @@ export {APIThread}
 export type DBAPIThread = DBThread & DBAPIFile & DBAPISnippet
 
 export function convertThread(db : DBThread) : Thread {
+	checkAvailable(["commentthreadid", "visibilitystate", "courseid", "submissionid", "fileid", "snippetid"], db)
 	if (!(checkEnum(db.visibilitystate))) {
 		throw new Error("enum from database not recognized on server"+db.visibilitystate)
 	}

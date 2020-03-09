@@ -7,6 +7,7 @@ import { CoursePartial } from "../../../models/api/Course";
 import { User } from "../../../models/database/User";
 import { APIPermission } from "../../../models/database/RolePermission";
 import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
+import { CourseRegistrationView, permissionBits } from "./makeDB";
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
@@ -95,13 +96,7 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 			VALUES ($1,$2,$3,$4) 
 			RETURNING *
 		)
-		SELECT
-          userID, courseID, courseRole, 
-          permission | (SELECT permission 
-                         FROM "CourseRolePermissions" 
-                         WHERE courseRoleID=courseRole
-                         ) AS permission
-     	FROM insert
+		${CourseRegistrationView('insert')}
 		`, [courseid, userid, role, perm])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
@@ -129,13 +124,7 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		SELECT
-          userID, courseID, courseRole, 
-          permission | (SELECT permission 
-                         FROM "CourseRolePermissions" 
-                         WHERE courseRoleID=courseRole
-                         ) AS permission
-	 	FROM update
+		${CourseRegistrationView('update')}
 	 	`, [courseid, userid, role])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
@@ -164,13 +153,7 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		SELECT
-          userID, courseID, courseRole, 
-          permission | (SELECT permission 
-                         FROM "CourseRolePermissions" 
-                         WHERE courseRoleID=courseRole
-                         ) AS permission
-		 FROM update
+		${CourseRegistrationView('update')}
 		 `, [courseid, userid, perm])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
@@ -196,17 +179,11 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 		return client.query(`
 		WITH update AS (
 			UPDATE "CourseRegistration" SET 
-			permission=permission & ~($3::bit(40))
+			permission=permission & ~($3::bit(${permissionBits}))
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		SELECT
-          userID, courseID, courseRole, 
-          permission | (SELECT permission 
-                         FROM "CourseRolePermissions" 
-                         WHERE courseRoleID=courseRole
-                         ) AS permission
-     	FROM update
+		${CourseRegistrationView('update')}
 		`, [courseid, userid, perm])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}
@@ -231,13 +208,7 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 			WHERE courseID=$1 AND userID=$2 
 			RETURNING *
 		)
-		SELECT
-          userID, courseID, courseRole, 
-          permission | (SELECT permission 
-                         FROM "CourseRolePermissions" 
-                         WHERE courseRoleID=courseRole
-                         ) AS permission
-		FROM delete
+		${CourseRegistrationView('delete')}
 		 `, [courseid, userid])
 		.then(extract).then(map(convertCourseReg)).then(one)
 	}

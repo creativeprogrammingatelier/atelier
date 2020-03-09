@@ -27,6 +27,7 @@ export type DBAPICourse = DBCourse & DBAPIUser
 
 
 export function convertCourse(db : DBCourse) : Course {
+	checkAvailable(["courseid", "coursename", "creatorid", "state"], db)
 	if (!checkEnum(db.state)){
 		throw new Error('non-existent enum type from db: '+db.state)
 	}
