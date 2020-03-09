@@ -13,6 +13,9 @@ export const plugin = {
 const freeze = Object.freeze;
 Object.freeze = <T>(x: T) => x;
 
+// Clear the cache for config, we want to reload and modify it
+delete require.cache[require.resolve('../../api/src/helpers/ConfigurationHelper')];
+
 // Now import config and update it
 import { config } from '../../api/src/helpers/ConfigurationHelper'
 config.plugins = [ plugin ];

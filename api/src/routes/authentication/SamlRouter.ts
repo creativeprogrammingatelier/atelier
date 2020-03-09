@@ -77,7 +77,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                     samlID: extID,
                     userName: result.extract.nameID,
                     email: `${extID}@example.com`,
-                    role: "user",
+                    role: result.extract.attributes.role || "user",
                     password: UserDB.invalidPassword()
                 });
             } else {
