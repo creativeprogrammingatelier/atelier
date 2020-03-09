@@ -36,8 +36,13 @@ RUN npm install --production
 # Copy the build artifacts from the build stage
 COPY --from=build /atelier/build .
 
-# Expose the configuration folder as a volume, so configuration can be added
+# Expose folders that should be kept across deployments
+# Configuration files
 VOLUME /atelier/config
+# Folder where uploaded projects are stored
+VOLUME /atelier/uploads
+# Folder with the keys for JWT
+VOLUME /atelier/api/keys
 
 # Set environment variables
 ARG NODE_ENV=production
