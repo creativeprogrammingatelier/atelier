@@ -10,11 +10,12 @@ import {capture} from "../helpers/ErrorHelper";
 import {courseState} from "../../../enums/courseStateEnum";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {localRole} from "../../../enums/localRoleEnum";
-import {getGlobalRole, requireRole} from "../helpers/PermissionHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {globalRole} from "../../../enums/roleEnum";
 import {getClient} from "../database/HelperDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
+import {filterCourse} from "../helpers/APIFilterHelper";
+import {getGlobalPermissions, requirePermission, requireRegistered} from "../helpers/PermissionHelper";
+import {containsPermission, PermissionEnum} from "../../../enums/permissionEnum";
 
 export const courseRouter = express.Router();
 
@@ -25,28 +26,29 @@ courseRouter.use(AuthMiddleware.requireAuth);
 
 /**
  * Get user courses
- *  - admin: receives all courses
- *  - rest: receives enrolled courses
+ * - notes:
+ *  - requires permissions to view all courses
  */
 courseRouter.get("/", capture(async(request: Request, response: Response) => {
 	const userID : string = await getCurrentUserID(request);
-	const globalRole : string = await getGlobalRole(userID);
-	if (globalRole === "admin") {
-		const courses : CoursePartial[] = await CourseDB.getAllCourses();
-		response.status(200).send(courses);
-	} else {
-		const enrolledCourses : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course : CourseRegistrationOutput) => course.courseID);
-		const courses : CoursePartial[] = (await CourseDB.getAllCourses()).filter((course : CoursePartial) => enrolledCourses.includes(course.ID));
-		response.status(200).send(courses);
-	}
+	const courses : CoursePartial[] = await CourseDB.getAllCourses();
+	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course : CourseRegistrationOutput) => course.courseID);
+	response.status(200).send(await filterCourse(courses, enrolled, userID));
 }));
 
 /**
  * Get a specific course
+ * - requirements:
+ *  - user is enrolled in the course
  */
 courseRouter.get("/:courseID", capture(async(request: Request, response: Response) => {
 	const courseID : string = request.params.courseID;
 	const course : CoursePartial = await CourseDB.getCourseByID(courseID);
+	const currentUserID : string = await getCurrentUserID(request);
+
+	// User should be registered in the course
+	await requireRegistered(currentUserID, courseID);
+
 	response.status(200).send(course);
 }));
 
@@ -54,13 +56,16 @@ courseRouter.get("/:courseID", capture(async(request: Request, response: Respons
 
 /**
  * Create a course
- * - require global admin
+ * - requirements:
+ *  - AddCourses permission
  */
 courseRouter.post('/', capture(async(request : Request, response : Response) => {
 	const name : string = request.body.name;
 	const state : courseState = request.body.state;
-	const userID : string = await getCurrentUserID(request);
-	await requireRole({globalRoles : ["admin"], userID : userID});
+	const currentUserID : string = await getCurrentUserID(request);
+
+	// Requires addCourses permission
+	await requirePermission(currentUserID, PermissionEnum.addCourses);
 
 	const client = await getClient();
 	try {
@@ -69,13 +74,13 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 		const course : CoursePartial = await CourseDB.addCourse({
 			courseName : name,
 			state : state,
-			creatorID : userID,
+			creatorID : currentUserID,
 			client : client
 		});
 
 		await CourseRegistrationDB.addEntry({
 			courseID : course.ID,
-			userID : userID,
+			userID : currentUserID,
 			role : localRole.student,
 			client : client
 		});
@@ -94,11 +99,18 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 /** ---------- PUT REQUESTS ---------- */
 
 /**
- * Join a course
+ * Join a user in a course
+ * - requirements:
+ *  - manageUserRegistration permission
  */
-courseRouter.put('/:courseID', capture(async(request : Request, response : Response) => {
+courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, response : Response) => {
 	const courseID : string = request.params.courseID;
-	const userID : string = await getCurrentUserID(request);
+	const userID : string = request.params.userID;
+	const currentUserID : string = await getCurrentUserID(request);
+
+	// Require manageUserRegistration permission
+	await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
+
 	const courseRegistration : CourseRegistrationOutput = await CourseRegistrationDB.addEntry({
 		courseID : courseID,
 		userID : userID,

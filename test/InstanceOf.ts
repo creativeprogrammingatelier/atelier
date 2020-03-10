@@ -6,6 +6,7 @@ import { Permission } from "../models/api/Permission";
 import { Snippet } from "../models/api/Snippet";
 import { Submission } from "../models/api/Submission";
 import { User } from "../models/api/User";
+
 /** Interface type checking, because this is not built in... */
 export function instanceOfCourse(object: any): object is Course {
     return ('ID' in object
@@ -116,5 +117,13 @@ export function instanceOfCoursePartial(object: any) : object is CoursePartial {
         && typeof object.state === 'string'
         && 'creator' in object
         && instanceOfUser(object.creator)
+    )
+}
+
+export function instanceOfError(object : any) {
+    return ('error' in object
+        && typeof object.ID === 'string'
+        && 'message' in object
+        && typeof object.message === 'string'
     )
 }

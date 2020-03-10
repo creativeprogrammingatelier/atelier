@@ -2,17 +2,20 @@
  * Api routes relating to comments
  */
 
-import express, { Response, Request } from 'express';
+import express, {Request, Response} from 'express';
 import {capture} from "../helpers/ErrorHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {Permission} from "../../../models/api/Permission";
-import {UserDB} from "../database/UserDB";
-import {User} from "../../../models/api/User";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {userRouter} from "./UserRouter";
-import {requireRole} from "../helpers/PermissionHelper";
+import {
+    getCoursePermissions,
+    getGlobalPermissions,
+    requirePermission,
+    requireRegistered
+} from "../helpers/PermissionHelper";
+import {containsPermission, PermissionEnum} from "../../../enums/permissionEnum";
 
 export const permissionRouter = express.Router();
 permissionRouter.use(AuthMiddleware.requireAuth);
@@ -24,12 +27,11 @@ permissionRouter.use(AuthMiddleware.requireAuth);
  */
 permissionRouter.get('/', capture(async(request : Request, response : Response) => {
     const userID : string = await getCurrentUserID(request);
-    const user : User = await UserDB.getUserByID(userID);
-    const permission : Permission = user.permission;
-    response.status(200).send(permission);
+    const permissions : number = await getGlobalPermissions(userID);
+    response.status(200).send({permissions : permissions } );
 }));
 
-/**
+/** DEBUGGING PATH
  * Get all permissions.
  */
 permissionRouter.get('/all',capture(async(request : Request, response : Response) => {
@@ -39,10 +41,16 @@ permissionRouter.get('/all',capture(async(request : Request, response : Response
 
 /**
  * Get user permissions of a course
+ * - requirements:
+ *  - user is registered in the course
  */
 permissionRouter.get('/course/:courseID', capture(async(request :Request, response: Response) => {
     const courseID : string = request.params.courseID;
     const userID : string = await getCurrentUserID(request);
+
+    // User should be registered in the course
+    await requireRegistered(userID, courseID);
+
     const coursePermissions : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
     if (coursePermissions[0] == undefined) throw new AuthError("course.noRegistration", "You don't have permission to view this data");
     const permission : Permission = {
@@ -52,40 +60,49 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
     response.status(200).send(permission);
 }));
 
+// TODO change permissions
 /** ---------- PUT REQUESTS ---------- */
-
+/**
+ * {
+ *     permission : {
+ *         "name" : true(add)/false(remove)
+ *     }
+ * }
+ * return same with all permissions
+ */
 /**
  * Add user permissions in a course
+ * - requirements:
+ *  - manageUserPermissionsManager permission
  */
-permissionRouter.put('/course/:courseID/user/:userID/add/:permission', capture(async(request : Request, response : Response) => {
+permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : Request, response : Response) => {
     const currentUserID : string = await getCurrentUserID(request);
-    await requireRole({userID : currentUserID, globalRoles : ["admin"]});
-
     const courseID : string = request.params.courseID;
-    const userID : string = request.params.userID;
-    const permission : number = request.params.permission as unknown as number;
-    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.addPermission({
-        courseID : courseID,
-        userID : userID,
-        permission : permission,
-    });
-    response.status(200).send(courseRegistrationOutput);
-}));
 
-/**
- * Remove user permissions in a course
- */
-permissionRouter.delete('/course/:courseID/user/:userID/remove/:permission', capture(async(request : Request, response : Response) => {
-    const currentUserID : string = await getCurrentUserID(request);
-    await requireRole({userID : currentUserID, globalRoles : ["admin"]});
+    // Requires manageUserPermissionsManage
+    await requirePermission(currentUserID, PermissionEnum.manageUserPermissionsManager, courseID);
 
-    const courseID : string = request.params.courseID;
+    const setPermissions = request.body.permissions;
+    const addPermissions : number = 0;
+    const removePermissions : number = 0;
     const userID : string = request.params.userID;
-    const permission : number = request.params.permission as unknown as number;
-    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.removePermission({
-       courseID : courseID,
-       userID : userID,
-       permission : permission
-    });
-    response.status(200).send(courseRegistrationOutput);
+
+    // TODO read setPermissions true/false to add/remove permissions. use enum as dictionary
+
+    console.log("Set permissions: " + setPermissions);
+    console.log(Object.keys(setPermissions));
+    // await CourseRegistrationDB.addPermission({
+    //     courseID : courseID,
+    //     userID : userID,
+    //     permission : addPermissions
+    // });
+    //
+    // const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.removePermission({
+    //     courseID : courseID,
+    //     userID : userID,
+    //     permission : removePermissions
+    // });
+
+    // TODO convert to { permissions { name => boolean, ..., ... }}
+    response.status(200).send({});//courseRegistrationOutput);
 }));

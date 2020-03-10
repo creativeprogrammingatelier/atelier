@@ -27,6 +27,9 @@ const BASE_URL = "http://localhost:5000";
 const DEFAULT_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 const AUTHORIZATION_KEY = issueToken(DEFAULT_ID);
 
+
+
+
 /** Fetch methods */
 const fetch = require('node-fetch');
 
@@ -44,7 +47,6 @@ function getFetch(extension: string, data: any = {}) {
 /** ---------- Test Course ---------- */
 getFetch(`/api/course/`)
     .then((result: Course[]) => {
-
         assert(result.every(instanceOfCoursePartial), "/api/course/");
     })
     .catch((error: any) => console.log(error));
