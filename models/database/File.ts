@@ -36,6 +36,7 @@ export function isNotNullFile(file : {type:string}) {
 }
 
 export function convertFile(db : DBFile) : File {
+	checkAvailable(["fileid", "pathname", "type", "courseid", "submissionid"], db)
 	return {
 		fileID: UUIDHelper.fromUUID(db.fileid),
 		submissionID: UUIDHelper.fromUUID(db.submissionid),

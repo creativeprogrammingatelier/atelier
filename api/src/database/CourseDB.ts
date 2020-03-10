@@ -3,6 +3,7 @@ import {Course, courseToAPIPartial, DBAPICourse} from '../../../models/database/
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { FileDB } from "./FileDB";
 import { User } from "../../../models/database/User";
+import { CoursesView } from "./makeDB";
 
 /**
  * @Author Rens Leendertz
@@ -88,9 +89,7 @@ export class CourseDB {
 			VALUES (DEFAULT, $1, $2, $3) 
 			RETURNING *
 		)
-		SELECT c.*, u.userName, u.globalrole, u.email, u.userid
-		FROM insert as c, "UsersView" u
-		WHERE c.creator = u.userID
+		${CoursesView('insert')}
 		`, [courseName, state, creatorid])
 		.then(extract).then(map(courseToAPIPartial)).then(one)
 		.then(res => {
@@ -110,9 +109,8 @@ export class CourseDB {
 			WHERE courseID=$1 
 			RETURNING *
 		)
-		SELECT c.*, u.userName, u.globalrole, u.email, u.userid
-		FROM delete as c, "UsersView" u
-		WHERE c.creator = u.userID`,[courseid])
+		${CoursesView('delete')}
+		`,[courseid])
 		.then(extract).then(map(courseToAPIPartial)).then(one)
 	}
 
@@ -139,9 +137,7 @@ export class CourseDB {
 			WHERE courseID=$1
 			RETURNING *
 		)
-		SELECT c.*, u.userName, u.globalrole, u.email, u.userid
-		FROM update as c, "UsersView" u
-		WHERE c.creator = u.userID
+		${CoursesView('update')}
 		`,
 			[courseid, courseName, state, creatorid])
 		.then(extract).then(map(courseToAPIPartial)).then(one)

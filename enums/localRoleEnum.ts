@@ -4,8 +4,13 @@ export enum localRole {
 	TA = "TA",
 	assistant = "assistant",
 	student = "student",
-	none = "none"
+	none = "none",
+	unauthorized = 'unauthorized',
+	plugin = 'plugin',
+	DEBUG = "DEBUG"
 }
+export const localPermissionSize = 40
+
 export function checkEnum(str : string) : str is keyof typeof localRole {
 	return str in localRole
 }

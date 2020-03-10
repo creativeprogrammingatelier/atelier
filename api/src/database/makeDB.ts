@@ -1,13 +1,5 @@
-const pg = require('pg');
+import {pool, end} from './HelperDB'
 
-const pool = new pg.Pool({
-	user: 'assistantassistant',
-	host: '127.0.0.1',
-	database: 'assistantassistant',
-	password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
-	port: 5432,
-	max: 1
-});
 //This script can only be run locally, 
 // to use this with a remote server, change the host. user and password will be required in all other instances of pool.
 // user: 'assistantassistant',
@@ -43,10 +35,93 @@ SELECT c.userID, array_agg(c)
 DROP USER IF EXISTS assistantassistant;
 CREATE ROLE assistantassistant;
  */
-function makeDB(out, err)
-{
-pool.query(`
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+ export const permissionBits = 40
+ /**
+  * most exported functions in this file, contain the query string for some view of the database
+  * By calling these functions, the respective query can be inserted into some string at the callee's end.
+  * parameters given to these functions replace tables `FROM` which data is pulled.
+  * this can be used to allow the data from an insert or update to be utilized in the respective view
+  * All these queries have a `WHERE` clause specified, so to add more checks can be done by appending `AND <condition>`
+  * but is generally not best practice, as it requires to know what names are used in the query.
+  * 
+  */
+export function usersView(userTable = `"Users"`){
+     return `
+     SELECT userID, 
+          userName, 
+          email,
+          globalRole, 
+          permission | (SELECT permission 
+                         FROM "GlobalRolePermissions" 
+                         WHERE globalRoleID=globalRole
+                         ) AS permission
+     FROM ${userTable}
+     WHERE 1=1`
+}
+
+export function CourseRegistrationView(courseRegistrationTable = `"CourseRegistration"`){
+     return `SELECT
+          userID, 
+          courseID, 
+          courseRole, 
+          permission | (SELECT permission 
+                         FROM "CourseRolePermissions" 
+                         WHERE courseRoleID=courseRole
+                         ) AS permission
+     FROM ${courseRegistrationTable}
+     WHERE 1=1
+     `
+}
+
+export function CoursesView(coursesTable=`"Courses"`, usersView=`"UsersView"`){
+     return `SELECT c.*, u.userName, u.globalrole, u.email, u.userID, u.permission
+     FROM ${coursesTable} as c, ${usersView} as u
+     WHERE c.creator = u.userID
+     `
+}
+
+export function submissionsView(submissionsTable=`"Submissions"`, usersView=`"UsersView"`){
+     return `SELECT s.*, u.userName, u.globalrole, u.email, u.permission
+     FROM ${submissionsTable} as s, ${usersView} as u
+     WHERE s.userID = u.userID`
+}
+
+export function filesView(filesTable=`"Files"`){
+     return `SELECT f.*, sr.courseID
+     FROM ${filesTable} as f, "SubmissionsRefs" as sr
+     WHERE f.submissionID = sr.submissionID`
+}
+
+export function snippetsView(snippetsTable=`"Snippets"`, filesView=`"FilesView"`){
+     return `SELECT s.*, fv.*, ctr.commentThreadID
+     FROM ${snippetsTable} as s, "CommentThreadRefs" as ctr, ${filesView} as fv
+     WHERE ctr.snippetID = s.snippetID
+       AND fv.fileID = ctr.fileID`
+}
+
+export function commentsView(commentsTable=`"Comments"`, usersView=`"UsersView"`){
+     return `SELECT c.*, u.userName, u.globalrole, u.email, u.permission, ctr.submissionID, ctr.courseID
+     FROM ${commentsTable} as c, ${usersView} as u, "CommentThreadRefs" as ctr
+     WHERE c.userID = u.userID
+       AND ctr.commentThreadID = c.commentThreadID`
+}
+
+export function commentThreadView(commentThreadTable=`"CommentThread"`){
+     return `SELECT 
+          sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
+          ct.visibilityState,
+          sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
+          fv.pathname, fv.type
+     FROM ${commentThreadTable} as ct, "SubmissionsRefs" as sr, "Snippets" as sv, "Files" as fv
+     WHERE ct.submissionID = sr.submissionID
+       AND ct.snippetID = sv.snippetID
+       AND fv.fileID = ct.fileID`
+}
+
+export function makeDB(out: (value: {}) => void, err : (error : Error) => void){
+return pool.query(`
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 ALTER ROLE assistantassistant WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'md594b9257ac7635f4597e055106a53fddd';
 DROP VIEW IF EXISTS 
@@ -57,6 +132,7 @@ DROP VIEW IF EXISTS
      "CommentThreadView", "CourseRegistrationView";
 
 DROP TABLE IF EXISTS 
+     "GlobalRolePermissions",
      "CourseRolePermissions", "Users", 
      "Courses", "CourseRegistration", 
      "Submissions", "Files", "Snippets", 
@@ -64,28 +140,44 @@ DROP TABLE IF EXISTS
 
 CREATE TABLE "CourseRolePermissions" (
     courseRoleID      text PRIMARY KEY,
-    permission        bit(40) NOT NULL
+    permission        bit(${permissionBits}) NOT NULL
 );
 INSERT INTO "CourseRolePermissions" VALUES
-	('student', 0::bit(40)),
-	('TA', 1::bit(40)),
-	('teacher', 3::bit(40));
+	('student', 1::bit(${permissionBits})),
+	('TA', 3::bit(${permissionBits})),
+     ('teacher', 7::bit(${permissionBits})),
+     ('unauthorized', 0::bit(${permissionBits})),
+     ('plugin', 0::bit(${permissionBits}));
 
+CREATE TABLE "GlobalRolePermissions" (
+     globalRoleID        text PRIMARY KEY,
+     permission          bit(${permissionBits}) NOT NULL
+);
+INSERT INTO "GlobalRolePermissions" VALUES
+     ('admin', '1111111111111111111111111111111111111111'),
+     ('user', 1::bit(${permissionBits})),
+     ('unauthorized', 0::bit(${permissionBits})),
+     ('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Users" (
-     userID       uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-     samlID       char(39) UNIQUE, --can be null
-     userName     text NOT NULL CHECK (userName <> ''),
-     globalRole   text NOT NULL DEFAULT 'user',
-     email        text NOT NULL UNIQUE CHECK (email <> ''),
-     hash         char(60) NOT NULL
+     userID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+     samlID         text UNIQUE, --can be null
+     userName       text NOT NULL CHECK (userName <> ''),
+     email          text NOT NULL UNIQUE CHECK (email <> ''),
+     globalRole     text NOT NULL REFERENCES "GlobalRolePermissions"(globalRoleID) DEFAULT 'unauthorized',
+     permission     bit(${permissionBits}) NOT NULL,
+     hash           char(60) NOT NULL
 );
 INSERT INTO "Users" VALUES
-     (DEFAULT, '', 'Caaas', 'admin', 'Cas@Caaas', '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-	('00000000-0000-0000-0000-000000000000', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ','Cas', DEFAULT, 'Cas@Cas', '');
+     (DEFAULT, NULL, 'normal', 'Cas@Caaas', 'admin', 0::bit(${permissionBits}), '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
+     ('00000000-0000-0000-0000-000000000000', 'samling_admin','Cs', 'admin@Cas', 'admin', 0::bit(${permissionBits}), ''),
+     (DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', 0::bit(${permissionBits}), ''),
+     (DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', 0::bit(${permissionBits}), ''),
+     (DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', 0::bit(${permissionBits}), ''),
+     (DEFAULT, NULL, 'pmd plugin', 'pmd@plugin', 'plugin', 0::bit(${permissionBits}), '');
 
 CREATE TABLE "Courses" (
-     courseID    uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     courseID    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
      courseName  text NOT NULL CHECK (courseName <> ''),
      state       text NOT NULL DEFAULT 'open',
      creator     uuid REFERENCES "Users" (userID)
@@ -97,16 +189,19 @@ INSERT INTO "Courses" VALUES
 CREATE TABLE "CourseRegistration" (
      courseID       uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE,
      userID         uuid NOT NULL REFERENCES "Users"(userID),
-     courseRole     text NOT NULL REFERENCES "CourseRolePermissions"(courseRoleID),
-     permission     bit(40) NOT NULL,
+     courseRole     text NOT NULL REFERENCES "CourseRolePermissions"(courseRoleID) DEFAULT 'unauthorized',
+     permission     bit(${permissionBits}) NOT NULL,
      PRIMARY KEY (courseID, userID)
 );
 INSERT INTO "CourseRegistration" VALUES
 	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40));
-
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', 0::bit(${permissionBits})),
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', 0::bit(${permissionBits})),
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', 0::bit(${permissionBits})),
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Submissions" (
-     submissionID   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     submissionID   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
      courseID       uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE,
      userID         uuid NOT NULL REFERENCES "Users"(userID),
      title           text NOT NULL CHECK (title <> ''),
@@ -117,7 +212,7 @@ INSERT INTO "Submissions" VALUES
 	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'MyFirstSubmission', DEFAULT, DEFAULT);
 
 CREATE TABLE "Files" (
-     fileID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     fileID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
      submissionID   uuid NOT NULL REFERENCES "Submissions"(submissionID) ON DELETE CASCADE,
      pathname       text NOT NULL,
      type           text NOT NULL DEFAULT 'unsupported'
@@ -127,7 +222,7 @@ INSERT INTO "Files" VALUES
      ('ffffffff-ffff-ffff-ffff-ffffffffffff', (SELECT submissionID from "Submissions" LIMIT 1), '', 'undefined/undefined');
 
 CREATE TABLE "Snippets" (
-     snippetID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     snippetID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
      lineStart         integer NOT NULL,
      lineEnd           integer NOT NULL,
      charStart         integer NOT NULL,
@@ -146,19 +241,19 @@ INSERT INTO "Snippets" VALUES
      );
 
 CREATE TABLE "CommentThread" (
-     commentThreadID   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     commentThreadID   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
      submissionID      uuid NOT NULL REFERENCES "Submissions"(submissionID) ON DELETE CASCADE,
      fileID            uuid NOT NULL REFERENCES "Files"(fileID),
-     snippetID         uuid NOT NULL REFERENCES "Snippets"(snippetID),
+     snippetID         uuid NOT NULL UNIQUE REFERENCES "Snippets"(snippetID),
      visibilityState   text NOT NULL DEFAULT 'public'
 );
+
 INSERT INTO "CommentThread" VALUES
 	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), '00000000-0000-0000-0000-000000000000', DEFAULT),
-	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT),
 	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT);
 
 CREATE TABLE "Comments" (
-     commentID         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     commentID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
      commentThreadID   uuid NOT NULL REFERENCES "CommentThread"(commentThreadID) ON DELETE CASCADE,
      userID            uuid NOT NULL REFERENCES "Users"(userID),
      date              timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -218,70 +313,41 @@ CREATE VIEW "CommentThreadRefs" AS (
 );
 
 CREATE VIEW "UsersView" AS (
-     SELECT userID, userName, globalRole, email
-     FROM "Users"
+     ${usersView(`"Users"`)}
 );
 CREATE VIEW "CourseRegistrationView" AS (
-     SELECT
-          userID, 
-          courseID, 
-          courseRole, 
-          permission | (SELECT permission 
-                         FROM "CourseRolePermissions" 
-                         WHERE courseRoleID=courseRole
-                         ) AS permission
-     FROM "CourseRegistration"
+     ${CourseRegistrationView()}
 );
 
 CREATE VIEW "CoursesView" AS (
-     SELECT c.*, u.userName, u.globalrole, u.email, u.userID
-     FROM "Courses" as c, "UsersView" u
-     where c.creator = u.userID
+     ${CoursesView()}
 );
 
 CREATE VIEW "SubmissionsView" AS (
-     SELECT s.*, u.userName, u.globalrole, u.email
-     FROM "Submissions" as s, "UsersView" as u
-     WHERE s.userID = u.userID
+     ${submissionsView()}
 );
 
 CREATE VIEW "FilesView" as (
-     SELECT f.*, sr.courseID
-     FROM "Files" as f, "SubmissionsRefs" as sr
-     WHERE f.submissionID = sr.submissionID
+     ${filesView()}
 );
 
 CREATE VIEW "SnippetsView" as (
-     SELECT s.*, fv.*, ctr.commentThreadID
-     FROM "Snippets" as s, "CommentThreadRefs" as ctr, "FilesView" as fv
-     WHERE ctr.snippetID = s.snippetID
-       AND fv.fileID = ctr.fileID
+     ${snippetsView()}
 );
 
 CREATE VIEW "CommentsView" AS (
-     SELECT c.*, u.userName, u.globalrole, u.email, ctr.submissionID, ctr.courseID
-     FROM "Comments" as c, "UsersView" as u, "CommentThreadRefs" as ctr
-     WHERE c.userID = u.userID
-       AND ctr.commentThreadID = c.commentThreadID
+     ${commentsView()}
 );
 
 CREATE VIEW  "CommentThreadView" as (
-     SELECT 
-          sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
-          ct.visibilityState,
-          sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
-          fv.pathname, fv.type
-     FROM "CommentThread" as ct, "SubmissionsRefs" as sr, "SnippetsView" as sv, "FilesView" as fv
-     WHERE ct.submissionID = sr.submissionID
-       AND ct.snippetID = sv.snippetID
-       AND fv.fileID = ct.fileID
+     ${commentThreadView()}
 );
 
-`).then(out).catch(err).then(pool.end.bind(pool));
+`).then(out).catch(e=>{err(e);throw e});
 }
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
 if (require.main === module){
-     makeDB(console.log, console.error)
+     makeDB(console.log, console.error).then(end)
 } else {
-     makeDB(()=>{console.log("made the database")}, console.error)
+     // makeDB(()=>{console.log("made the database")}, console.error)
 }

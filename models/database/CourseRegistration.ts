@@ -22,6 +22,7 @@ export {APICourseRegistration}
 export type DBAPICourseRegistration = DBCourseRegistration
 
 export function convertCourseReg(db :DBCourseRegistration) : CourseRegistrationOutput {
+	checkAvailable(["courseid", "userid", "courserole", "permission"], db)
 	if (!checkEnum(db.courserole)){
 		throw new Error("courserole from database does not match enum on server: "+db.courserole)
 	}
@@ -29,7 +30,9 @@ export function convertCourseReg(db :DBCourseRegistration) : CourseRegistrationO
 		courseID: UUIDHelper.fromUUID(db.courseid),
 		userID: UUIDHelper.fromUUID(db.userid),
 		role: localRole[db.courserole],
-		permission: db.permission
+		//shhh: this actually comes back as a string, don't tell anyone
+		// tslint:disable-next-line: ban
+		permission: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission
 	}
 }
 
@@ -37,6 +40,8 @@ export function courseRegToAPI(db : DBAPICourseRegistration) : APICourseRegistra
 	checkAvailable(["courserole", "permission"], db)
 	return {
 		role: db.courserole,
-		permissions: db.permission
+		//shhh: this actually comes back as a string, don't tell anyone
+		// tslint:disable-next-line: ban
+		permissions: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission
 	}
 }
