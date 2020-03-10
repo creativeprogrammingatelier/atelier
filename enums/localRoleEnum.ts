@@ -6,8 +6,7 @@ export enum localRole {
 	student = "student",
 	none = "none",
 	unauthorized = 'unauthorized',
-	plugin = 'plugin',
-	DEBUG = "DEBUG"
+	plugin = 'plugin'
 }
 export const localPermissionSize = 40
 

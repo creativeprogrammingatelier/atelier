@@ -15,10 +15,18 @@ export class AuthMiddleware {
     /** Middleware function that will refresh tokens in cookies */
     static refreshCookieToken: RequestHandler = captureNext(async (request, response, next) => {
         if (request.cookies.atelierToken) {
-            const token = await verifyToken<{ userID: string }>(request.cookies.atelierToken);
-            // The JWT expiration is stored in seconds, Date.now() in milliseconds
-            if (token.iat * 1000 + 600000 < Date.now()) {
-                await setTokenCookie(response, token.userID);
+            try {
+                const token = await verifyToken<{ userID: string }>(request.cookies.atelierToken);
+                // The JWT expiration is stored in seconds, Date.now() in milliseconds
+                if (token.iat * 1000 + 600000 < Date.now()) {
+                    await setTokenCookie(response, token.userID);
+                }
+            } catch (err) {
+                // Ignore AuthErrors, if auth is required for the route, 
+                // it will be handled in requireAuth
+                if (!(err instanceof AuthError)) {
+                    throw err;
+                }
             }
         }
         next();
@@ -30,18 +38,8 @@ export class AuthMiddleware {
 		if (!token) {
 			next(new AuthError("token.notProvided", "No token was provided with this request. You're probably not logged in."));
 		} else {
-            try {
-                await verifyToken(token);
-                next();
-            } catch (err) {
-                if (err instanceof jwt.TokenExpiredError) {
-                    next(new AuthError("token.expired", "Your token is expired. Please log in again."));
-                } else if (err instanceof jwt.JsonWebTokenError) {
-                    next(new AuthError("token.invalid", "An invalid token was provided. Please try logging in again."));
-                } else {
-                    next(err);
-                }
-            }
+            await verifyToken(token);
+            next();
 		}
     });
     
