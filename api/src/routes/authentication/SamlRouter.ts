@@ -63,6 +63,8 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     samlRouter.post('/login', capture(async (request, response) => {
         const result = await sp.parseLoginResponse(idp, 'post', request);
         const extID = `${samlConfig.id}_${result.extract.nameID}`;
+        // TODO: remove temporary logging
+        console.log("SAML response extract: ", result.extract);
         let user = undefined;
         try {
             user = await UserDB.getUserBySamlID(extID);
