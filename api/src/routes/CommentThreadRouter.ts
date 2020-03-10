@@ -8,15 +8,17 @@ import {ThreadDB} from "../database/ThreadDB";
 import {SnippetDB} from "../database/SnippetDB";
 
 import {CommentThread} from "../../../models/api/CommentThread";
-import {Comment} from "../../../models/api/Comment"
 import {capture} from "../helpers/ErrorHelper";
 import {FileDB} from "../database/FileDB";
 import {CommentDB} from "../database/CommentDB";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {getClient, pgDB} from "../database/HelperDB";
-import * as pg from "pg";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {userRouter} from "./UserRouter";
+import {
+    requireRegisteredCommentThreadID,
+    requireRegisteredFileID, requireRegisteredSubmissionID
+} from "../helpers/PermissionHelper";
+import {filterCommentThread} from "../helpers/APIFilterHelper";
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -25,43 +27,77 @@ commentThreadRouter.use(AuthMiddleware.requireAuth);
 
 /**
  * Get a specific comment thread.
+ * - requirements:
+ *  - user is registered in the course of the commentThread
  */
 commentThreadRouter.get('/:commentThreadID', capture(async (request: Request, response : Response) => {
     const commentThreadID : string = request.params.commentThreadID;
+    const currentUserID : string = await getCurrentUserID(request);
+
+    // User should be registered in the course
+    await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
+
     const thread : CommentThread = await ThreadDB.addCommentSingle(ThreadDB.getThreadByID(commentThreadID));
     response.status(200).send(thread);
 }));
 
 /**
- * Get comment threads of a file
+ * Get comment threads of a file.
+ * - requirements:
+ *  - user is registered in the course of the commentThread
+ * - notes:
+ *  - requires permission to view private comment threads
  */
 commentThreadRouter.get('/file/:fileID', capture(async (request: Request, response : Response) => {
     const fileID = request.params.fileID;
-    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
-    // TODO user visibility for automated comments
-    response.status(200).send(commentThreads);
+    const currentUserID : string = await getCurrentUserID(request);
+
+    // User should be registered in the course
+    await requireRegisteredFileID(currentUserID, fileID);
+
+    // Retrieve comment threads, and filter out restricted comment threads if user does not have access
+    let commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
+    response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
 /**
- * Get comment threads of a submission (general project comments)
+ * Get comment threads of a submission (general project comments).
+ * - requirements:
+ *  - user is registered in the course of the submission
+ * - notes:
+ *  - requires permission to view private comment threads
  */
 commentThreadRouter.get('/submission/:submissionID', capture(async (request: Request, response: Response) => {
     const submissionID: string = request.params.submissionID;
     const nullFileID : string = await FileDB.getNullFileID(submissionID) as unknown as string;
-    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
-    // TODO user visibility here for automated comments
-    response.status(200).send(commentThreads);
+    const currentUserID : string = await getCurrentUserID(request);
+
+    // User should be registered in the course
+    await requireRegisteredSubmissionID(currentUserID, submissionID);
+
+    // Retrieve comment threads, and filter out restricted comment threads if user does not have access
+    let commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
+    response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
 /**
  * Get recent comment threads of project (limited)
+ * - requirements:
+ *  - user is registered in the course of the submission
+ * - notes:
+ *  - requires permission to view private comment threads
  */
 commentThreadRouter.get('/submission/:submissionID/recent', capture(async (request: Request, response: Response) => {
     const submissionID = request.params.submissionID;
     const limit : number | undefined = request.headers.limit as unknown as number;
-    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit : limit}));
-    // TODO user visibility for automated comments
-    response.status(200).send(commentThreads);
+    const currentUserID : string = await getCurrentUserID(request);
+
+    // User should be registered in the course
+    await requireRegisteredSubmissionID(currentUserID, submissionID);
+
+    // Retrieve comment threads, and filter out restricted comment threads if user does not have access
+    let commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit : limit}));
+    response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
 /** ---------- POST REQUESTS ---------- */
@@ -99,10 +135,17 @@ async function createCommentThread(snippetID : string | undefined, fileID : stri
 
 /**
  * Create comment thread on a submission. General comment thread.
+ * - requirements:
+ *  - user is registered in the course of the submission
  */
 commentThreadRouter.post('/submission/:submissionID', capture( async(request : Request, response : Response) => {
     const client : pgDB = await getClient();
     let commentThreadID : string | undefined;
+    const currentUserID : string = await getCurrentUserID(request);
+    const submissionID : string = request.params.submissionID;
+
+    // User should be registered in the course
+    await requireRegisteredSubmissionID(currentUserID, submissionID);
 
     try {
         await client.query('BEGIN');
@@ -111,7 +154,6 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
         const snippetID : string | undefined = await SnippetDB.createNullSnippet({client : client});
 
         // Thread creation
-        const submissionID : string = request.params.submissionID;
         const fileID : string = await FileDB.getNullFileID(submissionID, {client : client}) as unknown as string;
         const commentThread : CommentThread = await createCommentThread(snippetID, fileID, submissionID, request, client);
         commentThreadID = commentThread.ID;
@@ -138,10 +180,17 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
 
 /**
  * Create comment thread on a file.
+ * - requirements:
+ *  - user is registered in the course of the file
  */
 commentThreadRouter.post('/file/:fileID', capture(async (request : Request, response : Response) => {
     const client : pgDB = await getClient();
     let commentThreadID : string | undefined;
+    const fileID : string = request.params.fileID;
+    const currentUserID : string = await getCurrentUserID(request);
+
+    // User should be registered in course
+    await requireRegisteredFileID(currentUserID, fileID);
 
     try {
         await client.query('BEGIN');
@@ -163,7 +212,6 @@ commentThreadRouter.post('/file/:fileID', capture(async (request : Request, resp
 
         // Thread creation
         const submissionID : string = request.body.submissionID;
-        const fileID : string = request.params.fileID;
         const commentThread : CommentThread = await createCommentThread(snippetID, fileID, submissionID, request, client);
         commentThreadID = commentThread.ID;
 

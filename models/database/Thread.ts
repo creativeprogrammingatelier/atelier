@@ -21,7 +21,7 @@ export interface DBThread {
 	courseid: string,
 	fileid: string,
 	snippetid: string,
-	visibilitystate: string
+	visibilitystate: threadState
 }
 
 export {APIThread}
@@ -51,7 +51,7 @@ export function threadToAPI(db : DBAPIThread) : APIThread{
 		ID: UUIDHelper.fromUUID(db.commentthreadid),
 		file: fileToAPI(db),
 		snippet: snippetToAPI(db),
-		visibility: db.visibilitystate,
+		visibility: db.visibilitystate as threadState,
 		comments: [],
 		references:{
 			courseID: UUIDHelper.fromUUID(db.courseid),

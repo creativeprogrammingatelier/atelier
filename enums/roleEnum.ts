@@ -9,12 +9,10 @@ export enum globalRoleEnum {
 }
 
 // Global role enum strings, since API returns stings
-// TODO decide additional roles
 export enum globalRole {
-	user = "user",
 	admin = "admin",
-	coordinator = "coordinator",
+	staff = "staff",
+	user = "coordinator",
+	plugin = "plugin",
 	none = "none"
 }
-
-// export default globalRoleEnum;
