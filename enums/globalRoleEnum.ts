@@ -2,6 +2,7 @@ export enum globalRole {
 	admin = "teacher",
 	user = "user",
 	unauthorized = 'unauthorized',
+	plugin = 'plugin',
 	DEBUG = "DEBUG"
 }
 

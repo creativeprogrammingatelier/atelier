@@ -9,12 +9,13 @@ import { getCurrentUserID, verifyToken, getToken, AuthError, setTokenCookie } fr
 import { RequestHandler } from 'express';
 import { UserDB } from '../database/UserDB';
 import { captureNext } from '../helpers/ErrorHelper';
+import {User} from "../../../models/api/User";
 
 export class AuthMiddleware {
     /** Middleware function that will refresh tokens in cookies */
     static refreshCookieToken: RequestHandler = captureNext(async (request, response, next) => {
         if (request.cookies.atelierToken) {
-            const token = await verifyToken(request.cookies.atelierToken);
+            const token = await verifyToken<{ userID: string }>(request.cookies.atelierToken);
             // The JWT expiration is stored in seconds, Date.now() in milliseconds
             if (token.iat * 1000 + 600000 < Date.now()) {
                 await setTokenCookie(response, token.userID);
@@ -50,8 +51,8 @@ export class AuthMiddleware {
      */
     static requireRole(roles: string[]): RequestHandler {
         const handler: RequestHandler = captureNext(async (request, response, next) => {
-            const userID = await getCurrentUserID(request);
-            const user = await UserDB.getUserByID(userID);
+            const userID : string = await getCurrentUserID(request);
+            const user : User = await UserDB.getUserByID(userID);
             if (roles.includes(user.permission.role)) {
                 next();
             } else {

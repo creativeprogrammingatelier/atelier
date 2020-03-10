@@ -14,7 +14,6 @@ export class AuthError extends Error {
 }
 
 interface TokenProps {
-    userID: string, 
     iat: number, 
     exp: number
 }
@@ -24,21 +23,25 @@ export function issueToken(userID: string, expiresIn: string | number = TOKEN_EX
     return jwt.sign({ userID }, AUTHSECRETKEY, { expiresIn });
 }
 
+/** Decode a token without verifying its validity */
+export const decodeToken = <T>(token: string) => 
+    jwt.decode(token) as TokenProps & T;
+
 /** Asynchronously verify a token */
-export const verifyToken = (token: string, time?: number) => 
-    new Promise((resolve: (props: TokenProps) => void, reject: (err: jwt.VerifyErrors) => void) =>
+export const verifyToken = <T>(token: string, secretOrKey = AUTHSECRETKEY, options?: jwt.VerifyOptions) => 
+    new Promise((resolve: (props: TokenProps & T) => void, reject: (err: jwt.VerifyErrors) => void) =>
         jwt.verify(
             token, 
-            AUTHSECRETKEY, 
-            { clockTimestamp: time }, 
+            secretOrKey, 
+            options, 
             (err, props) => 
-                err ? reject(err) : resolve(props as TokenProps)
+                err ? reject(err) : resolve(props as TokenProps & T)
         )
     );
 
 /** Retrieve the JWT token from request headers */
 export function getToken(request: Request) {
-    return request.cookies.atelierToken?.trim() ||
+    return request.cookies?.atelierToken?.trim() ||
         request.headers?.authorization?.replace("Bearer ", "")?.trim();
 }
 
@@ -46,7 +49,7 @@ export function getToken(request: Request) {
 export async function getCurrentUserID(request: Request) {
     const token = getToken(request);
     if (token !== undefined) {
-        const props = await verifyToken(token);
+        const props = await verifyToken<{ userID: string }>(token);
         return props.userID;
     } else {
         throw new AuthError("token.notProvided", "No token was provided with this request. You're probably not logged in.");

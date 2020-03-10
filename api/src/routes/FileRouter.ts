@@ -7,6 +7,7 @@ import { FileDB } from '../database/FileDB';
 import { readFile } from '../helpers/FilesystemHelper';
 import { capture } from '../helpers/ErrorHelper';
 import { File } from '../../../models/api/File';
+import { UPLOADS_PATH } from '../lib/constants';
 
 export const fileRouter = express.Router();
 
@@ -24,7 +25,13 @@ fileRouter.get('/:fileID', capture(async (request, response) => {
 fileRouter.get('/submission/:submissionID', capture(async (request, response) => {
     const submissionID: string = request.params.submissionID;
     const files : File[] = await FileDB.getFilesBySubmission(submissionID);
-    response.status(200).send(files);
+    response.status(200).send(
+        files.map(file => ({ 
+            ...file, 
+            // Remove the uploads/random chars prefix from files
+            name: path.join(...path.relative(UPLOADS_PATH, file.name).split(path.sep).slice(1)) 
+        }))
+    );
 }));
 
 /** 

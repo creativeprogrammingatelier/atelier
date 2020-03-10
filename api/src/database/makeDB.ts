@@ -146,7 +146,8 @@ INSERT INTO "CourseRolePermissions" VALUES
 	('student', 1::bit(${permissionBits})),
 	('TA', 3::bit(${permissionBits})),
      ('teacher', 7::bit(${permissionBits})),
-     ('unauthorized', 0::bit(${permissionBits}));
+     ('unauthorized', 0::bit(${permissionBits})),
+     ('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "GlobalRolePermissions" (
      globalRoleID        text PRIMARY KEY,
@@ -155,11 +156,12 @@ CREATE TABLE "GlobalRolePermissions" (
 INSERT INTO "GlobalRolePermissions" VALUES
      ('admin', '1111111111111111111111111111111111111111'),
      ('user', 1::bit(${permissionBits})),
-     ('unauthorized', 0::bit(${permissionBits}));
+     ('unauthorized', 0::bit(${permissionBits})),
+     ('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Users" (
      userID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-     samlID         char(39) UNIQUE, --can be null
+     samlID         text UNIQUE, --can be null
      userName       text NOT NULL CHECK (userName <> ''),
      email          text NOT NULL UNIQUE CHECK (email <> ''),
      globalRole     text NOT NULL REFERENCES "GlobalRolePermissions"(globalRoleID) DEFAULT 'unauthorized',
@@ -167,8 +169,12 @@ CREATE TABLE "Users" (
      hash           char(60) NOT NULL
 );
 INSERT INTO "Users" VALUES
-     (DEFAULT, '', 'Caaas', 'Cas@Caaas', 'admin', 0::bit(${permissionBits}), '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-	('00000000-0000-0000-0000-000000000000', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ','Cas', 'Cas@Cas', DEFAULT, 0::bit(${permissionBits}), '');
+     (DEFAULT, NULL, 'normal', 'Cas@Caaas', 'admin', 0::bit(${permissionBits}), '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
+     ('00000000-0000-0000-0000-000000000000', 'samling_admin','Cs', 'admin@Cas', 'admin', 0::bit(${permissionBits}), ''),
+     (DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', 0::bit(${permissionBits}), ''),
+     (DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', 0::bit(${permissionBits}), ''),
+     (DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', 0::bit(${permissionBits}), ''),
+     (DEFAULT, NULL, 'pmd plugin', 'pmd@plugin', 'plugin', 0::bit(${permissionBits}), '');
 
 CREATE TABLE "Courses" (
      courseID    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -188,8 +194,10 @@ CREATE TABLE "CourseRegistration" (
      PRIMARY KEY (courseID, userID)
 );
 INSERT INTO "CourseRegistration" VALUES
-	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(${permissionBits}));
-
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', 0::bit(${permissionBits})),
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', 0::bit(${permissionBits})),
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', 0::bit(${permissionBits})),
+     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Submissions" (
      submissionID   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -334,7 +342,7 @@ CREATE VIEW  "CommentThreadView" as (
      ${commentThreadView()}
 );
 
-`).then(out).catch(err);
+`).then(out).catch(e=>{err(e);throw e});
 }
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
 if (require.main === module){

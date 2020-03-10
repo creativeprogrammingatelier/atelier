@@ -63,6 +63,7 @@ export class SnippetDB {
 			`,[snippetid, fileid, commentthreadid, submissionid, courseid, 
 				lineStart, lineEnd, charStart, charEnd, searchBody, limit, offset ])
 		.then(extract).then(map(snippetToAPI)).then(doIf(!includeNulls, filterNullSnippet))
+		
 	}
 
 	static async createNullSnippet(params : DBTools = {}){

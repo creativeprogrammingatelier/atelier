@@ -1,4 +1,5 @@
-enum globalRoleEnum {
+// Database enum numbers
+export enum globalRoleEnum {
 	'students',
 	'teacher',
 	'admin',
@@ -7,4 +8,13 @@ enum globalRoleEnum {
 	'None'
 }
 
-export default globalRoleEnum;
+// Global role enum strings, since API returns stings
+// TODO decide additional roles
+export enum globalRole {
+	user = "user",
+	admin = "admin",
+	coordinator = "coordinator",
+	none = "none"
+}
+
+// export default globalRoleEnum;

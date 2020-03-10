@@ -1,22 +1,20 @@
 import * as React from 'react';
-import {Route, Switch, Link, Redirect} from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import {Login} from './Login';
 import TAView from './TAView';
 import StudentView from './StudentView';
 import RoleView from './RoleView';
-import Nav from './Nav';
 import Logout from './Logout';
 import Register from './Register';
 import AuthHelper from '../../helpers/AuthHelper';
-import roleEnum from '../../../enums/roleEnum';
+import {globalRole} from '../../../enums/roleEnum';
 import {AuthenticatedRoute} from './AuthenticatedRoute';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {FileOverview} from './submission/FileOverview';
-import {CommentThread} from './submission/comment/CommentThread';
 import {SearchOverview} from './search/SearchOverview';
 import {CourseOverview} from './course/CourseOverview';
-import {UserOverview } from './user/UserOverview';
+import {UserOverview} from './user/UserOverview';
 import {Homepage} from './Homepage';
 
 import '../styles/app.scss';
@@ -29,7 +27,7 @@ import {Bootstrap} from "./Bootstrap";
  *
  */
 const EMAILLOCALSTORAGEKEY = 'email';
-type AppState = {loggedIn: boolean, email: string, role: roleEnum};
+type AppState = {loggedIn: boolean, email: string, role: globalRole};
 type AppProps = {};
 
 class App extends React.Component<AppProps, AppState> {
@@ -40,7 +38,7 @@ class App extends React.Component<AppProps, AppState> {
 		this.state = {
 			loggedIn: false,
 			email: localStorage.getItem(EMAILLOCALSTORAGEKEY) || '',
-			role: roleEnum.None
+			role: globalRole.none
 		};
 		this.handleLogin = this.handleLogin.bind(this);
 		this.handleLogout = this.handleLogout.bind(this);
@@ -63,7 +61,7 @@ class App extends React.Component<AppProps, AppState> {
 		this.setState({
 			loggedIn: false,
 			email: '',
-			role: roleEnum.None
+			role: globalRole.none
 		});
 	}
 

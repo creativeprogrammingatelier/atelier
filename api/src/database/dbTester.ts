@@ -98,7 +98,8 @@ async function rolesHelper(){
 async function courseRegistrationHelper(){
 
 	log("\n\nCOURSEREGISTRATIONHELPER\n\n")
-	const newEntry = {userID:uuid, courseID:uuid, role:localRole.teacher,permission:1024}
+	const newEntry = {userID:uuid, courseID:uuid, role:localRole.teacher,permission:5}
+	equal(newEntry.permission, 5)
 	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid), 'getEntriesByCourse')
 	

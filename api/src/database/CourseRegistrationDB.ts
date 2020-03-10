@@ -58,7 +58,7 @@ import { CourseRegistrationView, permissionBits } from "./makeDB";
 	 */
 	 static async getAllEntries(params : DBTools = {}) {
 		return CourseRegistrationDB.getSubset(undefined,undefined,params);
-	}
+	 }
 
 	/**
 	 * get all users entered in a specific course. permissions set correctly

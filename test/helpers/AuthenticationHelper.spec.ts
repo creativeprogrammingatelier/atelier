@@ -14,13 +14,13 @@ describe("AuthenticationHelper", () => {
 
     it("should issue verifiable tokens", async () => {
         const token = auth.issueToken(userID);
-        const props = await auth.verifyToken(token);
-        expect((props as { userID: string }).userID).to.equal(userID);
+        const props = await auth.verifyToken<{ userID: string }>(token);
+        expect(props.userID).to.equal(userID);
     });
 
     it("should throw on expired token", () => {
         const token = auth.issueToken(userID, "1m");
-        const verification = auth.verifyToken(token, Date.now() + 61 * 1000);
+        const verification = auth.verifyToken(token, undefined, { clockTimestamp: Date.now() + 61 * 1000 });
         expect(verification).to.be.rejectedWith(jwt.TokenExpiredError);
     });
 

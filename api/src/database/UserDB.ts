@@ -33,6 +33,14 @@ export class UserDB {
 		return UserDB.filterUser({...params, userID}).then(one)
 	}
 
+    static async getUserBySamlID(samlID: string, params : DBTools = {}) {
+        const { client = pool } = params;
+        return client.query<DBUser>(`
+                SELECT * FROM "Users"
+                WHERE samlID = $1`, [samlID])
+            .then(extract).then(map(userToAPI)).then(one);
+    }
+
 	static async searchUser(searchString : string, params : DBTools ={}){
 		return UserDB.filterUser({...params, userName:searchString})
 	}
@@ -228,37 +236,6 @@ export class UserDB {
 			return onUnauthorised()
 		}
 	}
-
-	static async loginSAML(
-		loginRequest : {email:string, samlID:string},
-		onSucces : (userID : string) => void,
-		onUnauthorised : () => void,
-		onFailure : (error : Error) => void,
-		client : pgDB = pool) {
-			const {
-				email,
-				samlID
-			} = loginRequest
-			let res : DBUser
-			try {
-				res = await client.query(`
-				SELECT *
-				FROM "Users"
-				WHERE email = $1`, [email]).then(extract).then(one)
-			} catch (error) {
-				return onFailure(new Error("user not found"))
-			}
-			if (res === undefined) return onUnauthorised()
-			if (!res.samlid || !res.userid) return onFailure(new Error("the database is fkin"))
-			const {samlid, userid} = res
-			const userID = UUIDHelper.fromUUID(userid)
-			if (samlid === samlID) {
-				onSucces(userID)
-		 	} else {
-				onUnauthorised()
-			}
-
-		}
 
 	/**
 	 * 2 private methods to handle password hashing and comparing.

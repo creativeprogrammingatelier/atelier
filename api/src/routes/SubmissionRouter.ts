@@ -12,6 +12,12 @@ import { archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware
 import { validateProjectServer } from '../../../helpers/ProjectValidationHelper';
 import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { FileDB } from '../database/FileDB';
+import {getCurrentRole} from "../helpers/PermissionHelper";
+import { config } from '../helpers/ConfigurationHelper';
+import { CODEFILE_EXTENSIONS } from '../../../helpers/Constants';
+import path from 'path';
+import { Hmac } from 'crypto';
+import { raiseWebhookEvent } from '../helpers/WebhookHelper';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -20,12 +26,22 @@ submissionRouter.use(AuthMiddleware.requireAuth);
  * Get submissions of a course
  */
 submissionRouter.get('/course/:courseID', capture(async(request: Request, response: Response) => {
+    const userID : string = await getCurrentUserID(request);
     const courseID : string = request.params.courseID;
-    const submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+    const currentRole : string | undefined = await getCurrentRole(userID, courseID);
+    const viewAllRoles : string[] = ["admin", "TA", "teacher"];
+    let submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+
+    if (currentRole !== undefined && !viewAllRoles.includes(currentRole)) {
+        submissions = submissions.filter((submission : Submission) => submission.user.ID === userID);
+    }
+
     response.status(200).send(submissions);
 }));
 
-/** Create a new submission containing the files submitted in the body of the request */
+/**
+ * Create a new submission containing the files submitted in the body of the request
+ */
 submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capture(async (request, response) => {
     const files = request.files as Express.Multer.File[];
     validateProjectServer(request.body["project"], files);
@@ -38,18 +54,25 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         userID : userID
     });
 
-    await Promise.all(files.map(file => 
-        FileDB.addFile({
-            pathname: file.path,
-            type: file.mimetype,
-            submissionID: submission.ID
-        })
-    ));
+    const dbFiles = await Promise.all(
+        files.map(file => 
+            FileDB.addFile({
+                pathname: file.path,
+                type: file.mimetype,
+                submissionID: submission.ID
+            }))
+    );
 
     await archiveProject((request as FileUploadRequest).fileLocation!, request.body["project"]);
     await deleteNonCodeFiles(files);
 
     response.send(submission);
+
+    await Promise.all(
+        dbFiles
+            .filter(f => CODEFILE_EXTENSIONS.includes(path.extname(f.name)))
+            .map(file => raiseWebhookEvent("submission.file", file))
+    );
 }));
 
 /**

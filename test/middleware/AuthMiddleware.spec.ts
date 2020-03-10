@@ -1,65 +1,72 @@
 import 'mocha';
-import chai, { expect } from 'chai';
-import chaiSpies from 'chai-spies';
+import { expect } from 'chai';
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AuthMiddleware } from '../../api/src/middleware/AuthMiddleware';
 import { issueToken } from '../../api/src/helpers/AuthenticationHelper';
 
-chai.use(chaiSpies);
-
 describe("AuthMiddleware.requireAuth", () => {
-    function getSpies() {
-        const response = { 
-            status: chai.spy(() => response), 
-            json: chai.spy(() => response) 
-        } as unknown as Response;
-        return { next: chai.spy(), response };
+    const response = {} as unknown as Response;
+    let nextCount = 0;
+
+    // tslint:disable-next-line: no-any
+    function next(check: (args: any[]) => void = () => {}) {
+        return ((...args) => {
+            nextCount++;
+            check(args);
+        }) as NextFunction;
     }
 
+    beforeEach(() => {
+        nextCount = 0;
+    })
+
     it("should reject requests without a token", async () => {
-        const spies = getSpies();
         await AuthMiddleware.requireAuth(
             { headers: {} } as Request, 
-            spies.response, 
-            spies.next
+            response, 
+            next(args => {
+                expect(args).to.have.length(1);
+                expect(args[0].reason).to.equal("token.notProvided");
+            })
         );
-        expect(spies.response.status).to.have.been.called.with(401);
-        expect(spies.next).to.not.have.been.called();
+        expect(nextCount).to.equal(1);
     });
 
     it("should reject requests with an expired token", async () => {
-        const spies = getSpies();
         const token = issueToken("", "0s");
         await AuthMiddleware.requireAuth(
             { headers: { authorization: token } } as Request, 
-            spies.response, 
-            spies.next
+            response, 
+            next(args => {
+                expect(args).to.have.length(1);
+                expect(args[0].reason).to.equal("token.expired");
+            })
         );
-        expect(spies.response.status).to.have.been.called.with(401);
-        expect(spies.next).to.not.have.been.called();
+        expect(nextCount).to.equal(1);        
     });
 
     it("should reject requests with an invalid token", async () => {
-        const spies = getSpies();
         await AuthMiddleware.requireAuth(
             { headers: { authorization: "this is not a valid token" } } as Request,
-            spies.response,
-            spies.next
+            response,
+            next(args => {
+                expect(args).to.have.length(1);
+                expect(args[0].reason).to.equal("token.invalid");
+            })
         );
-        expect(spies.response.status).to.have.been.called.with(401);
-        expect(spies.next).to.not.have.been.called();
+        expect(nextCount).to.equal(1);
     });
 
     it("should accept requests with a valid token", async () => {
-        const spies = getSpies();
         const token = issueToken("");
         await AuthMiddleware.requireAuth(
             { headers: { authorization: token } } as Request, 
-            spies.response, 
-            spies.next
+            response, 
+            next(args => { 
+                expect(args).to.have.length(0);
+            })
         );
-        expect(spies.response.status).to.not.have.been.called();
-        expect(spies.next).to.have.been.called.with.exactly();
+        expect(nextCount).to.equal(1);
     });
 });

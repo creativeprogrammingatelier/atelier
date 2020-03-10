@@ -18,7 +18,7 @@ export class MissingFieldDatabaseError extends DatabaseError {
         super(message)
     }
 }
-export class InvalidDatabaseResonseError extends DatabaseError {
+export class InvalidDatabaseResponseError extends DatabaseError {
     constructor (message = "The database came back with data that is bs"){
         super(message)
     }
