@@ -7,20 +7,17 @@ import {issueToken} from "../../api/src/helpers/AuthenticationHelper";
 import {User} from "../../models/api/User";
 import {
     instanceOfCommentThread,
-    instanceOfCourse,
     instanceOfCoursePartial,
-    instanceOfCourseRegistration, instanceOfPermission, instanceOfSubmission,
+    instanceOfPermission,
+    instanceOfSubmission,
     instanceOfUser
 } from "../InstanceOf";
 import {CommentThread} from "../../models/api/CommentThread";
-import {Course, CoursePartial} from "../../models/api/Course";
-import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
+import {CoursePartial} from "../../models/api/Course";
 import {Submission} from "../../models/api/Submission";
 
 chai.use(chaiHttp);
 
-/** URL of the website */
-const BASE_URL = "http://localhost:5000";
 /** ID of an account to which permissions are added/removed for testing */
 const USER_ID = "r5zoYKbiTLiBA0swG6gZ2Q";
 /** ID of an admin account to set permissions on the user */
@@ -150,17 +147,17 @@ describe("API permissions", () => {
             expect(response).to.have.status(401);
         }
 
-        it("Should not view comment thread if not enrolled in the course", async () => {
+        it("Should not view comment thread if not enrolled in the course. No permissions.", async () => {
            await commentThread_401();
         });
 
-        it("Should view comment thread if enrolled in the course", async() => {
+        it("Should view comment thread if registered in the course", async() => {
            await registerCourse();
            await commentThread_200();
            await unregisterCourse();
         });
 
-        it("Should view comment thread if permission to view all courses", async() => {
+        it("Should view comment thread if permission to view all courses.", async() => {
             await setPermissions({"viewAllCourses" : true});
             await commentThread_200();
             await setPermissions({"viewAllCourses" : false});
@@ -188,11 +185,11 @@ describe("API permissions", () => {
             expect(response).to.have.status(401);
         }
 
-        it("Should not view courses if not enrolled in any", async() => {
+        it("Should not view courses if not enrolled in any. No permission.", async() => {
             await course_401();
         });
 
-        it("Should view courses if enrolled", async() => {
+        it("Should view courses if registered in a course.", async() => {
             await registerCourse();
             await course_200();
             await unregisterCourse();
@@ -217,16 +214,16 @@ describe("API permissions", () => {
             expect(response).to.have.status(401);
         }
 
-        it("Should be possible to get own permissions", async() => {
+        it("Should be possible to get own permissions.", async() => {
             const response = await getPermission();
             expect(response).to.have.status(200);
         });
 
-        it("Should not be possible to get course permissions if not registered", async() => {
+        it("Should not be possible to get course permissions if not registered. No permissions.", async() => {
            await permission_401();
         });
 
-        it("Should be possible to get permissions of user in the course if registered", async() => {
+        it("Should be possible to get permissions of user in the course if registered.", async() => {
             await registerCourse();
             await permission_200();
             await unregisterCourse();
@@ -238,7 +235,7 @@ describe("API permissions", () => {
     });
 
     describe("Submission", async() => {
-        it("Should not be possible to view submission if not registered", async() => {
+        it("Should not be possible to view submission if not registered. No permissions.", async() => {
             let response = await getSubmission();
             expect(response).to.have.status(401);
 
@@ -246,7 +243,7 @@ describe("API permissions", () => {
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to view submission if registered", async() => {
+        it("Should be possible to view submission if registered.", async() => {
             await registerCourse();
 
             let response = await getSubmission();
@@ -263,18 +260,18 @@ describe("API permissions", () => {
             await unregisterCourse();
         });
 
-        it("Should be possible to get own submissions", async() => {
+        it("Should be possible to get own submissions.", async() => {
             const response = await getSubmissionsByOwnUser();
             expect(response).to.have.status(200);
             assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
         });
 
-        it("Should not be possible to get other users submissions", async() => {
+        it("Should not be possible to get other users submissions. No permissions.", async() => {
             const response = await getSubmissionsByOtherUser();
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to get other users submissions with permission", async() => {
+        it("Should be possible to get other users submissions with view all submissions permission.", async() => {
             await setPermissions({"viewAllSubmissions" : true});
 
             const response = await getSubmissionsByOtherUser();
@@ -286,7 +283,7 @@ describe("API permissions", () => {
     });
 
     describe("User", async() => {
-        it("Should be possible to get your own profile", async() => {
+        it("Should be possible to get your own profile.", async() => {
             let response = await getOwnUser1();
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
@@ -296,17 +293,17 @@ describe("API permissions", () => {
             assert(instanceOfUser(response.body));
         });
 
-        it("Should not be possible to get other users profile", async() => {
+        it("Should not be possible to get other users profile. No permissions.", async() => {
             const response = await getOtherUser();
             expect(response).to.have.status(401);
         });
 
-        it("Should not be possible to get all user profiles", async() => {
+        it("Should not be possible to get all user profiles. No permissions.", async() => {
             const response = await getUsers();
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to get other users profile with view all user profiles permission", async() => {
+        it("Should be possible to get other users profile with view all user profiles permission.", async() => {
             await setPermissions({"viewAllUserProfiles" : true});
 
             let response = await getUsers();
