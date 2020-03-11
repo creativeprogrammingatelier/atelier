@@ -40,6 +40,14 @@ export class UserDB {
             .then(extract).then(map(userToAPI)).then(one);
     }
 
+    static async getSamlIDForUserID(userID : string, params : DBTools = {}) {
+        const { client = pool } = params;
+        return client.query<{ samlid: string }>(`
+                SELECT samlID FROM "Users" 
+                WHERE userID = $1`, [ userID ])
+            .then(extract).then(map(u => u.samlid)).then(one);
+    }
+
 	static async searchUser(searchString : string, params : DBTools ={}){
 		return UserDB.filterUser({...params, userName:searchString})
 	}
