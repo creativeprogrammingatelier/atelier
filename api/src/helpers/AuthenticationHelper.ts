@@ -29,14 +29,24 @@ export const decodeToken = <T>(token: string) =>
 
 /** Asynchronously verify a token */
 export const verifyToken = <T>(token: string, secretOrKey = AUTHSECRETKEY, options?: jwt.VerifyOptions) => 
-    new Promise((resolve: (props: TokenProps & T) => void, reject: (err: jwt.VerifyErrors) => void) =>
+    new Promise((resolve: (props: TokenProps & T) => void, reject: (err: Error) => void) => 
         jwt.verify(
             token, 
             secretOrKey, 
             options, 
-            (err, props) => 
-                err ? reject(err) : resolve(props as TokenProps & T)
-        )
+            (err, props) => {
+                if (err) {
+                    if (err instanceof jwt.TokenExpiredError) {
+                        reject(new AuthError("token.expired", "Your token is expired. Please log in again."));
+                    } else if (err instanceof jwt.JsonWebTokenError) {
+                        reject(new AuthError("token.invalid", "An invalid token was provided. Please try logging in again."));
+                    } else {
+                        reject(err);
+                    }
+                } else {
+                    resolve(props as TokenProps & T);
+                } 
+            })
     );
 
 /** Retrieve the JWT token from request headers */
