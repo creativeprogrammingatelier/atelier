@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {File} from "../../../../models/api/File";
-import CodeViewer2 from "../CodeViewer2";
+import {CodeViewer2} from "../CodeViewer2";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 
 export interface FileComment {
