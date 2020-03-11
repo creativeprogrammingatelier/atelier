@@ -13,6 +13,7 @@ import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { UserDB } from '../database/UserDB';
 import { CommentDB } from '../database/CommentDB';
 import { SnippetDB } from '../database/SnippetDB';
+import { SearchResult } from '../../../models/api/SearchResult';
 import { capture } from '../helpers/ErrorHelper';
 import { getCommonParams, InvalidParamsError } from '../helpers/ParamsHelper';
 
@@ -41,7 +42,7 @@ searchRouter.get('/', capture(async (request, response) => {
     const users = await UserDB.filterUser({ userName: query, ...common });
     const comments = await CommentDB.filterComment({ body: query, ...common });
     const snippets = await SnippetDB.filterSnippet({ body: query, ...common });
-    response.send({ users, comments, snippets });
+    response.send({ users, comments, snippets } as SearchResult);
 }))
 
 /** Search for users */

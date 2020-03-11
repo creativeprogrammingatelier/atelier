@@ -7,9 +7,10 @@ import { Submission } from '../../models/api/Submission';
 import { User } from '../../models/api/User';
 import { Comment } from "../../models/api/Comment";
 import { File as APIFile } from "../../models/api/File";
-import {threadState} from "../../enums/threadStateEnum";
+import { threadState } from "../../enums/threadStateEnum";
 import { LoginProvider } from '../../models/api/LoginProvider';
-import {Permission} from "../../models/api/Permission";
+import { Permission } from "../../models/api/Permission";
+import { SearchResult } from '../../models/api/SearchResult';
 
 // TODO: Fix all anys to be the correct model
 
@@ -111,8 +112,11 @@ export const createComment = (commentThreadID: string, comment : {commentBody : 
     });
 
 // Search
-export const search = (term: string) =>
-    Fetch.fetchJson<any>(`/api/search?q=${term}`);
+export const search = (query: string, limit = 20, offset = 0) =>
+    Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`);
+
+export const searchUsersInCourse = (query: string, courseID: string, limit = 20, offset = 0) =>
+    Fetch.fetchJson<User[]>(`/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`);
 
 // Auth
 export const getLoginProviders = () =>
