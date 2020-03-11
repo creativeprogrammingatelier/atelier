@@ -10,6 +10,8 @@ import {File as APIFile} from "../../models/api/File";
 import {threadState} from "../../enums/threadStateEnum";
 import {LoginProvider} from "../../models/api/LoginProvider";
 import {Permission} from "../../models/api/Permission";
+import {SearchResult} from '../../models/api/SearchResult';
+
 
 // TODO: Fix all anys to be the correct model
 
@@ -130,9 +132,11 @@ export function createComment(commentThreadID: string, comment: {commentBody: st
 }
 
 // Search
-export function search(term: string, doCache?: boolean) {
-	return Fetch.fetchJson<any>(`/api/search?q=${term}`, undefined, doCache);
-}
+export const search = (query: string, limit = 20, offset = 0) =>
+    Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`);
+
+export const searchUsersInCourse = (query: string, courseID: string, limit = 20, offset = 0) =>
+    Fetch.fetchJson<User[]>(`/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`);
 
 // Auth
 export function getLoginProviders(doCache?: boolean) {

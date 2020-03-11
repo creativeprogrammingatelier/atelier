@@ -11,9 +11,10 @@ import * as validator from '@authenio/samlify-node-xmllint';
 import { capture } from '../../helpers/ErrorHelper';
 import { config, SamlLoginConfiguration } from '../../helpers/ConfigurationHelper';
 import { readFileAsString } from '../../helpers/FilesystemHelper';
-import { AuthError, setTokenCookie } from '../../helpers/AuthenticationHelper';
+import { AuthError, setTokenCookie, clearTokenCookie, getCurrentUserID } from '../../helpers/AuthenticationHelper';
 import { UserDB } from '../../database/UserDB';
 import { NotFoundDatabaseError } from '../../database/DatabaseErrors';
+import { globalRole } from '../../../../enums/roleEnum';
 
 setSchemaValidator(validator);
 
@@ -36,13 +37,13 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
         assertionConsumerService: [
             { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/login` }
         ],
-        // TODO: find out how single logout flows work
-        // singleLogoutService: [
-        //     { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/logout` },
-        //     { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect", Location: `${urlBase}/logout` }
-        // ],
+        singleLogoutService: [
+            { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/logout` },
+        ],
         wantAssertionsSigned: true
     });
+
+    const extIDPrefix = samlConfig.id + "_";
 
     const samlRouter = express.Router();
 
@@ -61,23 +62,51 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 
     /** Post back the SAML response to finish logging in */
     samlRouter.post('/login', capture(async (request, response) => {
-        const result = await sp.parseLoginResponse(idp, 'post', request);
-        const extID = `${samlConfig.id}_${result.extract.nameID}`;
+        const { extract: result } = await sp.parseLoginResponse(idp, 'post', request);
+        const extID = extIDPrefix + result.nameID;
+        // TODO: remove temporary logging
+        console.log("SAML response extract: ", result);
         let user = undefined;
         try {
             user = await UserDB.getUserBySamlID(extID);
         } catch (err) {
             if (err instanceof NotFoundDatabaseError) {
-                // TODO: if we don't get information we need here from SAML attributes,
-                // then probably redirect the user to a page in the front-end where they 
-                // enter that
-                // If we do have the information, we can simply create the user right here
-                // and return the login flow
+                // Get name from SAML attributes
+                let userName = result.nameID;
+                if (samlConfig.attributes?.name !== undefined) {
+                    if (typeof samlConfig.attributes.name === "string") {
+                        userName = result.attributes[samlConfig.attributes.name] || userName;
+                    } else {
+                        const lastname = result.attributes[samlConfig.attributes.name.lastname];
+                        const firstname = result.attributes[samlConfig.attributes.name.firstname];
+                        if (lastname !== undefined && firstname !== undefined) {
+                            userName = firstname + " " + lastname;
+                        } else if (lastname !== undefined) {
+                            userName = lastname;
+                        } else if (firstname !== undefined) {
+                            userName = firstname;
+                        }
+                    }
+                }
+
+                // Get email from SAML attributes
+                // TODO: find a better default value for email
+                let email = extID + "@example.com";
+                if (samlConfig.attributes?.email !== undefined) {
+                    email = result.attributes[samlConfig.attributes.email] || email;
+                }
+
+                // Get role from SAML attributes
+                let role = globalRole.user as string;
+                if (samlConfig.attributes?.role !== undefined) {
+                    role = result.attributes[samlConfig.attributes.role] || role;
+                    if (samlConfig.attributes.roleMapping !== undefined) {
+                        role = samlConfig.attributes.roleMapping[role] || role;
+                    }
+                }
+
                 user = await UserDB.createUser({
-                    samlID: extID,
-                    userName: result.extract.nameID,
-                    email: `${extID}@example.com`,
-                    role: result.extract.attributes.role || "user",
+                    samlID: extID, userName, email, role,
                     password: UserDB.invalidPassword()
                 });
             } else {
@@ -87,13 +116,20 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
         (await setTokenCookie(response, user.ID)).redirect("/");
     }));
 
-    // samlRouter.get('/logout', capture(async (request, response) => {
-    //     const result = await sp.parseLogoutRequest(idp, 'redirect', request);
-    // }));
+    /** Initiate Single Logout with a logout request to the IDP */
+    samlRouter.get('/logout', capture(async (request, response) => {
+        const userID = await getCurrentUserID(request);
+        const extID = await UserDB.getSamlIDForUserID(userID);
+        const samlID = extID.substring(extIDPrefix.length);
+        const { context } = sp.createLogoutRequest(idp, 'redirect', { logoutNameID: samlID });
+        clearTokenCookie(response).redirect(context);
+    }));
 
-    // samlRouter.post('/logout', capture(async (request, response) => {
-
-    // }));
+    /** Parse the logout response */
+    samlRouter.post('/logout', capture(async (request, response) => {
+        await sp.parseLogoutResponse(idp, 'post', request);
+        clearTokenCookie(response).redirect('/');
+    }));
 
     /** Handle some SAML specific errors */
     samlRouter.use((err: Error & { code?: string }, request: Request, response: Response, next: NextFunction) => {

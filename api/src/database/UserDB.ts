@@ -3,6 +3,7 @@ import {User, DBUser, convertUser, userToAPI} from '../../../models/database/Use
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import e from "express";
+import { unwatchFile } from "fs";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
@@ -40,6 +41,15 @@ export class UserDB {
             .then(extract).then(map(userToAPI)).then(one);
     }
 
+    static async getSamlIDForUserID(userID : string, params : DBTools = {}) {
+        const { client = pool } = params;
+        const uuid = UUIDHelper.toUUID(userID);
+        return client.query<{ samlid: string }>(`
+                SELECT samlID FROM "Users" 
+                WHERE userID = $1`, [ uuid ])
+            .then(extract).then(map(u => u.samlid)).then(one);
+    }
+
 	static async searchUser(searchString : string, params : DBTools ={}){
 		return UserDB.filterUser({...params, userName:searchString})
 	}
@@ -71,6 +81,38 @@ export class UserDB {
 		`, [userid, username, email, role, limit, offset])
 		.then(extract).then(map(userToAPI))
 	}
+
+    static async filterUserInCourse(user : User & {courseID? : string}){
+        const {
+			userID = undefined,
+			userName = undefined,
+			email = undefined,
+            role = undefined,
+            courseID = undefined,
+
+			limit = undefined,
+			offset = undefined,
+			client = pool
+        } = user
+        const courseid = UUIDHelper.toUUID(courseID),
+            userid = UUIDHelper.toUUID(userID),
+			username = searchify(userName)
+		return client.query(`
+		SELECT *
+		FROM "UsersView" as u, "CourseRegistration" as cr
+        WHERE
+            (u.userID = cr.userID)
+        AND ($1::uuid IS NULL OR courseID = $1)
+		AND ($2::uuid IS NULL OR u.userID = $2)
+		AND ($3::text IS NULL OR userName ILIKE $3)
+		AND ($4::text IS NULL OR email = $4)
+        AND ($5::text IS NULL OR globalrole = $5)
+		ORDER BY userName, email --email is unique, so unique ordering
+		LIMIT $6
+		OFFSET $7
+		`, [courseid, userid, username, email, role, limit, offset])
+		.then(extract).then(map(userToAPI))
+    }
 
 	/**
 	 * creates a user based on the @param user. 

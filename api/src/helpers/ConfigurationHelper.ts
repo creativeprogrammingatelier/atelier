@@ -15,7 +15,14 @@ interface LoginConfiguration {
 export interface SamlLoginConfiguration extends LoginConfiguration {
     type: "saml", 
     /** The location for the metadata file of the Identity Provider */
-    metadata: { url: string } | { file: string }
+    metadata: { url: string } | { file: string },
+    /** The names of the attribute fields that contain user information */
+    attributes?: {
+        name?: string | { firstname: string, lastname: string },
+        email?: string,
+        role?: string,
+        roleMapping?: { [key: string]: string }
+    }
 }
 
 /** Use the built in login system */
@@ -120,7 +127,8 @@ export const config: Configuration = {
                         metadata: 
                             "url" in provider.metadata 
                             ? { url: prop(`loginProvider[${i}].metadata.url`, provider.metadata.url) }
-                            : { file: prop(`loginProvider[${i}].metadata.file`, provider.metadata.file) }
+                            : { file: prop(`loginProvider[${i}].metadata.file`, provider.metadata.file) },
+                        attributes: provider.attributes
                     }
                 case "builtin": 
                     return {
