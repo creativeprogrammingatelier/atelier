@@ -42,9 +42,10 @@ export class UserDB {
 
     static async getSamlIDForUserID(userID : string, params : DBTools = {}) {
         const { client = pool } = params;
+        const uuid = UUIDHelper.toUUID(userID);
         return client.query<{ samlid: string }>(`
                 SELECT samlID FROM "Users" 
-                WHERE userID = $1`, [ userID ])
+                WHERE userID = $1`, [ uuid ])
             .then(extract).then(map(u => u.samlid)).then(one);
     }
 
