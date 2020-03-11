@@ -62,14 +62,18 @@ export function usersView(userTable = `"Users"`){
 
 export function CourseRegistrationView(courseRegistrationTable = `"CourseRegistration"`){
      return `SELECT
-          userID, 
-          courseID, 
-          courseRole, 
-          permission | (SELECT permission 
-                         FROM "CourseRolePermissions" 
-                         WHERE courseRoleID=courseRole
+          cr.userID, 
+          cr.courseID, 
+          cr.courseRole, 
+          cr.permission | (
+                              SELECT permission 
+                              FROM "CourseRolePermissions" 
+                              WHERE courseRoleID=courseRole
+                         ) | (SELECT permission
+                              FROM "UsersView" as uv
+                              WHERE uv.userID = cr.userID
                          ) AS permission
-     FROM ${courseRegistrationTable}
+     FROM ${courseRegistrationTable} as cr
      WHERE 1=1
      `
 }
@@ -119,7 +123,7 @@ export function commentThreadView(commentThreadTable=`"CommentThread"`){
        AND fv.fileID = ct.fileID`
 }
 
-export function makeDB(out: (value: {}) => void, err : (error : Error) => void){
+export async function makeDB(out: (value: {}) => void, err : (error : Error) => void){
 return pool.query(`
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 

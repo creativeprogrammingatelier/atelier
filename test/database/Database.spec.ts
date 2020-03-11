@@ -1,7 +1,7 @@
 import {main} from '../../api/src/database/dbTester'
-before((done)=>{
-	require('../../database/makeDB')
-	done()
+import {makeDB} from '../../api/src/database/makeDB'
+before(async ()=>{
+	return makeDB(()=>console.log("done"), console.error)
 })
 it('database tests', ()=>{
 	return main()
