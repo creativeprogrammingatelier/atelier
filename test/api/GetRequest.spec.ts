@@ -22,13 +22,11 @@ import {User} from "../../models/api/User";
 import { instanceOfCommentThread, instanceOfFile, instanceOfSubmission, instanceOfUser, instanceOfCoursePartial } from '../InstanceOf';
 import { issueToken } from '../../api/src/helpers/AuthenticationHelper';
 
-/** Parameters for making requests to the API */
+/** URL of the website */
 const BASE_URL = "http://localhost:5000";
 const DEFAULT_ID = "AAAAAAAAAAAAAAAAAAAAAA";
+/** Default course in which we check permissions */
 const AUTHORIZATION_KEY = issueToken(DEFAULT_ID);
-
-
-
 
 /** Fetch methods */
 const fetch = require('node-fetch');

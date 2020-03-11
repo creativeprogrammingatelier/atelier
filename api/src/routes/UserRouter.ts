@@ -17,6 +17,21 @@ export const userRouter = express.Router();
 userRouter.use(AuthMiddleware.requireAuth);
 
 /**
+ * Get all users
+ * - requirements:
+ *  - view all user permissions
+ */
+userRouter.get('/all', capture(async(request : Request, response : Response) => {
+	const currentUserID : string = await getCurrentUserID(request);
+
+	// Require view all user profiles permission
+	await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
+
+	const users : User[] = await UserDB.getAllUsers();
+	response.status(200).send(users);
+}));
+
+/**
  * Get a specific user
  * - requirements:
  *  - view all users (if you are not the user)
@@ -35,6 +50,8 @@ userRouter.get('/:userID', capture(async(request : Request, response : Response)
 
 	response.status(200).send(user);
 }));
+
+
 
 /**
  * Get current user

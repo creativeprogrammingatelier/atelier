@@ -1,4 +1,5 @@
-import chai, { expect } from 'chai';
+import 'mocha';
+import { expect } from 'chai';
 import {before, Range, getRanges, rangesToString} from "../../client/src/helpers/HighlightingHelper";
 
 /**
@@ -64,7 +65,8 @@ ranges.push(r(4, 1, 4, 3, 1)); // 17
 ranges.push(r(4, 6, 5, 1, 1)); // 18
 ranges.push(r(4, 7, 5, 2, 1)); // 19
 ranges.push(r(5, 4, 5, 7, 1)); // 20
-describe("text test, no subtests because jarik doesn't want to", ()=>{
+
+describe("Checks whether the split is indeed disjoint. Edges cases for overlap checked manually (text) and in the front end.", ()=>{
     // Base cases
     testSplit(ranges.slice(0, 2));
     testSplit(ranges.slice(2, 4));
@@ -75,4 +77,4 @@ describe("text test, no subtests because jarik doesn't want to", ()=>{
 
     // Combined large case
     testSplit(ranges);
-})
+});

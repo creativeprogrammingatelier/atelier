@@ -97,9 +97,9 @@ submissionRouter.get('/:submissionID', capture(async(request: Request, response:
     const currentUserID : string = await getCurrentUserID(request);
 
     const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
-    if (submission !== undefined && submission.user.ID !== currentUserID) {
-        await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions);
-    }
+    // if (submission !== undefined && submission.user.ID !== currentUserID) {
+    //     await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions);
+    // }
 
     response.status(200).send(submission);
 }));
