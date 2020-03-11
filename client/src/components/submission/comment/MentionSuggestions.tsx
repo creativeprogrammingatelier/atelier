@@ -11,14 +11,39 @@ interface MentionSuggestionsProperties {
 }
 
 export function MentionSuggestions({suggestionBase, courseID, onSelected}: MentionSuggestionsProperties) {
-	const [suggestions, updateSuggestions] = useState([] as string[]);
+	const [suggestions, updateSuggestions] = useState({ s: [] as string[], base: suggestionBase });
+
+    function filterSuggestions(suggestions: string[], base: string) {
+        return suggestions.filter(s => s.toLowerCase().includes(base.toLowerCase()));
+    }
 
 	useEffect(() => {
-		if (suggestionBase === null || suggestionBase === "") {
-			updateSuggestions([]);
+		if (suggestionBase === null || suggestionBase.trim() === "") {
+			updateSuggestions({ s: [], base: "" });
 		} else {
+            // Quick offline filter for relevant results
+            updateSuggestions(({ s }) => ({ s: filterSuggestions(s, suggestionBase), base: suggestionBase }));
+
+            // Online lookup
+            const oldBase = suggestionBase;
 			searchUsersInCourse(suggestionBase, courseID, 10).then(users => {
-                updateSuggestions(users.map(u => u.name));
+                const names = users.map(u => u.name);
+                updateSuggestions(({ s, base }) => {
+                    console.log("Old base:", oldBase, "Base:", base);
+                    // If the base is exactly the same, we're fine
+                    if (oldBase === base) {
+                        console.log("Base is unchanged");
+                        return { s: names, base };
+                    // If the base has grown, filter on what's still relevant
+                    } else if (base.includes(oldBase)) {
+                        console.log("Base has grown, filtering");
+                        return { s: filterSuggestions(names, base), base };
+                    // If the base is smaller or has changed, we don't want to use these results
+                    } else {
+                        console.log("Base has changed, discard");
+                        return { s, base };
+                    }
+                });
             });
 		}
 	}, [suggestionBase]);
@@ -33,7 +58,7 @@ export function MentionSuggestions({suggestionBase, courseID, onSelected}: Menti
 
     return (
         <ul className="m-0 px-1 pb-1">
-            {suggestions.map(s => <Suggestion text={s}/>)}
+            {suggestions.s.map(s => <Suggestion text={s}/>)}
         </ul>
     );
 }
