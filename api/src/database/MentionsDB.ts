@@ -1,7 +1,7 @@
 import { pool, DBTools, extract, map, one, checkAvailable } from "./HelperDB"
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { convertMention, Mention, mentionToAPI } from "../../../models/database/Mention";
-import { commentsView, MentionsView } from "./makeDB";
+import { MentionsView } from "./makeDB";
 
 export class MentionsDB {
 	static async getAllMentions(params : DBTools = {}){
@@ -69,7 +69,7 @@ export class MentionsDB {
 			VALUES (DEFAULT, $1, $2)
 			RETURNING *
 		)
-		${commentsView('insert')}
+		${MentionsView('insert')}
 		`,[userid, commentid])
 		.then(extract).then(map(mentionToAPI)).then(one)
 	}
@@ -78,30 +78,33 @@ export class MentionsDB {
 		checkAvailable(["mentionID"], mention)
 		const {
 			mentionID,
+			commentID,
+			userID,
 			client = pool
 		} = mention 
-		const mentionid = UUIDHelper.toUUID(mentionID)
+		const mentionid = UUIDHelper.toUUID(mentionID),
+			commentid = UUIDHelper.toUUID(commentID),
+			userid = UUIDHelper.toUUID(userID)
 		return client.query(`
 		with update AS (
 			UPDATE "Mentions" SET
-			userID = COALESCE($2, userID)
+			userID = COALESCE($2, userID),
 			commentID = COALESCE($3, commentID)
 			WHERE mentionID = $1
 			RETURNING *
 		)
 		${MentionsView("update")}
-		`).then(extract).then(map(mentionToAPI)).then(one)
+		`, [mentionid, userid, commentid])
+		.then(extract).then(map(mentionToAPI)).then(one)
 	}
 	/**
 	 * mentions are automatically deleted when their comment or user vanishes.
 	 * 
 	 */
-	static async deleteMention(mention : Mention){
-		checkAvailable(['mentionID'], mention)
+	static async deleteMention(mentionID : string, params : DBTools = {}){
 		const {
-			mentionID,
 			client = pool
-		} = mention
+		} = params
 		const mentionid = UUIDHelper.toUUID(mentionID)
 		return client.query(`
 		WITH delete AS (

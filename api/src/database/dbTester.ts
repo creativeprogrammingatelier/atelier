@@ -21,6 +21,7 @@ import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
 import { Course } from '../../../models/database/Course'
 import util from 'util'
 import { makeDB } from './makeDB'
+import { Mention } from '../../../models/database/Mention'
 
 const ok = "✓",
 	fail = "✖"
@@ -201,6 +202,14 @@ async function commentHelper(){
 
 async function mentionHelper(){
 	await promise(M.getAllMentions(), "getAllMentions")
+	await promise(M.getMentionByID(uuid), "getMentionByID")
+	await promise(M.getMentionsByComment(uuid), "getMentionsByComment")
+	await promise(M.getMentionsByUser(uuid), "getMentionsByUser")
+	const m1 : Mention = {userID:uuid,commentID:uuid} 
+	m1.mentionID = (await promise(M.addMention(m1), "addMention")).mentionID
+	await promise(M.updateMention(m1), "updateMention")
+	await promise(M.updateMention({mentionID:m1.mentionID}), "updateMention2")
+	await promise(M.deleteMention(m1.mentionID), "deleteMention")
 }
 
 async function run(...funs : Function[]){

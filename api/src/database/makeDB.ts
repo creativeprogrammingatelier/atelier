@@ -284,7 +284,7 @@ CREATE TABLE "Mentions" (
      userID         uuid REFERENCES "Users"(userID) ON DELETE CASCADE
 );
 INSERT INTO "Mentions" VALUES
-     (DEFAULT, ${uuid}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'));
+     (${uuid}, ${uuid}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'));
 
 CREATE OR REPLACE FUNCTION delSnippet() 
      returns trigger AS
