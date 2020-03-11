@@ -5,7 +5,17 @@ import chaiHttp from "chai-http";
 
 import {issueToken} from "../../api/src/helpers/AuthenticationHelper";
 import {User} from "../../models/api/User";
-import {instanceOfCommentThread, instanceOfUser} from "../InstanceOf";
+import {
+    instanceOfCommentThread,
+    instanceOfCourse,
+    instanceOfCoursePartial,
+    instanceOfCourseRegistration, instanceOfPermission, instanceOfSubmission,
+    instanceOfUser
+} from "../InstanceOf";
+import {CommentThread} from "../../models/api/CommentThread";
+import {Course, CoursePartial} from "../../models/api/Course";
+import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
+import {Submission} from "../../models/api/Submission";
 
 chai.use(chaiHttp);
 
@@ -31,8 +41,55 @@ const ADMIN_AUTHORIZATION_KEY = issueToken(ADMIN_ID);
 const getUser = () => chai.request(app)
     .get(`/api/user/${USER_ID}`)
     .set({'Authorization' : USER_AUTHORIZATION_KEY});
+
 const getCommentThread = () => chai.request(app)
     .get(`/api/commentThread/${COMMENT_THREAD_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getCommentThreadByFile = () => chai.request(app)
+    .get(`/api/commentThread/file/${FILE_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getCommentThreadBySubmission = () => chai.request(app)
+    .get(`/api/commentThread/submission/${SUBMISSION_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+
+const getCourse = () => chai.request(app)
+    .get(`/api/course/${COURSE_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getCourses = () => chai.request(app)
+    .get(`/api/course/`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+
+const getPermission = () => chai.request(app)
+    .get(`/api/permission`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getPermissionByCourse = () => chai.request(app)
+    .get(`/api/permission/course/${COURSE_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+
+const getSubmission = () => chai.request(app)
+    .get(`/api/submission/${SUBMISSION_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getSubmissionsByCourse = () => chai.request(app)
+    .get(`/api/submission/course/${COURSE_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getSubmissionsByOwnUser = () => chai.request(app)
+    .get(`/api/submission/user/${USER_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getSubmissionsByOtherUser = () => chai.request(app)
+    .get(`/api/submission/user/${ADMIN_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+
+const getUsers = () => chai.request(app)
+    .get(`/api/user/all`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getOwnUser1 = () => chai.request(app)
+    .get(`/api/user`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getOwnUser2 = () => chai.request(app)
+    .get(`/api/user/${USER_ID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+const getOtherUser = () => chai.request(app)
+    .get(`/api/user/${ADMIN_ID}`)
     .set({'Authorization' : USER_AUTHORIZATION_KEY});
 
 /** Admin requests */
@@ -47,10 +104,14 @@ const setPermissions = (permissions : any) => chai.request(app)
     .send({permissions : permissions})
     .set({'Authorization' : ADMIN_AUTHORIZATION_KEY, 'Content-Type' : 'application/json'});
 
-
 describe("API permissions", () => {
     before(async() => {
         await unregisterCourse();
+        await setPermissions({
+            "viewAllCourses" : false,
+            "viewAllSubmissions" : false,
+            "viewAllUserProfiles" : false
+        });
     });
 
     it("Should have have default permissions at the start of the test", async () => {
@@ -64,96 +125,202 @@ describe("API permissions", () => {
     });
 
     describe("Comment threads", async () => {
-        it("Should not view comment thread if not enrolled in the course", async () => {
-            const response = await getCommentThread();
+        async function commentThread_200() {
+            let response = await getCommentThread();
+            expect(response).to.have.status(200);
+            assert(instanceOfCommentThread(response.body));
+
+            response = await getCommentThreadByFile();
+            expect(response).to.have.status(200);
+            assert(response.body.every((commentThread : CommentThread) => instanceOfCommentThread(commentThread)));
+
+            response = await getCommentThreadBySubmission();
+            expect(response).to.have.status(200);
+            assert(response.body.every((commentThread : CommentThread) => instanceOfCommentThread(commentThread)));
+        }
+
+        async function commentThread_401() {
+            let response = await getCommentThread();
             expect(response).to.have.status(401);
+
+            response = await getCommentThreadByFile();
+            expect(response).to.have.status(401);
+
+            response = await getCommentThreadBySubmission();
+            expect(response).to.have.status(401);
+        }
+
+        it("Should not view comment thread if not enrolled in the course", async () => {
+           await commentThread_401();
         });
 
         it("Should view comment thread if enrolled in the course", async() => {
            await registerCourse();
-
-           const response = await getCommentThread();
-           expect(response).to.have.status(200);
-           assert(instanceOfCommentThread(response.body));
-
+           await commentThread_200();
            await unregisterCourse();
         });
 
         it("Should view comment thread if permission to view all courses", async() => {
             await setPermissions({"viewAllCourses" : true});
-
-            let response = await getCommentThread();
-            expect(response).to.have.status(200);
-            assert(instanceOfCommentThread(response.body));
-
+            await commentThread_200();
             await setPermissions({"viewAllCourses" : false});
+        });
+    });
 
-            response = await getCommentThread();
+    describe("Courses", async() => {
+        async function course_200() {
+            let response = await getCourses();
+            expect(response).to.have.status(200);
+            expect(response.body.length).to.greaterThan(0);
+            assert(response.body.every((course : CoursePartial) => instanceOfCoursePartial(course)));
+
+            response = await getCourse();
+            expect(response).to.have.status(200);
+            assert(instanceOfCoursePartial(response.body));
+        }
+
+        async function course_401() {
+            let response = await getCourses();
+            expect(response).to.have.status(200);
+            expect(response.body.length).to.equal(0);
+
+            response = await getCourse();
             expect(response).to.have.status(401);
+        }
+
+        it("Should not view courses if not enrolled in any", async() => {
+            await course_401();
+        });
+
+        it("Should view courses if enrolled", async() => {
+            await registerCourse();
+            await course_200();
+            await unregisterCourse();
+        });
+
+        it("Should view courses if permission to view all courses", async() => {
+            await setPermissions({"viewAllCourses" : true});
+            await course_200();
+            await setPermissions({"viewAllCourses" : false});
+        });
+    });
+
+    describe("Permissions", async() => {
+        async function permission_200() {
+            const response = await getPermissionByCourse();
+            expect(response).to.have.status(200);
+            assert(instanceOfPermission(response.body));
+        }
+
+        async function permission_401() {
+            const response = await getPermissionByCourse();
+            expect(response).to.have.status(401);
+        }
+
+        it("Should be possible to get own permissions", async() => {
+            const response = await getPermission();
+            expect(response).to.have.status(200);
+        });
+
+        it("Should not be possible to get course permissions if not registered", async() => {
+           await permission_401();
+        });
+
+        it("Should be possible to get permissions of user in the course if registered", async() => {
+            await registerCourse();
+            await permission_200();
+            await unregisterCourse();
+        });
+    });
+
+    describe("Search", async() => {
+        // TODO search router
+    });
+
+    describe("Submission", async() => {
+        it("Should not be possible to view submission if not registered", async() => {
+            let response = await getSubmission();
+            expect(response).to.have.status(401);
+
+            response = await getSubmissionsByCourse();
+            expect(response).to.have.status(401);
+        });
+
+        it("Should be possible to view submission if registered", async() => {
+            await registerCourse();
+
+            let response = await getSubmission();
+            expect(response).to.have.status(200);
+            assert(instanceOfSubmission(response.body));
+
+            response = await getSubmissionsByCourse();
+            expect(response).to.have.status(200);
+            expect(response.body.every((submission : Submission) => (
+                instanceOfSubmission(submission) &&
+                submission.user.ID === USER_ID)
+            ));
+
+            await unregisterCourse();
+        });
+
+        it("Should be possible to get own submissions", async() => {
+            const response = await getSubmissionsByOwnUser();
+            expect(response).to.have.status(200);
+            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+        });
+
+        it("Should not be possible to get other users submissions", async() => {
+            const response = await getSubmissionsByOtherUser();
+            expect(response).to.have.status(401);
+        });
+
+        it("Should be possible to get other users submissions with permission", async() => {
+            await setPermissions({"viewAllSubmissions" : true});
+
+            const response = await getSubmissionsByOtherUser();
+            expect(response).to.have.status(200);
+            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+
+            await setPermissions({"viewAllSubmissions" : false});
+        });
+    });
+
+    describe("User", async() => {
+        it("Should be possible to get your own profile", async() => {
+            let response = await getOwnUser1();
+            expect(response).to.have.status(200);
+            assert(instanceOfUser(response.body));
+
+            response = await getOwnUser2();
+            expect(response).to.have.status(200);
+            assert(instanceOfUser(response.body));
+        });
+
+        it("Should not be possible to get other users profile", async() => {
+            const response = await getOtherUser();
+            expect(response).to.have.status(401);
+        });
+
+        it("Should not be possible to get all user profiles", async() => {
+            const response = await getUsers();
+            expect(response).to.have.status(401);
+        });
+
+        it("Should be possible to get other users profile with view all user profiles permission", async() => {
+            await setPermissions({"viewAllUserProfiles" : true});
+
+            let response = await getUsers();
+            expect(response).to.have.status(200);
+            assert(response.body.every((user : User) => instanceOfUser(user)));
+
+            response = await getOtherUser();
+            expect(response).to.have.status(200);
+            assert(instanceOfUser(response.body));
+
+            await setPermissions({"viewAllUserProfiles" : false});
         });
     });
 });
 
-/** User is not registered in the course prior to each test */
-
-
-// describe("Comment Threads should have proper permissions", () => {
-//     it("Should not view comment threads if not registered in the course", async() => {
-//         const response = await chai.request(app).get('/api/')
-//     });
-// });
-
-
-// describe("Check whether proper information is returned in get requests based on user permissions", () => {
-    // describe("Comment Threads should have proper permissions", async () => {
-    //      it("Should not view comment thread if not registered in the course", async() => {
-    //          const error : APIError = await getCommentThread();
-    //          console.log(error);
-    //          assert(instanceOfError(error), "Expecting permission denied from API");
-    //      });
-    //
-    //      it("Should view comment thread if registered in the course", async() => {
-    //          await registerCourse();
-    //          const commentThread : CommentThread = await getCommentThread();
-    //          assert(instanceOfCommentThread(commentThread), "Expecting comment thread from API");
-    //          await unregisterCourse();
-    //      });
-    //
-    //      it("Should view comment thread if permission to view all courses", async() => {
-    //          const error : APIError = await getCommentThread();
-    //          assert(instanceOfError(error), "Expecting permission denied from API");
-    //
-    //          await setPermissions({"permissions" : { "viewAllCourses" : true}});
-    //          const commentThread : CommentThread = await getCommentThread();
-    //          assert(instanceOfCommentThread(commentThread), "Expecting comment thread from API");
-    //          await setPermissions({"permissions" : { "viewAllCourses" : false}});
-    //      });
-    //
-    // });
-
-    // TODO comment thread can only be access if registered in the course (or permission for viewing all courses)
-
-    // TODO file can only be accessed if registered in the course (or permission for viewing all courses)
-
-    // TODO submission can only be accessed if registered in the course (or permission for viewing all courses)
-
-    // TODO recent submissions can only accessed if registered in the course (or permission for viewing all courses)
-
-    // TODO get all courses if permission for viewing all courses
-
-    // TODO get courses only if enrolled if no permission for viewing all courses
-
-    // TODO get course only possible if enrolled (or permission for viewing all courses)
-
-    // TODO get submissions of a course required user being registered.
-
-    // TODO get submissions only returns own submissions unless permission to view all submissions
-
-    // TODO get submissions of user required you being the user, or having permission to view all submissions
-
-    // TODO view all users requires view all user profiles permission
-
-    // TODO get a specific user requires you being the user or having access to view all user profiles
-
-    // TODO search test once last decisions made for search page
-// });
+// TODO some filter methods need additional testing. database doesn't contain enough after make to do this yet.
+// TODO possibly fix by testing put/post aswell
