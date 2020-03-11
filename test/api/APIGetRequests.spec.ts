@@ -4,6 +4,8 @@ import chaiAsPromised from "chai-as-promised";
 import {issueToken} from "../../api/src/helpers/AuthenticationHelper";
 import {Permission} from "../../models/api/Permission";
 import {User} from "../../models/api/User";
+import { AssertionError } from 'assert';
+import { instanceOfUser } from '../InstanceOf';
 
 /** URL of the website */
 const BASE_URL = "http://localhost:5000";
@@ -50,6 +52,9 @@ describe("Check whether get requests work properly with given permissions", () =
     // TODO check whether no permissions at the start as we set/remove before each test
     it('should have default permissions at the start of the test', async () => {
         const user : User = await getFetch(`/api/user/${USER_ID}`);
+        if (!instanceOfUser(user)){
+            throw new AssertionError({message:"did not receive a user from the api",expected:':User', actual:user})
+        }
         const permission : number = user.permission.permissions;
         console.log(permission);
         // TODO this user should have 0 permissions, but database currently gives permission 1.

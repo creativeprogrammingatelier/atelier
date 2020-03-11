@@ -35,7 +35,7 @@ SELECT c.userID, array_agg(c)
 DROP USER IF EXISTS assistantassistant;
 CREATE ROLE assistantassistant;
  */
-
+const uuid = "'00000000-0000-0000-0000-000000000000'"
  export const permissionBits = 40
  /**
   * most exported functions in this file, contain the query string for some view of the database
@@ -123,6 +123,15 @@ export function commentThreadView(commentThreadTable=`"CommentThread"`){
        AND fv.fileID = ct.fileID`
 }
 
+export function MentionsView(mentionsTable=`"Mentions"`){
+     return `
+          SELECT m.mentionID, uv.*, cv.commentID, cv.commentThreadID, cv.submissionID, cv.courseID
+          FROM ${mentionsTable} as m, "CommentsView" as cv, "UsersView" as uv
+          WHERE m.commentID = cv.commentID
+            AND m.userID = uv.userID
+     `
+}
+
 export async function makeDB(out: (value: {}) => void, err : (error : Error) => void){
 return pool.query(`
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -133,14 +142,15 @@ DROP VIEW IF EXISTS
      "UsersView", "CoursesView",
      "SubmissionsView", "FilesView",
      "SnippetsView", "CommentsView",
-     "CommentThreadView", "CourseRegistrationView";
+     "CommentThreadView", "CourseRegistrationView",
+     "MentionsView";
 
 DROP TABLE IF EXISTS 
      "GlobalRolePermissions",
      "CourseRolePermissions", "Users", 
      "Courses", "CourseRegistration", 
      "Submissions", "Files", "Snippets", 
-     "CommentThread", "Comments";
+     "CommentThread", "Comments", "Mentions";
 
 CREATE TABLE "CourseRolePermissions" (
     courseRoleID      text PRIMARY KEY,
@@ -158,7 +168,7 @@ CREATE TABLE "GlobalRolePermissions" (
      permission          bit(${permissionBits}) NOT NULL
 );
 INSERT INTO "GlobalRolePermissions" VALUES
-     ('admin', '1111111111111111111111111111111111111111'),
+     ('admin', '${'1'.repeat(permissionBits)}'),
      ('user', 1::bit(${permissionBits})),
      ('unauthorized', 0::bit(${permissionBits})),
      ('plugin', 0::bit(${permissionBits}));
@@ -174,7 +184,7 @@ CREATE TABLE "Users" (
 );
 INSERT INTO "Users" VALUES
      (DEFAULT, NULL, 'normal', 'Cas@Caaas', 'admin', 0::bit(${permissionBits}), '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-     ('00000000-0000-0000-0000-000000000000', 'samling_admin','Cs', 'admin@Cas', 'admin', 0::bit(${permissionBits}), ''),
+     (${uuid}, 'samling_admin','Cs', 'admin@Cas', 'admin', 0::bit(${permissionBits}), ''),
      (DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', 0::bit(${permissionBits}), ''),
      (DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', 0::bit(${permissionBits}), ''),
      (DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', 0::bit(${permissionBits}), ''),
@@ -187,7 +197,7 @@ CREATE TABLE "Courses" (
      creator     uuid REFERENCES "Users" (userID)
 );
 INSERT INTO "Courses" VALUES
-	('00000000-0000-0000-0000-000000000000', 'Pearls of Computer Science', DEFAULT, (SELECT userID from "Users" LIMIT 1));
+	(${uuid}, 'Pearls of Computer Science', DEFAULT, (SELECT userID from "Users" LIMIT 1));
 
 
 CREATE TABLE "CourseRegistration" (
@@ -198,11 +208,11 @@ CREATE TABLE "CourseRegistration" (
      PRIMARY KEY (courseID, userID)
 );
 INSERT INTO "CourseRegistration" VALUES
-	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40));
-     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', 0::bit(${permissionBits})),
-     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', 0::bit(${permissionBits})),
-     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', 0::bit(${permissionBits})),
-     ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', 0::bit(${permissionBits}));
+	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40)),
+     (${uuid}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', 0::bit(${permissionBits})),
+     (${uuid}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', 0::bit(${permissionBits})),
+     (${uuid}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', 0::bit(${permissionBits})),
+     (${uuid}, (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Submissions" (
      submissionID   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -213,7 +223,7 @@ CREATE TABLE "Submissions" (
      state          text NOT NULL DEFAULT 'new'
 );
 INSERT INTO "Submissions" VALUES
-	('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'MyFirstSubmission', DEFAULT, DEFAULT);
+	(${uuid}, ${uuid}, ${uuid}, 'MyFirstSubmission', DEFAULT, DEFAULT);
 
 CREATE TABLE "Files" (
      fileID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -222,7 +232,7 @@ CREATE TABLE "Files" (
      type           text NOT NULL DEFAULT 'unsupported'
 );
 INSERT INTO "Files" VALUES
-     ('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
+     (${uuid}, (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
      ('ffffffff-ffff-ffff-ffff-ffffffffffff', (SELECT submissionID from "Submissions" LIMIT 1), '', 'undefined/undefined');
 
 CREATE TABLE "Snippets" (
@@ -234,7 +244,7 @@ CREATE TABLE "Snippets" (
      body              text NOT NULL
 );
 INSERT INTO "Snippets" VALUES
-     (    '00000000-0000-0000-0000-000000000000', 
+     (    ${uuid}, 
           0, 1, 0, 0, 
           'this is a snippet of a file'
      ),
@@ -253,7 +263,7 @@ CREATE TABLE "CommentThread" (
 );
 
 INSERT INTO "CommentThread" VALUES
-	('00000000-0000-0000-0000-000000000000', (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), '00000000-0000-0000-0000-000000000000', DEFAULT),
+	(${uuid}, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), ${uuid}, DEFAULT),
 	(DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT);
 
 CREATE TABLE "Comments" (
@@ -264,9 +274,17 @@ CREATE TABLE "Comments" (
      body              text NOT NULL
 );
 INSERT INTO "Comments" VALUES
-	('00000000-0000-0000-0000-000000000000', (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is comment 0.'),
+	(${uuid}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
 	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a multi\\nline comment!'),
 	(DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a comment about nothing at all..');
+
+CREATE TABLE "Mentions" (
+     mentionID      uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+     commentID      uuid REFERENCES "Comments"(commentID) ON DELETE CASCADE,
+     userID         uuid REFERENCES "Users"(userID) ON DELETE CASCADE
+);
+INSERT INTO "Mentions" VALUES
+     (DEFAULT, ${uuid}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'));
 
 CREATE OR REPLACE FUNCTION delSnippet() 
      returns trigger AS
@@ -343,9 +361,12 @@ CREATE VIEW "CommentsView" AS (
      ${commentsView()}
 );
 
-CREATE VIEW  "CommentThreadView" as (
+CREATE VIEW "CommentThreadView" as (
      ${commentThreadView()}
 );
+CREATE VIEW "MentionsView" as (
+     ${MentionsView()}
+)
 
 `).then(out).catch(e=>{err(e);throw e});
 }

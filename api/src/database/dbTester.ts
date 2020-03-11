@@ -8,6 +8,7 @@ import {FileDB as FH}	from './FileDB'
 import {SnippetDB as SPH, SnippetDB} 	from './SnippetDB'
 import {ThreadDB as TH} 	from './ThreadDB'
 import {CommentDB as C} 	from './CommentDB'
+import {MentionsDB as M}	from './MentionsDB'
 
 import {courseState} 		from '../../../enums/courseStateEnum'
 import {localRole} 			from '../../../enums/localRoleEnum'
@@ -198,6 +199,10 @@ async function commentHelper(){
 	await promise(C.filterComment({body:'comment'}), "textSearch")
 }
 
+async function mentionHelper(){
+	await promise(M.getAllMentions(), "getAllMentions")
+}
+
 async function run(...funs : Function[]){
 	for (let i=0;i<funs.length; i++){
 		stored =''
@@ -211,7 +216,6 @@ async function run(...funs : Function[]){
 			errors++;
 		}
 	}
-	end()
 	const s = errors === 0 ? 'all OK' : ('there were '+errors+' errors')
 	console.log('\n-----------------',errors===0? 'all OK\n' : 'there were '+errors+' error(s)\n')
 	equal(errors===0, true, s)
@@ -226,6 +230,7 @@ export async function main(){
 		courseRegistrationHelper,
 		coursesHelper,
 		usersHelper,
+		mentionHelper,
 		)
 }
 if (require.main === module){
