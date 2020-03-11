@@ -23,15 +23,15 @@ import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
 import { commentRouter } from "./routes/CommentRouter";
+import { permissionRouter } from "./routes/PermissionRouter";
+import { roleRouter } from "./routes/RoleRouter";
 
 import { NotFoundDatabaseError } from './database/DatabaseErrors';
 import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
 import { AuthError } from './helpers/AuthenticationHelper';
 import { AuthMiddleware } from './middleware/AuthMiddleware';
 import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
-import {permissionRouter} from "./routes/PermissionRouter";
-import {roleRouter} from "./routes/RoleRouter";
-
+import { InvalidParamsError } from './helpers/ParamsHelper';
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -86,6 +86,8 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
         response.status(401).send({ error: error.reason, message: error.message });
     } else if (error instanceof NotFoundDatabaseError) {
         response.status(404).send({ error: "item.notfound", message: "The requested item could not be found." });
+    } else if (error instanceof InvalidParamsError) {
+        response.status(400).send({ error: error.reason, message: error.message });
     } else if (error instanceof ProjectValidationError) {
         response.status(400).send({ error: "project.invalid", message: error.message });
     } else if (error instanceof Error && isPostgresError(error)) {
