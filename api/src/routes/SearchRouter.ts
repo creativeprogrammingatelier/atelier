@@ -15,7 +15,7 @@ import { CommentDB } from '../database/CommentDB';
 import { SnippetDB } from '../database/SnippetDB';
 import { SearchResult } from '../../../models/api/SearchResult';
 import { capture } from '../helpers/ErrorHelper';
-import { getCommonParams, InvalidParamsError } from '../helpers/ParamsHelper';
+import { getCommonQueryParams, InvalidParamsError } from '../helpers/ParamsHelper';
 
 export const searchRouter = express.Router();
 
@@ -26,12 +26,12 @@ searchRouter.use(AuthMiddleware.requireAuth);
 
 /** Get the parameters for a search query, throws an error if invalid */
 function getSearchParams(request: Request) {
-    const query = request.params.q;
+    const query = request.query.q;
     if (!query?.trim()) throw new InvalidParamsError("q", "it should not be empty");
 
-    const common = getCommonParams(request);
-    const courseID = request.params.courseID as string | undefined;
-    const userID = request.params.userID as string | undefined;
+    const common = getCommonQueryParams(request);
+    const courseID = request.query.courseID as string | undefined;
+    const userID = request.query.userID as string | undefined;
 
     return { query, common: { ...common, courseID, userID } };
 }
