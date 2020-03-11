@@ -148,7 +148,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		const opacityRange = ['00', '6F', 'BF', 'FF'];
 
 		/** Highlight based on ranges*/
-		if (this.state.snippets != undefined) {
+		if (this.state.snippets !== undefined) {
 			const ranges : Range[] = this.state.snippets.map(snippet => {
 				return {
 					startLine : snippet.startLine,
@@ -200,7 +200,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * @param b, second head/anchor object
 	 */
 	compareRanges(a : any, b : any) {
-		return (a.line != b.line) ? a.line - b.line : a.ch - b.ch;
+		return (a.line !== b.line) ? a.line - b.line : a.ch - b.ch;
 	}
 
 	/**
@@ -248,15 +248,15 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 */
 	clickComment(line : number, character : number) {
 		const snippets : FileSnippet[] | undefined = this.state.snippets;
-		if (snippets == undefined) return;
+		if (snippets === undefined) return;
 
 		// Find earliest comment that was clicked
 		let first : FileSnippet | undefined;
 		for (const snippet of snippets) {
 			const {startLine, startCharacter, endLine, endCharacter} = snippet;
-			if ((startLine < line || (startLine == line && startCharacter <= character)) &&
-				(line < endLine || (line == endLine && character <= endCharacter))) {
-				if (first == undefined || startLine < first.startLine || (startLine == first.startLine && startCharacter < first.startCharacter)){
+			if ((startLine < line || (startLine === line && startCharacter <= character)) &&
+				(line < endLine || (line === endLine && character <= endCharacter))) {
+				if (first === undefined || startLine < first.startLine || (startLine === first.startLine && startCharacter < first.startCharacter)){
 					first = snippet;
 				}
 			}
@@ -283,7 +283,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	async addComment() {
 		const fileID = this.props.fileID;
 		const submissionID = this.props.submissionID;
-		const snippetBody : string | undefined = (this.state.commentSelection == "") ? undefined : this.state.commentSelection;
+		const snippetBody : string | undefined = (this.state.commentSelection === "") ? undefined : this.state.commentSelection;
 
 		console.log("Snippet body: " + snippetBody);
 		console.log("Line start: " + this.state.commentStartLine);

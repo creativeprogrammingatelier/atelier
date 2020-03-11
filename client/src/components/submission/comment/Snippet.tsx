@@ -6,6 +6,7 @@ import {ButtonBar} from "../../general/ButtonBar";
 import {Button} from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiCode} from "react-icons/all";
 import {MINIMIZED_LINES} from "../../../helpers/CommentHelper";
+import {Controlled as CodeMirror} from "react-codemirror2";
 
 interface SnippetProperties {
 	snippet: Snippet
@@ -16,23 +17,42 @@ export function Snippet({snippet}: SnippetProperties) {
 	const completeSnippet : string[] = snippet.body.split('\r').join("").split('\n');
 
 	// TODO top context required from database
+	const databaseTop : string = "";
+	const linesTop : number = 0;
 	// TODO bottom context required from database
-	const preLines : string[] = [];
-	const mainLines : string[] = completeSnippet.slice(0, Math.min(completeSnippet.length, MINIMIZED_LINES));
-	// Append spaces to the first line to match indentation (in case user starts selection at character 4 for example)
-	if (mainLines.length > 0) mainLines[0] = " ".repeat(snippet.start.character) + mainLines[0];
-	const postLines : string[] = completeSnippet.slice(MINIMIZED_LINES);
+	const databaseBottom : string = "";
+
+
+	const preLines : string = databaseTop + ((databaseTop.length > 0) ? '\n' : "");
+	// Prepend spaces to first line to match indentation in case uses does not start selection at the start of the line
+	const mainLines : string =
+		" ".repeat(snippet.start.character) +
+		completeSnippet.slice(0, Math.min(completeSnippet.length, MINIMIZED_LINES)).join('\n');
+	const postLines : string = completeSnippet.slice(MINIMIZED_LINES).join('\n') + '\n' + databaseBottom;
 
 	return (
 		<div className="snippet">
-            <pre className="m-0 px-2 py-1">
-                {(expanded && preLines.length > 0) && preLines.join("\n") + "\n"}
-	            <span>{mainLines.join("\n")}</span>
-	            {(expanded && postLines.length > 0) && "\n" + postLines.join("\n")}
-            </pre>
+			<CodeMirror
+				value = { expanded ? preLines + mainLines + postLines : mainLines }
+				options = {{
+					mode : 'clike',
+					theme : 'base16-light',
+					lineNumbers : true,
+					firstLineNumber : expanded ? snippet.start.line + 1 - linesTop : snippet.start.line + 1
+				}}
+				editorDidMount={
+					editor => {
+						editor.setSize('100%', '100%');
+					}
+				}
+				onBeforeChange={() => {
+					// nothing here so editing is not possible
+				}}
+			/>
+
 			<ButtonBar align="right">
 				<Button>
-					<Link to={`/submission/${snippet.references.submissionID}/${snippet.file.ID}/code#${snippet.start.line}`}>
+					<Link to={`/submission/${snippet.references.submissionID}/${snippet.file.ID}/code#${snippet.start.line + 1}`}>
 						<FiCode size={14} color="#FFFFFF"/>
 					</Link>
 				</Button>
