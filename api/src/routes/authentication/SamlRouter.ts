@@ -91,7 +91,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 
                 // Get email from SAML attributes
                 // TODO: find a better default value for email
-                let email = "example@example.com";
+                let email = extID + "@example.com";
                 if (samlConfig.attributes?.email !== undefined) {
                     email = result.attributes[samlConfig.attributes.email] || email;
                 }
