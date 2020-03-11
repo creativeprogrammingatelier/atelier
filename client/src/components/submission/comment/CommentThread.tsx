@@ -14,14 +14,14 @@ import {File} from "../../../../../models/api/File";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
-	thread : CommentThread,
-	submissionID? : string,
+    thread : CommentThread,
+    submissionID? : string,
 	file? : File,
 	body? : string
 	// Maybe also find a way to include the topic, so it can be shown immediately
 }
 
-/** Amount of lines to display when minimized*/
+/** Amount of lines to display when minimized */
 const MINIMIZED_LINES = 3;
 /** Amount of lines inclusive that count as a small snippet */
 const SMALL_SNIPPET_LINES = 3;
@@ -106,7 +106,7 @@ export function CommentThread({submissionID, thread, body, file}: CommentThreadP
                 {snippet && <Snippet snippet={snippet}/>}
                 {opened ? <div>
                         {comments.map(comment => <CommentComponent comment={comment}/>)}
-                        <WriteComment placeholder="Reply..." text={newCommentText} updateText={updateNewCommentText} />
+                        <WriteComment courseID={thread.references.courseID} placeholder="Reply..." text={newCommentText} updateText={updateNewCommentText} />
                         <ButtonBar align="right">
                             <Button onClick={handleNewComment}><FiSend size={14} color="#FFFFFF"/></Button>
                             <Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>

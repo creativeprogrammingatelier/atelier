@@ -1,13 +1,16 @@
 import React, {useState, useEffect} from "react";
+import { searchUsersInCourse } from "../../../../helpers/APIHelper";
 
 interface MentionSuggestionsProperties {
 	/** Already inserted text to match with the start of suggestions */
-	suggestionBase: string,
+    suggestionBase: string,
+    /** The ID of the course the comment is written for */
+    courseID: string,
 	/** Callback that's called when a suggestion is selected */
 	onSelected: (name: string) => void
 }
 
-export function MentionSuggestions({suggestionBase, onSelected}: MentionSuggestionsProperties) {
+export function MentionSuggestions({suggestionBase, courseID, onSelected}: MentionSuggestionsProperties) {
 	const [loading, updateLoading] = useState(false);
 	const [suggestions, updateSuggestions] = useState([] as string[]);
 
@@ -16,14 +19,10 @@ export function MentionSuggestions({suggestionBase, onSelected}: MentionSuggesti
 			updateSuggestions([]);
 		} else {
 			updateLoading(true);
-			const suggestions = [
-				"Pietje Puk",
-				"Pieter Post",
-				"Peter Tester",
-				"Piet Peterszoon van den Hartogh"
-			].filter(n => n.toLowerCase().startsWith(suggestionBase.toLowerCase()));
-			updateSuggestions(suggestions);
-			updateLoading(false);
+			searchUsersInCourse(suggestionBase, courseID, 10).then(users => {
+                updateSuggestions(users.map(u => u.name));
+                updateLoading(false);
+            });
 		}
 	}, [suggestionBase]);
 

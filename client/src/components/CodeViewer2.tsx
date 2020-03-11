@@ -17,10 +17,11 @@ import { getFileComments, createFileCommentThread } from '../../helpers/APIHelpe
 import { Range, getRanges } from "../helpers/HighlightingHelper";
 import {CommentThread} from "../../../models/api/CommentThread";
 import { withRouter } from 'react-router-dom';
+import { File } from '../../../models/api/File';
 
 type CodeViewer2Props = {
 	submissionID : string,
-	fileID : string,
+	file : File,
 	fileContents : string
 }
 
@@ -79,7 +80,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 
 	async getCommentThreads() {
         try {
-            const threads = await getFileComments(this.props.fileID);
+            const threads = await getFileComments(this.props.file.ID);
             const snippets : FileSnippet[] = [];
             threads.map((commentThread : CommentThread) => {
                 if (commentThread.snippet !== undefined) {
@@ -92,7 +93,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
                         onClick : () => {
                         	console.log("clicked comment");
 							const submissionID : string = this.props.submissionID;
-							const fileID : string = this.props.fileID;
+							const fileID : string = this.props.file.ID;
 							const threadID : string = commentThread.ID;
 							const path : string = `/submission/${submissionID}/${fileID}/comments#${threadID}`;
 							// @ts-ignore It actually is there
@@ -281,7 +282,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 	 * Create a comment
 	 */
 	async addComment() {
-		const fileID = this.props.fileID;
+		const fileID = this.props.file.ID;
 		const submissionID = this.props.submissionID;
 		const snippetBody : string | undefined = (this.state.commentSelection == "") ? undefined : this.state.commentSelection;
 
@@ -347,6 +348,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 							<h4>Code Snippet</h4>
 							<textarea value={this.state.commentSelection} />
                             <WriteComment 
+                                courseID={this.props.file.references.courseID}
                                 placeholder="Write a comment" 
                                 text={this.state.commentText} 
                                 updateText={commentText => this.setState({ commentText })} />
