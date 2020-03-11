@@ -33,18 +33,14 @@ export function MentionSuggestions({suggestionBase, courseID, onSelected}: Menti
                 searchUsersInCourse(suggestionBase, courseID, 10).then(users => {
                     const names = users.map(u => u.name);
                     updateSuggestions(({ s, base }) => {
-                        console.log("Old base:", oldBase, "Base:", base);
                         // If the base is exactly the same, we're fine
                         if (oldBase === base) {
-                            console.log("Base is unchanged");
                             return { s: names, base };
                         // If the base has grown, filter on what's still relevant
                         } else if (base.includes(oldBase)) {
-                            console.log("Base has grown, filtering");
                             return { s: filterSuggestions(names, base), base };
                         // If the base is smaller or has changed, we don't want to use these results
                         } else {
-                            console.log("Base has changed, discard");
                             return { s, base };
                         }
                     });
