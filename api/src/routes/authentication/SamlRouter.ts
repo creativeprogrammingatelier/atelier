@@ -14,6 +14,7 @@ import { readFileAsString } from '../../helpers/FilesystemHelper';
 import { AuthError, setTokenCookie, clearTokenCookie, getCurrentUserID } from '../../helpers/AuthenticationHelper';
 import { UserDB } from '../../database/UserDB';
 import { NotFoundDatabaseError } from '../../database/DatabaseErrors';
+import { globalRole } from '../../../../enums/roleEnum';
 
 setSchemaValidator(validator);
 
@@ -70,16 +71,42 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
             user = await UserDB.getUserBySamlID(extID);
         } catch (err) {
             if (err instanceof NotFoundDatabaseError) {
-                // TODO: if we don't get information we need here from SAML attributes,
-                // then probably redirect the user to a page in the front-end where they 
-                // enter that
-                // If we do have the information, we can simply create the user right here
-                // and return the login flow
+                // Get name from SAML attributes
+                let userName = result.nameID;
+                if (samlConfig.attributes?.name !== undefined) {
+                    if (typeof samlConfig.attributes.name === "string") {
+                        userName = result.attributes[samlConfig.attributes.name] || userName;
+                    } else {
+                        const lastname = result.attributes[samlConfig.attributes.name.lastname];
+                        const firstname = result.attributes[samlConfig.attributes.name.firstname];
+                        if (lastname !== undefined && firstname !== undefined) {
+                            userName = firstname + " " + lastname;
+                        } else if (lastname !== undefined) {
+                            userName = lastname;
+                        } else if (firstname !== undefined) {
+                            userName = firstname;
+                        }
+                    }
+                }
+
+                // Get email from SAML attributes
+                // TODO: find a better default value for email
+                let email = "example@example.com";
+                if (samlConfig.attributes?.email !== undefined) {
+                    email = result.attributes[samlConfig.attributes.email] || email;
+                }
+
+                // Get role from SAML attributes
+                let role = globalRole.user as string;
+                if (samlConfig.attributes?.role !== undefined) {
+                    role = result.attributes[samlConfig.attributes.role] || role;
+                    if (samlConfig.attributes.roleMapping !== undefined) {
+                        role = samlConfig.attributes.roleMapping[role] || role;
+                    }
+                }
+
                 user = await UserDB.createUser({
-                    samlID: extID,
-                    userName: result.attributes['urn:mace:dir:attribute-def:givenName'] + " " + result.attributes['urn:mace:dir:attribute-def:sn'],
-                    email: result.attributes['urn:mace:dir:attribute-def:mail'],
-                    role: "user",
+                    samlID: extID, userName, email, role,
                     password: UserDB.invalidPassword()
                 });
             } else {
