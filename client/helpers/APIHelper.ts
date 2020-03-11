@@ -132,11 +132,12 @@ export function createComment(commentThreadID: string, comment: {commentBody: st
 }
 
 // Search
-export const search = (query: string, limit = 20, offset = 0) =>
-    Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`);
-
-export const searchUsersInCourse = (query: string, courseID: string, limit = 20, offset = 0) =>
-    Fetch.fetchJson<User[]>(`/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`);
+export function search(query: string, limit = 20, offset = 0, doCache?: boolean) {
+	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`, undefined, doCache);
+}
+export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0, doCache?: boolean) {
+	return Fetch.fetchJson<User[]>(`/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`, undefined, doCache);
+}
 
 // Auth
 export function getLoginProviders(doCache?: boolean) {
