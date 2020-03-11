@@ -29,8 +29,8 @@ export function CourseOverview({match}: CourseOverviewProps) {
 				/>
 			</Jumbotron>
 			<Loading<Submission[]>
-				loader={getCourseSubmissions}
-				params={[match.params.courseId]}
+				loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
+				params={[match.params.courseId, reload]}
 				component={submissions =>
 					<DataBlockList
 						header="Submissions"
