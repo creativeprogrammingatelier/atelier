@@ -11,17 +11,14 @@ interface MentionSuggestionsProperties {
 }
 
 export function MentionSuggestions({suggestionBase, courseID, onSelected}: MentionSuggestionsProperties) {
-	const [loading, updateLoading] = useState(false);
 	const [suggestions, updateSuggestions] = useState([] as string[]);
 
 	useEffect(() => {
 		if (suggestionBase === null || suggestionBase === "") {
 			updateSuggestions([]);
 		} else {
-			updateLoading(true);
 			searchUsersInCourse(suggestionBase, courseID, 10).then(users => {
                 updateSuggestions(users.map(u => u.name));
-                updateLoading(false);
             });
 		}
 	}, [suggestionBase]);
@@ -32,15 +29,11 @@ export function MentionSuggestions({suggestionBase, courseID, onSelected}: Menti
 				@{text}
 			</li>
 		);
-	}
+    }
 
-	if (loading) {
-		return (
-			<span>Loading...</span>
-		);
-	} else {
-		return <ul className="m-0 px-1 pb-1">
-				{suggestions.map(s => <Suggestion text={s}/>)}
-			</ul>
-	}
+    return (
+        <ul className="m-0 px-1 pb-1">
+            {suggestions.map(s => <Suggestion text={s}/>)}
+        </ul>
+    );
 }
