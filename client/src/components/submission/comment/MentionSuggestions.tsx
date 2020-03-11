@@ -24,27 +24,32 @@ export function MentionSuggestions({suggestionBase, courseID, onSelected}: Menti
             // Quick offline filter for relevant results
             updateSuggestions(({ s }) => ({ s: filterSuggestions(s, suggestionBase), base: suggestionBase }));
 
-            // Online lookup
-            const oldBase = suggestionBase;
-			searchUsersInCourse(suggestionBase, courseID, 10).then(users => {
-                const names = users.map(u => u.name);
-                updateSuggestions(({ s, base }) => {
-                    console.log("Old base:", oldBase, "Base:", base);
-                    // If the base is exactly the same, we're fine
-                    if (oldBase === base) {
-                        console.log("Base is unchanged");
-                        return { s: names, base };
-                    // If the base has grown, filter on what's still relevant
-                    } else if (base.includes(oldBase)) {
-                        console.log("Base has grown, filtering");
-                        return { s: filterSuggestions(names, base), base };
-                    // If the base is smaller or has changed, we don't want to use these results
-                    } else {
-                        console.log("Base has changed, discard");
-                        return { s, base };
-                    }
+            // Online lookup, only if there's a good chance we'll get results
+            // Therefore the string for which we'll request suggestions has to be shorter than 25 characters
+            // and we either had an empty base before, or if we had a similar base, there were some suggestions
+            if ((suggestions.base === "" || !(suggestions.s.length === 0 && suggestionBase.includes(suggestions.base)))
+                && suggestionBase.length < 25) {
+                const oldBase = suggestionBase;
+                searchUsersInCourse(suggestionBase, courseID, 10).then(users => {
+                    const names = users.map(u => u.name);
+                    updateSuggestions(({ s, base }) => {
+                        console.log("Old base:", oldBase, "Base:", base);
+                        // If the base is exactly the same, we're fine
+                        if (oldBase === base) {
+                            console.log("Base is unchanged");
+                            return { s: names, base };
+                        // If the base has grown, filter on what's still relevant
+                        } else if (base.includes(oldBase)) {
+                            console.log("Base has grown, filtering");
+                            return { s: filterSuggestions(names, base), base };
+                        // If the base is smaller or has changed, we don't want to use these results
+                        } else {
+                            console.log("Base has changed, discard");
+                            return { s, base };
+                        }
+                    });
                 });
-            });
+            }
 		}
 	}, [suggestionBase]);
 
