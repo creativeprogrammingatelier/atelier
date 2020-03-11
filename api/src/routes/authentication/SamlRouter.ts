@@ -61,10 +61,10 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 
     /** Post back the SAML response to finish logging in */
     samlRouter.post('/login', capture(async (request, response) => {
-        const result = await sp.parseLoginResponse(idp, 'post', request);
-        const extID = extIDPrefix + result.extract.nameID;
+        const { extract: result } = await sp.parseLoginResponse(idp, 'post', request);
+        const extID = extIDPrefix + result.nameID;
         // TODO: remove temporary logging
-        console.log("SAML response extract: ", result.extract);
+        console.log("SAML response extract: ", result);
         let user = undefined;
         try {
             user = await UserDB.getUserBySamlID(extID);
@@ -77,9 +77,9 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                 // and return the login flow
                 user = await UserDB.createUser({
                     samlID: extID,
-                    userName: result.extract.nameID,
-                    email: `${extID}@example.com`,
-                    role: result.extract.attributes.role || "user",
+                    userName: result.attributes['urn:mace:dir:attribute-def:givenName'] + " " + result.attributes['urn:mace:dir:attribute-def:sn'],
+                    email: result.attributes['urn:mace:dir:attribute-def:mail'],
+                    role: "user",
                     password: UserDB.invalidPassword()
                 });
             } else {
