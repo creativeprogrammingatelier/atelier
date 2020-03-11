@@ -82,6 +82,17 @@ submissionRouter.get('/user/:userID', capture(async(request: Request, response: 
     const userID : string = request.params.userID;
     const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
     response.status(200).send(submissions);
+    // TODO: Error handling
+}));
+/**
+ * Get submissions of a user within a course
+ */
+submissionRouter.get('/course/:courseID/user/:userID', capture(async(request: Request, response: Response) => {
+    const courseID = request.params.courseID;
+    const userID = request.params.userID;
+    const submissions : Submission[] = await SubmissionDB.getRecents({userID, courseID});
+    response.status(200).send(submissions);
+    // TODO: Error handling
 }));
 
 /**

@@ -14,12 +14,14 @@ import {Permission} from "../../models/api/Permission";
 // TODO: Fix all anys to be the correct model
 
 // Courses
-export function getCourses(doCache?: boolean) {
-	console.log("Creating an API call for /api/course/, with caching: "+doCache);
-	return Fetch.fetchJson<Course[]>("/api/course/", undefined, doCache);
-}
 export function getCourse(courseID: string, doCache?: boolean) {
 	return Fetch.fetchJson<Course>(`/api/course/${courseID}`, undefined, doCache);
+}
+export function getCourses(doCache?: boolean) {
+	return Fetch.fetchJson<Course[]>("/api/course/", undefined, doCache);
+}
+export function getUserCourses(userId: string, doCache?: boolean) {
+	return Fetch.fetchJson<Course[]>(`/api/course/user/${userId}`, undefined, doCache);
 }
 export function createCourse(course: {name: string, state: string}, doCache?: boolean) {
 	return Fetch.fetchJson<Course>("/api/course", {
@@ -40,6 +42,9 @@ export function getUser(userId: string, doCache?: boolean) {
 // Submissions
 export function getCourseSubmissions(courseId: string, doCache?: boolean) {
 	return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}`, undefined, doCache);
+}
+export function getCourseUserSubmissions(courseId: string, userId: string, doCache?: boolean) {
+	return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}/user/${userId}`, undefined, doCache);
 }
 export function getUserSubmissions(userId: string, doCache?: boolean) {
 	return Fetch.fetchJson<Submission[]>(`/api/submission/user/${userId}`, undefined, doCache);
@@ -71,6 +76,14 @@ export function getFile(fileId: string, doCache?: boolean) {
 }
 export function getFileContents(fileId: string, doCache?: boolean) {
 	return Fetch.fetchString(`/api/file/${fileId}/body`, undefined, doCache);
+}
+
+// Comments
+export function getUserComments(userId: string, doCache?: boolean) {
+	return Fetch.fetchJson<Comment[]>(`/api/comment/user/${userId}`, undefined, doCache);
+}
+export function getCourseUserComments(courseId: string, userId: string, doCache?: boolean) {
+	return Fetch.fetchJson<Comment[]>(`/api/comment/course/${courseId}/user/${userId}`, undefined, doCache);
 }
 
 // CommentThreads

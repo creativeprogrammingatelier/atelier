@@ -24,7 +24,7 @@ courseRouter.use(AuthMiddleware.requireAuth);
 /** ---------- GET REQUESTS ---------- */
 
 /**
- * Get user courses
+ * Get current user courses
  *  - admin: receives all courses
  *  - rest: receives enrolled courses
  */
@@ -39,6 +39,22 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
 		const courses : CoursePartial[] = (await CourseDB.getAllCourses()).filter((course : CoursePartial) => enrolledCourses.includes(course.ID));
 		response.status(200).send(courses);
 	}
+}));
+
+/**
+ * Get user courses
+ *  - admin: receives all of the users courses
+ *  - user self: receives all of the users courses
+ *  - rest: not allowed
+ */
+courseRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
+	const userID = request.params.userID;
+	// TODO: Authentication, only admins and the user itself should be able to see this
+	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course: CourseRegistrationOutput) => course.courseID);
+	// const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
+	const courses = await CourseDB.getAllCourses();
+	response.status(200).send(courses);
+	// TODO: Error handling
 }));
 
 /**

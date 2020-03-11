@@ -60,4 +60,17 @@ export class TimeHelper {
 	static secondsAgo(date: Date) {
 		return date.getUTCSeconds();
 	}
+
+	static fromString(date: string) {
+		return new Date(date);
+	}
+	static toDateTimeString(date: Date) {
+		return date.toLocaleString();
+	}
+	static toDateString(date: Date) {
+		return date.toLocaleDateString();
+	}
+	static toTimeString(date: Date) {
+		return date.toLocaleTimeString();
+	}
 }
