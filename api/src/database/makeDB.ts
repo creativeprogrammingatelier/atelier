@@ -198,6 +198,7 @@ CREATE TABLE "CourseRegistration" (
      PRIMARY KEY (courseID, userID)
 );
 INSERT INTO "CourseRegistration" VALUES
+	((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40));
      ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', 0::bit(${permissionBits})),
      ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', 0::bit(${permissionBits})),
      ('00000000-0000-0000-0000-000000000000', (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', 0::bit(${permissionBits})),

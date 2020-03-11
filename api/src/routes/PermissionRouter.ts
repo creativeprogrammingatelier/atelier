@@ -9,13 +9,8 @@ import {CourseRegistrationOutput} from "../../../models/database/CourseRegistrat
 import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {Permission} from "../../../models/api/Permission";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {
-    getCoursePermissions,
-    getGlobalPermissions,
-    requirePermission,
-    requireRegistered
-} from "../helpers/PermissionHelper";
-import {containsPermission, PermissionEnum} from "../../../enums/permissionEnum";
+import {getGlobalPermissions, requirePermission, requireRegistered} from "../helpers/PermissionHelper";
+import {PermissionEnum} from "../../../enums/permissionEnum";
 
 export const permissionRouter = express.Router();
 permissionRouter.use(AuthMiddleware.requireAuth);
@@ -62,14 +57,7 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
 
 // TODO change permissions
 /** ---------- PUT REQUESTS ---------- */
-/**
- * {
- *     permission : {
- *         "name" : true(add)/false(remove)
- *     }
- * }
- * return same with all permissions
- */
+
 /**
  * Add user permissions in a course
  * - requirements:
@@ -83,26 +71,31 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
     await requirePermission(currentUserID, PermissionEnum.manageUserPermissionsManager, courseID);
 
     const setPermissions = request.body.permissions;
-    const addPermissions : number = 0;
-    const removePermissions : number = 0;
+    let addPermissions : number = 0;
+    let removePermissions : number = 0;
     const userID : string = request.params.userID;
 
-    // TODO read setPermissions true/false to add/remove permissions. use enum as dictionary
+    const permissions = Object.keys(setPermissions);
+    const add : boolean[] = Object.values(setPermissions);
 
-    console.log("Set permissions: " + setPermissions);
-    console.log(Object.keys(setPermissions));
-    // await CourseRegistrationDB.addPermission({
-    //     courseID : courseID,
-    //     userID : userID,
-    //     permission : addPermissions
-    // });
-    //
-    // const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.removePermission({
-    //     courseID : courseID,
-    //     userID : userID,
-    //     permission : removePermissions
-    // });
+    for (let i = 0; i < permissions.length; i++) {
+        const permissionType : PermissionEnum = PermissionEnum[permissions[i] as keyof typeof PermissionEnum];
+        if (add[i]) addPermissions |= (1 << permissionType);
+        else removePermissions |= (1 << permissionType);
+    }
+
+    await CourseRegistrationDB.addPermission({
+        courseID : courseID,
+        userID : userID,
+        permission : addPermissions
+    });
+
+    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.removePermission({
+        courseID : courseID,
+        userID : userID,
+        permission : removePermissions
+    });
 
     // TODO convert to { permissions { name => boolean, ..., ... }}
-    response.status(200).send({});//courseRegistrationOutput);
+    response.status(200).send(courseRegistrationOutput);
 }));

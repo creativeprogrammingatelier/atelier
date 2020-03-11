@@ -69,6 +69,7 @@ export class ConfigurationError extends Error {
 }
 
 const env = process.env.NODE_ENV || "development";
+console.log(__dirname);
 const file = fs.readFileSync(`config/${env}.json`, 'utf8');
 const json = JSON.parse(file);
 

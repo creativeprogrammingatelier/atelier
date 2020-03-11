@@ -4,9 +4,9 @@ export enum localRole {
 	TA = "TA",
 	assistant = "assistant",
 	student = "student",
-	plugin = "plugin",
 	none = "none",
-	DEBUG = "DEBUG"
+	unauthorized = 'unauthorized',
+	plugin = 'plugin'
 }
 export const localPermissionSize = 40
 
