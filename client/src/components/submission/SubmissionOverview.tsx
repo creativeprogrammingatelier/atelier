@@ -62,7 +62,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<CommentThread[]>
 						loader={getRecentComments}
 						params={[submissionId]}
-						component={threads => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
+						component={(threads : CommentThread[]) => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>
 				</DataList>
 

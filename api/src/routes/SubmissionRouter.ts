@@ -2,22 +2,21 @@
  * Api routes relating to submission information
  */
 
-import express, {Response, Request} from 'express';
+import express, {Request, Response} from 'express';
 import {SubmissionDB} from "../database/SubmissionDB";
 import {Submission} from "../../../models/api/Submission";
-import {UUIDHelper} from "../helpers/UUIDHelper";
 import {capture} from "../helpers/ErrorHelper";
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware } from '../helpers/FilesystemHelper';
-import { validateProjectServer } from '../../../helpers/ProjectValidationHelper';
-import { getCurrentUserID } from '../helpers/AuthenticationHelper';
-import { FileDB } from '../database/FileDB';
-import {getCurrentRole} from "../helpers/PermissionHelper";
-import { config } from '../helpers/ConfigurationHelper';
-import { CODEFILE_EXTENSIONS } from '../../../helpers/Constants';
+import {AuthMiddleware} from '../middleware/AuthMiddleware';
+import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware} from '../helpers/FilesystemHelper';
+import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
+import {getCurrentUserID} from '../helpers/AuthenticationHelper';
+import {FileDB} from '../database/FileDB';
+import {CODEFILE_EXTENSIONS} from '../../../helpers/Constants';
 import path from 'path';
-import { Hmac } from 'crypto';
-import { raiseWebhookEvent } from '../helpers/WebhookHelper';
+import {raiseWebhookEvent} from '../helpers/WebhookHelper';
+import {filterSubmission} from "../helpers/APIFilterHelper";
+import {PermissionEnum} from "../../../enums/permissionEnum";
+import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -28,13 +27,12 @@ submissionRouter.use(AuthMiddleware.requireAuth);
 submissionRouter.get('/course/:courseID', capture(async(request: Request, response: Response) => {
     const userID : string = await getCurrentUserID(request);
     const courseID : string = request.params.courseID;
-    const currentRole : string | undefined = await getCurrentRole(userID, courseID);
-    const viewAllRoles : string[] = ["admin", "TA", "teacher"];
-    let submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
 
-    if (currentRole !== undefined && !viewAllRoles.includes(currentRole)) {
-        submissions = submissions.filter((submission : Submission) => submission.user.ID === userID);
-    }
+    // Requires registration in the course
+    await requireRegistered(userID, courseID);
+
+    let submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+    submissions = await filterSubmission(submissions, userID);
 
     response.status(200).send(submissions);
 }));
@@ -77,9 +75,16 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
 
 /**
  * Get submissions of a user
+ * - requirements:
+ *  - view all submissions permission
  */
 submissionRouter.get('/user/:userID', capture(async(request: Request, response: Response) => {
     const userID : string = request.params.userID;
+    const currentUserID : string = await getCurrentUserID(request);
+
+    // Requires view all submission permission if you are not the user
+    if (userID !== currentUserID) await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions);
+
     const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
     response.status(200).send(submissions);
     // TODO: Error handling
@@ -100,6 +105,12 @@ submissionRouter.get('/course/:courseID/user/:userID', capture(async(request: Re
  */
 submissionRouter.get('/:submissionID', capture(async(request: Request, response: Response) => {
     const submissionID : string = request.params.submissionID;
+    const currentUserID : string = await getCurrentUserID(request);
+
     const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
+
+    // Requires registration in the course
+    await requireRegistered(currentUserID, submission.references.courseID);
+
     response.status(200).send(submission);
 }));

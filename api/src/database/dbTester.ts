@@ -5,7 +5,7 @@ import {RolePermissionDB as RPH}	from "./RolePermissionDB"
 import {CourseRegistrationDB as CRH}	from './CourseRegistrationDB'
 import {SubmissionDB as SH}	from './SubmissionDB'
 import {FileDB as FH}	from './FileDB'
-import {SnippetDB as SPH} 	from './SnippetDB'
+import {SnippetDB as SPH, SnippetDB} 	from './SnippetDB'
 import {ThreadDB as TH} 	from './ThreadDB'
 import {CommentDB as C} 	from './CommentDB'
 
@@ -14,12 +14,12 @@ import {localRole} 			from '../../../enums/localRoleEnum'
 import {submissionStatus}	from '../../../enums/submissionStatusEnum'
 import {threadState}		from '../../../enums/threadStateEnum'
 
-import {Snippet}			from '../../../models/database/Snippet'
+import {Snippet, DBSnippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
-import { deepEqual, notDeepEqual, equal, notEqual, AssertionError } from 'assert'
+import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
 import { Course } from '../../../models/database/Course'
-import { isMainThread } from 'worker_threads'
 import util from 'util'
+import { makeDB } from './makeDB'
 
 const ok = "✓",
 	fail = "✖"
@@ -46,19 +46,26 @@ function logger<T>(pre: string) {
 	return (s: T) => {log<T>(pre, s); return s}
 }
 let errors = 0;
+function error(pre : string){
+	return (e : Error) => {log(pre, e); throw e}
+}
 
 function promise<T>(pr : Promise<T>, s : string) : Promise<T>{
-	return pr.then(logger(s))
+	return pr.then(logger(s)).catch(error(s))
 }
 async function usersHelper() {
 	log("\n\nUSERSHELPER\n\n")
-	const user = {userName:"C", email:"C@CAA", role:'admin',password:"C"}
+	const user = {userName:"C", email:"C@CAA", role:'admin',password:"C", permission:1}
 	const t1 = new Date()
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
 	await promise(UH.getUserByID(uuid), 'getUserById')
 	const {ID:userID} = await promise(UH.createUser(user), 'createUser')
 	await promise(UH.updateUser({userID, role:'user'}), 'updateUser')
+	const {permission : {permissions:p1}} = await promise(UH.addPermissionsUser(userID, 15), 'addPermissions')
+	equal(p1, 15, "addPermissions")
+	const {permission: {permissions:p2}} = await promise(UH.removePermissionsUser(userID, 6), 'addPermissions')
+	equal(p2, 9)
 	await promise(UH.deleteUser(userID!), 'deleteUser')
 }
 
@@ -67,7 +74,7 @@ async function coursesHelper() {
 	const course : Course= {courseName:"cname",creatorID:uuid,state:courseState.open}
 	const course2 = {courseName:"newname",creatorID:uuid,state:courseState.hidden}
 	const res = await promise(CH.getAllCourses(), 'getAllCourses')
-	await promise(CRH.addPermissionsCourse(res, {userID:uuid}), "addPermissions")
+	const r1 = await promise(CRH.addPermissionsCourse(res, {userID:uuid}), "addPermissions")
 	const {ID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
 	await promise(CH.getCourseByID(ID), 'getCourseByID')
 	await promise(CH.updateCourse({courseID:ID}), "updateCourse1")
@@ -91,8 +98,9 @@ async function rolesHelper(){
 async function courseRegistrationHelper(){
 
 	log("\n\nCOURSEREGISTRATIONHELPER\n\n")
-	const newEntry = {userID:uuid, courseID:uuid, role:localRole.teacher,permission:1024}
-	await promise(CRH.getAllEntries(), 'getAllEntries')
+	const newEntry = {userID:uuid, courseID:uuid, role:localRole.teacher,permission:5}
+	equal(newEntry.permission, 5)
+	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid), 'getEntriesByCourse')
 	
 	const res = await promise(CRH.addEntry(newEntry), 'addEntry')
@@ -138,11 +146,11 @@ async function snippetHelper(){
 	log("\n\nSNIPPETHELPER\n\n")
 	await promise(SPH.getAllSnippets(), 'getAllSnippets')
 	await promise(SPH.getSnippetsByFile(uuid), 'getSnippetsByFile')
-	const snip = await promise(SPH.getSnippetByID(uuid), 'getSubmissionById')
+	const snip = await promise(SPH.getSnippetByID(uuid), 'getSnippetByID')
 	const snip2 : Snippet = {snippetID: snip.ID, body:snip.body+"AB"}
 	const res2 = await promise(SPH.updateSnippet(snip2), "updateSnippet")
 
-	const snip1 = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, body:"this is the body"}
+	const snip1 : Snippet = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, body:"this is the body"}
 	
 	const id = await promise(SPH.addSnippet(snip1), 'addSnippet')
 	await promise(SPH.deleteSnippet(id), "deleteSnippet")
@@ -221,5 +229,8 @@ export async function main(){
 		)
 }
 if (require.main === module){
-	main()
+	(async ()=>{
+		await makeDB(()=>{console.log("fin")}, console.error)
+		main()
+	})()
 }

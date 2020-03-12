@@ -1,9 +1,8 @@
-import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools } from "./HelperDB";
+import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools, toBin } from "./HelperDB";
 import {User, DBUser, convertUser, userToAPI} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
-import e from "express";
-import { unwatchFile } from "fs";
+import { usersView, permissionBits } from "./makeDB";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
@@ -54,19 +53,26 @@ export class UserDB {
 		return UserDB.filterUser({...params, userName:searchString})
 	}
 
+	/**
+	 * 
+	 * permissions will be checked like this:
+	 * 		the permissions field will be checked to contain every required permission. 
+	 */
 	static async filterUser(user : User){
 		const {
 			userID = undefined,
 			userName = undefined,
 			email = undefined,
 			role = undefined,
+			permission = undefined,
 
 			limit = undefined,
 			offset = undefined,
 			client = pool
 		} = user
 		const userid = UUIDHelper.toUUID(userID),
-			username = searchify(userName)
+			username = searchify(userName),
+			binPerm = toBin(permission)
 		return client.query(`
 		SELECT *
 		FROM "UsersView"
@@ -75,10 +81,11 @@ export class UserDB {
 		AND ($2::text IS NULL OR userName ILIKE $2)
 		AND ($3::text IS NULL OR email = $3)
 		AND ($4::text IS NULL OR globalrole = $4)
+		AND ($5::bit(${permissionBits}) IS NULL OR (permission & $5) = $5)
 		ORDER BY userName, email --email is unique, so unique ordering
-		LIMIT $5
-		OFFSET $6
-		`, [userid, username, email, role, limit, offset])
+		LIMIT $6
+		OFFSET $7
+		`, [userid, username, email, role, binPerm, limit, offset])
 		.then(extract).then(map(userToAPI))
 	}
 
@@ -126,21 +133,27 @@ export class UserDB {
 			password,
 			role,
 			userName,
+			permission = 0,
 			samlID = undefined,
 			client = pool
 		} = user;
-		const hash = password === undefined ? undefined : UserDB.hashPassword(password);
+		const hash = password === undefined ? undefined : UserDB.hashPassword(password),
+			binPerm = toBin(permission)
 		return client.query(`
+			WITH insert AS (
 				INSERT INTO "Users" 
-				VALUES (DEFAULT, $1, $2, $3, $4, $5) 
-				RETURNING userID, userName, globalRole, email
-			`, [samlID, userName, role, email, password])
+				VALUES (DEFAULT, $1, $2, $3, $4, $5, $6) 
+				RETURNING *
+			)
+			${usersView('insert')}
+			`, [samlID, userName, email, role, binPerm, hash])
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	/**
 	 * update a user using the @param user.
 	 * userID is required to identify the user.
 	 * all other fields may or may not be present and will be updated accordingly.
+	 * permissions are replaced if available.
 	 */
 	static async updateUser(user: User) {
 		checkAvailable(['userID'], user)
@@ -149,33 +162,77 @@ export class UserDB {
 			email = undefined,
 			password = undefined,
 			role = undefined,
+			permission = undefined,
 			userName = undefined,
 
 			client = pool
 		} = user
 		const userid = UUIDHelper.toUUID(userID);
+		const binPerm = toBin(permission)
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password)
-		return client.query(`UPDATE "Users"
+		return client.query(`
+		WITH update as (
+			UPDATE "Users"
 			SET 
 			email = COALESCE($2, email),
 			hash = COALESCE($3, hash),
-			globalRole = COALESCE($4, globalRole),
-			userName = COALESCE($5, userName)
+			userName = COALESCE($4, userName),
+			globalRole = COALESCE($5, globalRole),
+			permission = COALESCE($6, permission)
 			WHERE userID = $1
-			RETURNING userID, userName, globalRole, email 
-			`, [userid, email, hash, role, userName])
+			RETURNING *
+		)
+		${usersView("update")}
+			`, [userid, email, hash, userName, role, binPerm])
 			.then(extract).then(map(userToAPI)).then(one)
+	}
+	static async addPermissionsUser(userID : string, permission : number, params : DBTools={}){
+		const userid = UUIDHelper.toUUID(userID),
+			binPerm = toBin(permission)
+		const {client = pool} = params
+		return client.query(`
+		WITH update as (
+			UPDATE "Users"
+			SET 
+			permission = $2 | permission
+			WHERE userID = $1
+			RETURNING *
+		)
+		${usersView("update")}
+		`, [userid, binPerm])
+		.then(extract).then(map(userToAPI)).then(one)
+	}
+
+	static async removePermissionsUser(userID : string, permission : number, params : DBTools = {}){
+		const userid = UUIDHelper.toUUID(userID),
+			binPerm = toBin(permission)
+		const {client = pool} = params
+		return client.query(`
+		WITH update as (
+			UPDATE "Users"
+			SET 
+			permission = permission & ~($2::bit(${permissionBits}))
+			WHERE userID = $1
+			RETURNING *
+		)
+		${usersView("update")}
+		`, [userid, binPerm])
+		.then(extract).then(map(userToAPI)).then(one)
 	}
 
 	/**
 	 * deletes a user from the database, based on the userID.
 	 */
-	static async deleteUser(userID: string, DB : pgDB = pool) {
+	static async deleteUser(userID: string, params : DBTools = {}) {
 		const userid = UUIDHelper.toUUID(userID);
-		return DB.query(`
+		const {client = pool} = params
+		return client.query(`
+		WITH delete AS (
 			DELETE FROM "Users" 
 			WHERE userID = $1 
-			RETURNING userID, userName, globalRole, email
+			RETURNING *
+		)
+		${usersView("delete")}
 			`, [userid])
 			.then(extract).then(map(userToAPI)).then(one)
 	}

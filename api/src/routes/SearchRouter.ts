@@ -12,18 +12,16 @@ import express, { Request } from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { UserDB } from '../database/UserDB';
 import { CommentDB } from '../database/CommentDB';
+import { capture } from "../helpers/ErrorHelper";
+import { User } from "../../../models/database/User";
 import { SnippetDB } from '../database/SnippetDB';
 import { SearchResult } from '../../../models/api/SearchResult';
-import { capture } from '../helpers/ErrorHelper';
 import { getCommonQueryParams, InvalidParamsError } from '../helpers/ParamsHelper';
-import { User } from '../../../models/database/User';
 
 export const searchRouter = express.Router();
 
 // Authentication is required for all endpoints
 searchRouter.use(AuthMiddleware.requireAuth);
-
-// TODO: handle permissions
 
 /** Get the parameters for a search query, throws an error if invalid */
 function getSearchParams(request: Request) {
@@ -50,7 +48,7 @@ searchRouter.get('/', capture(async (request, response) => {
     const comments = await CommentDB.filterComment({ body: query, ...common });
     const snippets = await SnippetDB.filterSnippet({ body: query, ...common });
     response.send({ users, comments, snippets } as SearchResult);
-}))
+}));
 
 /** Search for users */
 searchRouter.get('/users', capture(async (request, response) => {

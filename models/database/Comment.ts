@@ -27,6 +27,7 @@ export {APIComment};
 export type DBAPIComment = DBComment & DBAPIUser
 
 export function convertComment(db : DBComment) : Comment {
+	checkAvailable(["commentid", "body", "date", "userid", "courseid", "submissionid", "commentthreadid"], db)
 	return {
 		commentID: UUIDHelper.fromUUID(db.commentid),
 		commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
@@ -38,7 +39,7 @@ export function convertComment(db : DBComment) : Comment {
 	}
 }
 export function commentToAPI(db : DBAPIComment) : APIComment {
-	checkAvailable(["commentid", "body", "date", "courseid", "submissionid", "commentthreadid"], db)
+	checkAvailable(["commentid", "body", "date", "userid", "courseid", "submissionid", "commentthreadid"], db)
 	return {
 		ID: UUIDHelper.fromUUID(db.commentid),
 		user: userToAPI(db),

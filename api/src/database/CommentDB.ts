@@ -1,6 +1,7 @@
 import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools } from "./HelperDB";
 import {Comment, commentToAPI, DBAPIComment} from '../../../models/database/Comment';
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import { commentsView } from "./makeDB";
 
 /**
  * commentID, commentThreadID, userID, date, body
@@ -130,10 +131,7 @@ export class CommentDB {
 				)
 				RETURNING *
 			)
-			SELECT i.*, u.userName, u.globalrole, u.email, ctr.submissionID, ctr.courseID
-     		FROM "UsersView" as u, "CommentThreadRefs" as ctr, insert as i
-     		WHERE i.userID = u.userID
-       		  AND ctr.commentThreadID = i.commentThreadID
+			${commentsView('insert')}
 			`, args)
 		.then(extract).then(map(commentToAPI)).then(one)
 	}
@@ -177,10 +175,9 @@ export class CommentDB {
 				date = COALESCE($4, date),
 				body = COALESCE($5, body)
 				WHERE commentID =$1
+				RETURNING *
 			)
-			SELECT c.*
-			FROM "CommentsView" as c
-			WHERE c.commentID = $1
+			${commentsView('update')}
 			`, args)
 		.then(extract).then(map(commentToAPI)).then(one)
 	}
@@ -196,10 +193,9 @@ export class CommentDB {
 			WITH delete AS (
 				DELETE FROM "Comments" 
 				WHERE commentID=$1
+				RETURNING *
 			)
-			SELECT c.*
-			FROM "CommentsView" as c
-			WHERE c.commentID = $1
+			${commentsView('delete')}
 			`, [commentid])
 		.then(extract).then(map(commentToAPI)).then(one)
 	}

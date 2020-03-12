@@ -1,6 +1,7 @@
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf } from "./HelperDB";
 import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles} from '../../../models/database/File';
 import { UUIDHelper } from "../helpers/UUIDHelper";
+import { filesView } from "./makeDB";
 
 /**
  * fileID, submissionID, pathname, type
@@ -125,9 +126,7 @@ export class FileDB {
 			) 
 			RETURNING *
 		)
-		SELECT f.*, sr.courseID
-     	FROM insert as f, "SubmissionsRefs" as sr
-     	WHERE f.submissionID = sr.submissionID
+		${filesView('insert')}
 			`, [submissionid, pathname, type])
 		.then(extract).then(map(fileToAPI)).then(one)
 	}
@@ -149,9 +148,7 @@ export class FileDB {
 			WHERE fileID=$1
 			RETURNING *
 		)
-		SELECT f.*, sr.courseID
-		FROM update as f, "SubmissionsRefs" as sr
-		WHERE f.submissionID = sr.submissionID
+		${filesView('update')}
 		`, [fileid, pathname, type])
 		.then(extract).then(map(fileToAPI)).then(one)
 	}
@@ -164,9 +161,7 @@ export class FileDB {
 			WHERE fileID=$1 
 			RETURNING *
 		)
-		SELECT f.*, sr.courseID
-		FROM delete as f, "SubmissionsRefs" as sr
-		WHERE f.submissionID = sr.submissionID
+		${filesView('delete')}
 		`,[fileid])
 		.then(extract).then(map(fileToAPI)).then(one)
 	}

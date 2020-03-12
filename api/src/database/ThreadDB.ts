@@ -8,6 +8,7 @@ import { Snippet } from "../../../models/database/Snippet";
 import { File } from "../../../models/database/File";
 import { AssertionError } from "assert";
 import { FileDB } from "./FileDB";
+import { commentThreadView } from "./makeDB";
 
 /**
  * commentThreadID, submissionID, fileID, snippetID, visibilityState
@@ -160,50 +161,6 @@ export class ThreadDB {
 
 	static async filterThread(thread : Thread) : Promise<APIThread[]> {
 		return ThreadDB.filterThreadExtended(thread);
-		const {
-			commentThreadID = undefined, 
-			submissionID = undefined, 
-			courseID = undefined,
-			fileID = undefined, 
-			snippetID = undefined, 
-			visibilityState = undefined,
-
-			addComments = false,
-
-			limit = undefined,
-			offset = undefined,
-			client = pool
-		} = thread
-		const commentThreadid = UUIDHelper.toUUID(commentThreadID),
-			submissionid = UUIDHelper.toUUID(submissionID),
-			courseid = UUIDHelper.toUUID(courseID),
-			fileid = UUIDHelper.toUUID(fileID),
-			snippetid = UUIDHelper.toUUID(snippetID)
-
-
-		const query = client.query(`SELECT * FROM "CommentThread" 
-			WHERE
-				((NOT $2::bool) OR commentThreadID = $1)
-			AND ((NOT $4::bool) OR submissionID = $3)
-			AND ((NOT $6::bool) OR fileID = $5)
-			AND ((NOT $8::bool) OR snippetID = $7)
-			AND ((NOT $10::bool) OR visibilityState = $9)
-			LIMIT $11
-				`, [commentThreadid,
-					submissionid,
-					courseid,
-					fileid, 
-					snippetid, 
-					visibilityState,
-					limit,
-					offset
-				])
-		.then(extract).then(map(threadToAPI))
-		if (addComments){
-			return ThreadDB.addComments(query, client)
-		} else {
-			return query
-		}
 	}
 
 	static async addThread(thread : Thread) : Promise<APIThread> {
@@ -227,16 +184,7 @@ export class ThreadDB {
 			VALUES (DEFAULT, $1, $2, $3, $4) 
 			RETURNING *
 		)
-		-- this is the commentThreadView, but the system has not yet been updated
-		SELECT 
-			sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
-			ct.visibilityState,
-			s.body, s.lineStart, s.charStart, s.lineEnd, s.charEnd,
-			f.pathname, f.type
-		FROM insert as ct, "SubmissionsRefs" as sr, "Snippets" as s, "Files" as f
-		WHERE ct.submissionID = sr.submissionID
-		AND ct.snippetID = s.snippetID
-		AND f.fileID = ct.fileID
+		${commentThreadView('insert')}
 			`, [submissionid, fileid, snippetid, visibilityState])
 		.then(extract).then(map(threadToAPI)).then(one)
 		if (addComments){
@@ -274,15 +222,7 @@ export class ThreadDB {
 			WHERE commentThreadID = $1
 			RETURNING *
 		)
-		SELECT 
-			sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
-			ct.visibilityState,
-			sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
-			fv.pathname, fv.type
-		FROM update as ct, "SubmissionsRefs" as sr, "SnippetsView" as sv, "FilesView" as fv
-		WHERE ct.submissionID = sr.submissionID
-			AND ct.snippetID = sv.snippetID
-			AND fv.fileID = ct.fileID
+		${commentThreadView('update')}
 		`, [commentThreadid, submissionid, fileid, snippetid, visibilityState])
 		.then(extract).then(map(threadToAPI)).then(one)
 
@@ -306,10 +246,9 @@ export class ThreadDB {
 		WITH delete AS (
 			DELETE FROM "CommentThread" 
 			WHERE commentThreadID = $1
+			RETURNING *
 		)
-		SELECT *
-		FROM "CommentThreadView"
-		WHERE commentThreadID=$1
+		${commentThreadView('delete')}
 		`, [commentThreadid])
 		.then(extract).then(map(convertThread)).then(one)
 	}

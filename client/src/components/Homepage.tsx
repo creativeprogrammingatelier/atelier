@@ -8,15 +8,16 @@ import {getCourses, permission} from "../../helpers/APIHelper";
 import {Button, Jumbotron} from "react-bootstrap";
 import {Permission} from "../../../models/api/Permission";
 import {globalRole} from "../../../enums/roleEnum";
+import {PermissionEnum} from "../../../enums/permissionEnum";
 
 export function Homepage() {
-	const [role, setRole] = useState(globalRole.none);
+	const [permissions, setPermissions] = useState(0);
     const [reload, updateReload] = useState(0);
 
  	useEffect(() => {
  		permission()
 			.then((permission : Permission) => {
-				setRole(permission.role as globalRole);
+				setPermissions(permission.permissions);
 			});
 	}, []);
 
@@ -47,10 +48,12 @@ export function Homepage() {
 				/>
 			</div>
 			{
-				role === globalRole.admin &&
+				((permissions & (1 << PermissionEnum.addCourses)) > 0) ?
 					<div className="m-3">
 						<AddCourse handleResponse={updateCourse}/>
 					</div>
+					:
+					<p>No permission to add courses</p>
 			}
 		</Frame>
 	);

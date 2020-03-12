@@ -6,6 +6,9 @@ import { Permission } from "../models/api/Permission";
 import { Snippet } from "../models/api/Snippet";
 import { Submission } from "../models/api/Submission";
 import { User } from "../models/api/User";
+import {APIError} from "../models/api/Error";
+import {CourseRegistrationOutput} from "../models/database/CourseRegistration";
+
 /** Interface type checking, because this is not built in... */
 export function instanceOfCourse(object: any): object is Course {
     return ('ID' in object
@@ -116,5 +119,17 @@ export function instanceOfCoursePartial(object: any) : object is CoursePartial {
         && typeof object.state === 'string'
         && 'creator' in object
         && instanceOfUser(object.creator)
+    )
+}
+
+export function instanceOfCourseRegistration(object : any) : object is CourseRegistrationOutput {
+    return ('courseID' in object
+        && typeof object.courseID === 'string'
+        && 'userID' in object
+        && typeof object.userID === 'string'
+        && 'role' in object
+        && typeof object.role === 'string'
+        && 'permission' in object
+        && typeof object.permission === 'number'
     )
 }
