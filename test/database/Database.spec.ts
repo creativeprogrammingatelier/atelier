@@ -1,8 +1,14 @@
 import {main} from '../../api/src/database/dbTester'
-before((done)=>{
-	require('../../api/src/database/makeDB')
-	done()
-})
-it('database tests', ()=>{
-	return main()
+import {makeDB} from '../../api/src/database/makeDB'
+
+describe("database testing", () =>{
+	//This makeDB doesn't run squentially with other files, and breaks them consequentially
+	// before(async ()=>{
+	// 	return makeDB(()=>console.log("done"), console.error)
+	// })
+
+	it('database tests', ()=>{
+		
+		return main()
+	})
 })

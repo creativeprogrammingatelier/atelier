@@ -15,11 +15,14 @@ import {
 import {CommentThread} from "../../models/api/CommentThread";
 import {CoursePartial} from "../../models/api/Course";
 import {Submission} from "../../models/api/Submission";
-
+import { UserDB } from '../../api/src/database/UserDB';
+describe("API get requests", async () =>{
 chai.use(chaiHttp);
 
 /** ID of an account to which permissions are added/removed for testing */
-const USER_ID = "r5zoYKbiTLiBA0swG6gZ2Q";
+const USER_ID = (await UserDB.filterUser({role:'user', limit:1}))[0].ID
+console.log("~~~~~~~~~~",USER_ID)
+
 /** ID of an admin account to set permissions on the user */
 const ADMIN_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 
@@ -318,6 +321,6 @@ describe("API permissions", () => {
         });
     });
 });
-
+})
 // TODO some filter methods need additional testing. database doesn't contain enough after make to do this yet.
 // TODO possibly fix by testing put/post aswell

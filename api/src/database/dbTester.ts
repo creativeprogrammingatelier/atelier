@@ -8,6 +8,7 @@ import {FileDB as FH}	from './FileDB'
 import {SnippetDB as SPH, SnippetDB} 	from './SnippetDB'
 import {ThreadDB as TH} 	from './ThreadDB'
 import {CommentDB as C} 	from './CommentDB'
+import {MentionsDB as M}	from './MentionsDB'
 
 import {courseState} 		from '../../../enums/courseStateEnum'
 import {localRole} 			from '../../../enums/localRoleEnum'
@@ -20,6 +21,7 @@ import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
 import { Course } from '../../../models/database/Course'
 import util from 'util'
 import { makeDB } from './makeDB'
+import { Mention } from '../../../models/database/Mention'
 
 const ok = "✓",
 	fail = "✖"
@@ -198,6 +200,18 @@ async function commentHelper(){
 	await promise(C.filterComment({body:'comment'}), "textSearch")
 }
 
+async function mentionHelper(){
+	await promise(M.getAllMentions(), "getAllMentions")
+	await promise(M.getMentionByID(uuid), "getMentionByID")
+	await promise(M.getMentionsByComment(uuid), "getMentionsByComment")
+	await promise(M.getMentionsByUser(uuid), "getMentionsByUser")
+	const m1 : Mention = {userID:uuid,commentID:uuid} 
+	m1.mentionID = (await promise(M.addMention(m1), "addMention")).mentionID
+	await promise(M.updateMention(m1), "updateMention")
+	await promise(M.updateMention({mentionID:m1.mentionID}), "updateMention2")
+	await promise(M.deleteMention(m1.mentionID), "deleteMention")
+}
+
 async function run(...funs : Function[]){
 	for (let i=0;i<funs.length; i++){
 		stored =''
@@ -211,13 +225,12 @@ async function run(...funs : Function[]){
 			errors++;
 		}
 	}
-	end()
 	const s = errors === 0 ? 'all OK' : ('there were '+errors+' errors')
 	console.log('\n-----------------',errors===0? 'all OK\n' : 'there were '+errors+' error(s)\n')
 	equal(errors===0, true, s)
 }
 export async function main(){
-	await run(
+	return await run(
 		commentHelper, 
 		snippetHelper, 
 		fileHelper, 
@@ -226,6 +239,7 @@ export async function main(){
 		courseRegistrationHelper,
 		coursesHelper,
 		usersHelper,
+		mentionHelper,
 		)
 }
 if (require.main === module){

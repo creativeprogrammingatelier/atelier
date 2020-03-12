@@ -49,7 +49,9 @@ authRouter.get('/token', capture(async (request, response) => {
     const token = getToken(request);
     const { iss: userID } = decodeToken<{ iss: string }>(token);
     const plugin = config.plugins.find(p => p.userID === userID);
-    if (plugin === undefined) throw new AuthError("plugin.unknown", "This plugin has not been registered with Atelier.");
+    if (plugin === undefined) {
+        throw new AuthError("plugin.unknown", "This plugin has not been registered with Atelier.");
+    }
     const { exp, iat } = await verifyToken(token, plugin.publicKey, {
         algorithms: [ "RS256" ],
         issuer: userID
