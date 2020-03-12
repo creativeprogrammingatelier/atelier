@@ -28,7 +28,7 @@ export function Homepage() {
 		<Frame title="Home" sidebar search="/search">
 			<Jumbotron>
 				<h1>Home</h1>
-				<p>Welcome to this amazing website!</p>
+				<p>Welcome to Atelyay!</p>
 				<Button>Have a button!</Button>
 			</Jumbotron>
 			<div className="m-3">
