@@ -230,7 +230,7 @@ async function run(...funs : Function[]){
 	equal(errors===0, true, s)
 }
 export async function main(){
-	await run(
+	return await run(
 		commentHelper, 
 		snippetHelper, 
 		fileHelper, 

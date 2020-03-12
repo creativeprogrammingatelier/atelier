@@ -6,6 +6,7 @@ import { randomBytes } from 'crypto';
 import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import * as auth from '../../api/src/helpers/AuthenticationHelper';
+import { AssertionError } from 'assert';
 
 chai.use(chaiAsPromised);
 
@@ -21,7 +22,7 @@ describe("AuthenticationHelper", () => {
     it("should throw on expired token", () => {
         const token = auth.issueToken(userID, "1m");
         const verification = auth.verifyToken(token, undefined, { clockTimestamp: Date.now() + 61 * 1000 });
-        expect(verification).to.be.rejectedWith(jwt.TokenExpiredError);
+        expect(verification).to.be.rejectedWith(auth.AuthError);
     });
 
     it("should retrieve the userID from a request with Authorization header", async () => {
