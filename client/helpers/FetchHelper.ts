@@ -17,58 +17,73 @@ export class Fetch {
 	/**
 	 * Generic fetch, requesting JSON content from the server,
 	 * using the authentication token if the user is logged in.
-	 * Throws a `FetchError` if the request was not succesful.
+	 * An extra handler function can be given to transform the data before caching
+	 * Throws a `FetchError` if the request was not successful.
 	 */
-	static async fetch(url: RequestInfo, options: RequestInit = {}) {
-		const res = await fetch(url, options);
+	static async fetch<T>(url: RequestInfo, options: RequestInit = {}, doCache = true, handler?: (response: Response) => T) {
+		// TODO: This method looks like a mess, how can it be improved
+		doCache = doCache && (options.method === undefined || options.method === "GET");
 
-		if (res.ok) {
-			return res;
+		if (doCache && cache.has(url)) {
+			return cache.get(url);
+		}
+
+		const response = await fetch(url, options);
+
+		if (response.ok) {
+			if (handler) {
+				const data = handler(response);
+				if (doCache) {
+					cache.register(url, data);
+				}
+				return data;
+			}
+			if (doCache) {
+				cache.register(url, response);
+			}
+			return response;
 		} else {
-			throw new FetchError(res);
+			throw new FetchError(response);
 		}
 	}
 
 	/**
 	 * Do a fetch and convert the result into a JSON object.
-	 * Throws a `JsonFetchError` if the request was not succesful.
+	 * Throws a `JsonFetchError` if the request was not successful.
 	 */
-	static async fetchJson<T>(url: RequestInfo, options: RequestInit = {}): Promise<T> {
+	static async fetchJson<T>(url: RequestInfo, options: RequestInit = {}, doCache?: boolean): Promise<T> {
 		const headers = {
 			"Accept": "application/json"
 		};
 
 		try {
-			const res = await Fetch.fetch(url, Fetch.combineHeaders(options, headers));
-			return res.json();
-		} catch (err) {
-			if (err instanceof FetchError) {
-				throw await JsonFetchError.create(err.response);
+			return await Fetch.fetch(url, Fetch.combineHeaders(options, headers), doCache, (data) => data.json());
+		} catch (error) {
+			if (error instanceof FetchError) {
+				throw await JsonFetchError.create(error.response);
 			} else {
-				throw err;
+				throw error;
 			}
 		}
 	}
 
 	/** Do a fetch of binary data, returning the blob */
-	static async fetchBlob(url: RequestInfo, options: RequestInit = {}) {
-		const res = await Fetch.fetch(url, options);
-		return res.blob();
+	static async fetchBlob(url: RequestInfo, options: RequestInit = {}, doCache?: boolean) {
+		return Fetch.fetch(url, options, doCache, (data) => data.blob());
 	}
 
 	/** Do a fetch for textual data and return the content as a string */
-	static async fetchString(url: RequestInfo, options: RequestInit = {}) {
+	static async fetchString(url: RequestInfo, options: RequestInit = {}, doCache?: boolean) {
 		const headers = {
 			// TODO: find out what is send to the server as the type of .pde files
 			"Accept": "text/*"
 		};
 
-		const res = await Fetch.fetch(url, Fetch.combineHeaders(options, headers));
-		return res.text();
+		return Fetch.fetch(url, Fetch.combineHeaders(options, headers), doCache, (data) => data.text());
 	}
 }
 
-/** Error thrown on an unsuccesful fetch */
+/** Error thrown on an unsuccessful fetch */
 export class FetchError extends Error {
 	/** The response sent by the server */
 	response: Response;
@@ -79,7 +94,7 @@ export class FetchError extends Error {
 	}
 }
 
-/** Error thrown on an unsuccesful fetch when requesting json data */
+/** Error thrown on an unsuccessful fetch when requesting json data */
 export class JsonFetchError extends FetchError {
 	error: string;
 

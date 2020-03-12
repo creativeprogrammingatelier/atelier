@@ -3,9 +3,9 @@ import {FiMenu, FiSearch} from "react-icons/fi";
 import {Header} from "./Header";
 import {Sidebar} from "./Sidebar";
 import {Content} from "./Content";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
-interface FrameProperties {
-	children?: JSX.Element | JSX.Element[],
+interface FrameProperties extends ParentalProperties {
 	title: string,
 	sidebar: boolean,
 	search?: string,

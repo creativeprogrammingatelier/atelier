@@ -3,12 +3,13 @@ import React, {useState, useEffect, useRef} from "react";
 import {MentionSuggestions} from "./MentionSuggestions";
 
 interface WriteCommentProperties {
+    courseID: string,
 	placeholder: string,
     text: string,
     updateText: (text: string) => void
 }
 
-export function WriteComment({placeholder, text, updateText}: WriteCommentProperties) {
+export function WriteComment({courseID, placeholder, text, updateText}: WriteCommentProperties) {
 	const [caretPosition, updateCaretPosition] = useState(0);
 	const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
 	const [suggestionBase, updateSuggestionBase] = useState("");
@@ -72,6 +73,7 @@ export function WriteComment({placeholder, text, updateText}: WriteCommentProper
 				ref={textarea}
             />
 			<MentionSuggestions
+                courseID={courseID}
 				suggestionBase={suggestionBase}
 				onSelected={handleMentionSelected}
 			/>

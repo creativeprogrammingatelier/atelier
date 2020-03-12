@@ -23,18 +23,14 @@ export function Sidebar({position, close}: SidebarProperties) {
 				<div className="sidebarContent p-0">
 					<Logo/>
 					<hr/>
-					<SidebarEntry location="/" icon={FiHome}>Home</SidebarEntry>
-					<SidebarEntry location="/activity" icon={FiActivity}>Activity</SidebarEntry>
-					<SidebarEntry location="/settings" icon={FiSettings}>Settings</SidebarEntry>
+					<SidebarEntry location="/" icon={FiHome} close={close}>Home</SidebarEntry>
+					<SidebarEntry location="/activity" icon={FiActivity} close={close}>Activity</SidebarEntry>
+					<SidebarEntry location="/settings" icon={FiSettings} close={close}>Settings</SidebarEntry>
 					<Loading<User>
 						loader={getCurrentUser}
-						component={user => {
-							console.log("Loaded user");
-							console.log(user);
-							return <SidebarEntry location={"/user/" + user.ID} icon={FiUser}>{user.name}</SidebarEntry>
-						}}
+						component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>}
 					/>
-					<SidebarEntry location="/logout" icon={FiLogOut}>Logout</SidebarEntry>
+					<SidebarEntry location="/logout" icon={FiLogOut} close={close}>Logout</SidebarEntry>
 				</div>
 			</div>
 			<div className="sidebarOutside col-2 col-sm-4 col-md-7 col-lg-9 col-xl-10" onClick={close}/>

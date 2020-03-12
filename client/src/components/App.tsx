@@ -21,6 +21,7 @@ import '../styles/app.scss';
 import '../styles/base.scss';
 import {SubmissionShare} from './submission/SubmissionShare';
 import {Bootstrap} from "./Bootstrap";
+import {CourseUserOverview} from "./user/CourseUserOverview";
 
 
 /**
@@ -95,8 +96,10 @@ class App extends React.Component<AppProps, AppState> {
 				<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
 				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
 				<AuthenticatedRoute path='/user/:userId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
 				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
-				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={CourseUserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
 				<AuthenticatedRoute path='/search' component={SearchOverview}/>

@@ -23,7 +23,7 @@ function normalizePath(file: File): File {
                     .relative(UPLOADS_PATH, file.name)
                     .split(path.sep)
                     .slice(1))
-                .replace(/\//g, "/")
+                .replace(/\\/g, "/")
     }
 }
 

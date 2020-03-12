@@ -1,7 +1,7 @@
 import React, {MouseEventHandler} from "react";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
-interface ContentProperties {
-	children?: JSX.Element | JSX.Element[],
+interface ContentProperties extends ParentalProperties {
 	onClick?: MouseEventHandler
 }
 export function Content({children, onClick}: ContentProperties) {

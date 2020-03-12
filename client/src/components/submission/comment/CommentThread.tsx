@@ -13,8 +13,8 @@ import {Snippet} from "./Snippet";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
-	thread : CommentThread,
-	submissionID? : string,
+    thread : CommentThread,
+    submissionID? : string,
 	file? : File,
 	body? : string
 }
@@ -53,7 +53,7 @@ export function CommentThread({submissionID, thread, body, file}: CommentThreadP
 				{thread.snippet && <Snippet snippet={thread.snippet}/>}
                 {opened ? <div>
                         {comments.map(comment => <CommentComponent comment={comment}/>)}
-                        <WriteComment placeholder="Reply..." text={newCommentText} updateText={updateNewCommentText} />
+                        <WriteComment courseID={thread.references.courseID} placeholder="Reply..." text={newCommentText} updateText={updateNewCommentText} />
                         <ButtonBar align="right">
                             <Button onClick={handleNewComment}><FiSend size={14} color="#FFFFFF"/></Button>
                             <Button onClick={() => setOpened(false)}><FiChevronUp size={14} color="#FFFFFF"/></Button>
