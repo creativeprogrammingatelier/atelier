@@ -103,7 +103,7 @@ const setPermissions = (permissions: any) => chai.request(app)
 
 describe("API permissions", () => {
     before(async () => {
-        USER_ID = (await UserDB.filterUser({role: 'user', limit: 1}))[0].ID;
+        USER_ID = (await UserDB.filterUser({userName: 'test user', limit: 1}))[0].ID;
         USER_AUTHORIZATION_KEY = issueToken(USER_ID);
 
         await unregisterCourse();
