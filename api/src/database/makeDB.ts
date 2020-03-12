@@ -188,7 +188,8 @@ INSERT INTO "Users" VALUES
      (DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', 0::bit(${permissionBits}), ''),
      (DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', 0::bit(${permissionBits}), ''),
      (DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', 0::bit(${permissionBits}), ''),
-     (DEFAULT, NULL, 'pmd plugin', 'pmd@plugin', 'plugin', 0::bit(${permissionBits}), '');
+     (DEFAULT, NULL, 'pmd plugin', 'pmd@plugin', 'plugin', 0::bit(${permissionBits}), ''),
+     (DEFAULT, NULL, 'test user', 'test@test', 'user', 0::bit(${permissionBits}), '');
 
 CREATE TABLE "Courses" (
      courseID    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
