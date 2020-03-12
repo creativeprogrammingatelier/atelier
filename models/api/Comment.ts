@@ -8,6 +8,8 @@ export interface Comment {
 	references: {
 		courseID: string,
 		submissionID: string,
-		commentThreadID: string
+		commentThreadID: string,
+		fileID: string,
+		snippetID: string,
 	}
 }
