@@ -13,9 +13,9 @@ import {localRole} from "../../../enums/localRoleEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {getClient} from "../database/HelperDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
-import {filterCourse} from "../helpers/APIFilterHelper";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../enums/permissionEnum";
+import {filterCourse} from "../helpers/APIFilterHelper";
 
 export const courseRouter = express.Router();
 
