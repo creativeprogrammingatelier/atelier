@@ -46,8 +46,7 @@ courseRouter.get("/user/:userID", capture(async(request: Request, response: Resp
 	const userID = request.params.userID;
 	// TODO: Authentication, only admins and the user itself should be able to see this
 	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course: CourseRegistrationOutput) => course.courseID);
-	// const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
-	const courses = await CourseDB.getAllCourses();
+	const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
 	response.status(200).send(courses);
 	// TODO: Error handling
 }));
