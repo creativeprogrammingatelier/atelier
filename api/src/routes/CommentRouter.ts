@@ -29,7 +29,7 @@ commentRouter.get("/user/:userID", capture(async(request: Request, response: Res
 commentRouter.get("/course/:courseID/user/:userID", capture(async(request: Request, response: Response) => {
     const courseID = request.params.courseID;
     const userID = request.params.userID;
-    const comments = await CommentDB.filterComment({userID}); // TODO: Allow for filtering by courseID
+    const comments = await CommentDB.filterComment({courseID, userID});
     response.status(200).send(comments);
     // TODO: Error handling
 }));
