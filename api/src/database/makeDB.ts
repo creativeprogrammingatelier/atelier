@@ -136,7 +136,6 @@ export async function makeDB(out: (value: {}) => void, err : (error : Error) => 
 return pool.query(`
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-ALTER ROLE assistantassistant WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'md594b9257ac7635f4597e055106a53fddd';
 DROP VIEW IF EXISTS 
      "SubmissionsRefs", "CommentThreadRefs",
      "UsersView", "CoursesView",
