@@ -19,7 +19,10 @@
 		"clean": "gts clean",
 		"compile": "tsc -p .",
 		"fix": "gts fix",
-		"check": "gts check"
+		"check": "gts check",
+		"database-rebuild": "node build/api/src/database/structure/DatabaseStructure",
+		"database-samples": "node build/api/src/database/structure/DatabaseSamples",
+		"database-reset": "npm run database-rebuild && npm run database-samples"
 	},
 	"dependencies": {
 		"@authenio/samlify-node-xmllint": "^1.0.2",

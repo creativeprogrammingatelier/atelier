@@ -33,7 +33,6 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
 	const wrapped = (children: JSX.Element) => wrapper ? <Fragment>{wrapper(children)}</Fragment> : children;
 
 	useEffect(() => {
-		console.log("Loading something, cache: "+cache);
 		(parameters ? promise(...parameters, cache) : promise(cache)).then(res => {
 			updateResult(res);
 			updateState(LoadingState.Loaded);
