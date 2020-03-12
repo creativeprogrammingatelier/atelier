@@ -23,14 +23,15 @@ import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
 import { commentRouter } from "./routes/CommentRouter";
+import {permissionRouter} from "./routes/PermissionRouter";
+import {roleRouter} from "./routes/RoleRouter";
 
 import { NotFoundDatabaseError } from './database/DatabaseErrors';
 import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
 import { AuthError } from './helpers/AuthenticationHelper';
 import { AuthMiddleware } from './middleware/AuthMiddleware';
 import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
-import {permissionRouter} from "./routes/PermissionRouter";
-import {roleRouter} from "./routes/RoleRouter";
+
 
 
 export const app = express();

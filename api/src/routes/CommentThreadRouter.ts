@@ -139,7 +139,7 @@ async function createCommentThread(snippetID : string | undefined, fileID : stri
  *  - user is registered in the course of the submission
  */
 commentThreadRouter.post('/submission/:submissionID', capture( async(request : Request, response : Response) => {
-    const client : pgDB = await getClient();
+
     let commentThreadID : string | undefined;
     const currentUserID : string = await getCurrentUserID(request);
     const submissionID : string = request.params.submissionID;
@@ -147,6 +147,7 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
     // User should be registered in the course
     await requireRegisteredSubmissionID(currentUserID, submissionID);
 
+    const client : pgDB = await getClient();
     try {
         await client.query('BEGIN');
 
@@ -184,7 +185,6 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
  *  - user is registered in the course of the file
  */
 commentThreadRouter.post('/file/:fileID', capture(async (request : Request, response : Response) => {
-    const client : pgDB = await getClient();
     let commentThreadID : string | undefined;
     const fileID : string = request.params.fileID;
     const currentUserID : string = await getCurrentUserID(request);
@@ -192,6 +192,7 @@ commentThreadRouter.post('/file/:fileID', capture(async (request : Request, resp
     // User should be registered in course
     await requireRegisteredFileID(currentUserID, fileID);
 
+    const client : pgDB = await getClient();
     try {
         await client.query('BEGIN');
 

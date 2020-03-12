@@ -14,8 +14,8 @@ import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {getClient} from "../database/HelperDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {filterCourse} from "../helpers/APIFilterHelper";
-import {getGlobalPermissions, requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import {containsPermission, PermissionEnum} from "../../../enums/permissionEnum";
+import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
+import {PermissionEnum} from "../../../enums/permissionEnum";
 
 export const courseRouter = express.Router();
 
@@ -117,4 +117,22 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 		role : localRole.student
 	});
 	response.status(200).send(courseRegistration);
+}));
+
+/** ---------- DELETE REQUESTS ---------- */
+courseRouter.delete('/:courseID/user/:userID', capture(async(request : Request, response : Response) => {
+	const courseID : string = request.params.courseID;
+	const userID : string = request.params.userID;
+	const currentUserID : string = await getCurrentUserID(request);
+
+	// Require manage user registration
+	await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
+
+	const result : CourseRegistrationOutput = await CourseRegistrationDB.deleteEntry({
+		courseID,
+		userID
+	});
+
+	response.status(200).send(result);
+
 }));

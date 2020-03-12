@@ -27,8 +27,6 @@ export async function requirePermissions(userID : string, requiredPermissions : 
             coursePermissions = courseRegistrationOutput[0].permission;
         }
     }
-    console.log("global permissions: " + globalPermissions);
-    console.log("course permissions: " + coursePermissions);
     const permissions : number = globalPermissions | coursePermissions;
 
     const access : boolean = requiredPermissions.every((permission : PermissionEnum) => containsPermission(permission, permissions));
