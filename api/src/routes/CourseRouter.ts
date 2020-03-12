@@ -37,6 +37,22 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
 }));
 
 /**
+ * Get user courses
+ *  - admin: receives all of the users courses
+ *  - user self: receives all of the users courses
+ *  - rest: not allowed
+ */
+courseRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
+	const userID = request.params.userID;
+	// TODO: Authentication, only admins and the user itself should be able to see this
+	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course: CourseRegistrationOutput) => course.courseID);
+	// const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
+	const courses = await CourseDB.getAllCourses();
+	response.status(200).send(courses);
+	// TODO: Error handling
+}));
+
+/**
  * Get a specific course
  * - requirements:
  *  - user is enrolled in the course

@@ -7,7 +7,17 @@
             "type": "saml",
             "id": "samling",
             "name": "Samling",
-            "metadata": { "url": "https://capriza.github.io/samling/public/metadata.xml" }
+            "metadata": { "url": "https://capriza.github.io/samling/public/metadata.xml" },
+            "attributes": {
+                "name": "name",
+                "email": "email",
+                "role": "role",
+                "roleMapping": {
+                    "admin": "admin",
+                    "user": "user",
+                    "student": "user"
+                }
+            }
         },
         {
             "type": "builtin",

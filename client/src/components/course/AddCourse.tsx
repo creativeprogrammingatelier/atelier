@@ -20,6 +20,7 @@ export function AddCourse({handleResponse} : AddCourseProps) {
                 name : courseName,
                 state : courseState.open
             });
+            setCourseName("");
             if (handleResponse !== undefined) {
                 handleResponse(course);
             }
@@ -33,7 +34,7 @@ export function AddCourse({handleResponse} : AddCourseProps) {
         <div className="addCourse">
             <Form>
                 <InputGroup>
-                    <Form.Control type="text" placeholder="Course name" onChange={(event: React.FormEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value)}/>
+                    <Form.Control type="text" placeholder="Course name" value={courseName} onChange={(event: React.FormEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value)}/>
                     <InputGroup.Append>
                         <Button onClick={() => handleSubmission(courseName)}>Create Course</Button>
                     </InputGroup.Append>

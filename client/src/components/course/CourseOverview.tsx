@@ -1,11 +1,12 @@
-import React, {useState} from "react";
+import React, {useState, Fragment} from "react";
 import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
-import {getCourseSubmissions} from "../../../helpers/APIHelper";
+import {getCourse, getCourseSubmissions} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
+import {Course} from "../../../../models/api/Course";
 
 interface CourseOverviewProps {
 	match: {
@@ -21,16 +22,15 @@ export function CourseOverview({match}: CourseOverviewProps) {
 	return (
 		<Frame title="Course" sidebar search={"/course/../search"}>
 			<Jumbotron>
-				<h1>Long Course Name Here</h1>
-				<p>Created by someone?</p>
+				<Loading<Course>
+					loader={getCourse}
+					params={[match.params.courseId]}
+					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
+				/>
 			</Jumbotron>
-			<Uploader
-				courseId={match.params.courseId}
-				onUploadComplete={() => updateReload(rel => rel + 1)}
-			/>
 			<Loading<Submission[]>
-				loader={getCourseSubmissions}
-				params={[match.params.courseId]}
+				loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
+				params={[match.params.courseId, reload]}
 				component={submissions =>
 					<DataBlockList
 						header="Submissions"
@@ -48,6 +48,12 @@ export function CourseOverview({match}: CourseOverviewProps) {
 					/>
 				}
 			/>
+			<div className="m-3">
+				<Uploader
+					courseId={match.params.courseId}
+					onUploadComplete={() => updateReload(rel => rel + 1)}
+				/>
+			</div>
 		</Frame>
 	);
 }

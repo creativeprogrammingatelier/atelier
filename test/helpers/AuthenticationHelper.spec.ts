@@ -4,7 +4,6 @@ import chaiAsPromised from 'chai-as-promised';
 import { randomBytes } from 'crypto';
 
 import { Request } from 'express';
-import jwt from 'jsonwebtoken';
 import * as auth from '../../api/src/helpers/AuthenticationHelper';
 import { AssertionError } from 'assert';
 
@@ -17,6 +16,16 @@ describe("AuthenticationHelper", () => {
         const token = auth.issueToken(userID);
         const props = await auth.verifyToken<{ userID: string }>(token);
         expect(props.userID).to.equal(userID);
+    });
+
+    it("should issue two verifiable tokens", async () => {
+        const userID2 = randomBytes(16).toString('hex');
+        const token = auth.issueToken(userID);
+        const token2 = auth.issueToken(userID2);
+        const props = await auth.verifyToken<{ userID: string }>(token);
+        const props2 = await auth.verifyToken<{ userID: string }>(token2);
+        expect(props.userID).to.equal(userID);
+        expect(props2.userID).to.equal(userID2); 
     });
 
     it("should throw on expired token", () => {
@@ -44,5 +53,5 @@ describe("AuthenticationHelper", () => {
         const req = { cookies: { atelierToken: token } } as Request;
         const result = await auth.getCurrentUserID(req);
         expect(result).to.equal(userID);
-    })
+    });
 });

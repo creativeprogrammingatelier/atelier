@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {DataBlock} from './DataBlock';
 import {DataTagProperties} from "./DataTag";
 import {Heading} from "../Heading";
+import { DataList } from './DataList';
 
 interface DataListEntryProperties {
 	transport?: string,
@@ -23,10 +24,7 @@ export function DataBlockList({header, list}: DataListProperties) {
 		}, 1000)
 	}, []);
 
-	return <div>
-		<Heading title={header}/>
-		<div className="m-3">
-			{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time, offset:currentTime}} tags={block.tags}/>)}
-		</div>
-	</div>
+	return <DataList header={header}>
+		{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time, offset:currentTime}} tags={block.tags}/>)}
+	</DataList>
 }

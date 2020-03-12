@@ -12,6 +12,8 @@ import {PermissionEnum} from "../../../enums/permissionEnum";
 
 export function Homepage() {
 	const [permissions, setPermissions] = useState(0);
+    const [reload, updateReload] = useState(0);
+
  	useEffect(() => {
  		permission()
 			.then((permission : Permission) => {
@@ -20,7 +22,7 @@ export function Homepage() {
 	}, []);
 
 	function updateCourse(course: Course) {
-		// TODO course added, but should be in the loading component
+		updateReload(x => x + 1);
 	}
 
 	return (
@@ -32,7 +34,8 @@ export function Homepage() {
 			</Jumbotron>
 			<div className="m-3">
 				<Loading<Course[]>
-					loader={getCourses}
+                    loader={reload => getCourses(false)}
+                    params={[reload]}
 					component={courses =>
 						<div>
 							{courses.map((course: Course) => <PanelButton
@@ -52,7 +55,6 @@ export function Homepage() {
 					:
 					<p>No permission to add courses</p>
 			}
-
 		</Frame>
 	);
 }

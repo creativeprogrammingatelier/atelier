@@ -6,12 +6,13 @@ interface LinkProperties {
 	children: string,
 	location: string
 	icon: IconType,
+	close: React.MouseEventHandler
 }
-export function SidebarEntry({children, location, icon}: LinkProperties) {
+export function SidebarEntry({children, location, icon, close}: LinkProperties) {
 	const ICON: IconType = icon;
 	return (
 		<div className="link">
-			<Link to={location}><h4><ICON color="#FFFFFF"/>{children}</h4></Link>
+			<Link to={location} onClick={close}><h4><ICON color="#FFFFFF"/>{children}</h4></Link>
 		</div>
 	)
 }

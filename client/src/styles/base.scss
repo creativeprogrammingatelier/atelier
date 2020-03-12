@@ -16,6 +16,9 @@ p a {
 p a:hover {
 	color: $secondaryColor;
 }
+button:focus {
+	outline: none;
+}
 thead {
 	padding: 1rem;
 	color: $colorWhite;
@@ -254,7 +257,7 @@ textarea:focus, textarea:active {
 	background-color: $colorWhite;
 }
 .form-control {
-	padding: 0.25rem 0.5rem;
+	padding: 0.375rem 0.5rem;
 	border: none;
 	border-radius: 0;
 }
@@ -263,13 +266,31 @@ textarea:focus, textarea:active {
 	box-shadow: none;
 }
 .form-control-plaintext {
-	padding: 0.25rem 0.5rem;
+	padding: 0.375rem 0.5rem;
 	color: $colorOffBlack;
 	border: 0;
 }
 .form-control-plaintext:focus {
 	outline: 0;
 	box-shadow: none;
+}
+.custom-control-input {
+	z-index: 1;
+}
+.custom-control-input:focus {
+	outline: none;
+}
+.custom-control-input:focus ~ .custom-control-label::before {
+	box-shadow: none;
+ }
+.custom-control-input:checked ~ .custom-control-label::before {
+	background-color: $colorPrimary;
+}
+.custom-control-input:not(:disabled):active ~ .custom-control-label::before {
+	background-color: $colorSecondary;
+}
+.custom-control-label::before {
+	border: none;
 }
 
 .btn {
@@ -293,6 +314,9 @@ textarea:focus, textarea:active {
 }
 .btn-primary:not(:disabled):not(.disabled):active:focus {
 	box-shadow: initial;
+}
+.btn-primary:disabled {
+	background-color: gray;
 }
 .buttonBar {
 	background-color: $primaryColor;
@@ -388,4 +412,50 @@ textarea:focus, textarea:active {
 		margin: 1rem 0;
 		border-color: $colorWhite;
 	}
+}
+
+.close {
+	font-weight: 300;
+	color: $colorOffWhite;
+	text-shadow: none;
+	opacity: 1;
+}
+.close:hover {
+	color: $colorOffWhite;
+}
+.alert {
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0;
+}
+.alert-dismissible {
+	padding-right: 3rem;
+
+	.close {
+		padding: 0.5rem 1rem;
+	}
+}
+.alert-danger {
+	color: $colorWhite;
+	background: $gradientDanger;
+}
+
+.directoryNode {
+	margin: 0 0 0 0.5rem;
+
+	.dataItem {
+		margin: 0;
+	}
+	.directoryNode .toast-body {
+		padding: 0.25rem 0.5rem;
+	}
+	.directoryNode:last-of-type > .dataItem .toast-body {
+		padding-bottom: 0.5rem;
+	}
+}
+.directoryTopLevel {
+	margin: 0.5rem 0;
+}
+.directoryTopLevel:last-child .toast-body {
+	padding-bottom: 0.5rem;
 }

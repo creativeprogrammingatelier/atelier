@@ -17,14 +17,15 @@ interface LoadingProperties<R, F extends LoadingFunc<R>> {
 	/** Function taking the loaded data returning the component to render */
 	component: (result: R) => React.ReactElement | React.ReactElement[]
 	/** An optional component to use to wrap around the loading icon or error message */
-	wrapper?: (children: JSX.Element) => React.ReactElement | React.ReactElement[]
+	wrapper?: (children: JSX.Element) => React.ReactElement | React.ReactElement[],
+	cache?: boolean
 }
 
 /**
  * Loading component that shows a loading spinner wile data is loading
  * and gives the data
  */
-export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: promise, params: param, component, wrapper}: LoadingProperties<R, F>) {
+export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: promise, params: parameters, component, wrapper, cache}: LoadingProperties<R, F>) {
 	const [state, updateState] = useState(LoadingState.Loading);
 	const [result, updateResult] = useState(undefined as R | undefined);
 	const [error, updateError] = useState(undefined as {error: string, message: string} | undefined);
@@ -32,14 +33,15 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
 	const wrapped = (children: JSX.Element) => wrapper ? <Fragment>{wrapper(children)}</Fragment> : children;
 
 	useEffect(() => {
-		(param ? promise(...param) : promise()).then(res => {
+		console.log("Loading something, cache: "+cache);
+		(parameters ? promise(...parameters, cache) : promise(cache)).then(res => {
 			updateResult(res);
 			updateState(LoadingState.Loaded);
 		}).catch(err => {
 			updateError(err);
 			updateState(LoadingState.Error);
 		});
-	}, [param]);
+	}, [parameters]);
 
 	if (state === LoadingState.Loaded) {
 		return (

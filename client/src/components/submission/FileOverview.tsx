@@ -9,9 +9,11 @@ import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import {getFile, getFileContents} from "../../../helpers/APIHelper";
+import {getCourse, getFile, getFileContents, getSubmission} from "../../../helpers/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import {Course} from "../../../../models/api/Course";
+import {Submission} from "../../../../models/api/Submission";
 
 export interface FileProperties {
 	id: string,
@@ -58,7 +60,11 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={filePath + "/search"}>
 					<Jumbotron>
 						<h1>{FileNameHelper.fromPath(file.name)}</h1>
-						<p>In submission <Link to={submissionPath}>some course</Link></p>
+						<Loading<Submission>
+							loader={getSubmission}
+							params={[submissionId]}
+							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link></p>}
+						/>
 					</Jumbotron>
 					<Loading<[File, string]>
 						loader={(fileId: string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
