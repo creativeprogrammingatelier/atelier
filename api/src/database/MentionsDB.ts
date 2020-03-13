@@ -1,7 +1,7 @@
 import { pool, DBTools, extract, map, one, checkAvailable } from "./HelperDB"
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { convertMention, Mention, mentionToAPI } from "../../../models/database/Mention";
-import { MentionsView } from "./makeDB";
+import { MentionsView } from "./ViewsDB";
 
 export class MentionsDB {
 	static async getAllMentions(params : DBTools = {}){
