@@ -89,7 +89,8 @@ textarea:focus, textarea:active {
 .sidebar {
 	height: 100vh;
 	background: $gradientVertical;
-	box-shadow: $shadowLarge; // TODO: Only for mobile
+	box-shadow: $shadowLarge;
+	z-index: 1030;
 }
 .sidebarContent {
 	width: 100%;
