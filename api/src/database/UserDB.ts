@@ -121,6 +121,22 @@ export class UserDB {
 		.then(extract).then(map(userToAPI))
     }
 
+    static async getUserByPossibleMentionInCourse(possibleMention : string, courseID : string, params : DBTools = {}) {
+        const { client = pool } = params;
+        const courseid = UUIDHelper.toUUID(courseID);
+        return client.query(`
+        SELECT *
+        FROM "UsersView" as u, "CourseRegistration" as cr
+        WHERE 
+            (u.userID = cr.userID)
+        AND (courseID = $1)
+        AND (POSITION(userName in $2) = 1)
+        ORDER BY (char_length(userName)) DESC
+        LIMIT 1
+        `, [ courseid, possibleMention ])
+        .then(extract).then(one).then(userToAPI)
+    }
+
 	/**
 	 * creates a user based on the @param user. 
 	 * All fields but userID are required

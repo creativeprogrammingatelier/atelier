@@ -70,7 +70,7 @@ export class MentionsDB {
 			RETURNING *
 		)
 		${MentionsView('insert')}
-		`,[userid, commentid])
+		`,[commentid, userid])
 		.then(extract).then(map(mentionToAPI)).then(one)
 	}
 
