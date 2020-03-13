@@ -213,7 +213,7 @@ async function mentionHelper(){
 }
 
 async function courseInviteHelper(){
-	const invite = {userID: uuid, courseID: uuid, type:'', joinRole: localRole.TA}
+	const invite = {creatorID: uuid, courseID: uuid, type:'', joinRole: localRole.TA}
 	await promise(CI.filterInvite({}), "filterInvite")
 	const resinv = await promise(CI.addInvite(invite), "addInvite")
 	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))
