@@ -17,7 +17,8 @@ export interface PostgresError extends Error {
     constraint?: string,
     file?: string,
     line?: string,
-    routine?: string
+    routine?: string,
+    context?:string
 }
 
 /** A small categorization of errors thrown by Postgres */
@@ -33,7 +34,7 @@ export enum PostgresErrorCode {
 }
 
 /** Check if an error is thrown by Postgres */
-export function isPostgresError(err: Error) {
+export function isPostgresError(err: Error) : err is PostgresError {
     return "name" in err && "code" in err;
 }
 

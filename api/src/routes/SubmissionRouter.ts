@@ -17,6 +17,7 @@ import {raiseWebhookEvent} from '../helpers/WebhookHelper';
 import {filterSubmission} from "../helpers/APIFilterHelper";
 import {PermissionEnum} from "../../../enums/permissionEnum";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
+import { transaction } from '../database/HelperDB';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -45,25 +46,30 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     validateProjectServer(request.body["project"], files);
     const userID = await getCurrentUserID(request);
 
-    // TODO: create a single transaction, including filesystem things
-    const submission = await SubmissionDB.addSubmission({ 
-        title : request.body["project"],
-        courseID: request.params.courseID, 
-        userID : userID
+    const { submission, dbFiles } = await transaction(async client => {
+        const submission = await SubmissionDB.addSubmission({ 
+            title : request.body["project"],
+            courseID: request.params.courseID, 
+            userID,
+            client
+        });
+        
+        const dbFiles = await Promise.all(
+            files.map(file => 
+                FileDB.addFile({
+                    pathname: file.path,
+                    type: file.mimetype,
+                    submissionID: submission.ID,
+                    client
+                }))
+        );
+                
+        await archiveProject((request as FileUploadRequest).fileLocation!, request.body["project"]);
+        await deleteNonCodeFiles(files);
+
+        return { submission, dbFiles };
     });
-
-    const dbFiles = await Promise.all(
-        files.map(file => 
-            FileDB.addFile({
-                pathname: file.path,
-                type: file.mimetype,
-                submissionID: submission.ID
-            }))
-    );
-
-    await archiveProject((request as FileUploadRequest).fileLocation!, request.body["project"]);
-    await deleteNonCodeFiles(files);
-
+                
     response.send(submission);
 
     await Promise.all(

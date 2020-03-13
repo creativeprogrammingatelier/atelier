@@ -97,7 +97,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                 }
 
                 // Get role from SAML attributes
-                let role = globalRole.user as string;
+                let role = "user";
                 if (samlConfig.attributes?.role !== undefined) {
                     role = result.attributes[samlConfig.attributes.role] || role;
                     if (samlConfig.attributes.roleMapping !== undefined) {

@@ -152,7 +152,7 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		const color = '#dc3339';
 		const opacityRange = ['00', '6F', 'BF', 'FF'];
 
-		/** Highlight based on ranges*/
+		/** Highlight based on ranges */
 		if (this.state.snippets !== undefined) {
 			const ranges : Range[] = this.state.snippets.map(snippet => {
 				return {

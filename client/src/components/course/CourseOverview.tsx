@@ -3,10 +3,11 @@ import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
-import {getCourse, getCourseSubmissions} from "../../../helpers/APIHelper";
+import {getCourse, getCourseSubmissions, getCourseMentions} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
 import {Course} from "../../../../models/api/Course";
+import { Mention } from "../../../../models/api/Mention";
 
 interface CourseOverviewProps {
 	match: {
@@ -54,6 +55,22 @@ export function CourseOverview({match}: CourseOverviewProps) {
 					onUploadComplete={() => updateReload(rel => rel + 1)}
 				/>
 			</div>
+            <Loading<Mention[]>
+                loader={courseID => getCourseMentions(courseID)}
+                params={[match.params.courseId]}
+                component={mentions =>
+                    <DataBlockList
+                        header="Mentions"
+                        list={mentions.map(mention => ({
+                            transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
+                            title: mention.commentID,
+                            text: "You've been mentioned!",
+                            time: new Date(),
+                            tags: []
+                        }))}
+                    />
+                }
+            />
 		</Frame>
 	);
 }

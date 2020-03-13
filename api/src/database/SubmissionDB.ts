@@ -5,7 +5,7 @@ import { UUIDHelper } from "../helpers/UUIDHelper";
 import { User } from "../../../models/database/User";
 import { FileDB } from "./FileDB";
 import { APIFile } from "../../../models/database/File";
-import { submissionsView } from "./makeDB";
+import { submissionsView } from "./ViewsDB";
 
 /**
  * submissionID, userID, title, date, state

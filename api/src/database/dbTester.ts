@@ -20,8 +20,8 @@ import { UUIDHelper } from '../helpers/UUIDHelper'
 import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
 import { Course } from '../../../models/database/Course'
 import util from 'util'
-import { makeDB } from './makeDB'
 import { Mention } from '../../../models/database/Mention'
+import { CourseInviteDB as CI, CourseInviteDB } from './CourseInviteDB'
 
 const ok = "✓",
 	fail = "✖"
@@ -212,6 +212,13 @@ async function mentionHelper(){
 	await promise(M.deleteMention(m1.mentionID), "deleteMention")
 }
 
+async function courseInviteHelper(){
+	const invite = {creatorID: uuid, courseID: uuid, type:'', joinRole: localRole.TA}
+	await promise(CI.filterInvite({}), "filterInvite")
+	const resinv = await promise(CI.addInvite(invite), "addInvite")
+	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))
+}
+
 async function run(...funs : Function[]){
 	for (let i=0;i<funs.length; i++){
 		stored =''
@@ -240,11 +247,13 @@ export async function main(){
 		coursesHelper,
 		usersHelper,
 		mentionHelper,
+		courseInviteHelper,
 		)
 }
 if (require.main === module){
 	(async ()=>{
-		await makeDB(()=>{console.log("fin")}, console.error)
-		main()
+		// await makeDB(()=>{console.log("fin")}, console.error)
+		await main()
+		end();
 	})()
 }

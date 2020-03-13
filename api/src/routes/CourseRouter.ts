@@ -11,11 +11,11 @@ import {courseState} from "../../../enums/courseStateEnum";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {localRole} from "../../../enums/localRoleEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {getClient} from "../database/HelperDB";
+import {getClient, transaction} from "../database/HelperDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
-import {filterCourse} from "../helpers/APIFilterHelper";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../enums/permissionEnum";
+import {filterCourse} from "../helpers/APIFilterHelper";
 
 export const courseRouter = express.Router();
 
@@ -82,33 +82,25 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 	// Requires addCourses permission
 	await requirePermission(currentUserID, PermissionEnum.addCourses);
 
-	const client = await getClient();
-	try {
-		await client.query('BEGIN');
-
+	const course = await transaction(async client => {
 		const course : CoursePartial = await CourseDB.addCourse({
 			courseName : name,
-			state : state,
+			state,
 			creatorID : currentUserID,
-			client : client
+			client
 		});
 
 		await CourseRegistrationDB.addEntry({
 			courseID : course.ID,
 			userID : currentUserID,
 			role : localRole.student,
-			client : client
+			client
 		});
 
-		await client.query('COMMIT');
+        return course;
+    });
 
-		response.status(200).send(course);
-	} catch (e) {
-		await client.query('ROLLBACK');
-		throw e;
-	} finally {
-		client.release();
-	}
+    response.status(200).send(course);
 }));
 
 /** ---------- PUT REQUESTS ---------- */
