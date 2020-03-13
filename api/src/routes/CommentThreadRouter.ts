@@ -12,7 +12,7 @@ import {capture} from "../helpers/ErrorHelper";
 import {FileDB} from "../database/FileDB";
 import {CommentDB} from "../database/CommentDB";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {getClient, pgDB} from "../database/HelperDB";
+import {getClient, pgDB, transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {
     requireRegisteredCommentThreadID,
@@ -152,26 +152,16 @@ commentThreadRouter.post('/submission/:submissionID', capture(async (request, re
     // User should be registered in the course
     await requireRegisteredSubmissionID(currentUserID, submissionID);
 
-    const client : pgDB = await getClient();
-    try {
-        await client.query('BEGIN');
-
+    const commentThread = await transaction(async client => {
         // Snippet creation
         const snippetID : string | undefined = await SnippetDB.createNullSnippet({client});
-
+    
         // Thread creation
         const fileID : string = await FileDB.getNullFileID(submissionID, {client}) as unknown as string;
-        const commentThread : CommentThread = await createCommentThread(request, client, snippetID, fileID, submissionID);
+        return createCommentThread(request, client, snippetID, fileID, submissionID);
+    });
 
-        await client.query('COMMIT');
-
-        response.send(commentThread);
-    } catch (e) {
-        await client.query('ROLLBACK');
-        throw e;
-    } finally {
-        client.release();
-    }
+    response.send(commentThread);
 }));
 
 
@@ -187,10 +177,7 @@ commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
     // User should be registered in course
     await requireRegisteredFileID(currentUserID, fileID);
 
-    const client : pgDB = await getClient();
-    try {
-        await client.query('BEGIN');
-
+    const commentThread = await transaction(async client => {
         // Snippet creation
         let snippetID : string | undefined;
         if (request.body.snippetBody === undefined) {
@@ -205,20 +192,13 @@ commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
                 client
             });
         }
-
+        
         // Thread creation
         const submissionID : string = request.body.submissionID;
-        const commentThread : CommentThread = await createCommentThread(request, client, snippetID, fileID, submissionID);
-
-        await client.query('COMMIT');
-
-        response.send(commentThread);
-    } catch (e) {
-        await client.query('ROLLBACK');
-        throw e;
-    } finally {
-        client.release();
-    }
+        return createCommentThread(request, client, snippetID, fileID, submissionID);
+    });
+        
+    response.send(commentThread);
 }));
 
 
