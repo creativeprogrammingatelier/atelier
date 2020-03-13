@@ -1,8 +1,8 @@
-import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools, toBin } from "./HelperDB";
+import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools, toBin, permissionBits } from "./HelperDB";
 import {User, DBUser, convertUser, userToAPI} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
-import { usersView, permissionBits } from "./makeDB";
+import { usersView} from "./ViewsDB";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
@@ -119,6 +119,22 @@ export class UserDB {
 		OFFSET $7
 		`, [courseid, userid, username, email, role, limit, offset])
 		.then(extract).then(map(userToAPI))
+    }
+
+    static async getUserByPossibleMentionInCourse(possibleMention : string, courseID : string, params : DBTools = {}) {
+        const { client = pool } = params;
+        const courseid = UUIDHelper.toUUID(courseID);
+        return client.query(`
+        SELECT *
+        FROM "UsersView" as u, "CourseRegistration" as cr
+        WHERE 
+            (u.userID = cr.userID)
+        AND (courseID = $1)
+        AND (POSITION(userName in $2) = 1)
+        ORDER BY (char_length(userName)) DESC
+        LIMIT 1
+        `, [ courseid, possibleMention ])
+        .then(extract).then(one).then(userToAPI)
     }
 
 	/**

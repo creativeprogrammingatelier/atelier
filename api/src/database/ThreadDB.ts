@@ -8,7 +8,7 @@ import { Snippet } from "../../../models/database/Snippet";
 import { File } from "../../../models/database/File";
 import { AssertionError } from "assert";
 import { FileDB } from "./FileDB";
-import { commentThreadView } from "./makeDB";
+import { commentThreadView } from "./ViewsDB";
 
 /**
  * commentThreadID, submissionID, fileID, snippetID, visibilityState

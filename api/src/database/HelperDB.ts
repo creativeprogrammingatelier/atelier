@@ -1,7 +1,6 @@
 import * as pg from "pg"
 import { NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResponseError } from "./DatabaseErrors";
 import { config } from "../helpers/ConfigurationHelper";
-import { permissionBits } from "./makeDB";
 
 /**
  * type on which queries can be run
@@ -18,6 +17,8 @@ export const pool = new pg.Pool({
 
 pool.on("connect", () => console.log("Connected to the database."));
 
+
+export const permissionBits = 40
 /**
  * export some functions to aid other files in communicating with the database:
  * end = stop the database connection gracefully
@@ -25,6 +26,31 @@ pool.on("connect", () => console.log("Connected to the database."));
  */
 export const end = pool.end.bind(pool);
 export const getClient : () => Promise<pg.PoolClient> = pool.connect.bind(pool);
+
+/** 
+ * Execute multiple database queries in one transaction
+ * @example
+ * const submission = await transaction(async (client) => {
+ *     const submission = await SubmissionDB.addSubmission({ ... });
+ *     const file = await FileDB.addFile({ submissionID: submission.ID, ... });
+ *     return submission;
+ * });
+ */
+export async function transaction<T>(queryFunction: (client: pgDB) => Promise<T>) {
+    const client = await getClient();
+    try {
+        await client.query("BEGIN");
+        const res = await queryFunction(client);
+        await client.query("COMMIT");
+        return res;
+    } catch (err) {
+        await client.query("ROLLBACK");
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
 /**
  * check if an object of pgDB is in fact a pool or not.
  */

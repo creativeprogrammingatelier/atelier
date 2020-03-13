@@ -1,7 +1,7 @@
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf } from "./HelperDB";
 import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet} from '../../../models/database/Snippet';
 import { UUIDHelper } from "../helpers/UUIDHelper";
-import { snippetsView } from "./makeDB";
+import { snippetsView } from "./ViewsDB";
 
 /**
  * 
