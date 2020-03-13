@@ -1,6 +1,7 @@
-import {pool, end} from '../HelperDB'
+import {pool, end, permissionBits, pgDB} from '../HelperDB'
+import { isPostgresError } from '../../helpers/DatabaseErrorHelper';
 
-export const permissionBits = 40;
+
 /**
  * most exported functions in this file, contain the query string for some view of the database
  * By calling these functions, the respective query can be inserted into some string at the callee's end.
@@ -11,8 +12,8 @@ export const permissionBits = 40;
  *
  */
 
-export function databaseSamples(out: (value: {}) => void, err : (error : Error) => void){
-	return pool.query(`
+export function databaseSamples(client : pgDB = pool) : Promise<void> {
+	const query = `
 	
 	INSERT INTO "Courses" VALUES 
 		('00000000-0000-0000-0000-000000000001', 'Art, Impact and Technology', DEFAULT, (SELECT userID from "Users" LIMIT 1));
@@ -121,11 +122,19 @@ export function databaseSamples(out: (value: {}) => void, err : (error : Error) 
 		('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000003', (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, 'All these names are totally incomprehensible to anyone, horrible to do this!'),
 		('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000004', (SELECT userID from "Users" WHERE samlID='samling_teacher'), DEFAULT, 'Youre missing some planets, Pluto example');
 	
-	`).then(out).catch(e=>{err(e);throw e});
+     `
+     return client.query(query).then(() => {
+          console.log("inserted values into db")
+     }).catch(e=>{
+          if (isPostgresError(e) && e.position!==undefined){
+			console.log(query.substring(Number(e.position)-20, Number(e.position)+20))
+		}
+		throw e
+     });
 }
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
 if (require.main === module){
-	databaseSamples(console.log, console.error).then(end)
+	databaseSamples().then(end)
 } else {
 	// makeDB(()=>{console.log("made the database")}, console.error)
 }

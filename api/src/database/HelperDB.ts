@@ -1,7 +1,6 @@
 import * as pg from "pg"
 import { NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResponseError } from "./DatabaseErrors";
 import { config } from "../helpers/ConfigurationHelper";
-import { permissionBits } from "./makeDB";
 
 /**
  * type on which queries can be run
@@ -18,6 +17,8 @@ export const pool = new pg.Pool({
 
 pool.on("connect", () => console.log("Connected to the database."));
 
+
+export const permissionBits = 40
 /**
  * export some functions to aid other files in communicating with the database:
  * end = stop the database connection gracefully

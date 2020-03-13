@@ -1,8 +1,8 @@
-import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools, toBin } from "./HelperDB";
+import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools, toBin, permissionBits } from "./HelperDB";
 import {User, DBUser, convertUser, userToAPI} from '../../../models/database/User';
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
-import { usersView, permissionBits } from "./makeDB";
+import { usersView} from "./ViewsDB";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB

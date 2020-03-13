@@ -1,7 +1,7 @@
 import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools } from "./HelperDB";
 import {Comment, commentToAPI, DBAPIComment} from '../../../models/database/Comment';
 import { UUIDHelper } from "../helpers/UUIDHelper";
-import { commentsView } from "./makeDB";
+import { commentsView } from "./ViewsDB";
 
 /**
  * commentID, commentThreadID, userID, date, body
