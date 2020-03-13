@@ -34,7 +34,8 @@ export function Snippet({snippet, expanded}: SnippetProperties) {
 					mode: "clike",
 					theme: "base16-light",
 					lineNumbers: true,
-					firstLineNumber: expanded ? snippet.start.line + 1 - linesTop : snippet.start.line + 1
+					firstLineNumber: expanded ? snippet.start.line + 1 - linesTop : snippet.start.line + 1,
+					readOnly: "nocursor"
 				}}
 				editorDidMount={
 					editor => {
