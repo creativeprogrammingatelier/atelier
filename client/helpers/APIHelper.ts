@@ -11,9 +11,7 @@ import {threadState} from "../../enums/threadStateEnum";
 import {LoginProvider} from "../../models/api/LoginProvider";
 import {Permission} from "../../models/api/Permission";
 import {SearchResult} from '../../models/api/SearchResult';
-
-
-// TODO: Fix all anys to be the correct model
+import {Mention} from '../../models/api/Mention';
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -129,6 +127,14 @@ export function createComment(commentThreadID: string, comment: {commentBody: st
 		body: JSON.stringify(comment),
 		headers: {"Content-Type": "application/json"}
 	}, doCache);
+}
+
+// Mentions
+export function getMentions(doCache?: boolean) {
+    return Fetch.fetchJson<Mention[]>('/api/mentions', undefined, doCache);
+}
+export function getCourseMentions(courseID: string, doCache?: boolean) {
+    return Fetch.fetchJson<Mention[]>(`/api/mentions/course/${courseID}`, undefined, doCache);
 }
 
 // Search
