@@ -216,9 +216,7 @@ async function courseInviteHelper(){
 	const invite = {userID: uuid, courseID: uuid, type:'', joinRole: localRole.TA}
 	await promise(CI.filterInvite({}), "filterInvite")
 	const resinv = await promise(CI.addInvite(invite), "addInvite")
-	console.log(resinv)
-	const del = await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))
-	console.log(del)
+	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))
 }
 
 async function run(...funs : Function[]){
