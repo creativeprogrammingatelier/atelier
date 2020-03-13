@@ -68,11 +68,13 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
     }
   }  
   cloudtex.updatePixels();
-  */'
+  */','before context works!','after context works too!'
 	     ),
 	     ('00000000-0000-0000-0000-000000000002', 
 	          57, 57, 2, 10, 
-	          'cloudtex'
+               'cloudtex',
+               'this is a line before the item, as context',
+               'this is a line after the item, as context'
 	     ),
 	     ('00000000-0000-0000-0000-000000000003', 
 	          178, 204, 4, 23, 
@@ -102,12 +104,13 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
     v = at3(q, rx1, ry1, rz1);
     b = lerp(u, v, t);
 
-    d = lerp(a, b, sy);'
+    d = lerp(a, b, sy);',
+    '',''
 	     ),
      ( -- a null snippet
           '00000000-0000-0000-0000-000000000004',
           -1, -1, -1, -1,
-          ''
+          '','',''
      );
 	     
 	INSERT INTO "CommentThread" VALUES

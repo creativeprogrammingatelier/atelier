@@ -1,4 +1,4 @@
-import {end, pgDB } from './HelperDB'
+import {end, pgDB, one } from './HelperDB'
 import {UserDB as UH}	from './UserDB'
 import {CourseDB as CH}	from './CourseDB'
 import {RolePermissionDB as RPH}	from "./RolePermissionDB"
@@ -22,6 +22,7 @@ import { Course } from '../../../models/database/Course'
 import util from 'util'
 import { Mention } from '../../../models/database/Mention'
 import { CourseInviteDB as CI, CourseInviteDB } from './CourseInviteDB'
+import { PluginsDB as P } from './PluginsDB'
 
 const ok = "✓",
 	fail = "✖"
@@ -152,7 +153,7 @@ async function snippetHelper(){
 	const snip2 : Snippet = {snippetID: snip.ID, body:snip.body+"AB"}
 	const res2 = await promise(SPH.updateSnippet(snip2), "updateSnippet")
 
-	const snip1 : Snippet = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, body:"this is the body"}
+	const snip1 : Snippet = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, body:"this is the body", contextAfter:'abc', contextBefore:'def'}
 	
 	const id = await promise(SPH.addSnippet(snip1), 'addSnippet')
 	await promise(SPH.deleteSnippet(id), "deleteSnippet")
@@ -219,6 +220,26 @@ async function courseInviteHelper(){
 	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))
 }
 
+async function pluginHelper(){
+	const plugins = await promise(P.filterPlugins({}),"filterPlugin")
+	const ID = plugins[0].pluginID
+	await promise(P.filterHooks({}), "filterHooks")
+	await promise(P.filterHooks({pluginID:ID}), "filterHooks2")
+	const plugin = await promise(P.filterPlugins({pluginID:ID}),"filterPlugin").then(one)
+	const pluginExt = await promise(P.addHooks(plugin), "add hooks")
+
+	//disable warnings, this is what we want to do, as we are adding the same entry back in later
+	const warn = console.warn
+	console.warn = ()=>{}
+	await promise(P.deletePlugin(plugin.pluginID), "deletePlugin")
+	console.warn = warn;
+
+	await promise(P.addPlugin(plugin), "addPlugin")
+	for (const el of pluginExt.hooks) await promise(P.addHook({pluginID:ID, hook:el}), "addPlugin")
+	for (const el of pluginExt.hooks) await promise(P.deleteHook({pluginID:ID, hook:el}), "deletePlugin")
+	for (const el of pluginExt.hooks) await promise(P.addHook({pluginID:ID, hook:el}), "addPlugin")
+}
+
 async function run(...funs : Function[]){
 	for (let i=0;i<funs.length; i++){
 		stored =''
@@ -248,6 +269,7 @@ export async function main(){
 		usersHelper,
 		mentionHelper,
 		courseInviteHelper,
+		pluginHelper,
 		)
 }
 if (require.main === module){

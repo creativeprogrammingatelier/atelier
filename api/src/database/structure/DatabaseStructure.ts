@@ -65,7 +65,8 @@ DROP TABLE IF EXISTS
 	"Courses", "CourseRegistration", 
 	"Submissions", "Files", "Snippets", 
 	"CommentThread", "Comments", 
-	"Mentions", "CourseInvites";
+	"Mentions", "CourseInvites",
+	"Plugins", "PluginHooks";
 
 CREATE TABLE "CourseRolePermissions" (
    courseRoleID      text PRIMARY KEY,
@@ -103,8 +104,43 @@ INSERT INTO "Users" VALUES
 	(DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', 0::bit(${permissionBits}), ''),
 	(DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', 0::bit(${permissionBits}), ''),
 	(DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', 0::bit(${permissionBits}), ''),
-	(DEFAULT, NULL, 'pmd plugin', 'pmd@plugin', 'plugin', 0::bit(${permissionBits}), ''),
+	(DEFAULT, NULL, 'PMD', 'pmd@plugin', 'plugin', 0::bit(${permissionBits}), ''),
 	(DEFAULT, NULL, 'test user', 'test@test', 'user', 0::bit(${permissionBits}), '');
+
+
+CREATE TABLE "Plugins" (
+	pluginID 		uuid PRIMARY KEY REFERENCES "Users"(userID) ON DELETE CASCADE,
+	webHookURL		text NOT NULL,
+	webHookSecret	text NOT NULL,
+	publicKey		text NOT NULL
+);
+INSERT INTO "Plugins" VALUES
+	((SELECT userID FROM "Users" WHERE globalRole='plugin' LIMIT 1), 
+	'http://localhost:5000/atelier/hook', 
+	'Super$ecretWebh00k$ecret', 
+	'-----BEGIN RSA PUBLIC KEY-----
+	MIICCgKCAgEA1y78vFFBb+bBWmVGqO9KWuHYBf2Xo0iFVoFYCF2XMFy32vXIF26H
+	5g0uTIE1p+fza/G58YRQYoCko2HtdC510Enx0+kGj1vvw3p6Kja3s3jv+bzv/6wB
+	zQPs+S7fQ7pGRAVyBEp869y1FpuDp4rengBkXz5OI3wZREvD1db4LhKTZNasAe+W
+	ilO7ohWlUG4u1T5spGHl+mjrxa7ooaKknfB8FP5Upm0fN58r8q3RfF5h1VcaNlpa
+	cFFEMrA7mlx+ZUmyE+YA7AhML1wORNVxDXS9l2ngISaq+7PVmhqDgabI503Sj+gY
+	MqlZ/ziIpS7oGCnfY8VF/sOQ/PEntbTjbiCrPy0nDCfUnKjuulBGqmRKO5DX2wAi
+	Nq9QYiHqXzU90PzADXrKCeT90cOcwXUiUQSDiNGhROp9LgiX1U5BOae1bRjchcNP
+	NDpMbogvgK/yfhTp1+huZbYd+vlp4VWH0BZssVT606u3pwej1lql+Y9JArW8GrRB
+	pYd9P4uTlyzcTtHSqP3on74MGsM9sGkMxZNMvFmgDsDEPCoMphlCCYLhUj7oa8EB
+	k/EiwCFulZ/0NAAK1rJG+LW5tj4uv68jzFRKDQQjwWpzEa+zT4uTfyDp852eaeAj
+	SdfHBttlTZZXgTfHffVPikkBZQueP/sfyUjPXu/QSHCyTv28GPuOH6sCAwEAAQ==
+	-----END RSA PUBLIC KEY-----');
+
+CREATE TABLE "PluginHooks" (
+	pluginID		uuid NOT NULL REFERENCES "Plugins"(pluginID) ON DELETE CASCADE,
+	hook			text NOT NULL,
+	UNIQUE (pluginID, hook)
+);
+INSERT INTO "PluginHooks" VALUES
+	((SELECT pluginID FROM "Plugins" LIMIT 1),
+	'submission.file'
+	);
 
 CREATE TABLE "Courses" (
 	courseID    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -166,17 +202,21 @@ CREATE TABLE "Snippets" (
 	lineEnd           integer NOT NULL,
 	charStart         integer NOT NULL,
 	charEnd           integer NOT NULL,
-	body              text NOT NULL
+	body              text NOT NULL,
+	contextBefore	  text NOT NULL,
+	contextAfter	  text NOT NULL
 );
 INSERT INTO "Snippets" VALUES
 	(    ${uuid}, 
 		 0, 1, 0, 0, 
-		 'this is a snippet of a file'
+		 'this is a snippet of a file',
+		 'head context',
+		'footer context'
 	),
 	( -- a null snippet
 		 'ffffffff-ffff-ffff-ffff-ffffffffffff',
 		 -1, -1, -1, -1,
-		 ''
+		 '','',''
 	);
 
 CREATE TABLE "CommentThread" (
