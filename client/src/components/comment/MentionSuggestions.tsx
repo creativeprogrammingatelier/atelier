@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { searchUsersInCourse } from "../../../../helpers/APIHelper";
+import { searchUsersInCourse } from "../../../helpers/APIHelper";
 
 interface MentionSuggestionsProperties {
 	/** Already inserted text to match with the start of suggestions */
