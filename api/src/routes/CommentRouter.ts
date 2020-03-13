@@ -2,7 +2,7 @@
  * Api routes relating to comments
  */
 
-import express, { Response, Request } from 'express';
+import express from 'express';
 import {CommentDB} from "../database/CommentDB";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
@@ -16,22 +16,20 @@ commentRouter.use(AuthMiddleware.requireAuth);
 /**
  * Get all comments by a user
  */
-commentRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
+commentRouter.get("/user/:userID", capture(async (request, response) => {
     const userID = request.params.userID;
     const comments = await CommentDB.filterComment({userID});
     response.status(200).send(comments);
-    // TODO: Error handling
 }));
 
 /**
  * Get all comments by a user within a course
  */
-commentRouter.get("/course/:courseID/user/:userID", capture(async(request: Request, response: Response) => {
+commentRouter.get("/course/:courseID/user/:userID", capture(async (request, response) => {
     const courseID = request.params.courseID;
     const userID = request.params.userID;
     const comments = await CommentDB.filterComment({courseID, userID});
     response.status(200).send(comments);
-    // TODO: Error handling
 }));
 
 /** ---------- PUT REQUESTS ---------- */
@@ -43,7 +41,7 @@ commentRouter.get("/course/:courseID/user/:userID", capture(async(request: Reque
  * - requirements:
  *  - user is registered in the course of the commentThread
  */
-commentRouter.put('/:commentThreadID',capture(async(request : Request, response : Response) => {
+commentRouter.put('/:commentThreadID', capture(async (request, response) => {
         const commentThreadID = request.params.commentThreadID;
         const currentUserID : string = await getCurrentUserID(request);
         const commentBody = request.body.commentBody;
@@ -52,7 +50,7 @@ commentRouter.put('/:commentThreadID',capture(async(request : Request, response 
         await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 
         const comment : Comment = await CommentDB.addComment({
-            commentThreadID : commentThreadID,
+            commentThreadID,
             userID : currentUserID,
             body : commentBody
         });
