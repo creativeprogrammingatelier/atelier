@@ -19,6 +19,8 @@ import {
     requireRegisteredFileID, requireRegisteredSubmissionID
 } from "../helpers/PermissionHelper";
 import {filterCommentThread} from "../helpers/APIFilterHelper";
+import { getMentions } from '../helpers/MentionsHelper';
+import { MentionsDB } from '../database/MentionsDB';
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -129,6 +131,11 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
         body : commentBody,
         client
     });
+
+    const mentionedUsers = await getMentions(commentBody, comment.references.courseID, client);
+    for (const user of mentionedUsers) {
+        await MentionsDB.addMention({ userID: user.ID, commentID: comment.ID, client });
+    }
 
     return { ...commentThread, comments: commentThread.comments.concat(comment) };
 }

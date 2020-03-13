@@ -9,6 +9,9 @@ import {capture} from "../helpers/ErrorHelper";
 import {Comment} from "../../../models/api/Comment";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {requireRegisteredCommentThreadID} from "../helpers/PermissionHelper";
+import { getMentions } from '../helpers/MentionsHelper';
+import { MentionsDB } from '../database/MentionsDB';
+import { getClient } from '../database/HelperDB';
 
 export const commentRouter = express.Router();
 commentRouter.use(AuthMiddleware.requireAuth);
@@ -49,10 +52,28 @@ commentRouter.put('/:commentThreadID', capture(async (request, response) => {
         // User should be registered
         await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 
-        const comment : Comment = await CommentDB.addComment({
-            commentThreadID,
-            userID : currentUserID,
-            body : commentBody
-        });
-        response.status(200).send(comment);
+        const client = await getClient();
+        try {
+            await client.query('BEGIN');
+
+            const comment : Comment = await CommentDB.addComment({
+                commentThreadID,
+                userID : currentUserID,
+                body : commentBody,
+                client
+            });
+            
+            const mentionedUsers = await getMentions(commentBody, comment.references.courseID, client);
+            await Promise.all(mentionedUsers.map(user => 
+                MentionsDB.addMention({ userID: user.ID, commentID: comment.ID, client })
+            ));
+
+            await client.query('COMMIT');
+            response.status(200).send(comment);
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        } finally {
+            client.release();
+        }
 }));
