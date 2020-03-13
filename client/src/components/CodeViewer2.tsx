@@ -10,7 +10,7 @@ import 'codemirror/addon/search/jump-to-line.js';
 import {Controlled as CodeMirror} from 'react-codemirror2';
 import {FileSnippet} from "./submission/CodeTab";
 import {Editor} from "codemirror";
-import {WriteComment} from "./submission/comment/WriteComment";
+import {WriteComment} from "./comment/WriteComment";
 import { Button } from 'react-bootstrap';
 import { JsonFetchError } from '../../helpers/FetchHelper';
 import { getFileComments, createFileCommentThread } from '../../helpers/APIHelper';

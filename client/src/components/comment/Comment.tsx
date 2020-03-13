@@ -1,6 +1,6 @@
 import React from "react";
 
-import {Comment} from "../../../../../models/api/Comment";
+import {Comment} from "../../../../models/api/Comment";
 
 interface CommentProperties {
 	comment: Comment
