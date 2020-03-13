@@ -133,9 +133,9 @@ INSERT INTO "CourseRegistration" VALUES
 
 CREATE TABLE "CourseInvites" (
 	inviteID 		uuid PRIMARY KEY DEFAULT gen_random_uuid(), 
-	userID 			uuid NOT NULL REFERENCES "Users"(userID) ON DELETE CASCADE, 
-	courseID 		uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE, 
-	type 			text NOT NULL, 
+	creatorID		uuid NOT NULL REFERENCES "Users"(userID) ON DELETE CASCADE, 
+	courseID		uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE, 
+	type			text NOT NULL, 
 	joinRole		text NOT NULL REFERENCES "CourseRolePermissions"(courseRoleID)
 );
 

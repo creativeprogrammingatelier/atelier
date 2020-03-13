@@ -1,3 +1,4 @@
+console.log("config import")
 /** Helpers for reading configuration files */
 import fs from 'fs';
 

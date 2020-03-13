@@ -1,9 +1,11 @@
+console.log("started", new Date())
+
 import { Request, Response, CookieOptions } from 'express'
 import jwt from 'jsonwebtoken';
 
 import { AUTHSECRETKEY, TOKEN_EXPIRATION } from '../lib/constants';
 import { config } from '../helpers/ConfigurationHelper';
-
+console.log("imported", new Date())
 /** Error that gets thrown when the user is not authorized or authenticated */
 export class AuthError extends Error {
     reason: string

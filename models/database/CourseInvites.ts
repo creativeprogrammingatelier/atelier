@@ -5,14 +5,14 @@ import { DBTools } from "../../api/src/database/HelperDB";
 
 export interface CourseInvite extends DBTools{
 	inviteID? : string,
-	userID? : string,
+	creatorID? : string,
 	courseID? : string,
 	type? : string,
 	joinRole? : localRole,
 }
 export interface DBCourseInvite {
 	inviteid : string,
-	userid : string,
+	creatorid : string,
 	courseid : string,
 	type : string,
 	joinrole : localRole,
@@ -24,7 +24,7 @@ export function convertCourseInvite(db : DBCourseInvite) : CourseInvite {
 	}
 	return {
 		inviteID: UUIDHelper.fromUUID(db.inviteid),
-		userID: UUIDHelper.fromUUID(db.userid),
+		creatorID: UUIDHelper.fromUUID(db.creatorid),
 		courseID: UUIDHelper.fromUUID(db.courseid),
 		type: db.type,
 		joinRole: localRole[db.joinrole]
