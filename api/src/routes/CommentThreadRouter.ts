@@ -56,7 +56,7 @@ commentThreadRouter.get('/file/:fileID', capture(async (request: Request, respon
     await requireRegisteredFileID(currentUserID, fileID);
 
     // Retrieve comment threads, and filter out restricted comment threads if user does not have access
-    let commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
+    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
@@ -76,7 +76,7 @@ commentThreadRouter.get('/submission/:submissionID', capture(async (request: Req
     await requireRegisteredSubmissionID(currentUserID, submissionID);
 
     // Retrieve comment threads, and filter out restricted comment threads if user does not have access
-    let commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
+    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
@@ -96,7 +96,7 @@ commentThreadRouter.get('/submission/:submissionID/recent', capture(async (reque
     await requireRegisteredSubmissionID(currentUserID, submissionID);
 
     // Retrieve comment threads, and filter out restricted comment threads if user does not have access
-    let commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit : limit}));
+    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
@@ -112,11 +112,11 @@ commentThreadRouter.get('/submission/:submissionID/recent', capture(async (reque
  */
 async function createCommentThread(snippetID : string | undefined, fileID : string | undefined, submissionID : string | undefined, request : Request, client : pgDB) {
     const commentThread : CommentThread = await ThreadDB.addThread({
-        submissionID : submissionID,
-        fileID : fileID,
-        snippetID : snippetID,
+        submissionID,
+        fileID,
+        snippetID,
         visibilityState : request.body.visiblityState ? request.body.visibilityState : threadState.public,
-        client : client
+        client
     });
 
     // Comment creation
@@ -125,9 +125,9 @@ async function createCommentThread(snippetID : string | undefined, fileID : stri
 
     await CommentDB.addComment({
         commentThreadID : commentThread.ID,
-        userID : userID,
+        userID,
         body : commentBody,
-        client : client
+        client
     });
 
     return commentThread;
@@ -152,10 +152,10 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
         await client.query('BEGIN');
 
         // Snippet creation
-        const snippetID : string | undefined = await SnippetDB.createNullSnippet({client : client});
+        const snippetID : string | undefined = await SnippetDB.createNullSnippet({client});
 
         // Thread creation
-        const fileID : string = await FileDB.getNullFileID(submissionID, {client : client}) as unknown as string;
+        const fileID : string = await FileDB.getNullFileID(submissionID, {client}) as unknown as string;
         const commentThread : CommentThread = await createCommentThread(snippetID, fileID, submissionID, request, client);
         commentThreadID = commentThread.ID;
 
@@ -167,7 +167,7 @@ commentThreadRouter.post('/submission/:submissionID', capture( async(request : R
         client.release();
     }
 
-    if (commentThreadID == undefined) {
+    if (commentThreadID === undefined) {
         response.status(500).send({
             error : 'db',
             message : 'Could not add the comment thread.'
@@ -198,8 +198,8 @@ commentThreadRouter.post('/file/:fileID', capture(async (request : Request, resp
 
         // Snippet creation
         let snippetID : string | undefined;
-        if (request.body.snippetBody == undefined) {
-            snippetID = await SnippetDB.createNullSnippet({client : client});
+        if (request.body.snippetBody === undefined) {
+            snippetID = await SnippetDB.createNullSnippet({client});
         } else {
             snippetID = await SnippetDB.addSnippet({
                 lineStart : request.body.lineStart,
@@ -207,7 +207,7 @@ commentThreadRouter.post('/file/:fileID', capture(async (request : Request, resp
                 lineEnd : request.body.lineEnd,
                 charEnd : request.body.charEnd,
                 body : request.body.snippetBody,
-                client : client
+                client
             });
         }
 
@@ -224,7 +224,7 @@ commentThreadRouter.post('/file/:fileID', capture(async (request : Request, resp
         client.release();
     }
 
-    if (commentThreadID == undefined) {
+    if (commentThreadID === undefined) {
         response.status(500).send({
             error : 'db',
             message : 'Could not add the comment thread.'

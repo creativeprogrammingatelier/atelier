@@ -61,3 +61,19 @@ userRouter.get('/', capture(async(request : Request, response : Response) => {
 	const user : User = await UserDB.getUserByID(userID);
 	response.status(200).send(user);
 }));
+
+
+/** ---------- PUT REQUESTS ---------- */
+/** Set details for current user */
+userRouter.put('/', capture(async(request : Request, response : Response) => {
+	const currentUserID : string = await getCurrentUserID(request);
+	const updatedEmail : string | undefined = request.body.email;
+	const updatedName : string | undefined = request.body.name;
+
+	const user : User = await UserDB.updateUser({
+		userID : currentUserID,
+		email : updatedEmail,
+		userName : updatedName
+	});
+	response.status(200).send(user);
+}));

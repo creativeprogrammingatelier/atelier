@@ -52,7 +52,7 @@ commentRouter.put('/:commentThreadID',capture(async(request : Request, response 
         await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 
         const comment : Comment = await CommentDB.addComment({
-            commentThreadID : commentThreadID,
+            commentThreadID,
             userID : currentUserID,
             body : commentBody
         });

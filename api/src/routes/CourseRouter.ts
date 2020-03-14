@@ -88,16 +88,16 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 
 		const course : CoursePartial = await CourseDB.addCourse({
 			courseName : name,
-			state : state,
+			state,
 			creatorID : currentUserID,
-			client : client
+			client
 		});
 
 		await CourseRegistrationDB.addEntry({
 			courseID : course.ID,
 			userID : currentUserID,
 			role : localRole.student,
-			client : client
+			client
 		});
 
 		await client.query('COMMIT');
@@ -127,8 +127,8 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 	await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
 
 	const courseRegistration : CourseRegistrationOutput = await CourseRegistrationDB.addEntry({
-		courseID : courseID,
-		userID : userID,
+		courseID,
+		userID,
 		role : localRole.student
 	});
 	response.status(200).send(courseRegistration);
