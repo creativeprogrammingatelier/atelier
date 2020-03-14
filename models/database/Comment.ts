@@ -7,6 +7,8 @@ export interface Comment extends DBTools {
 	commentThreadID?: string, 
 	submissionID?: string,
 	courseID?: string,
+	fileID?: string,
+	snippetID?: string,
     userID?: string,
     date?: Date,
 	body?: string
@@ -17,6 +19,8 @@ export interface DBComment {
 	commentthreadid: string, 
 	submissionid: string,
 	courseid: string,
+	fileid: string,
+	snippetid: string,
     userid: string,
     date: Date,
     body: string
@@ -48,7 +52,9 @@ export function commentToAPI(db : DBAPIComment) : APIComment {
 		references: {
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),
-			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid)
+			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
+			fileID: UUIDHelper.fromUUID(db.fileid),
+			snippetID: UUIDHelper.fromUUID(db.snippetid)
 		}
 	}
 }
@@ -59,6 +65,8 @@ export function onlyComment(obj : Comment){
 		submissionID: obj.submissionID,
 		courseID: obj.courseID,
 		userID: obj.userID,
+		fileID: obj.fileID,
+		snippetID: obj.snippetID,
 		date: obj.date,
 		body: obj.body
 	}

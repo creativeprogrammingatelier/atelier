@@ -1,7 +1,7 @@
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf } from "./HelperDB";
 import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet} from '../../../models/database/Snippet';
 import { UUIDHelper } from "../helpers/UUIDHelper";
-import { snippetsView } from "./makeDB";
+import { snippetsView } from "./ViewsDB";
 
 /**
  * 
@@ -32,6 +32,9 @@ export class SnippetDB {
 			charStart = undefined,
 			charEnd = undefined,
 			body = undefined,
+			contextBefore = undefined,
+			contextAfter = undefined,
+
 			limit = undefined,
 			offset = undefined,
 			client = pool,
@@ -42,7 +45,9 @@ export class SnippetDB {
 			commentthreadid = UUIDHelper.toUUID(commentThreadID),
 			submissionid = UUIDHelper.toUUID(submissionID),
 			courseid = UUIDHelper.toUUID(courseID),
-			searchBody = searchify(body)
+			searchBody = searchify(body),
+			searchBefore = searchify(contextBefore),
+			searchAfter = searchify(contextAfter)
 
 		return client.query(
 			`SELECT * FROM "SnippetsView" 
@@ -56,31 +61,35 @@ export class SnippetDB {
 			AND ($7::integer IS NULL OR lineEnd=$7)
 			AND ($8::integer IS NULL OR charStart=$8)
 			AND ($9::integer IS NULL OR charEnd=$9)
-			AND ($10::text IS NULL OR  body ILIKE $10)
+			AND ($10::text IS NULL OR body ILIKE $10)
+			AND ($11::text IS NULL OR contextBefore ILIKE $11)
+			AND ($12::text IS NULL OR contextAfter ILIKE $12)
 			ORDER BY snippetID
-			LIMIT $11
-			OFFSET $12
+			LIMIT $13
+			OFFSET $14
 			`,[snippetid, fileid, commentthreadid, submissionid, courseid, 
-				lineStart, lineEnd, charStart, charEnd, searchBody, limit, offset ])
+				lineStart, lineEnd, charStart, charEnd, searchBody, searchBefore, searchAfter,
+				limit, offset ])
 		.then(extract).then(map(snippetToAPI)).then(doIf(!includeNulls, filterNullSnippet))
 		
 	}
 
 	static async createNullSnippet(params : DBTools = {}){
-		const {client =pool} = params
-		const nullSnippet = {...params, body:'', lineStart:-1, lineEnd:-1, charEnd:-1, charStart:-1}
+		const nullSnippet = {...params, body:'', contextAfter:'',contextBefore:'', lineStart:-1, lineEnd:-1, charEnd:-1, charStart:-1}
 		return SnippetDB.addSnippet(nullSnippet)
 	}
 
 	static async addSnippet(snippet : Snippet) : Promise<string>{
 		// console.log("this function only adds a single snippet. you might want to use a function that also makes the thread immediately.")
-		checkAvailable(['lineStart','lineEnd','charStart','charEnd', 'body'], snippet)
+		checkAvailable(['lineStart','lineEnd','charStart','charEnd', 'body', 'contextBefore','contextAfter'], snippet)
 		const {
 			lineStart,
 			lineEnd,
 			charStart,
 			charEnd,
 			body,
+			contextBefore,
+			contextAfter,
 			client =pool
 		} = snippet
 		// if (lineStart === -1){
@@ -88,14 +97,14 @@ export class SnippetDB {
 		// }
 		return client.query(`
 			INSERT INTO "Snippets"
-			VALUES (DEFAULT, $1, $2, $3, $4, $5) 
+			VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7) 
 			RETURNING snippetID
-			`, [lineStart, lineEnd, charStart, charEnd, body])
+			`, [lineStart, lineEnd, charStart, charEnd, body, contextBefore, contextAfter])
 		.then(extract).then(one).then(res => UUIDHelper.fromUUID(res.snippetid as string))
 	}
 	
 
-	static async updateSnippet(snippet : Snippet, DB : pgDB = pool){
+	static async updateSnippet(snippet : Snippet){
 		checkAvailable(['snippetID'], snippet)
 		const {
 			snippetID,
@@ -103,22 +112,27 @@ export class SnippetDB {
 			lineEnd = undefined,
 			charStart = undefined,
 			charEnd = undefined,
-			body = undefined
+			body = undefined,
+			contextBefore = undefined,
+			contextAfter = undefined,
+			client = pool
 		} = snippet
 		const snippetid = UUIDHelper.toUUID(snippetID);
-		return DB.query(`
+		return client.query(`
 			WITH update AS (
 				UPDATE "Snippets" SET 
 				lineStart = COALESCE($2, lineStart),
 				lineEnd = COALESCE($3, lineEnd),
 				charStart = COALESCE($4, charStart),
 				charEnd = COALESCE($5, charEnd),
-				body = COALESCE($6, body)
+				body = COALESCE($6, body),
+				contextBefore = COALESCE($7, contextBefore),
+				contextAfter = COALESCE($8, contextAfter)
 				WHERE snippetID=$1
 				RETURNING *
 			)
 			${snippetsView('update')}
-			`, [snippetid, lineStart, lineEnd, charStart, charEnd, body])
+			`, [snippetid, lineStart, lineEnd, charStart, charEnd, body, contextBefore, contextAfter])
 		.then(extract).then(map(snippetToAPI)).then(one)
 	}
 

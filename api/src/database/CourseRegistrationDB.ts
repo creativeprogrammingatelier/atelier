@@ -1,4 +1,4 @@
-import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools } from "./HelperDB";
+import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools, permissionBits } from "./HelperDB";
 
 import {CourseRegistration, convertCourseReg, DBCourseRegistration, DBAPICourseRegistration, courseRegToAPI, APICourseRegistration} from '../../../models/database/CourseRegistration';
 import {RolePermissionDB} from './RolePermissionDB'
@@ -7,7 +7,7 @@ import { CoursePartial } from "../../../models/api/Course";
 import { User } from "../../../models/database/User";
 import { APIPermission } from "../../../models/database/RolePermission";
 import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
-import { CourseRegistrationView, permissionBits } from "./makeDB";
+import { CourseRegistrationView} from "./ViewsDB";
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz

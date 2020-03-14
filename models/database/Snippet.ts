@@ -13,6 +13,8 @@ export interface Snippet extends DBTools{
 	charStart?: number,
 	charEnd?: number,
 	body?: string,
+	contextBefore? : string,
+	contextAfter? : string,
 	includeNulls?:boolean,
 
 }
@@ -27,7 +29,9 @@ export interface DBSnippet {
 	lineend: number,
 	charstart: number,
 	charend: number,
-	body: string
+	body: string,
+	contextbefore:string,
+	contextafter:string,
 
 }
 
@@ -51,7 +55,9 @@ export function convertSnippet(db : DBSnippet) : Snippet {
 		lineEnd: db.lineend,
 		charStart: db.charstart,
 		charEnd: db.charend,
-		body: db.body
+		body: db.body,
+		contextBefore: db.contextbefore,
+		contextAfter: db.contextafter,
 	}
 	// for (const key in db){
 	// 	if (key in keys) continue
@@ -73,6 +79,8 @@ export function snippetToAPI(db : DBAPISnippet) : APISnippet {
 			character: db.charend
 		},
 		body : db.body,
+		contextBefore: db.contextbefore,
+		contextAfter: db.contextafter,
 		references: {
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),

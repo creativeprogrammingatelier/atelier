@@ -29,6 +29,9 @@ tbody {
 		background-color: $colorOffWhite;
 	}
 }
+form:last-child {
+	margin-bottom: 0;
+}
 textarea {
 	width: 100%;
 	vertical-align: top;
@@ -86,7 +89,8 @@ textarea:focus, textarea:active {
 .sidebar {
 	height: 100vh;
 	background: $gradientVertical;
-	box-shadow: $shadowLarge; // TODO: Only for mobile
+	box-shadow: $shadowLarge;
+	z-index: 1030;
 }
 .sidebarContent {
 	width: 100%;
@@ -253,6 +257,12 @@ textarea:focus, textarea:active {
 	max-height:50vh;
 }
 
+.form-group {
+	margin: 0;
+}
+.form-group:not(:last-child) {
+	margin-bottom: 1rem;
+}
 .input-group {
 	background-color: $colorWhite;
 }
@@ -458,4 +468,8 @@ textarea:focus, textarea:active {
 }
 .directoryTopLevel:last-child .toast-body {
 	padding-bottom: 0.5rem;
+}
+
+.transparent {
+	background: transparent;
 }

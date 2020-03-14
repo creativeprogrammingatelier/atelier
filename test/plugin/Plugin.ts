@@ -1,3 +1,4 @@
+console.log("plugin start", new Date())
 import crypto from 'crypto';
 
 export const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", { modulusLength: 1024 });
@@ -23,3 +24,4 @@ config.plugins = [ plugin ];
 // Reset freeze
 Object.freeze = freeze;
 Object.freeze(config);
+console.log("done freeze", new Date())

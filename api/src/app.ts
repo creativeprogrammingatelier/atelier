@@ -22,9 +22,10 @@ import { searchRouter } from './routes/SearchRouter';
 import { submissionRouter } from './routes/SubmissionRouter';
 import { userRouter } from './routes/UserRouter';
 import { commentThreadRouter} from './routes/CommentThreadRouter'
-import { commentRouter } from "./routes/CommentRouter";
-import {permissionRouter} from "./routes/PermissionRouter";
-import {roleRouter} from "./routes/RoleRouter";
+import { commentRouter } from './routes/CommentRouter';
+import { permissionRouter } from './routes/PermissionRouter';
+import { roleRouter } from './routes/RoleRouter';
+import { mentionsRouter } from './routes/MentionsRouter';
 
 import { NotFoundDatabaseError } from './database/DatabaseErrors';
 import { parsePostgresErrorCode, isPostgresError, PostgresError } from './helpers/DatabaseErrorHelper';
@@ -65,6 +66,7 @@ app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/file', fileRouter);
+app.use('/api/mentions', mentionsRouter);
 app.use('/api/permission', permissionRouter);
 app.use('/api/role', roleRouter);
 app.use('/api/search', searchRouter);

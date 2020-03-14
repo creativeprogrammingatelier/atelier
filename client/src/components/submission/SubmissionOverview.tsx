@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 
@@ -6,11 +6,9 @@ import {Frame} from "../frame/Frame";
 import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {CommentThread} from "../../../../models/api/CommentThread";
-import {CommentThread as CommentThreadComponent} from "./comment/CommentThread";
-import {FileNameHelper} from "../../helpers/FileNameHelper";
+import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
 import {Submission} from "../../../../models/api/Submission";
 import {DataList} from "../general/data/DataList";
-import {DataItem} from "../general/data/DataItem";
 import {Course} from "../../../../models/api/Course";
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";

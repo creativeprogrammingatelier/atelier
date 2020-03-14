@@ -3,7 +3,7 @@ import {Course, courseToAPIPartial, DBAPICourse} from '../../../models/database/
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { FileDB } from "./FileDB";
 import { User } from "../../../models/database/User";
-import { CoursesView } from "./makeDB";
+import { CoursesView } from "./ViewsDB";
 
 /**
  * @Author Rens Leendertz

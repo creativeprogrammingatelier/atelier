@@ -12,6 +12,8 @@ export interface Snippet {
 		character: number
 	},
 	body :string,
+	contextBefore : string,
+	contextAfter : string,
 	references: {
 		courseID: string,
 		submissionID: string,

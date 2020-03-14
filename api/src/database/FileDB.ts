@@ -1,7 +1,7 @@
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf } from "./HelperDB";
 import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles} from '../../../models/database/File';
 import { UUIDHelper } from "../helpers/UUIDHelper";
-import { filesView } from "./makeDB";
+import { filesView } from "./ViewsDB";
 
 /**
  * fileID, submissionID, pathname, type
