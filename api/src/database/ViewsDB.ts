@@ -84,14 +84,14 @@ export function CourseRegistrationViewAll(){
              c.courseID, 
              u.userID, 
              u.permission,
-             COALESCE( -- if no entry present, use 'unauthorized'
+             COALESCE( -- if no entry present, use 'unregistered'
                 (
                    SELECT e.courseRole 
                    FROM "CourseRegistration" as e
                    WHERE e.courseID=c.courseID 
                      AND e.userID=u.userID
                 ), 
-                'unauthorized'
+                'unregistered'
              ) AS courseRole
           FROM  
              "UsersView" as u, 
@@ -130,7 +130,7 @@ export function CourseUsersView(){
  WITH entries as (
  select * from "CourseRegistration"
  ), defaults as (
- select c.courseID, u.userID, 'unauthorized' as courseRole, 0::bit(40) as permission from "Users" as u, "Courses" as c
+ select c.courseID, u.userID, 'unregistered' as courseRole, 0::bit(40) as permission from "Users" as u, "Courses" as c
  )
  select d.courseID, d.userID, COALESCE((SELECT e.courseRole from entries as e where e.courseID=d.courseID AND e.userID=d.userID), d.courseRole) FROM defaults as d
  * 
