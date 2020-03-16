@@ -2,6 +2,8 @@ import * as React from 'react';
 import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {UserSettings} from "./UserSettings";
+import {CourseSettings} from "./CourseSettings";
+import {DataList} from "../general/data/DataList";
 
 export function Settings() {
     return (
@@ -11,12 +13,8 @@ export function Settings() {
                 <Button>Have a button!</Button>
             </Jumbotron>
 
-            <UserSettings />
-
-            <h1>Course settings</h1>
-            <p>List of courses</p>
-            <p>Change course name</p>
-            <p>Change user role / permissions in course</p>
+            <DataList header="User Details" children = {<UserSettings />} />
+            <DataList header="Course Settings" children = {<CourseSettings />} />
         </Frame>
     )
 }

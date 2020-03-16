@@ -1,11 +1,7 @@
-import * as React from 'react';
-import {Loading} from "../general/loading/Loading";
-import {getCourses, getCurrentUser, getUser, setUser} from "../../../helpers/APIHelper";
-import {User} from "../../../../models/api/User";
+import React from 'react';
 import {useState} from "react";
-import {InputField} from "../general/InputField";
 
-export function UserSettings() {
+export function CourseSettings() {
     const [reload, setReload] = useState(false);
     // if view all courses => get all courses
 
@@ -13,6 +9,13 @@ export function UserSettings() {
     // view courses with manageUserRole
 
     return (
-        <div></div>
+        <div>
+            <h1>Course settings</h1>
+            <p>List of courses</p>
+            <p>Change course name</p>
+            <p>Change user role / permissions in course</p>
+        </div>
+
+
     )
 }

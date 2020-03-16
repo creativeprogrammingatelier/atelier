@@ -12,6 +12,7 @@ import {LoginProvider} from "../../models/api/LoginProvider";
 import {Permission} from "../../models/api/Permission";
 import {SearchResult} from '../../models/api/SearchResult';
 import {Mention} from '../../models/api/Mention';
+import {CourseInvite, Invite} from "../../models/api/Invite";
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -165,4 +166,20 @@ export function coursePermission(courseID: string, doCache?: boolean) {
 }
 export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
+}
+
+// Invites
+export function getInvites(courseID : string, doCache? : boolean) {
+	return Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`, undefined, doCache);
+}
+
+export function getInvite(courseID : string, role : string, doCache? : boolean) {
+	return Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`, undefined, doCache);
+}
+
+export function deleteInvite(courseID : string, role : string, doCache?: boolean) {
+	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {
+		method: "DELETE",
+		headers: {"Content-Type": "application/json"}
+	}, doCache);
 }

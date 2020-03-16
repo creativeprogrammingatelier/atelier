@@ -2,6 +2,8 @@ import { localRole, checkEnum } from "../../enums/localRoleEnum";
 import { DatabaseError } from "../../api/src/database/DatabaseErrors";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { DBTools } from "../../api/src/database/HelperDB";
+import { CourseInvite as Invite } from "../api/Invite";
+
 
 export interface CourseInvite extends DBTools{
 	inviteID? : string,
@@ -18,7 +20,7 @@ export interface DBCourseInvite {
 	joinrole : localRole,
 }
 
-export function convertCourseInvite(db : DBCourseInvite) : CourseInvite {
+export function convertCourseInvite(db : DBCourseInvite) : Invite {
 	if (!(checkEnum(db.joinrole))){
 		throw new DatabaseError('database gave a course role which was not recognised by the backend')
 	}

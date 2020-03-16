@@ -13,6 +13,7 @@ import {getGlobalPermissions, requirePermission, requireRegistered} from "../hel
 import {PermissionEnum} from "../../../enums/permissionEnum";
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
+import {localRole} from "../../../enums/localRoleEnum";
 
 export const permissionRouter = express.Router();
 permissionRouter.use(AuthMiddleware.requireAuth);
@@ -38,21 +39,19 @@ permissionRouter.get('/all',capture(async(request : Request, response : Response
 
 /**
  * Get user permissions of a course
- * - requirements:
- *  - user is registered in the course
  */
 permissionRouter.get('/course/:courseID', capture(async(request :Request, response: Response) => {
     const courseID : string = request.params.courseID;
     const userID : string = await getCurrentUserID(request);
 
-    // User should be registered in the course
-    await requireRegistered(userID, courseID);
-
+    // If user not registered in the course, return global permissions and localRole.none
     const coursePermissions : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-    if (coursePermissions[0] === undefined) throw new AuthError("course.noRegistration", "You don't have permission to view this data");
+    const coursePermission : number = coursePermissions.length > 0 ? coursePermissions[0].permission : 0;
+    const globalPermission : number = await getGlobalPermissions(userID);
+
     const permission : Permission = {
-        role : coursePermissions[0].role,
-        permissions : coursePermissions[0].permission
+        role : coursePermissions.length > 0 ? coursePermissions[0].role : localRole.none,
+        permissions : coursePermission | globalPermission
     };
     response.status(200).send(permission);
 }));
