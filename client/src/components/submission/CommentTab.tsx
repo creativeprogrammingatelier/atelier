@@ -15,8 +15,6 @@ interface CommentTabProperties {
 
 // TODO sort threads once new interface is implemented. Useful for switch between code and comment threads.
 export function CommentTab({file}: CommentTabProperties) {
-	useEffect(() => ScrollHelper.scrollToHash(), []);
-
 	return <div className="contentTab">
 		<div className="m-3">
 			<Loading<APICommentThread[]>

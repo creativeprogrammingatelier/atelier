@@ -1,4 +1,4 @@
-import React, {useState, Fragment} from "react";
+import React, {useState, Fragment, useEffect} from "react";
 
 import {Comment as CommentComponent} from "./Comment";
 import {ButtonBar} from "../general/ButtonBar";
@@ -11,6 +11,7 @@ import {File} from "../../../../models/api/File";
 import {Snippet} from "./Snippet";
 import {Link} from "react-router-dom";
 import {CommentCreator} from "./CommentCreator";
+import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -59,6 +60,8 @@ export function CommentThread({thread}: CommentThreadProperties) {
 		// TODO: Some form of success feedback, probably
 	};
 
+	useEffect(() => ScrollHelper.scrollToHash(), []);
+
 	return (
 		<div id={thread.ID} className="commentThread">
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
@@ -84,7 +87,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 						</Button>
 					</Link>
 				}
-				<Button onClick={() => setOpened(!opened)}>{opened ? <FiChevronDown size={14} color="#FFFFFF"/> : <FiChevronUp size={14} color="#FFFFFF"/>}</Button>
+				<Button onClick={() => setOpened(!opened)}>{opened ? <FiChevronUp size={14} color="#FFFFFF"/> : <FiChevronDown size={14} color="#FFFFFF"/>}</Button>
 			</ButtonBar>
 		</div>
 	);
