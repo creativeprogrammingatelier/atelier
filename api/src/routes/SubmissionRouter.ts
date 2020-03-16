@@ -50,9 +50,8 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         const submission = await SubmissionDB.addSubmission({ 
             title : request.body["project"],
             courseID: request.params.courseID, 
-            userID,
-            client
-        });
+            userID
+        }, client);
         
         const dbFiles = await Promise.all(
             files.map(file => 

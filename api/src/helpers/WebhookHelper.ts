@@ -40,6 +40,8 @@ async function postWebhook<T>(plugin: PluginConfiguration, event: string, body: 
     const res = await fetch(createWebhookRequest(plugin, event, body));
     if (!res.ok) {
         // TODO: store this somewhere the plugin owner can see it
-        console.log(`Error while posting webhook request. Recipient: ${plugin} Event: ${event}`);
+        const resText = await res.text();
+        console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.userID}). 
+            Got response ${res.status}: ${resText}`);
     }
 }
