@@ -51,7 +51,7 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
     const globalPermission : number = await getGlobalPermissions(userID);
 
     const permission : Permission = {
-        role : coursePermissions.length > 0 ? coursePermissions[0].role : courseRole.none,
+        role : coursePermissions.length > 0 ? coursePermissions[0].role : courseRole.unregistered,
         permissions : coursePermission | globalPermission
     };
     response.status(200).send(permission);
