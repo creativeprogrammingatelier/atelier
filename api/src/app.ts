@@ -33,6 +33,7 @@ import { AuthError } from './helpers/AuthenticationHelper';
 import { AuthMiddleware } from './middleware/AuthMiddleware';
 import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
 import { InvalidParamsError } from './helpers/ParamsHelper';
+import {inviteRouter} from "./routes/InviteRouter";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -66,6 +67,7 @@ app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/file', fileRouter);
+app.use('/api/invite', inviteRouter);
 app.use('/api/mentions', mentionsRouter);
 app.use('/api/permission', permissionRouter);
 app.use('/api/role', roleRouter);

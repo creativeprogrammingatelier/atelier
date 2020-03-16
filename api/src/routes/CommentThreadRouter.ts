@@ -22,6 +22,7 @@ import {filterCommentThread} from "../helpers/APIFilterHelper";
 import { getMentions } from '../helpers/MentionsHelper';
 import { MentionsDB } from '../database/MentionsDB';
 import {Snippet} from "../../../models/api/Snippet";
+import {getCommentLines} from "../../../client/src/helpers/CommentHelper";
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -179,6 +180,8 @@ commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
     await requireRegisteredFileID(currentUserID, fileID);
 
     const commentThread = await transaction(async client => {
+        //const snippetContext = getCommentLines()
+
         // Snippet creation
         let snippetID: string | undefined;
         if (request.body.snippetBody === undefined) {
@@ -189,7 +192,9 @@ commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
                 charStart: request.body.charStart,
                 lineEnd: request.body.lineEnd,
                 charEnd: request.body.charEnd,
+                contextBefore : request.body.contextBefore,
                 body: request.body.snippetBody,
+                contextAfter : request.body.contextAfter,
                 client
             });
         }
@@ -198,7 +203,7 @@ commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
         const submissionID: string = request.body.submissionID;
         return createCommentThread(request, client, snippetID, fileID, submissionID);
     });
-    
+
     response.status(200).send(commentThread);
 }));
 

@@ -105,7 +105,9 @@ export function getRecentComments(submissionID: string, doCache?: boolean) {
 }
 
 interface CommentThreadProperties {
+	contextBefore? : string,
 	snippetBody?: string,
+	contextAfter? : string,
 	lineStart?: number,
 	charStart?: number,
 	lineEnd?: number,

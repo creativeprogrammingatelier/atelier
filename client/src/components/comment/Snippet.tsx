@@ -12,17 +12,14 @@ interface SnippetProperties {
 export function Snippet({snippet, expanded}: SnippetProperties) {
 	const completeSnippet: string[] = snippet.body.split("\r").join("").split("\n");
 
-	// TODO top context required from database
-	const databaseTop = "";
-	const linesTop = 0;
-	// TODO bottom context required from database
-	const databaseBottom = "";
+	const databaseTop : string = snippet.contextBefore;
+	console.log(snippet);
+	const linesTop : number = (databaseTop.split('\r').join("").split('\n').length);
+	const databaseBottom : string = snippet.contextAfter;
 
 
 	const preLines: string = databaseTop + ((databaseTop.length > 0) ? "\n" : "");
-	// Prepend spaces to first line to match indentation in case uses does not start selection at the start of the line
 	const mainLines: string =
-		" ".repeat(snippet.start.character) +
 		completeSnippet.slice(0, Math.min(completeSnippet.length, MINIMIZED_LINES)).join("\n");
 	const postLines: string = completeSnippet.slice(MINIMIZED_LINES).join("\n") + "\n" + databaseBottom;
 

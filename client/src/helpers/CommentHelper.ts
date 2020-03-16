@@ -1,4 +1,6 @@
 /** Amount of lines to display when minimized*/
+import {Editor} from "codemirror";
+
 export const MINIMIZED_LINES = 3;
 /** Amount of lines inclusive that count as a small snippet */
 const SMALL_SNIPPET_LINES = 3;
@@ -10,6 +12,35 @@ const SMALL_SNIPPET_LINES_BELOW = 2;
 const LARGE_SNIPPET_LINES_ABOVE = 0;
 /** Amount of context lines to show below for a small snippet */
 const LARGE_SNIPPET_LINES_BELOW = 0;
+
+export function getContextLines(codeMirror : Editor, lineStart : number, lineEnd : number) {
+    const snippetLength : number = lineEnd - lineStart + 1;
+    const smallSnippet : boolean = snippetLength <= SMALL_SNIPPET_LINES;
+
+    const topMargin : number = smallSnippet ? SMALL_SNIPPET_LINES_ABOVE : LARGE_SNIPPET_LINES_ABOVE;
+    const btmMargin : number = smallSnippet ? SMALL_SNIPPET_LINES_BELOW : LARGE_SNIPPET_LINES_BELOW;
+
+    const centerEnd : number = Math.min(lineEnd + 1, lineStart + MINIMIZED_LINES);
+
+    const contextBefore : string = codeMirror.getRange(
+        {line : lineStart - topMargin, ch : 0},
+        {line : lineStart, ch : 0}
+    );
+    const center = codeMirror.getRange(
+        {line : lineStart, ch : 0},
+        {line : lineEnd + 1, ch : 0}
+    );
+    const contextAfter = codeMirror.getRange(
+        {line : lineEnd + 1, ch : 0},
+        {line : lineEnd + 1 + btmMargin, ch : 0}
+    );
+
+    return {
+        contextBefore,
+        center,
+        contextAfter
+    }
+}
 
 export function getCommentLines(fileContent : string[], lineStart : number, lineEnd : number) {
     const totalLines : number = fileContent.length;
