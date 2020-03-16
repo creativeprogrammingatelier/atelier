@@ -12,10 +12,11 @@ interface SnippetProperties {
 export function Snippet({snippet, expanded}: SnippetProperties) {
 	const completeSnippet: string[] = snippet.body.split("\r").join("").split("\n");
 
-	const databaseTop : string = snippet.contextBefore;
-	console.log(snippet);
-	const linesTop : number = (databaseTop.split('\r').join("").split('\n').length);
-	const databaseBottom : string = snippet.contextAfter;
+	const databaseTop : string = "";//snippet.contextBefore;
+	//console.log(snippet);
+	const linesTop = 0;
+	//const linesTop : number = (databaseTop.split('\r').join("").split('\n').length);
+	const databaseBottom : string = "";//snippet.contextAfter;
 
 
 	const preLines: string = databaseTop + ((databaseTop.length > 0) ? "\n" : "");
