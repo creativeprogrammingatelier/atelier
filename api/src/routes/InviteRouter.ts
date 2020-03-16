@@ -6,14 +6,14 @@ import express, {Request, Response} from "express";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {capture} from "../helpers/ErrorHelper";
 import {CourseInvite} from "../../../models/database/CourseInvites";
 import {CourseInviteDB} from "../database/CourseInviteDB";
 import {CoursePartial} from "../../../models/api/Course";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
-import {localRole} from "../../../enums/localRoleEnum";
+import {courseRole} from "../../../models/enums/courseRoleEnum";
 
 export const inviteRouter = express.Router();
 
@@ -32,7 +32,7 @@ inviteRouter.get('/course/:courseID/role/:role', capture( async(request : Reques
     const invites : CourseInvite[] = await CourseInviteDB.filterInvite({
         creatorID : currentUserID,
         courseID : request.params.courseID,
-        joinRole : request.params.role as localRole
+        joinRole : request.params.role as courseRole
     });
 
     if (invites.length > 0) {
@@ -43,7 +43,7 @@ inviteRouter.get('/course/:courseID/role/:role', capture( async(request : Reques
             creatorID : currentUserID,
             courseID : request.params.courseID,
             type : '',
-            joinRole : request.params.role as localRole,
+            joinRole : request.params.role as courseRole,
         });
         response.status(200).send(invite);
     }

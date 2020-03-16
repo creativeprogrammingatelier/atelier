@@ -83,7 +83,7 @@ export class FileDB {
 	static async getNullFileID(submissionID : string, params : DBTools = {}){
 		const submissionid = UUIDHelper.toUUID(submissionID);
 		const {client =pool} = params
-		return client.query(`
+		return client.query<{fileid:string},[string]>(`
 		SELECT fileID
 		FROM "Files"
 		WHERE submissionID = $1

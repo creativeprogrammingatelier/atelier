@@ -73,7 +73,7 @@ commentThreadRouter.get('/file/:fileID', capture(async (request, response) => {
  */
 commentThreadRouter.get('/submission/:submissionID', capture(async (request, response) => {
     const submissionID = request.params.submissionID;
-    const nullFileID = await FileDB.getNullFileID(submissionID) as unknown as string;
+    const nullFileID = await FileDB.getNullFileID(submissionID);
     const currentUserID = await getCurrentUserID(request);
 
     // User should be registered in the course

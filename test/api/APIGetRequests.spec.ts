@@ -98,7 +98,7 @@ const unregisterCourse = () => chai.request(app)
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
 const setPermissions = (permissions: any) => chai.request(app)
     .put(`/api/permission/user/${USER_ID}`)
-    .send({permissions: permissions})
+    .send({permissions})
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY, 'Content-Type': 'application/json'});
 
 describe("API permissions", () => {
