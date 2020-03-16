@@ -32,7 +32,9 @@ courseRouter.use(AuthMiddleware.requireAuth);
 courseRouter.get("/", capture(async(request: Request, response: Response) => {
 	const userID : string = await getCurrentUserID(request);
 	const courses : CoursePartial[] = await CourseDB.getAllCourses();
-	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course : CourseRegistrationOutput) => course.courseID);
+	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).filter(item =>{
+		return item.role !== courseRole.unregistered
+	}).map((course : CourseRegistrationOutput) => course.courseID);
 	response.status(200).send(await filterCourse(courses, enrolled, userID));
 }));
 

@@ -10,6 +10,7 @@ import {containsPermission, PermissionEnum} from "../../../models/enums/permissi
 import {FileDB} from "../database/FileDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {SubmissionDB} from "../database/SubmissionDB";
+import { courseRole } from "../../../models/enums/courseRoleEnum";
 
 /**
  * Check permissions of a user. Unions global and course permissions (if courseID provided), then checks
@@ -19,15 +20,14 @@ import {SubmissionDB} from "../database/SubmissionDB";
  * @param courseID, ID of the course if applicable
  */
 export async function requirePermissions(userID : string, requiredPermissions : PermissionEnum[], courseID? : string) {
-    const globalPermissions : number = (await UserDB.getUserByID(userID)).permission.permissions;
-    let coursePermissions : number = 0;
+    
+    let permissions = 0;
     if (courseID !== undefined) {
-        const courseRegistrationOutput : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-        if (courseRegistrationOutput.length > 0) {
-            coursePermissions = courseRegistrationOutput[0].permission;
-        }
+        const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+        permissions = courseRegistrationOutput.permission;
+    } else {
+        permissions = (await UserDB.getUserByID(userID)).permission.permissions;
     }
-    const permissions : number = globalPermissions | coursePermissions;
 
     const access : boolean = requiredPermissions.every((permission : PermissionEnum) => containsPermission(permission, permissions));
     if (!access) throw new AuthError("permission.notAllowed", "You don't have the permissions to view/manage this data.");
@@ -56,8 +56,8 @@ export async function requireRegistered(userID : string, courseID : string) {
     if (containsPermission(PermissionEnum.viewAllCourses, globalPermissions)) return;
 
     // Check registration
-    const courseRegistrationOutput : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-    if (courseRegistrationOutput.length == 0) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
+    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    if (courseRegistrationOutput.role === courseRole.unregistered) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
 }
 
 /**
@@ -100,10 +100,9 @@ export async function getGlobalPermissions(userID : string) {
  * @param courseID, ID of the course
  */
 export async function getCoursePermissions(userID : string, courseID : string) {
-    const globalPermissions : number = await getGlobalPermissions(userID);
-    const courseRegistrationOutput : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-    const coursePermissions = (courseRegistrationOutput.length === 0) ? 0 : courseRegistrationOutput[0].permission;
-    return globalPermissions | coursePermissions;
+    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    const permissions = courseRegistrationOutput.permission;
+    return permissions;
 }
 
 /**
@@ -121,7 +120,6 @@ export async function getGlobalRole(userID : string) {
  * @param courseID, ID of the course
  */
 export async function getCurrentRole(userID : string, courseID: string) {
-    const courseRegistrationOutput : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-    if (courseRegistrationOutput.length == 0) return undefined;
-    return courseRegistrationOutput[0].role;
+    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    return courseRegistrationOutput.role;
 }

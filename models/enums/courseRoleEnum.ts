@@ -6,5 +6,5 @@ export enum courseRole {
 	TA = "TA",
 	student = "student",
 	plugin = 'plugin',
-	unauthorized = 'unauthorized',
+	unregistered = 'unregistered',
 }

@@ -134,7 +134,11 @@ async function courseRegistrationHelper(){
 	equal(newEntry.permission, 5)
 	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid), 'getEntriesByCourse')
-	
+	await promise(CRH.filterCourseRegistration({}), 'filterCourseReg')
+	await promise(CRH.filterCourseRegistration({userID:uuid}), 'filterCourseReg2')
+	await promise(CRH.filterCourseRegistration({courseRole:courseRole.plugin}), 'filterCourseReg3')
+	await promise(CRH.filterCourseRegistration({permission:0}), 'filterCourseReg4')
+	await promise(CRH.filterCourseRegistration({permission:3}), 'filterCourseReg5')
 	const res = await promise(CRH.addEntry(newEntry), 'addEntry')
 	const upd = {userID:res.userID, courseID:res.courseID, role:courseRole.TA}
 	await promise(CRH.getEntriesByUser(uuid), 'getEntriesByUser')

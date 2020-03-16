@@ -5,5 +5,5 @@ export enum globalRole {
 	staff = "staff",
 	user = "user",
 	plugin = 'plugin',
-	unauthorized = 'unauthorized',
+	unregistered = 'unregistered',
 }
