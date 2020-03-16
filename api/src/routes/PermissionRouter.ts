@@ -10,7 +10,7 @@ import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {Permission} from "../../../models/api/Permission";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {getGlobalPermissions, requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
 

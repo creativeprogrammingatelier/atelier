@@ -7,14 +7,14 @@ import {CourseDB} from "../database/CourseDB";
 import {CoursePartial} from "../../../models/api/Course";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {capture} from "../helpers/ErrorHelper";
-import {courseState} from "../../../enums/courseStateEnum";
+import {courseState} from "../../../models/enums/courseStateEnum";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {localRole} from "../../../enums/localRoleEnum";
+import {courseRole} from "../../../models/enums/courseRoleEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {getClient, transaction} from "../database/HelperDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {filterCourse} from "../helpers/APIFilterHelper";
 
 export const courseRouter = express.Router();
@@ -93,7 +93,7 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 		await CourseRegistrationDB.addEntry({
 			courseID : course.ID,
 			userID : currentUserID,
-			role : localRole.student,
+			role : courseRole.student,
 			client
 		});
 
@@ -121,7 +121,7 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 	const courseRegistration : CourseRegistrationOutput = await CourseRegistrationDB.addEntry({
 		courseID : courseID,
 		userID : userID,
-		role : localRole.student
+		role : courseRole.student
 	});
 	response.status(200).send(courseRegistration);
 }));

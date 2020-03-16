@@ -6,7 +6,7 @@ import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {AuthError} from "./AuthenticationHelper";
 import {User} from "../../../models/api/User";
 import {UserDB} from "../database/UserDB";
-import {containsPermission, PermissionEnum} from "../../../enums/permissionEnum";
+import {containsPermission, PermissionEnum} from "../../../models/enums/permissionEnum";
 import {FileDB} from "../database/FileDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {SubmissionDB} from "../database/SubmissionDB";

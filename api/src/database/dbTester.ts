@@ -1,7 +1,7 @@
 import {end, pgDB, one } from './HelperDB'
 import {UserDB as UH}	from './UserDB'
 import {CourseDB as CH}	from './CourseDB'
-import {RolePermissionDB as RPH}	from "./RolePermissionDB"
+import {CourseRoleDB as RPH}	from "./CourseRoleDB"
 import {CourseRegistrationDB as CRH}	from './CourseRegistrationDB'
 import {SubmissionDB as SH}	from './SubmissionDB'
 import {FileDB as FH}	from './FileDB'
@@ -10,19 +10,21 @@ import {ThreadDB as TH} 	from './ThreadDB'
 import {CommentDB as C} 	from './CommentDB'
 import {MentionsDB as M}	from './MentionsDB'
 
-import {courseState} 		from '../../../enums/courseStateEnum'
-import {localRole} 			from '../../../enums/localRoleEnum'
-import {submissionStatus}	from '../../../enums/submissionStatusEnum'
-import {threadState}		from '../../../enums/threadStateEnum'
+import {courseState} 		from '../../../models/enums/courseStateEnum'
+import {courseRole} 			from '../../../models/enums/courseRoleEnum'
+import {submissionStatus}	from '../../../models/enums/submissionStatusEnum'
+import {threadState}		from '../../../models/enums/threadStateEnum'
 
 import {Snippet, DBSnippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
-import { deepEqual, notDeepEqual, equal, notEqual } from 'assert'
+import { deepEqual, notDeepEqual, equal, notEqual, AssertionError } from 'assert'
 import { Course } from '../../../models/database/Course'
 import util from 'util'
 import { Mention } from '../../../models/database/Mention'
 import { CourseInviteDB as CI, CourseInviteDB } from './CourseInviteDB'
 import { PluginsDB as P } from './PluginsDB'
+import { getEnum } from '../../../models/enums/enumHelper'
+import { globalRole } from '../../../models/enums/globalRoleEnum'
 
 const ok = "✓",
 	fail = "✖"
@@ -58,13 +60,13 @@ function promise<T>(pr : Promise<T>, s : string) : Promise<T>{
 }
 async function usersHelper() {
 	log("\n\nUSERSHELPER\n\n")
-	const user = {userName:"C", email:"C@CAA", role:'admin',password:"C", permission:1}
+	const user = {userName:"C", email:"C@CAA", role:globalRole.admin,password:"C", permission:1}
 	const t1 = new Date()
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
 	await promise(UH.getUserByID(uuid), 'getUserById')
 	const {ID:userID} = await promise(UH.createUser(user), 'createUser')
-	await promise(UH.updateUser({userID, role:'user'}), 'updateUser')
+	await promise(UH.updateUser({userID, role:globalRole.user}), 'updateUser')
 	const {permission : {permissions:p1}} = await promise(UH.addPermissionsUser(userID, 15), 'addPermissions')
 	equal(p1, 15, "addPermissions")
 	const {permission: {permissions:p2}} = await promise(UH.removePermissionsUser(userID, 6), 'addPermissions')
@@ -89,25 +91,52 @@ async function rolesHelper(){
 	log("\n\nROLESHELPER\n\n")
 	const role = "DEBUG"
 	const perm = 64
+	let noError;
+	try {
+		noError=false
+		getEnum(courseRole, role)
+		noError = true
+	} catch (e){
+		//pass, do nothing
+	}
+	equal(noError, false, "role DEBUG should not yet exist in the courseRoleEnum");
+	
 	await promise(RPH.getAllRoles(), 'getAllRoles')
-	await promise(RPH.addNewLocalRole(role, perm), 'addNewLocalRole')
+	await promise(RPH.addNewCourseRole(role, perm), 'addNewCourseRole')
+	try {
+		noError = false
+		getEnum(courseRole,role)
+		noError = true
+	} catch (e){
+		//pass, do nothing
+	}
+	equal(noError, true, "role DEBUG should now exist in the courseRoleEnum");
+	
 	await promise(RPH.addPermissionToRole(role, 32),"addPermissionToRole")
 	await promise(RPH.getRolePermissions(role), 'getRolePermissions')
 	await promise(RPH.removePermissionFromRole(role, 64), "removePermissionFromRole")
 	await promise(RPH.setPermissionOnRole(role, 127), "setPermissionOnRole")
-	await promise(RPH.deleteLocalRole(role), 'deleteLocalRole')
+	await promise(RPH.deleteCourseRole(role), 'deleteCourseRole')
+	try {
+		noError=false
+		getEnum(courseRole,role)
+		noError = true
+	} catch (e){
+		//pass, do nothing
+	}
+	equal(noError, false, "role DEBUG should no longer exist in the courseRoleEnum");
 }
 
 async function courseRegistrationHelper(){
 
 	log("\n\nCOURSEREGISTRATIONHELPER\n\n")
-	const newEntry = {userID:uuid, courseID:uuid, role:localRole.teacher,permission:5}
+	const newEntry = {userID:uuid, courseID:uuid, role:courseRole.teacher,permission:5}
 	equal(newEntry.permission, 5)
 	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid), 'getEntriesByCourse')
 	
 	const res = await promise(CRH.addEntry(newEntry), 'addEntry')
-	const upd = {userID:res.userID, courseID:res.courseID, role:localRole.TA}
+	const upd = {userID:res.userID, courseID:res.courseID, role:courseRole.TA}
 	await promise(CRH.getEntriesByUser(uuid), 'getEntriesByUser')
 	await promise(CRH.updateRole(upd), 'updateRole')
 	await promise(CRH.addPermission({...newEntry, permission:2048}), "addPermission")
@@ -214,7 +243,7 @@ async function mentionHelper(){
 }
 
 async function courseInviteHelper(){
-	const invite = {creatorID: uuid, courseID: uuid, type:'', joinRole: localRole.TA}
+	const invite = {creatorID: uuid, courseID: uuid, type:'', joinRole: courseRole.TA}
 	await promise(CI.filterInvite({}), "filterInvite")
 	const resinv = await promise(CI.addInvite(invite), "addInvite")
 	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))
@@ -259,6 +288,7 @@ async function run(...funs : Function[]){
 }
 export async function main(){
 	return await run(
+		rolesHelper,
 		commentHelper, 
 		snippetHelper, 
 		fileHelper, 

@@ -3,7 +3,7 @@
  */
 
 import express, {Request} from 'express';
-import {threadState} from "../../../enums/threadStateEnum";
+import {threadState} from "../../../models/enums/threadStateEnum";
 import {ThreadDB} from "../database/ThreadDB";
 import {SnippetDB} from "../database/SnippetDB";
 

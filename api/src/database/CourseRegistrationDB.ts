@@ -1,7 +1,7 @@
 import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools, permissionBits } from "./HelperDB";
 
 import {CourseRegistration, convertCourseReg, DBCourseRegistration, DBAPICourseRegistration, courseRegToAPI, APICourseRegistration} from '../../../models/database/CourseRegistration';
-import {RolePermissionDB} from './RolePermissionDB'
+import {CourseRoleDB} from './CourseRoleDB'
 import { UUIDHelper, ID64 } from "../helpers/UUIDHelper";
 import { CoursePartial } from "../../../models/api/Course";
 import { User } from "../../../models/database/User";

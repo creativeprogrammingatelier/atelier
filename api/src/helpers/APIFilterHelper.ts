@@ -1,10 +1,10 @@
 import {CommentThread} from "../../../models/api/CommentThread";
 import {getCoursePermissions, getGlobalPermissions} from "./PermissionHelper";
-import {containsPermission, PermissionEnum} from "../../../enums/permissionEnum";
+import {containsPermission, PermissionEnum} from "../../../models/enums/permissionEnum";
 import {CoursePartial} from "../../../models/api/Course";
 import {Comment} from "../../../models/api/Comment";
 import {Submission} from "../../../models/api/Submission";
-import {threadState} from "../../../enums/threadStateEnum";
+import {threadState} from "../../../models/enums/threadStateEnum";
 
 export async function filterCommentThread(commentThreads : CommentThread[], userID : string) {
     if (commentThreads.length == 0) return commentThreads;

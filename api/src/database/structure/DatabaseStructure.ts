@@ -1,5 +1,5 @@
 import {end, pool, permissionBits, getClient, pgDB} from "../HelperDB";
-import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView} from "../ViewsDB";
+import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseRegistrationViewAll, CourseUsersView} from "../ViewsDB";
 import { isPostgresError, PostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
 
@@ -57,7 +57,8 @@ DROP VIEW IF EXISTS
 	"SubmissionsView", "FilesView",
 	"SnippetsView", "CommentsView",
 	"CommentThreadView", "CourseRegistrationView",
-	"MentionsView";
+	"MentionsView", "CourseRegistrationViewAll", 
+	"CourseUsersView";
 
 DROP TABLE IF EXISTS 
 	"GlobalRolePermissions",
@@ -308,6 +309,14 @@ CREATE VIEW "CourseRegistrationView" AS (
 
 CREATE VIEW "CoursesView" AS (
 	${CoursesView()}
+);
+
+CREATE VIEW "CourseRegistrationViewAll" AS (
+	${CourseRegistrationViewAll()}
+);
+
+CREATE VIEW "CourseUsersView" AS (
+	${CourseUsersView()}
 );
 
 CREATE VIEW "SubmissionsView" AS (
