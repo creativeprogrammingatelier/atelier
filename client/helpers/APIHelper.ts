@@ -9,10 +9,12 @@ import {Comment} from "../../models/api/Comment";
 import {File as APIFile} from "../../models/api/File";
 import {LoginProvider} from "../../models/api/LoginProvider";
 import {Permission} from "../../models/api/Permission";
+import {Permissions} from "../../models/api/Permission";
 import {SearchResult} from '../../models/api/SearchResult';
 import {Mention} from '../../models/api/Mention';
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {threadState} from "../../models/enums/threadStateEnum";
+import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -104,6 +106,13 @@ export function getProjectComments(submissionID: string, doCache?: boolean) {
 export function getRecentComments(submissionID: string, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`, undefined, doCache);
 }
+export function setCommentThreadVisibility(commentThreadID : string, visible : boolean, doCache? : boolean) {
+	return Fetch.fetchJson<CommentThread>(`/api/commentThread/${commentThreadID}`, {
+		method : "PUT",
+		body : JSON.stringify({ visibility : visible ? "public" : "private"}),
+		headers : {"Content-Type" : "application/json"}
+	}, doCache);
+}
 
 interface CommentThreadProperties {
 	contextBefore? : string,
@@ -166,6 +175,13 @@ export function coursePermission(courseID: string, doCache?: boolean) {
 }
 export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
+}
+export function setPermission(courseID : string, userID : string, permissions : { permissions : Permissions}, doCache?: boolean) {
+	return Fetch.fetchJson<CourseRegistrationOutput>(`/api/permission/course/${courseID}/user/${userID}`, {
+		method : "PUT",
+		body: JSON.stringify(permissions),
+		headers : {"Content-Type" : "application/json"}
+	}, doCache);
 }
 
 // Invites

@@ -12,17 +12,17 @@ import {capture} from "../helpers/ErrorHelper";
 import {FileDB} from "../database/FileDB";
 import {CommentDB} from "../database/CommentDB";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {getClient, pgDB, transaction} from "../database/HelperDB";
+import {pgDB, transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {
+    requirePermission,
     requireRegisteredCommentThreadID,
-    requireRegisteredFileID, requireRegisteredSubmissionID
+    requireRegisteredFileID,
+    requireRegisteredSubmissionID
 } from "../helpers/PermissionHelper";
 import {filterCommentThread} from "../helpers/APIFilterHelper";
-import { getMentions } from '../helpers/MentionsHelper';
-import { MentionsDB } from '../database/MentionsDB';
-import {Snippet} from "../../../models/api/Snippet";
-import {getCommentLines} from "../../../client/src/helpers/CommentHelper";
+import {getMentions} from '../helpers/MentionsHelper';
+import {MentionsDB} from '../database/MentionsDB';
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -103,6 +103,20 @@ commentThreadRouter.get('/submission/:submissionID/recent', capture(async (reque
     const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
+
+commentThreadRouter.put('/:commentThreadID', capture(async (request, response) => {
+    const commentThreadID : string = request.params.commentThreadID;
+    const visibilityState : threadState | undefined = request.body.visibility as threadState;
+
+    // TODO what requirements if you are not the creator?
+
+    const commentThread : CommentThread = await ThreadDB.updateThread({
+        commentThreadID,
+        visibilityState
+    });
+    response.status(200).send(commentThread);
+}));
+
 
 /** ---------- POST REQUESTS ---------- */
 
