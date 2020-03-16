@@ -40,7 +40,7 @@ export function CourseOverview({match}: CourseOverviewProps) {
 							return {
 								transport: `/submission/${submission.ID}`,
 								title: submission.name,
-								text: submission.name,
+								text: "Submitted by "+ submission.user.name,
 								time: new Date(submission.date),
 								tags: []
 								//tags: submission.tags
