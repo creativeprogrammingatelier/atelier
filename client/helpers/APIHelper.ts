@@ -7,11 +7,14 @@ import {Submission} from "../../models/api/Submission";
 import {User} from "../../models/api/User";
 import {Comment} from "../../models/api/Comment";
 import {File as APIFile} from "../../models/api/File";
-import {threadState} from "../../enums/threadStateEnum";
 import {LoginProvider} from "../../models/api/LoginProvider";
 import {Permission} from "../../models/api/Permission";
+import {Permissions} from "../../models/api/Permission";
 import {SearchResult} from '../../models/api/SearchResult';
 import {Mention} from '../../models/api/Mention';
+import {CourseInvite, Invite} from "../../models/api/Invite";
+import {threadState} from "../../models/enums/threadStateEnum";
+import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -103,6 +106,13 @@ export function getProjectComments(submissionID: string, doCache?: boolean) {
 export function getRecentComments(submissionID: string, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`, undefined, doCache);
 }
+export function setCommentThreadVisibility(commentThreadID : string, visible : boolean, doCache? : boolean) {
+	return Fetch.fetchJson<CommentThread>(`/api/commentThread/${commentThreadID}`, {
+		method : "PUT",
+		body : JSON.stringify({ visibility : visible ? "public" : "private"}),
+		headers : {"Content-Type" : "application/json"}
+	}, doCache);
+}
 
 interface CommentThreadProperties {
 	contextBefore? : string,
@@ -165,4 +175,27 @@ export function coursePermission(courseID: string, doCache?: boolean) {
 }
 export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
+}
+export function setPermission(courseID : string, userID : string, permissions : { permissions : Permissions}, doCache?: boolean) {
+	return Fetch.fetchJson<CourseRegistrationOutput>(`/api/permission/course/${courseID}/user/${userID}`, {
+		method : "PUT",
+		body: JSON.stringify(permissions),
+		headers : {"Content-Type" : "application/json"}
+	}, doCache);
+}
+
+// Invites
+export function getInvites(courseID : string, doCache? : boolean) {
+	return Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`, undefined, doCache);
+}
+
+export function getInvite(courseID : string, role : string, doCache? : boolean) {
+	return Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`, undefined, doCache);
+}
+
+export function deleteInvite(courseID : string, role : string, doCache?: boolean) {
+	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {
+		method: "DELETE",
+		headers: {"Content-Type": "application/json"}
+	}, doCache);
 }

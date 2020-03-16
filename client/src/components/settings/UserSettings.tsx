@@ -19,24 +19,21 @@ export function UserSettings() {
     };
 
     return (
-        <div>
-            <h1>User details</h1>
-            <Loading
-                loader={ reload => getCurrentUser(false) }
-                params={[reload]}
-                component={(user : User) => {
-                    setReload(false);
-                    return (
-                        <div>
-                            <p>Current name: {user.name} </p>
-                            <p>Current email: {user.email}</p>
+        <Loading
+            loader={ reload => getCurrentUser(false) }
+            params={[reload]}
+            component={(user : User) => {
+                setReload(false);
+                return (
+                    <div>
+                        <p>Current name: {user.name} </p>
+                        <p>Current email: {user.email}</p>
 
-                            <InputField callBack={handleNameChange} buttonText="Change name" />
-                            <InputField callBack={handleEmailChange} buttonText="Change email" />
-                        </div>
-                    )
-                }}
-            />
-        </div>
+                        <InputField callBack={handleNameChange} buttonText="Change name" />
+                        <InputField callBack={handleEmailChange} buttonText="Change email" />
+                    </div>
+                )
+            }}
+        />
     )
 }

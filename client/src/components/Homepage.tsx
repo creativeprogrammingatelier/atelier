@@ -7,8 +7,7 @@ import {Course} from "../../../models/api/Course";
 import {getCourses, permission} from "../../helpers/APIHelper";
 import {Button, Jumbotron} from "react-bootstrap";
 import {Permission} from "../../../models/api/Permission";
-import {globalRole} from "../../../enums/roleEnum";
-import {PermissionEnum} from "../../../enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 
 export function Homepage() {
 	const [permissions, setPermissions] = useState(0);

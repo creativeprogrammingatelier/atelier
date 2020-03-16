@@ -1,8 +1,9 @@
 import { courseRole} from "../enums/courseRoleEnum";
 import { DatabaseError } from "../../api/src/database/DatabaseErrors";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
+import { CourseInvite as Invite } from "../api/Invite";
 import { DBTools, checkAvailable } from "../../api/src/database/HelperDB";
-import { getEnum } from "../enums/enumHelper";
+import {checkEnum, getEnum} from "../enums/enumHelper";
 
 export interface CourseInvite extends DBTools{
 	inviteID? : string,
@@ -19,8 +20,11 @@ export interface DBCourseInvite {
 	joinrole : courseRole,
 }
 
-export function convertCourseInvite(db : DBCourseInvite) : CourseInvite {
-	checkAvailable(["inviteid", "creatorid", "courseid", "type", "joinrole"],db)
+export function convertCourseInvite(db : DBCourseInvite) : Invite {
+	if (!(checkEnum(courseRole, db.joinrole))){
+		throw new DatabaseError('database gave a course role which was not recognised by the backend')
+	}
+	checkAvailable(["inviteid", "creatorid", "courseid", "type", "joinrole"],db);
 	return {
 		inviteID: UUIDHelper.fromUUID(db.inviteid),
 		creatorID: UUIDHelper.fromUUID(db.creatorid),
