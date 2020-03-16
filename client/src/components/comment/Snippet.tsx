@@ -12,17 +12,16 @@ interface SnippetProperties {
 export function Snippet({snippet, expanded}: SnippetProperties) {
 	const completeSnippet: string[] = snippet.body.split("\r").join("").split("\n");
 
-	const databaseTop : string = "";//snippet.contextBefore;
+	const databaseTop : string = snippet.contextBefore;
 	//console.log(snippet);
-	const linesTop = 0;
-	//const linesTop : number = (databaseTop.split('\r').join("").split('\n').length);
-	const databaseBottom : string = "";//snippet.contextAfter;
+	const linesTop : number = (databaseTop.split('\r').join("").split('\n').length);
+	const databaseBottom : string = snippet.contextAfter;
 
 
-	const preLines: string = databaseTop + ((databaseTop.length > 0) ? "\n" : "");
+	const preLines: string = databaseTop;
 	const mainLines: string =
 		completeSnippet.slice(0, Math.min(completeSnippet.length, MINIMIZED_LINES)).join("\n");
-	const postLines: string = completeSnippet.slice(MINIMIZED_LINES).join("\n") + "\n" + databaseBottom;
+	const postLines: string = completeSnippet.slice(MINIMIZED_LINES).join("\n") + databaseBottom;
 
 	return (
 		<div className="snippet">
@@ -32,7 +31,7 @@ export function Snippet({snippet, expanded}: SnippetProperties) {
 					mode: "clike",
 					theme: "base16-light",
 					lineNumbers: true,
-					firstLineNumber: expanded ? snippet.start.line + 1 - linesTop : snippet.start.line + 1,
+					firstLineNumber: expanded ? snippet.start.line + 2 - linesTop : snippet.start.line + 1,
 					readOnly: "nocursor"
 				}}
 				editorDidMount={
