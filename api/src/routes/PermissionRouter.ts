@@ -13,6 +13,7 @@ import {getGlobalPermissions, requirePermission, requireRegistered} from "../hel
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
+import { getEnum } from '../../../models/enums/enumHelper';
 
 export const permissionRouter = express.Router();
 permissionRouter.use(AuthMiddleware.requireAuth);
@@ -66,7 +67,7 @@ function getPermissions(setPermissions : any) {
     const add : boolean[] = Object.values(setPermissions);
 
     for (let i = 0; i < permissions.length; i++) {
-        const permissionType : PermissionEnum = PermissionEnum[permissions[i] as keyof typeof PermissionEnum];
+        const permissionType : PermissionEnum = getEnum(PermissionEnum, permissions[i]) //PermissionEnum[permissions[i] as keyof typeof PermissionEnum];
         if (add[i]) addPermissions |= (1 << permissionType);
         else removePermissions |= (1 << permissionType);
     }

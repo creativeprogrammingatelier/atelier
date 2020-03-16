@@ -287,7 +287,7 @@ async function run(...funs : Function[]){
 	equal(errors===0, true, s)
 }
 export async function main(){
-	return await run(
+	return run(
 		rolesHelper,
 		commentHelper, 
 		snippetHelper, 
