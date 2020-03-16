@@ -1,6 +1,6 @@
 import {pool, extract, map, one, pgDB, funmap, checkAvailable, keyInMap, DBTools } from "./HelperDB";
 import {Thread, DBThread, convertThread, APIThread, threadToAPI} from '../../../models/database/Thread';
-import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
+import {submissionStatus} from '../../../models/enums/submissionStatusEnum'
 import { Comment, convertComment, APIComment } from "../../../models/database/Comment";
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { CommentDB } from "./CommentDB";

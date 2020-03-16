@@ -4,6 +4,7 @@ import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { config } from '../helpers/ConfigurationHelper';
 import { UserDB } from '../database/UserDB';
 import { NotFoundDatabaseError } from '../database/DatabaseErrors';
+import { globalRole } from '../../../models/enums/globalRoleEnum';
 
 export const adminRouter = express.Router()
 
@@ -26,7 +27,7 @@ adminRouter.post('/plugins', capture(async (request, response) => {
     const user = await UserDB.createUser({
         userName: name,
         email, 
-        role: "plugin"
+        role: globalRole.plugin
     });
     response.send({
         message: "Add the following plugin object to your configuration file",

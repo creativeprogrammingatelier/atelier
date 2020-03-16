@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {Loading} from "../general/loading/Loading";
 import {coursePermission, deleteInvite, getInvite, getInvites} from "../../../helpers/APIHelper";
 import {CourseInvite, Invite} from "../../../../models/api/Invite";
-import {containsPermission, PermissionEnum} from "../../../../enums/permissionEnum";
 import {Permission} from "../../../../models/api/Permission";
 import {DataItem} from "../general/data/DataItem";
 import {DataList} from "../general/data/DataList";
+import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 
 export function CourseInvites({ courseID } : {courseID : string}) {
     return (

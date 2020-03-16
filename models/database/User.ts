@@ -1,13 +1,15 @@
 import { UUIDHelper, ID64, UUID } from "../../api/src/helpers/UUIDHelper";
 import { User as APIUser } from "../api/User";
 import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB";
+import { globalRole } from "../enums/globalRoleEnum";
+import { getEnum } from "../enums/enumHelper";
 
 export interface User extends DBTools {
-	userID?: ID64,
+	userID?: string,
 	samlID?: string,
 	userName?: string,
 	email?: string,
-	role?: string,
+	role?: globalRole,
 	permission?: number,
 	password?: string,
 
@@ -34,7 +36,7 @@ export function convertUser(db : DBUser) : User{
 		samlID:db.samlid,
 		userName:db.username,
 		email:db.email,
-		role:db.globalrole,
+		role:getEnum(globalRole, db.globalrole),
 		//shhh: this actually comes back as a string from the database. don't tell anyone
 		// tslint:disable-next-line: ban
 		permission:typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission,
@@ -48,7 +50,7 @@ export function userToAPI(db : DBAPIUser) : APIUser {
 		name: db.username,
 		email: db.email,
 		permission: { 
-			role:db.globalrole,
+			role:getEnum(globalRole, db.globalrole),
 			//shhh: this actually comes back as a string from the database. don't tell anyone
 			// tslint:disable-next-line: ban
 			permissions:typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission,

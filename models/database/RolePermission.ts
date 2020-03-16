@@ -1,8 +1,9 @@
-import {localRole, checkEnum} from '../../enums/localRoleEnum'
+import {courseRole} from '../enums/courseRoleEnum'
 import {Permission as APIPermission} from '../api/Permission'
 import { pgDB, DBTools, checkAvailable } from '../../api/src/database/HelperDB'
+import { getEnum } from '../enums/enumHelper'
 export interface RolePermission{
-	role?:localRole,
+	role?:courseRole,
 	permission : number
 }
 
@@ -16,11 +17,8 @@ export type DBAPIRolePermission = DBRolePermission
 
 export function convertRolePermission(db : DBRolePermission) : RolePermission {
 	checkAvailable(["courseroleid", "permission"], db)
-	if (!checkEnum(db.courseroleid)){
-		throw new Error("role stored in database does not match enum on server: "+ db.courseroleid)
-	}
 	return {
-		role: localRole[db.courseroleid],
+		role: getEnum(courseRole, db.courseroleid),
 		//shhh: this actually comes back as a string, don't tell anyone
 		// tslint:disable-next-line: ban
 		permission: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission
@@ -28,11 +26,8 @@ export function convertRolePermission(db : DBRolePermission) : RolePermission {
 }
 export function rolePermToAPI(db : DBAPIRolePermission) : APIPermission {
 	checkAvailable(["courseroleid", "permission"], db)
-	if (!checkEnum(db.courseroleid)){
-		throw new Error("role stored in database does not match enum on server: "+ db.courseroleid)
-	}
 	return {
-		role: db.courseroleid,
+		role: getEnum(courseRole, db.courseroleid),
 		//shhh: this actually comes back as a string, don't tell anyone
 		// tslint:disable-next-line: ban
 		permissions: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission

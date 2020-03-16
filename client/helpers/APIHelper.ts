@@ -7,12 +7,12 @@ import {Submission} from "../../models/api/Submission";
 import {User} from "../../models/api/User";
 import {Comment} from "../../models/api/Comment";
 import {File as APIFile} from "../../models/api/File";
-import {threadState} from "../../enums/threadStateEnum";
 import {LoginProvider} from "../../models/api/LoginProvider";
 import {Permission} from "../../models/api/Permission";
 import {SearchResult} from '../../models/api/SearchResult';
 import {Mention} from '../../models/api/Mention';
 import {CourseInvite, Invite} from "../../models/api/Invite";
+import {threadState} from "../../models/enums/threadStateEnum";
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {

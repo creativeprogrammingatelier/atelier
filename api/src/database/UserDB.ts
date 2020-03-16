@@ -3,6 +3,7 @@ import {User, DBUser, convertUser, userToAPI} from '../../../models/database/Use
 import bcrypt from 'bcrypt';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { usersView} from "./ViewsDB";
+import { globalRole } from "../../../models/enums/globalRoleEnum";
 
 /**
  * Users middleware provides helper methods for interacting with users in the DB
@@ -15,7 +16,7 @@ export class UserDB {
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
 	static async getAllStudents(params : DBTools = {}) {
-		return UserDB.filterUser({...params, role:'user'})
+		return UserDB.filterUser({...params, role:globalRole.user})
 	}
 
 	/**

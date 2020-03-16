@@ -5,14 +5,14 @@
 import express, {Request, Response} from "express";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {CourseInviteDB} from "../database/CourseInviteDB";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
-import {localRole} from "../../../enums/localRoleEnum";
-import {requirePermission} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../enums/permissionEnum";
 import {CourseInvite} from "../../../models/api/Invite";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {courseRole} from "../../../models/enums/courseRoleEnum";
 
 export const inviteRouter = express.Router();
 
@@ -32,9 +32,9 @@ inviteRouter.get('/course/:courseID/all', capture(async(request : Request, respo
         courseID
     });
 
-    const studentInvites : CourseInvite[] = invites.filter((invite : CourseInvite) => invite.joinRole === localRole.student);
-    const taInvites : CourseInvite[] = invites.filter((invite : CourseInvite) => invite.joinRole === localRole.TA);
-    const teacherInvites : CourseInvite[] = invites.filter((invite : CourseInvite) => invite.joinRole === localRole.teacher);
+    const studentInvites : CourseInvite[] = invites.filter((invite : CourseInvite) => invite.joinRole === courseRole.student);
+    const taInvites : CourseInvite[] = invites.filter((invite : CourseInvite) => invite.joinRole === courseRole.TA);
+    const teacherInvites : CourseInvite[] = invites.filter((invite : CourseInvite) => invite.joinRole === courseRole.teacher);
 
     response.status(200).send({
         student : studentInvites.length > 0 ? studentInvites[0].inviteID : undefined,
@@ -48,7 +48,7 @@ inviteRouter.get('/course/:courseID/all', capture(async(request : Request, respo
  */
 inviteRouter.get('/course/:courseID/role/:role', capture( async(request : Request, response : Response) => {
     const currentUserID : string = await getCurrentUserID(request);
-    const role : localRole = request.params.role as localRole;
+    const role : courseRole = request.params.role as courseRole;
     const courseID : string = request.params.courseID;
 
     // Link require manageUserRegistration
@@ -117,7 +117,7 @@ inviteRouter.delete("/course/:courseID/role/:role", capture(async(request : Requ
     const courseInvites : CourseInvite[] = await CourseInviteDB.filterInvite({
         courseID,
         creatorID : currentUserID,
-        joinRole : role as localRole
+        joinRole : role as courseRole
     });
 
     await Promise.all(courseInvites.map((courseInvite : CourseInvite) =>

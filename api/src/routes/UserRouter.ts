@@ -9,7 +9,7 @@ import {User} from "../../../models/api/User";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {requirePermission} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 
 export const userRouter = express.Router();
 

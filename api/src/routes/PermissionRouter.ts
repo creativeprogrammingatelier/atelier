@@ -10,10 +10,11 @@ import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {Permission} from "../../../models/api/Permission";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {getGlobalPermissions, requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
-import {localRole} from "../../../enums/localRoleEnum";
+import {courseRole} from "../../../models/enums/courseRoleEnum";
+import {getEnum} from "../../../models/enums/enumHelper";
 
 export const permissionRouter = express.Router();
 permissionRouter.use(AuthMiddleware.requireAuth);
@@ -50,7 +51,7 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
     const globalPermission : number = await getGlobalPermissions(userID);
 
     const permission : Permission = {
-        role : coursePermissions.length > 0 ? coursePermissions[0].role : localRole.none,
+        role : coursePermissions.length > 0 ? coursePermissions[0].role : courseRole.none,
         permissions : coursePermission | globalPermission
     };
     response.status(200).send(permission);
@@ -65,7 +66,7 @@ function getPermissions(setPermissions : any) {
     const add : boolean[] = Object.values(setPermissions);
 
     for (let i = 0; i < permissions.length; i++) {
-        const permissionType : PermissionEnum = PermissionEnum[permissions[i] as keyof typeof PermissionEnum];
+        const permissionType : PermissionEnum = getEnum(PermissionEnum, permissions[i]); //PermissionEnum[permissions[i] as keyof typeof PermissionEnum];
         if (add[i]) addPermissions |= (1 << permissionType);
         else removePermissions |= (1 << permissionType);
     }

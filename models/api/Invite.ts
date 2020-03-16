@@ -1,5 +1,4 @@
-import {DBTools} from "../../api/src/database/HelperDB";
-import {localRole} from "../../enums/localRoleEnum";
+import {courseRole} from "../enums/courseRoleEnum";
 
 /** String if link exists, otherwise undefined */
 export interface Invite {
@@ -13,5 +12,5 @@ export interface CourseInvite {
     creatorID : string,
     courseID : string,
     type : string,
-    joinRole : localRole,
+    joinRole : courseRole,
 }

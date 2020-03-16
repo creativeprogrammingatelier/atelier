@@ -14,7 +14,8 @@ import { readFileAsString } from '../../helpers/FilesystemHelper';
 import { AuthError, setTokenCookie, clearTokenCookie, getCurrentUserID } from '../../helpers/AuthenticationHelper';
 import { UserDB } from '../../database/UserDB';
 import { NotFoundDatabaseError } from '../../database/DatabaseErrors';
-import { globalRole } from '../../../../enums/roleEnum';
+import { globalRole } from '../../../../models/enums/globalRoleEnum';
+import { checkEnum, getEnum } from '../../../../models/enums/enumHelper';
 
 setSchemaValidator(validator);
 
@@ -97,11 +98,14 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                 }
 
                 // Get role from SAML attributes
-                let role = "user";
+                let role = globalRole.user;
                 if (samlConfig.attributes?.role !== undefined) {
                     role = result.attributes[samlConfig.attributes.role] || role;
                     if (samlConfig.attributes.roleMapping !== undefined) {
-                        role = samlConfig.attributes.roleMapping[role] || role;
+                        const samlRole = samlConfig.attributes.roleMapping[role] || role;
+                        if (checkEnum(globalRole, samlRole)){
+                            user = getEnum(globalRole, samlRole)
+                        }
                     }
                 }
 
