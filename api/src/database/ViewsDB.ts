@@ -190,4 +190,3 @@ export function MentionsView(mentionsTable=`"Mentions"`){
             AND m.userID = uv.userID
      `
 }
-

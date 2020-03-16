@@ -119,8 +119,8 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 	await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
 
 	const courseRegistration : CourseRegistrationOutput = await CourseRegistrationDB.addEntry({
-		courseID : courseID,
-		userID : userID,
+		courseID,
+		userID,
 		role : courseRole.student
 	});
 	response.status(200).send(courseRegistration);

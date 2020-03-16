@@ -21,6 +21,8 @@ import {
 import {filterCommentThread} from "../helpers/APIFilterHelper";
 import { getMentions } from '../helpers/MentionsHelper';
 import { MentionsDB } from '../database/MentionsDB';
+import {Snippet} from "../../../models/api/Snippet";
+import {getCommentLines} from "../../../client/src/helpers/CommentHelper";
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -58,7 +60,7 @@ commentThreadRouter.get('/file/:fileID', capture(async (request, response) => {
     await requireRegisteredFileID(currentUserID, fileID);
 
     // Retrieve comment threads, and filter out restricted comment threads if user does not have access
-    const commentThreads = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
+    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
@@ -78,7 +80,7 @@ commentThreadRouter.get('/submission/:submissionID', capture(async (request, res
     await requireRegisteredSubmissionID(currentUserID, submissionID);
 
     // Retrieve comment threads, and filter out restricted comment threads if user does not have access
-    const commentThreads = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
+    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
@@ -98,7 +100,7 @@ commentThreadRouter.get('/submission/:submissionID/recent', capture(async (reque
     await requireRegisteredSubmissionID(currentUserID, submissionID);
 
     // Retrieve comment threads, and filter out restricted comment threads if user does not have access
-    const commentThreads = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
+    const commentThreads : CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
@@ -155,10 +157,10 @@ commentThreadRouter.post('/submission/:submissionID', capture(async (request, re
     const commentThread = await transaction(async client => {
         // Snippet creation
         const snippetID : string | undefined = await SnippetDB.createNullSnippet({client});
-    
+
         // Thread creation
         const fileID : string = await FileDB.getNullFileID(submissionID, {client}) as unknown as string;
-        return createCommentThread(request, client, snippetID, fileID, submissionID);
+        return  createCommentThread(request, client, snippetID, fileID, submissionID);
     });
 
     response.send(commentThread);
@@ -178,27 +180,31 @@ commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
     await requireRegisteredFileID(currentUserID, fileID);
 
     const commentThread = await transaction(async client => {
+        //const snippetContext = getCommentLines()
+
         // Snippet creation
-        let snippetID : string | undefined;
+        let snippetID: string | undefined;
         if (request.body.snippetBody === undefined) {
             snippetID = await SnippetDB.createNullSnippet({client});
         } else {
             snippetID = await SnippetDB.addSnippet({
-                lineStart : request.body.lineStart,
-                charStart : request.body.charStart,
-                lineEnd : request.body.lineEnd,
-                charEnd : request.body.charEnd,
-                body : request.body.snippetBody,
+                lineStart: request.body.lineStart,
+                charStart: request.body.charStart,
+                lineEnd: request.body.lineEnd,
+                charEnd: request.body.charEnd,
+                contextBefore : request.body.contextBefore,
+                body: request.body.snippetBody,
+                contextAfter : request.body.contextAfter,
                 client
             });
         }
-        
+
         // Thread creation
-        const submissionID : string = request.body.submissionID;
+        const submissionID: string = request.body.submissionID;
         return createCommentThread(request, client, snippetID, fileID, submissionID);
     });
-        
-    response.send(commentThread);
+
+    response.status(200).send(commentThread);
 }));
 
 

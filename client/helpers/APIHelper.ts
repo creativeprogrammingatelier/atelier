@@ -38,6 +38,13 @@ export function getCurrentUser(doCache?: boolean) {
 export function getUser(userId: string, doCache?: boolean) {
 	return Fetch.fetchJson<User>(`/api/user/${userId}`, undefined, doCache);
 }
+export function setUser(body : {name? : string, email? : string}, doCache? : boolean) {
+	return Fetch.fetchJson<User>(`/api/user/`, {
+		method : "PUT",
+		body : JSON.stringify(body),
+		headers : {"Content-Type" : "application/json"}
+	}, doCache);
+}
 
 // Submissions
 export function getCourseSubmissions(courseId: string, doCache?: boolean) {
@@ -98,7 +105,9 @@ export function getRecentComments(submissionID: string, doCache?: boolean) {
 }
 
 interface CommentThreadProperties {
+	contextBefore? : string,
 	snippetBody?: string,
+	contextAfter? : string,
 	lineStart?: number,
 	charStart?: number,
 	lineEnd?: number,

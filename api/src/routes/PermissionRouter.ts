@@ -25,7 +25,7 @@ permissionRouter.use(AuthMiddleware.requireAuth);
 permissionRouter.get('/', capture(async(request : Request, response : Response) => {
     const userID : string = await getCurrentUserID(request);
     const permissions : number = await getGlobalPermissions(userID);
-    response.status(200).send({permissions : permissions } );
+    response.status(200).send({permissions} );
 }));
 
 /** DEBUGGING PATH
@@ -49,7 +49,7 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
     await requireRegistered(userID, courseID);
 
     const coursePermissions : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-    if (coursePermissions[0] == undefined) throw new AuthError("course.noRegistration", "You don't have permission to view this data");
+    if (coursePermissions[0] === undefined) throw new AuthError("course.noRegistration", "You don't have permission to view this data");
     const permission : Permission = {
         role : coursePermissions[0].role,
         permissions : coursePermissions[0].permission
@@ -59,8 +59,8 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
 
 /** ---------- PUT REQUESTS ---------- */
 function getPermissions(setPermissions : any) {
-    let addPermissions : number = 0;
-    let removePermissions : number = 0;
+    let addPermissions = 0;
+    let removePermissions = 0;
 
     const permissions = Object.keys(setPermissions);
     const add : boolean[] = Object.values(setPermissions);
@@ -92,14 +92,14 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
 
 
     await CourseRegistrationDB.addPermission({
-        courseID : courseID,
-        userID : userID,
+        courseID,
+        userID,
         permission : permissions[0]
     });
 
     const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.removePermission({
-        courseID : courseID,
-        userID : userID,
+        courseID,
+        userID,
         permission : permissions[1]
     });
 
