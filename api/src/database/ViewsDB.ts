@@ -115,7 +115,7 @@ export function commentThreadView(commentThreadTable=`"CommentThread"`){
      return `SELECT 
           sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
           ct.visibilityState,
-          sv.body, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
+          sv.body, sv.contextBefore, sv.contextAfter, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
           fv.pathname, fv.type
      FROM ${commentThreadTable} as ct, "SubmissionsRefs" as sr, "Snippets" as sv, "Files" as fv
      WHERE ct.submissionID = sr.submissionID
