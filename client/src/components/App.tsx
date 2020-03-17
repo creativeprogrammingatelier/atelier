@@ -40,7 +40,7 @@ class App extends React.Component<AppProps, AppState> {
 		this.state = {
 			loggedIn: false,
 			email: localStorage.getItem(EMAILLOCALSTORAGEKEY) || '',
-			role: globalRole.none
+			role: globalRole.unregistered
 		};
 		this.handleLogin = this.handleLogin.bind(this);
 		this.handleLogout = this.handleLogout.bind(this);
@@ -63,7 +63,7 @@ class App extends React.Component<AppProps, AppState> {
 		this.setState({
 			loggedIn: false,
 			email: '',
-			role: globalRole.none
+			role: globalRole.unregistered
 		});
 	}
 
