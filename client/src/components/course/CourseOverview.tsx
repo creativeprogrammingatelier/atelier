@@ -1,12 +1,12 @@
-import React, {useState, Fragment, useEffect} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
-import {getCourse, getCourseSubmissions, getCourseMentions, coursePermission} from "../../../helpers/APIHelper";
+import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
-import {Course} from "../../../../models/api/Course";
+import {Course, CoursePartial} from "../../../../models/api/Course";
 import {Mention} from "../../../../models/api/Mention";
 import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
@@ -29,8 +29,8 @@ export function CourseOverview({match}: CourseOverviewProps) {
 
     // Refresh course on course update
     const [reloadCourse, setReloadCourse] = useState(0);
-    const courseUpdate = (course : Course) => setReloadCourse(x => x + 1);
-    
+    const courseUpdate = (course: Course) => setReloadCourse(x => x + 1);
+
     useEffect(() => {
         coursePermission(match.params.courseId, true)
             .then((permission: Permission) => {
@@ -91,23 +91,25 @@ export function CourseOverview({match}: CourseOverviewProps) {
                 }
             />
             <CourseInvites courseID={match.params.courseId}/>
-			{
-				((permissions & (1 << PermissionEnum.manageUserPermissionsManager)) > 0) &&
-                    <DataList
-                        header="User Permission Settings"
-                        children = {
-                            <CourseSettings courseID={match.params.courseId} />
-                        }
-                    />
-			}
+            {
+                /* (permissions & (1 << PermissionEnum.manageUserPermissionsManager)) > 0) */
+                containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
+                <DataList
+                    header="User Permission Settings"
+                    children={
+                        <CourseSettings courseID={match.params.courseId}/>
+                    }
+                />
+            }
             {
                 containsPermission(PermissionEnum.manageCourses, permissions) &&
                 <DataList
                     header={"Course settings"}
-                    children = {
-                        <UpdateCourse courseID={match.params.courseId} handleResponse={courseUpdate} />
+                    children={
+                        <UpdateCourse courseID={match.params.courseId} handleResponse={courseUpdate}/>
                     }
-                }
+                />
+            }
         </Frame>
     );
 }
