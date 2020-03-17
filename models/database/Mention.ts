@@ -1,4 +1,4 @@
-import { DBTools } from "../../api/src/database/HelperDB";
+import { DBTools, checkAvailable } from "../../api/src/database/HelperDB";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { Mention as APIMention } from "../api/Mention";
 
@@ -27,6 +27,7 @@ export function convertMention(db : DBMention) : Mention{
 	}
 }
 export function mentionToAPI(db : DBMention) : APIMention{
+	checkAvailable(["mentionid","userid","commentid","commentthreadid","submissionid","courseid"],db)
 	return {
 		mentionID: UUIDHelper.fromUUID(db.mentionid),
 		userID: UUIDHelper.fromUUID(db.userid),

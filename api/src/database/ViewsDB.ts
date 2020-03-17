@@ -77,6 +77,65 @@ export function CourseRegistrationView(courseRegistrationTable = `"CourseRegistr
      WHERE 1=1
      `
 }
+export function CourseRegistrationViewAll(){
+     return `
+     WITH allButPermissions AS (
+          SELECT 
+             c.courseID, 
+             u.userID, 
+             u.permission,
+             COALESCE( -- if no entry present, use 'unregistered'
+                (
+                   SELECT e.courseRole 
+                   FROM "CourseRegistration" as e
+                   WHERE e.courseID=c.courseID 
+                     AND e.userID=u.userID
+                ), 
+                'unregistered'
+             ) AS courseRole
+          FROM  
+             "UsersView" as u, 
+             "Courses" as c
+       )
+       SELECT abp.courseID, abp.userID, abp.courseRole,
+          abp.permission 
+          | COALESCE( -- if entry not present, use 0 for no permissions
+             (
+                SELECT e.permission
+                FROM "CourseRegistration" as e
+                WHERE e.courseID=abp.courseID 
+                  AND e.userID=abp.userID
+             ),
+             0::bit(40)
+          ) | ( -- the permissions of this role in a course
+             SELECT permission 
+             FROM "CourseRolePermissions" 
+             WHERE courseRoleID=courseRole
+          ) AS permission
+       FROM allButPermissions as abp
+     `
+}
+
+export function CourseUsersView(){
+     return `
+          SELECT u.userName, u.email, u.globalRole, crv.*
+          FROM "UsersView" as u, "CourseRegistrationViewAll" as crv
+          WHERE u.userID = crv.userID
+
+     `
+}
+
+/*
+ * 
+ WITH entries as (
+ select * from "CourseRegistration"
+ ), defaults as (
+ select c.courseID, u.userID, 'unregistered' as courseRole, 0::bit(40) as permission from "Users" as u, "Courses" as c
+ )
+ select d.courseID, d.userID, COALESCE((SELECT e.courseRole from entries as e where e.courseID=d.courseID AND e.userID=d.userID), d.courseRole) FROM defaults as d
+ * 
+ * 
+ */
 
 export function CoursesView(coursesTable=`"Courses"`, usersView=`"UsersView"`){
      return `SELECT c.*, u.userName, u.globalrole, u.email, u.userID, u.permission

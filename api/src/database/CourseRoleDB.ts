@@ -1,12 +1,13 @@
 import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
-import {localRole, checkEnum} from '../../../enums/localRoleEnum'
+import {courseRole} from '../../../models/enums/courseRoleEnum'
 import {RolePermission, DBRolePermission, convertRolePermission} from '../../../models/database/RolePermission'
+import { removeItem, addItem } from "../../../models/enums/enumHelper";
 /**
  * interface for interacting with rolepermissions
  * @Author Rens Leendertz
  */
 
-export class RolePermissionDB {
+export class CourseRoleDB {
 	/**
 	 * get all roles currently stored in the database, given to onSuccess as a list of Permission
 	 */
@@ -29,7 +30,12 @@ export class RolePermissionDB {
 	/**
 	 * Add a new role to the database
 	 */
-	static async addNewLocalRole(name : string, permissions : number, DB : pgDB = pool){
+	static async addNewCourseRole(name : string, permissions : number, DB : pgDB = pool){
+		
+		//this might not be the best place,
+		// this will add an entry to the courseRole enum.
+		addItem(courseRole, name)
+
 		return DB.query(`INSERT INTO "CourseRolePermissions" 
 			VALUES ($1,$2) 
 			RETURNING *`, [name, toBin(permissions)])
@@ -48,7 +54,7 @@ export class RolePermissionDB {
 	}
 	/**
 	 * Add some permissions to a role in the database
-	 * the @param permission should be constructed using the localPermissions Enum inside enums/localRoleEnum 
+	 * the @param permission should be constructed using the localPermissions Enum inside enums/courseRoleEnum 
 	 * If the role already has some of the rights, those will be retained
 	 * No permissions will be removed
 	 */
@@ -62,7 +68,7 @@ export class RolePermissionDB {
 
 	/**
 	 * Remove some permissions from a role in the database
-	 * the @param permission should be constructed using the localPermissions Enum inside enums/localRoleEnum 
+	 * the @param permission should be constructed using the localPermissions Enum inside enums/courseRoleEnum 
 	 * If the role already does not have (some of) the rights, those will not enabled
 	 * No permissions will be added
 	 */
@@ -79,10 +85,14 @@ export class RolePermissionDB {
 	 * This may fail due to foreign key constraints if there are still users with this role in a course.
 	 * make sure to change those permissions first.
 	 */
-	static async deleteLocalRole(name : string, DB : pgDB = pool) {
+	static async deleteCourseRole(name : string, DB : pgDB = pool) {
 		return DB.query(`DELETE FROM "CourseRolePermissions" 
 			WHERE courseRoleID=$1 
 			RETURNING *`,[name])
-		.then(extract).then(map(convertRolePermission)).then(one)
+		.then(extract).then(map(convertRolePermission)).then(one).then((res) =>{
+			//this will also remove the entry from the courseRole enum on the server, no longer allowing it as a valid item.
+			removeItem(courseRole, name)
+			return res
+		})
 	}
 }

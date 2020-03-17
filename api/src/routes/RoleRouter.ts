@@ -3,10 +3,11 @@ import {AuthMiddleware} from '../middleware/AuthMiddleware';
 import {capture} from "../helpers/ErrorHelper";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {localRole} from "../../../enums/localRoleEnum";
+import {courseRole} from "../../../models/enums/courseRoleEnum";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {getGlobalPermissions, requirePermission} from "../helpers/PermissionHelper";
-import {containsPermission, PermissionEnum} from "../../../enums/permissionEnum";
+import {containsPermission, PermissionEnum} from "../../../models/enums/permissionEnum";
+import { getEnum } from '../../../models/enums/enumHelper';
 
 export const roleRouter = express.Router();
 
@@ -30,7 +31,7 @@ roleRouter.post('/course/:courseID/user/:userID/:role', capture(async(request : 
     const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.updateRole({
         userID,
         courseID,
-        role : role as localRole
+        role : getEnum(courseRole, role)
     });
     response.status(200).send(courseRegistrationOutput);
 }));

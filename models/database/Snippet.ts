@@ -66,7 +66,10 @@ export function convertSnippet(db : DBSnippet) : Snippet {
 	return ret
 }
 export function snippetToAPI(db : DBAPISnippet) : APISnippet {
-	checkAvailable(["snippetid", "linestart", "charstart", "lineend", "charend", "body", "courseid", "submissionid", "commentthreadid"], db)
+	checkAvailable(["snippetid", "linestart", "charstart", 
+					"lineend", "charend", "body", 
+					"contextbefore", "contextafter",
+					"courseid", "submissionid", "commentthreadid"], db)
 	return {
 		ID: UUIDHelper.fromUUID(db.snippetid),
 		file: fileToAPI(db),

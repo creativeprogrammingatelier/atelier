@@ -1,6 +1,6 @@
 import {extract, map, one, pool, pgDB, checkAvailable, DBTools  } from "./HelperDB";
 import {Submission, DBSubmission, convertSubmission, submissionToAPI, APISubmission} from '../../../models/database/Submission';
-import {submissionStatus, checkEnum} from '../../../enums/submissionStatusEnum'
+import {submissionStatus} from '../../../models/enums/submissionStatusEnum'
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { User } from "../../../models/database/User";
 import { FileDB } from "./FileDB";

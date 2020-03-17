@@ -1,5 +1,5 @@
 import {end, pool, permissionBits, getClient, pgDB} from "../HelperDB";
-import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView} from "../ViewsDB";
+import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseRegistrationViewAll, CourseUsersView} from "../ViewsDB";
 import { isPostgresError, PostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
 
@@ -57,7 +57,8 @@ DROP VIEW IF EXISTS
 	"SubmissionsView", "FilesView",
 	"SnippetsView", "CommentsView",
 	"CommentThreadView", "CourseRegistrationView",
-	"MentionsView";
+	"MentionsView", "CourseRegistrationViewAll", 
+	"CourseUsersView";
 
 DROP TABLE IF EXISTS 
 	"GlobalRolePermissions",
@@ -76,7 +77,7 @@ INSERT INTO "CourseRolePermissions" VALUES
    ('student', 1::bit(${permissionBits})),
    ('TA', 3::bit(${permissionBits})),
 	('teacher', 7::bit(${permissionBits})),
-	('unauthorized', 0::bit(${permissionBits})),
+	('unregistered', 0::bit(${permissionBits})),
 	('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "GlobalRolePermissions" (
@@ -86,7 +87,7 @@ CREATE TABLE "GlobalRolePermissions" (
 INSERT INTO "GlobalRolePermissions" VALUES
 	('admin', '${'1'.repeat(permissionBits)}'),
 	('user', 1::bit(${permissionBits})),
-	('unauthorized', 0::bit(${permissionBits})),
+	('unregistered', 0::bit(${permissionBits})),
 	('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Users" (
@@ -94,7 +95,7 @@ CREATE TABLE "Users" (
 	samlID         text UNIQUE, --can be null
 	userName       text NOT NULL CHECK (userName <> ''),
 	email          text NOT NULL UNIQUE CHECK (email <> ''),
-	globalRole     text NOT NULL REFERENCES "GlobalRolePermissions"(globalRoleID) DEFAULT 'unauthorized',
+	globalRole     text NOT NULL REFERENCES "GlobalRolePermissions"(globalRoleID) DEFAULT 'unregistered',
 	permission     bit(${permissionBits}) NOT NULL,
 	hash           char(60) NOT NULL
 );
@@ -155,7 +156,7 @@ INSERT INTO "Courses" VALUES
 CREATE TABLE "CourseRegistration" (
 	courseID       uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE,
 	userID         uuid NOT NULL REFERENCES "Users"(userID),
-	courseRole     text NOT NULL REFERENCES "CourseRolePermissions"(courseRoleID) DEFAULT 'unauthorized',
+	courseRole     text NOT NULL REFERENCES "CourseRolePermissions"(courseRoleID) DEFAULT 'unregistered',
 	permission     bit(${permissionBits}) NOT NULL,
 	PRIMARY KEY (courseID, userID)
 );
@@ -308,6 +309,14 @@ CREATE VIEW "CourseRegistrationView" AS (
 
 CREATE VIEW "CoursesView" AS (
 	${CoursesView()}
+);
+
+CREATE VIEW "CourseRegistrationViewAll" AS (
+	${CourseRegistrationViewAll()}
+);
+
+CREATE VIEW "CourseUsersView" AS (
+	${CourseUsersView()}
 );
 
 CREATE VIEW "SubmissionsView" AS (

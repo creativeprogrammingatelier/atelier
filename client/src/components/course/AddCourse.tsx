@@ -2,9 +2,9 @@ import React, {FormEvent, useState} from "react";
 import {InputField} from '../general/InputField';
 import {Course} from '../../../../models/api/Course';
 import { createCourse } from '../../../helpers/APIHelper';
-import { courseState } from '../../../../enums/courseStateEnum';
 import {Button, FormControl, InputGroup, Form} from "react-bootstrap";
 import {FiClipboard} from "react-icons/all";
+import {courseState} from "../../../../models/enums/courseStateEnum";
 
 interface AddCourseProps {
     handleResponse? : (course : Course) => void

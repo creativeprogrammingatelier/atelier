@@ -15,7 +15,7 @@ import {CODEFILE_EXTENSIONS} from '../../../helpers/Constants';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
 import {filterSubmission} from "../helpers/APIFilterHelper";
-import {PermissionEnum} from "../../../enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import { transaction } from '../database/HelperDB';
 

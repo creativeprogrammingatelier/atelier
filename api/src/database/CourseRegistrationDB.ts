@@ -1,13 +1,14 @@
 import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools, permissionBits } from "./HelperDB";
 
 import {CourseRegistration, convertCourseReg, DBCourseRegistration, DBAPICourseRegistration, courseRegToAPI, APICourseRegistration} from '../../../models/database/CourseRegistration';
-import {RolePermissionDB} from './RolePermissionDB'
+import {CourseRoleDB} from './CourseRoleDB'
 import { UUIDHelper, ID64 } from "../helpers/UUIDHelper";
 import { CoursePartial } from "../../../models/api/Course";
 import { User } from "../../../models/database/User";
 import { APIPermission } from "../../../models/database/RolePermission";
 import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 import { CourseRegistrationView} from "./ViewsDB";
+import { CourseUser, convertCourseUser } from "../../../models/database/CourseUser";
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
@@ -40,17 +41,56 @@ import { CourseRegistrationView} from "./ViewsDB";
 		return total
 	}
 
+	/**
+	 * get a subset of entries.
+	 * if an entry does not exist in the database, it will be replaced by an entry with role 'unregistered', 
+	 * and no extra permissions besides the ones the user receives through his global user account.
+	 * @param courses a subset of courses to return for
+	 * @param users a subset of users to return for
+	 * @param params 
+	 */
 	static async getSubset(courses : string[] | undefined, users : string[] | undefined, params : DBTools = {}){
 		const {client = pool} = params
 		if (courses) courses = courses.map<string>(UUIDHelper.toUUID)
 		if (users) users = users.map<string>(UUIDHelper.toUUID)
+
 		return client.query(`
 			SELECT *
-			FROM "CourseRegistrationView"
+			FROM "CourseRegistrationViewAll"
 			WHERE 
 				($1::uuid[] IS NULL OR courseID = ANY($1))
 			AND ($2::uuid[] IS NULL OR userID = ANY($2))
 		`, [courses, users]).then(extract).then(map(convertCourseReg))
+	}
+
+	static async filterCourseRegistration(registration : CourseUser){
+		const {
+			userID = undefined,
+			courseID = undefined,
+			userName = undefined,
+			email = undefined,
+
+			globalRole = undefined,
+			courseRole = undefined,
+			permission = undefined,
+
+			client = pool
+		}=registration
+		const userid = UUIDHelper.toUUID(userID),
+			courseid = UUIDHelper.toUUID(courseID)
+		return client.query(`
+			SELECT *
+			FROM "CourseUsersView"
+			WHERE
+				($1::uuid IS NULL OR userID = $1)
+			AND ($2::uuid IS NULL OR courseID = $2)
+			AND ($3::text IS NULL OR userName =$3)
+			AND ($4::text IS NULL OR email =$4)
+			AND ($5::text IS NULL OR globalRole =$5)
+			AND ($6::text IS NULL OR courseRole =$6)
+			AND ($7::bit(${permissionBits}) IS NULL OR (permission & $7) = $7)
+		`, [userid, courseid, userName, email, globalRole, courseRole, toBin(permission)])
+		.then(extract).then(map(convertCourseUser))
 	}
 
 	/**
@@ -72,6 +112,10 @@ import { CourseRegistrationView} from "./ViewsDB";
 	 */
 	static async getEntriesByUser(userID : ID64, params : DBTools = {}) {
 		return 	CourseRegistrationDB.getSubset(undefined, [userID], params)
+	}
+
+	static async getSingleEntry(courseID : string, userID : string, params : DBTools = {}){
+		return CourseRegistrationDB.getSubset([courseID], [userID], params).then(one)
 	}
 
 	/**

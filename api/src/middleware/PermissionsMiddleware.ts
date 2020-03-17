@@ -17,7 +17,7 @@ export default class PermissionsMiddleware {
 	}*/
 
 	private static checkCommentAccessPermission(comment: any, user: User): boolean {
-		if (comment && (user.email == comment.author.email || user.role == 'teacher')) {
+		if (comment && (user.email === comment.author.email || user.role === 'staff')) {
 			return true;
 		}
 		return false;

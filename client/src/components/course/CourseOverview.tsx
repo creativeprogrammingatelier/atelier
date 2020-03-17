@@ -8,6 +8,7 @@ import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
 import {Course} from "../../../../models/api/Course";
 import { Mention } from "../../../../models/api/Mention";
+import {CourseInvites} from "../invite/CourseInvite";
 
 interface CourseOverviewProps {
 	match: {
@@ -71,6 +72,7 @@ export function CourseOverview({match}: CourseOverviewProps) {
                     />
                 }
             />
+        	<CourseInvites courseID = {match.params.courseId} />
 		</Frame>
 	);
 }

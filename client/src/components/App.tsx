@@ -8,7 +8,6 @@ import RoleView from './RoleView';
 import Logout from './Logout';
 import Register from './Register';
 import AuthHelper from '../../helpers/AuthHelper';
-import {globalRole} from '../../../enums/roleEnum';
 import {AuthenticatedRoute} from './AuthenticatedRoute';
 import {SubmissionOverview} from './submission/SubmissionOverview';
 import {FileOverview} from './submission/FileOverview';
@@ -23,6 +22,7 @@ import {SubmissionShare} from './submission/SubmissionShare';
 import {Bootstrap} from "./Bootstrap";
 import {CourseUserOverview} from "./user/CourseUserOverview";
 import {Settings} from "./settings/Settings";
+import {globalRole} from "../../../models/enums/globalRoleEnum";
 
 
 /**
@@ -53,7 +53,7 @@ class App extends React.Component<AppProps, AppState> {
 	handleLogin(email: string) {
 		this.setState({
 			loggedIn: true,
-			email: email
+			email
 		});
 		localStorage.setItem(EMAILLOCALSTORAGEKEY, email);
         this.getAndSetRole();
@@ -70,8 +70,8 @@ class App extends React.Component<AppProps, AppState> {
 	getAndSetRole() {
 		AuthHelper.getRole().then((response: Response) => {
 			response.json().then((json: any) => {
-				let userRole = json.role;
-				if (response.status == 200) {
+				const userRole = json.role;
+				if (response.status === 200) {
 					this.setState({
 						role: userRole,
 						loggedIn: true
