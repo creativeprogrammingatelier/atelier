@@ -37,6 +37,7 @@ export class CourseSettings extends React.Component<CourseSettingsProps, CourseS
         const userID : string = values[0];
         const permissions : number = values[1] as unknown as number;
 
+        console.log(userID);
         this.setState({
             settingsUser : userID,
             settingsPermission : permissions,
@@ -44,9 +45,6 @@ export class CourseSettings extends React.Component<CourseSettingsProps, CourseS
             manageUserRegistration : containsPermission(PermissionEnum.manageUserRegistration, permissions),
             manageUserPermissionsManager : containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)
         } as unknown as CourseSettingsState);
-
-        console.log(this.state.settingsUser);
-        console.log(this.state.settingsPermission);
     }
 
     handleCheckboxChange(event : ChangeEvent<HTMLInputElement>) {
@@ -90,10 +88,9 @@ export class CourseSettings extends React.Component<CourseSettingsProps, CourseS
                     return (
                         <div>
                             <select
-                                value={this.state.settingsUser}
                                 onChange={this.handleUserChange}
                             >
-                                {users.map((user : CourseRegistrationOutput) => <option value={user.userID + "-" + user.permission}>{user.userID}</option>)}
+                                {users.map((user : CourseRegistrationOutput) => <option id={user.userID} value={user.userID + "-" + user.permission}>{user.userID}</option>)}
                             </select>
 
 
