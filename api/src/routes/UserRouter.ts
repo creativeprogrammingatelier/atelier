@@ -10,6 +10,8 @@ import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {requirePermission} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
+import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 
 export const userRouter = express.Router();
 
@@ -28,6 +30,23 @@ userRouter.get('/all', capture(async(request : Request, response : Response) => 
 	await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
 
 	const users : User[] = await UserDB.getAllUsers();
+	response.status(200).send(users);
+}));
+
+/**
+ * Get users of a course
+ * - requirements:
+ *  - view all user permission
+ */
+userRouter.get('/course/:courseID', capture(async(request: Request, response : Response) => {
+	const currentUserID : string = await getCurrentUserID(request);
+	const courseID : string = request.params.courseID;
+
+	// Require view all user profile permission
+	await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles, courseID);
+
+	// TODO get name of each user
+	const users : CourseRegistrationOutput[] = await CourseRegistrationDB.getEntriesByCourse(courseID);
 	response.status(200).send(users);
 }));
 

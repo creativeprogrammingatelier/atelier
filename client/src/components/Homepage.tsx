@@ -47,12 +47,10 @@ export function Homepage() {
 				/>
 			</div>
 			{
-				((permissions & (1 << PermissionEnum.addCourses)) > 0) ?
+				((permissions & (1 << PermissionEnum.addCourses)) > 0) &&
 					<div className="m-3">
 						<AddCourse handleResponse={updateCourse}/>
 					</div>
-					:
-					<p>No permission to add courses</p>
 			}
 		</Frame>
 	);

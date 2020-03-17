@@ -14,7 +14,6 @@ export function Settings() {
             </Jumbotron>
 
             <DataList header="User Details" children = {<UserSettings />} />
-            <DataList header="Course Settings" children = {<CourseSettings />} />
         </Frame>
     )
 }
