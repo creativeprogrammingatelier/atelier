@@ -223,10 +223,6 @@ describe("API permissions", () => {
             expect(response).to.have.status(200);
         });
 
-        it("Should not be possible to get course permissions if not registered. No permissions.", async () => {
-            await permission_401();
-        });
-
         it("Should be possible to get permissions of user in the course if registered.", async () => {
             await registerCourse();
             await permission_200();
