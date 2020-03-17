@@ -6,7 +6,7 @@ import {Button} from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiCode, FiEye, FiEyeOff, FiTrash} from "react-icons/all";
 import {CommentThread} from "../../../../models/api/CommentThread";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
-import {createComment} from "../../../helpers/APIHelper";
+import {createComment, setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {File} from "../../../../models/api/File";
 import {Snippet} from "./Snippet";
 import {Link} from "react-router-dom";
@@ -54,9 +54,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 		console.log("Clicked to discard");
 	};
 	const handleVisibility = () => {
-		console.log("Clicked to toggle visibility");
-		setRestricted(!restricted);
-		// TODO: Update server
+		setCommentThreadVisibility(thread.ID, restricted).then(() => setRestricted(!restricted));
 		// TODO: Some form of success feedback, probably
 	};
 
