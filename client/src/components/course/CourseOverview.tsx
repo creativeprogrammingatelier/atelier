@@ -10,9 +10,10 @@ import {Course} from "../../../../models/api/Course";
 import {Mention} from "../../../../models/api/Mention";
 import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
-import {PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {CourseSettings} from "../settings/CourseSettings";
 import {DataList} from "../general/data/DataList";
+import {UpdateCourse} from "./UpdateCourse";
 
 interface CourseOverviewProps {
     match: {
@@ -25,6 +26,10 @@ interface CourseOverviewProps {
 export function CourseOverview({match}: CourseOverviewProps) {
     const [reload, updateReload] = useState(0);
     const [permissions, setPermissions] = useState(0);
+
+    // Refresh course on course update
+    const [reloadCourse, setReloadCourse] = useState(0);
+    const courseUpdate = (course : Course) => setReloadCourse(x => x + 1);
     
     useEffect(() => {
         coursePermission(match.params.courseId, true)
@@ -37,8 +42,8 @@ export function CourseOverview({match}: CourseOverviewProps) {
         <Frame title="Course" sidebar search={"/course/../search"}>
             <Jumbotron>
                 <Loading<Course>
-                    loader={getCourse}
-                    params={[match.params.courseId]}
+                    loader={(courseId, reloadCourse) => getCourse(courseId, false)}
+                    params={[match.params.courseId, reloadCourse]}
                     component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p>
                     </Fragment>}
                 />
@@ -95,6 +100,14 @@ export function CourseOverview({match}: CourseOverviewProps) {
                         }
                     />
 			}
+            {
+                containsPermission(PermissionEnum.manageCourses, permissions) &&
+                <DataList
+                    header={"Course settings"}
+                    children = {
+                        <UpdateCourse courseID={match.params.courseId} handleResponse={courseUpdate} />
+                    }
+                }
         </Frame>
     );
 }
