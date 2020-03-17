@@ -1,50 +1,136 @@
-import React from 'react';
-import {useState} from "react";
+import React, {ChangeEvent} from 'react';
 import {Loading} from "../general/loading/Loading";
-import {getCourses, setCommentThreadVisibility, setPermission} from "../../../helpers/APIHelper";
-import {CoursePartial} from "../../../../models/api/Course";
-import {Permissions} from "../../../../models/api/Permission";
-import {PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {CourseRegistrationOutput} from "../../../../models/database/CourseRegistration";
+import {getUsersByCourse, setPermission} from "../../../helpers/APIHelper";
+import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 
-export function CourseSettings() {
-    const [settingsCourse, setSettingsCourse] = useState("");
-    const [settingsUser, setSettingsUser] = useState("");
-    const [settingsPermission, setSettingsPermission] = useState("");
+interface CourseSettingsProps {
+    courseID : string
+}
 
-    const setPermissions = () => {
-        console.log(settingsCourse);
-        console.log(settingsUser);
-        console.log(settingsPermission);
-        //setPermission(settingsCourse, settingsUser, {permissions : {viewAllCourses : true}})
+interface CourseSettingsState {
+    courseID : string,
+    settingsUser : string,
+    settingsPermission : number,
+    viewRestrictedComments : boolean,
+    manageUserRegistration : boolean,
+    manageUserPermissionsManager : boolean
+}
 
-    };
-    // TODO show courses in which you can manage user permissions
+export class CourseSettings extends React.Component<CourseSettingsProps, CourseSettingsState> {
+    constructor(props : CourseSettingsProps) {
+        super(props);
+        this.state = {
+            courseID : props.courseID,
+            settingsUser : "",
+            settingsPermission : 0,
+            viewRestrictedComments : false,
+            manageUserRegistration : false,
+            manageUserPermissionsManager : false
+        };
+        this.handleUserChange = this.handleUserChange.bind(this);
+        this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+    }
 
-    return (
-        <Loading<CoursePartial[]>
-            loader={getCourses}
-            component={(courses : CoursePartial[]) => {
-                return (
-                    <div>
-                        <select
-                            value={settingsCourse}
-                            onChange={(e) => setSettingsCourse(e.target.value)}
-                        >
-                            { courses.map((course : CoursePartial) => <option value={course.ID}>{course.name}</option>) }
-                        </select>
-                        <input
-                            type='text'
-                            value={settingsUser}
-                            onChange={(e) => setSettingsUser(e.target.value)}
-                        />
-                        <input
-                            type='text'
-                            value={settingsPermission}
-                            onChange={(e) => setSettingsPermission(e.target.value)}
-                        />
-                        <button onClick={setPermissions}>Set permissions</button>
-                    </div>
-                )
-            }} />
-    )
+    handleUserChange(event : ChangeEvent<HTMLSelectElement>) {
+        const values = event.target.value.split("-");
+        const userID : string = values[0];
+        const permissions : number = values[1] as unknown as number;
+
+        console.log(userID);
+        this.setState({
+            settingsUser : userID,
+            settingsPermission : permissions,
+            viewRestrictedComments : containsPermission(PermissionEnum.viewRestrictedComments, permissions),
+            manageUserRegistration : containsPermission(PermissionEnum.manageUserRegistration, permissions),
+            manageUserPermissionsManager : containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)
+        } as unknown as CourseSettingsState);
+    }
+
+    handleCheckboxChange(event : ChangeEvent<HTMLInputElement>) {
+        const target = event.target;
+        const value = target.checked;
+        const name = target.name;
+
+        this.setState({
+            [name] : value
+        } as unknown as CourseSettingsState);
+    }
+
+    setPermissions() {
+        const userID : string = this.state.settingsUser;
+        const viewRestrictedComments : boolean = this.state.viewRestrictedComments;
+        const manageUserRegistration : boolean = this.state.manageUserRegistration;
+        const manageUserPermissionsManager : boolean = this.state.manageUserPermissionsManager;
+
+        const permissions = {
+            permissions : {
+                viewRestrictedComments,
+                manageUserRegistration,
+                manageUserPermissionsManager
+            }
+        };
+
+        console.log("setting permissions");
+        setPermission(this.state.courseID, userID, permissions, false)
+            .then((courseRegistration : CourseRegistrationOutput) => {
+                // TODO feedback?
+                console.log(courseRegistration);
+            });
+    }
+
+    render() {
+        return (
+            <Loading<CourseRegistrationOutput[]>
+                loader={() => getUsersByCourse(this.state.courseID)}
+                params={[this.state.courseID]}
+                component={(users : CourseRegistrationOutput[]) => {
+                    return (
+                        <div>
+                            <select
+                                onChange={this.handleUserChange}
+                            >
+                                {users.map((user : CourseRegistrationOutput) => <option id={user.userID} value={user.userID + "-" + user.permission}>{user.userID}</option>)}
+                            </select>
+
+
+                            <br />
+                            <label>
+                                View Restricted Comments:
+                                <input
+                                    name="viewRestrictedComments"
+                                    type="checkbox"
+                                    checked={this.state.viewRestrictedComments}
+                                    onChange={this.handleCheckboxChange} />
+                            </label>
+
+                            <br />
+                            <label>
+                                Manage user registration:
+                                <input
+                                    name="manageUserRegistration"
+                                    type="checkbox"
+                                    checked={this.state.manageUserRegistration}
+                                    onChange={this.handleCheckboxChange} />
+                            </label>
+
+                            <br />
+                            <label>
+                                Manage user permissions:
+                                <input
+                                    name="manageUserPermissionsManager"
+                                    type="checkbox"
+                                    checked={this.state.manageUserPermissionsManager}
+                                    onChange={this.handleCheckboxChange} />
+                            </label>
+
+                            <br />
+                            <button onClick={() => this.setPermissions()}> Set permissions for user </button>
+
+                        </div>
+                    )
+                }}
+            />
+        )
+    }
 }

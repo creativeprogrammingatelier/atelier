@@ -3,23 +3,35 @@ import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../general/data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
-import {getCourse, getCourseSubmissions, getCourseMentions} from "../../../helpers/APIHelper";
+import {getCourse, getCourseSubmissions, getCourseMentions, coursePermission} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
 import {Course} from "../../../../models/api/Course";
-import { Mention } from "../../../../models/api/Mention";
+import {Mention} from "../../../../models/api/Mention";
 import {CourseInvites} from "../invite/CourseInvite";
+import {Permission} from "../../../../models/api/Permission";
+import {PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {CourseSettings} from "../settings/CourseSettings";
+import {DataList} from "../general/data/DataList";
 
 interface CourseOverviewProps {
-	match: {
-		params: {
-			courseId: string
-		}
-	}
+    match: {
+        params: {
+            courseId: string
+        }
+    }
 }
 
 export function CourseOverview({match}: CourseOverviewProps) {
-	const [reload, updateReload] = useState(0);
+    const [reload, updateReload] = useState(0);
+    const [permissions, setPermissions] = useState(0);
+
+    useEffect(() => {
+        coursePermission(match.params.courseId, true)
+            .then((permission: Permission) => {
+                setPermissions(permission.permissions);
+            })
+    }, []);
 
 	return (
 		<Frame title="Course" sidebar search={"/course/../search"}>
@@ -72,7 +84,16 @@ export function CourseOverview({match}: CourseOverviewProps) {
                     />
                 }
             />
-        	<CourseInvites courseID = {match.params.courseId} />
-		</Frame>
-	);
+            <CourseInvites courseID={match.params.courseId}/>
+			{
+				((permissions & (1 << PermissionEnum.manageUserPermissionsManager)) > 0) &&
+                    <DataList
+                        header="User Permission Settings"
+                        children = {
+                            <CourseSettings courseID={match.params.courseId} />
+                        }
+                    />
+			}
+        </Frame>
+    );
 }

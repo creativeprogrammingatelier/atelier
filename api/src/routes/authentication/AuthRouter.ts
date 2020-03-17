@@ -44,6 +44,16 @@ authRouter.get('/logout', (request, response) => {
     clearTokenCookie(response).redirect('/');
 });
 
+/** 
+ * Helper that converts a certificate into a public key, 
+ * or does nothing if it is not a certificate 
+ */
+function certToPublicKey(keyOrCertificate: string) {
+    return keyOrCertificate
+        .replace("-----BEGIN CERTIFICATE-----", "-----BEGIN PUBLIC KEY-----")
+        .replace("-----END CERTIFICATE-----", "-----END PUBLIC KEY-----");
+}
+
 /** Get an access token for a plugin */
 authRouter.get('/token', capture(async (request, response) => {
     const token = getToken(request);
@@ -52,7 +62,7 @@ authRouter.get('/token', capture(async (request, response) => {
     if (plugin === undefined) {
         throw new AuthError("plugin.unknown", "This plugin has not been registered with Atelier.");
     }
-    const { exp, iat } = await verifyToken(token, plugin.publicKey, {
+    const { exp, iat } = await verifyToken(token, certToPublicKey(plugin.publicKey), {
         algorithms: [ "RS256" ],
         issuer: userID
     });

@@ -48,6 +48,9 @@ export function setUser(body : {name? : string, email? : string}, doCache? : boo
 		headers : {"Content-Type" : "application/json"}
 	}, doCache);
 }
+export function getUsersByCourse(courseID : string, doCache? : boolean) {
+	return Fetch.fetchJson<CourseRegistrationOutput[]>(`/api/user/course/${courseID}`, undefined, doCache);
+}
 
 // Submissions
 export function getCourseSubmissions(courseId: string, doCache?: boolean) {
