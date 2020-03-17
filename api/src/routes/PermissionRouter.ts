@@ -103,7 +103,6 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
         permission : permissions[1]
     });
 
-    // TODO convert to { permissions { name => boolean, ..., ... }}
     response.status(200).send(courseRegistrationOutput);
 }));
 
@@ -128,6 +127,5 @@ permissionRouter.put('/user/:userID/', capture(async(request : Request, response
     await UserDB.addPermissionsUser(userID, permissions[0]);
     const user : User = await UserDB.removePermissionsUser(userID, permissions[1]);
 
-    // TODO convert to { permissions { name => boolean, ..., ... }}
     response.status(200).send(user);
 }));
