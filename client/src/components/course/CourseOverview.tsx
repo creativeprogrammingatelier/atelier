@@ -15,26 +15,26 @@ import {CourseSettings} from "../settings/CourseSettings";
 import {DataList} from "../general/data/DataList";
 
 interface CourseOverviewProps {
-    match: {
-        params: {
-            courseId: string
-        }
-    }
+	match: {
+		params: {
+			courseId: string
+		}
+	}
 }
 
 export function CourseOverview({match}: CourseOverviewProps) {
-    const [reload, updateReload] = useState(0);
-    const [permissions, setPermissions] = useState(0);
+	const [reload, updateReload] = useState(0);
+	const [permissions, setPermissions] = useState(0);
 
-    const [reloadCourse, setReloadCourse] = useState(0);
-    const courseUpdate = (course : CoursePartial) => setReloadCourse(x => x + 1);
+	const [reloadCourse, setReloadCourse] = useState(0);
+	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
-    useEffect(() => {
-        coursePermission(match.params.courseId, true)
-            .then((permission: Permission) => {
-                setPermissions(permission.permissions);
-            })
-    }, []);
+	useEffect(() => {
+		coursePermission(match.params.courseId, true)
+			.then((permission: Permission) => {
+				setPermissions(permission.permissions);
+			});
+	}, []);
 
 	return (
 		<Frame title="Course" sidebar search={"/course/../search"}>
@@ -56,7 +56,7 @@ export function CourseOverview({match}: CourseOverviewProps) {
 							return {
 								transport: `/submission/${submission.ID}`,
 								title: submission.name,
-								text: "Submitted by "+ submission.user.name,
+								text: "Submitted by " + submission.user.name,
 								time: new Date(submission.date),
 								tags: []
 								//tags: submission.tags
@@ -71,33 +71,28 @@ export function CourseOverview({match}: CourseOverviewProps) {
 					onUploadComplete={() => updateReload(rel => rel + 1)}
 				/>
 			</div>
-            <Loading<Mention[]>
-                loader={courseID => getCourseMentions(courseID)}
-                params={[match.params.courseId]}
-                component={mentions =>
-                    <DataBlockList
-                        header="Mentions"
-                        list={mentions.map(mention => ({
-                            transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
-                            title: mention.commentID,
-                            text: "You've been mentioned!",
-                            time: new Date(),
-                            tags: []
-                        }))}
-                    />
-                }
-            />
-            <CourseInvites courseID={match.params.courseId}/>
-			{
-			    /* (permissions & (1 << PermissionEnum.manageUserPermissionsManager)) > 0) */
-				containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
-                    <DataList
-                        header="User Permission Settings"
-                        children = {
-                            <CourseSettings courseID={match.params.courseId} />
-                        }
-                    />
+			<Loading<Mention[]>
+				loader={courseID => getCourseMentions(courseID)}
+				params={[match.params.courseId]}
+				component={mentions =>
+					<DataBlockList
+						header="Mentions"
+						list={mentions.map(mention => ({
+							transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
+							title: mention.commentID,
+							text: "You've been mentioned!",
+							time: new Date(),
+							tags: []
+						}))}
+					/>
+				}
+			/>
+			<CourseInvites courseID={match.params.courseId}/>
+			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
+				<DataList header="User Permission Settings">
+						<CourseSettings courseID={match.params.courseId}/>
+				</DataList>
 			}
-        </Frame>
-    );
+		</Frame>
+	);
 }
