@@ -10,7 +10,8 @@ export interface Comment extends DBTools {
 	fileID?: string,
 	snippetID?: string,
     userID?: string,
-    date?: Date,
+	created?: Date,
+	edited?:Date,
 	body?: string
 }
 
@@ -22,7 +23,8 @@ export interface DBComment {
 	fileid: string,
 	snippetid: string,
     userid: string,
-    date: Date,
+	created: Date,
+	edited: Date,
     body: string
 }
 
@@ -31,24 +33,26 @@ export {APIComment};
 export type DBAPIComment = DBComment & DBAPIUser
 
 export function convertComment(db : DBComment) : Comment {
-	checkAvailable(["commentid", "body", "date", "userid", "courseid", "submissionid", "commentthreadid"], db)
+	checkAvailable(["commentid", "body", "created", "edited", "userid", "courseid", "submissionid", "commentthreadid"], db)
 	return {
 		commentID: UUIDHelper.fromUUID(db.commentid),
 		commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
 		submissionID: UUIDHelper.fromUUID(db.submissionid),
 		courseID: UUIDHelper.fromUUID(db.courseid), 
 		userID: UUIDHelper.fromUUID(db.userid),
-		date: db.date,
+		created: db.created,
+		edited: db.edited,
 		body: db.body
 	}
 }
 export function commentToAPI(db : DBAPIComment) : APIComment {
-	checkAvailable(["commentid", "body", "date", "userid", "courseid", "submissionid", "commentthreadid"], db)
+	checkAvailable(["commentid", "body", "created", "edited", "userid", "courseid", "submissionid", "commentthreadid"], db)
 	return {
 		ID: UUIDHelper.fromUUID(db.commentid),
 		user: userToAPI(db),
 		text:db.body,
-		date:db.date.toISOString(),
+		created:db.created.toISOString(),
+		edited:db.edited.toISOString(),
 		references: {
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),
@@ -58,7 +62,7 @@ export function commentToAPI(db : DBAPIComment) : APIComment {
 		}
 	}
 }
-export function onlyComment(obj : Comment){
+export function onlyComment(obj : Comment) : Comment{
     return {
 		commentID: obj.commentID,
 		commentThreadID: obj.commentThreadID,
@@ -67,7 +71,8 @@ export function onlyComment(obj : Comment){
 		userID: obj.userID,
 		fileID: obj.fileID,
 		snippetID: obj.snippetID,
-		date: obj.date,
+		created: obj.created,
+		edited: obj.edited,
 		body: obj.body
 	}
 }

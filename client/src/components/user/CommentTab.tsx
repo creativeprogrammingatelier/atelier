@@ -27,7 +27,7 @@ export function CommentTab({user, course}: CommentTabProperties) {
 						return {
 							title: comment.user.name,
 							text: comment.text,
-							time: TimeHelper.fromString(comment.date),
+							time: TimeHelper.fromString(comment.created),
 							transport: "" // TODO: Link to correct /submission/:submissionId/:fileId/comments#:commentThreadId
 						};
 					})}

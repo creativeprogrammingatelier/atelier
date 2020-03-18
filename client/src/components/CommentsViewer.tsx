@@ -71,8 +71,8 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 	}
 
 	static sortComments(a: Comment, b: Comment) {
-		let aDate = new Date(a.date!);
-		let bDate = new Date(b.date!);
+		let aDate = new Date(a.created!);
+		let bDate = new Date(b.created!);
 
 		if (aDate < bDate) {
 			return 1;

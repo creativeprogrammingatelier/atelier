@@ -29,8 +29,10 @@ export function instanceOfComment(object: any): object is Comment {
         && instanceOfUser(object.user)
         && 'text' in object
         && typeof object.text === 'string'
-        && 'date' in object
-        && typeof object.date === 'string'
+        && 'created' in object
+        && typeof object.created === 'string'
+        && 'edited' in object
+        && typeof object.edited === 'string'
         && 'references' in object
         && typeof object.references === 'object');
 }
