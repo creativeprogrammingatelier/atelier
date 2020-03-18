@@ -1,13 +1,9 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {Frame} from "../frame/Frame";
-import {DataBlockList} from "../general/data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
-import {Submission} from "../../../../models/api/Submission";
-import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions} from "../../../helpers/APIHelper";
-import {Uploader} from "../uploader/Uploader";
+import {coursePermission, getCourse} from "../../../helpers/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../models/api/Course";
-import {Mention} from "../../../../models/api/Mention";
 import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
@@ -56,7 +52,11 @@ export function CourseSettings({match}: CourseOverviewProps) {
                 <DataList
                     header="User Permission Settings"
                     children={
-                        <PermissionSettings courseID={match.params.courseId}/>
+                        <PermissionSettings
+                            courseID={match.params.courseId}
+                            viewPermissions={containsPermission(PermissionEnum.manageUserPermissionsView, permissions)}
+                            managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
+                        />
                     }
                 />
             }
