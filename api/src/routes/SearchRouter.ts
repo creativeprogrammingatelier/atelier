@@ -47,7 +47,14 @@ searchRouter.get('/', capture(async (request, response) => {
     const users = await filterUser({ userName: query, ...common });
     const comments = await CommentDB.filterComment({ body: query, ...common });
     const snippets = await SnippetDB.filterSnippet({ body: query, ...common });
-    response.send({ users, comments, snippets } as SearchResult);
+    response.send({
+        users, 
+        courses: [], 
+        submissions: [], 
+        files: [],
+        comments: comments.map(comment => ({comment, submission: undefined})),
+        snippets: snippets.map(snippet => ({snippet, file: undefined, submission: undefined}))
+    } as unknown as SearchResult);
 }));
 
 /** Search for users */
