@@ -83,8 +83,9 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
     const currentUserID : string = await getCurrentUserID(request);
     const courseID : string = request.params.courseID;
 
-    // Requires manageUserPermissionsManage
-    await requirePermission(currentUserID, PermissionEnum.manageUserPermissionsManager, courseID);
+    // Can only set permissions based on permission bits
+    // TODO AND view bits with 0 if no view permission
+    // TODO AND manage bits with 0 if no manage permission
 
     const setPermissions = request.body.permissions;
     const userID : string = request.params.userID;

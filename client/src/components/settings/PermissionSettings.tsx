@@ -6,15 +6,16 @@ import {
     PermissionEnum,
     viewPermissions
 } from "../../../../models/enums/permissionEnum";
-import {CourseUser} from "../../../../models/database/CourseUser";
 import {Loading} from "../general/loading/Loading";
-import {getUsersByCourse, setPermission} from "../../../helpers/APIHelper";
+import {getAllUsers, getUsersByCourse, setPermissionCourse, setPermissionGlobal} from "../../../helpers/APIHelper";
 import {CourseRegistrationOutput} from "../../../../models/database/CourseRegistration";
+import {User} from "../../../../models/api/User";
+import {CourseUser} from "../../../../models/database/CourseUser";
 
 interface CourseSettingsProps {
-    courseID: string,
-    viewPermissions : boolean,
-    managePermissions : boolean
+    courseID?: string,
+    viewPermissions: boolean,
+    managePermissions: boolean
 }
 
 const DEFAULT_USER = "-USER-";
@@ -120,24 +121,30 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
             return;
         }
 
-
         const allPermissions = [...viewPermissions, ...managePermissions];
-        allPermissions.forEach((permission : string[]) => {
+        allPermissions.forEach((permission: string[]) => {
             const name = permission[1];
             permissions = {
                 ...permissions,
-                [name] : getEnum(this.state, name)
+                [name]: getEnum(this.state, name)
             }
         });
 
-        setPermission(
-            courseID,
-            user,
-            {permissions}
-        ).then((permission : CourseRegistrationOutput) => {
-            // TODO handle response
-            console.log(permission);
-        });
+        // Send local / global permission request
+        if (courseID === undefined) {
+            console.log("Global permissions");
+            setPermissionGlobal(user, {permissions})
+                .then((permission: CourseRegistrationOutput) => {
+                    console.log(permission);
+                    // TODO handle response
+                });
+        } else {
+            console.log("Local permissions");
+            setPermissionCourse(courseID, user, {permissions}).then((permission: CourseRegistrationOutput) => {
+                // TODO handle response
+                console.log(permission);
+            });
+        }
     }
 
     /**
@@ -170,26 +177,47 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
 
     render() {
         return (
-            <Loading<CourseUser[]>
-                loader={() => getUsersByCourse(getEnum(this.state, "courseID"))}
-                component={(users: CourseUser[]) => {
+            <Loading<Array<CourseUser | User>>
+                loader={() => getEnum(this.state, "courseID") === undefined ?
+                    getAllUsers()
+                    : getUsersByCourse(getEnum(this.state, "courseID"))}
+                component={(users: Array<User | CourseUser>) => {
                     return (
                         <div>
+                            <h4>User</h4>
                             <select onChange={this.handleUserChange}>
                                 <option selected={true}>{DEFAULT_USER}</option>
-                                {users.map((user: CourseUser) =>
-                                    <option
-                                        id={user.userID}
-                                        value={user.userID + "-" + user.permission}>
-                                        {user.userName}
-                                    </option>
-                                )}
+                                {
+                                    users.map((user: User | CourseUser) => {
+                                        let userID = "";
+                                        let permission = 0;
+                                        let userName = "";
+
+                                        if ("userID" in user) {
+                                            const user2 : CourseUser = user as CourseUser;
+                                            userID = user2.userID!;
+                                            permission = user2.permission!;
+                                            userName = user2.userName!;
+                                        } else {
+                                            const user2 : User = user as User;
+                                            userID = user2.ID;
+                                            permission = user2.permission.permissions;
+                                            userName = user2.name;
+                                        }
+
+                                        return (
+                                            <option id={userID} value={userID + "-" + permission}>
+                                                {userName} - {user.email}
+                                            </option>
+                                        )
+                                    })
+                                }
                             </select>
 
-                            { this.props.viewPermissions && this.renderPermissions(viewPermissions, 'View Permissions') }
-                            { this.props.managePermissions &&  this.renderPermissions(managePermissions, 'Manage permissions') }
+                            {this.props.viewPermissions && this.renderPermissions(viewPermissions, 'View Permissions')}
+                            {this.props.managePermissions && this.renderPermissions(managePermissions, 'Manage permissions')}
 
-                            <button onClick={() => this.setPermissions()}> Set permissions for user </button>
+                            <button onClick={() => this.setPermissions()}> Set permissions for user</button>
                         </div>
                     )
                 }}
