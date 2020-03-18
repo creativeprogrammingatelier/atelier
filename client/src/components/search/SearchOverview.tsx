@@ -1,17 +1,23 @@
 import React, {useState} from "react";
-
-import {SearchBar} from "./SearchBar";
 import {Frame} from "../frame/Frame";
-import {search} from "../../../helpers/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {SearchQuery} from "./SearchQuery";
-import {DataList} from "../data/DataList";
 import {SearchResult} from "../../../../models/api/SearchResult";
 import {SearchResults} from "./SearchResults";
 
-
-export function SearchOverview() {
+export interface SearchProperties {
+	course?: string
+}
+interface SearchOverviewProperties {
+	location: {
+		state: SearchProperties
+	}
+}
+export function SearchOverview({location: {state}}: SearchOverviewProperties) {
 	const [searchResults, setSearchResults] = useState(undefined as unknown as SearchResult);
+
+	console.log("Loading search");
+	console.log(state);
 
 	return (
 		<Frame title="Search" sidebar>
@@ -19,10 +25,9 @@ export function SearchOverview() {
 				<h1>Search</h1>
 			</Jumbotron>
 			<div className="m-3">
-				<SearchQuery handleResponse={results => setSearchResults(results)}/>
+				<SearchQuery state={state} handleResponse={results => setSearchResults(results)}/>
 			</div>
 			{searchResults && <SearchResults results={searchResults}/>}
-
 		</Frame>
 	);
 }

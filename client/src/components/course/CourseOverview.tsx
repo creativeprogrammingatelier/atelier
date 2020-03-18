@@ -22,7 +22,7 @@ interface CourseOverviewProps {
 	}
 }
 
-export function CourseOverview({match}: CourseOverviewProps) {
+export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProps) {
 	const [reload, updateReload] = useState(0);
 	const [permissions, setPermissions] = useState(0);
 
@@ -30,24 +30,24 @@ export function CourseOverview({match}: CourseOverviewProps) {
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
 	useEffect(() => {
-		coursePermission(match.params.courseId, true)
+		coursePermission(courseId, true)
 			.then((permission: Permission) => {
 				setPermissions(permission.permissions);
 			});
 	}, []);
 
 	return (
-		<Frame title="Course" sidebar search={"/course/../search"}>
+		<Frame title="Course" sidebar search={{course: courseId}}>
 			<Jumbotron>
 				<Loading<Course>
 					loader={getCourse}
-					params={[match.params.courseId]}
+					params={[courseId]}
 					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
 				/>
 			</Jumbotron>
 			<Loading<Submission[]>
 				loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
-				params={[match.params.courseId, reload]}
+				params={[courseId, reload]}
 				component={submissions =>
 					<DataBlockList
 						header="Submissions"
@@ -67,13 +67,13 @@ export function CourseOverview({match}: CourseOverviewProps) {
 			/>
 			<div className="m-3">
 				<Uploader
-					courseId={match.params.courseId}
+					courseId={courseId}
 					onUploadComplete={() => updateReload(rel => rel + 1)}
 				/>
 			</div>
 			<Loading<Mention[]>
 				loader={courseID => getCourseMentions(courseID)}
-				params={[match.params.courseId]}
+				params={[courseId]}
 				component={mentions =>
 					<DataBlockList
 						header="Mentions"
@@ -87,10 +87,10 @@ export function CourseOverview({match}: CourseOverviewProps) {
 					/>
 				}
 			/>
-			<CourseInvites courseID={match.params.courseId}/>
+			<CourseInvites courseID={courseId}/>
 			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
 				<DataList header="User Permission Settings">
-					<CourseSettings courseID={match.params.courseId}/>
+					<CourseSettings courseID={courseId}/>
 				</DataList>
 			}
 		</Frame>

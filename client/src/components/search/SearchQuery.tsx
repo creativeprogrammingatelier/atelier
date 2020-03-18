@@ -5,11 +5,13 @@ import {createCourse, getCourses, search} from "../../../helpers/APIHelper";
 import {courseState} from "../../../../models/enums/courseStateEnum";
 import {Loading} from "../general/loading/Loading";
 import {SearchResult} from "../../../../models/api/SearchResult";
+import {SearchProperties} from "./SearchOverview";
 
 interface SearchQueryProperties {
+	state: SearchProperties,
 	handleResponse?: (results: SearchResult) => void
 }
-export function SearchQuery({handleResponse}: SearchQueryProperties) {
+export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 	const [query, setQuery] = useState("");
 	const [course, setCourse] = useState("");
 
@@ -29,11 +31,11 @@ export function SearchQuery({handleResponse}: SearchQueryProperties) {
 	return <Form>
 		<Form.Group>
 			<Form.Control as="select" onChange={event => setCourse((event.target as HTMLInputElement).value)}>
-				<option selected disabled>Select a course</option>
+				<option disabled>Select a course</option>
 				<option value="">No course</option>
 				<Loading<Course[]>
 					loader={getCourses}
-					component={courses => courses.map(course => <option value={course.ID}>{course.name}</option>)}
+					component={courses => courses.map(course => <option value={course.ID} selected={state && state.course === course.ID}>{course.name}</option>)}
 				/>
 			</Form.Control>
 		</Form.Group>

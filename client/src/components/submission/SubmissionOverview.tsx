@@ -28,7 +28,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		loader={getSubmission}
 		params={[submissionId]}
 		component={
-			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
+			submission => <Frame title={submission.name!} sidebar search={{course: submission.references.courseID}}>
 				<Jumbotron>
 					<h1>{submission.name}</h1>
 					<Loading<Course>
@@ -77,6 +77,6 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				 ]}/>*/}
 			</Frame>
 		}
-		wrapper={children => <Frame title="Submission" sidebar search={submissionPath + "/search"}>{children}</Frame>}
+		wrapper={children => <Frame title="Submission" sidebar search>{children}</Frame>}
 	/>;
 }

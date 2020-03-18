@@ -57,7 +57,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 			loader={getFile}
 			params={[fileId]}
 			component={
-				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={filePath + "/search"}>
+				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={{course: file.references.courseID}}>
 					<Jumbotron>
 						<h1>{FileNameHelper.fromPath(file.name)}</h1>
 						<Loading<Submission>
@@ -92,7 +92,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 					/>
 				</Frame>
 			}
-			wrapper={children => <Frame title="File" sidebar search={filePath + "/search"}>{children}</Frame>}
+			wrapper={children => <Frame title="File" sidebar search>{children}</Frame>}
 		/>
 	);
 }
