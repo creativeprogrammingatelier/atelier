@@ -1,24 +1,21 @@
 import React, {useState} from "react";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {Course} from "../../../../models/api/Course";
-import {createCourse, search} from "../../../helpers/APIHelper";
+import {createCourse, getCourses, search} from "../../../helpers/APIHelper";
 import {courseState} from "../../../../models/enums/courseStateEnum";
+import {Loading} from "../general/loading/Loading";
+import {SearchResult} from "../../../../models/api/SearchResult";
 
 interface SearchQueryProperties {
-	handleResponse?: (results: string[]) => void
+	handleResponse?: (results: SearchResult) => void
 }
 export function SearchQuery({handleResponse}: SearchQueryProperties) {
 	const [query, setQuery] = useState("");
-
-	// TODO get result from api: determine interface of what comes back from the API
-	const getResults = (term: string): any => search(term)
-		.then(data => ({
-			// TODO Process data
-		}));
+	const [course, setCourse] = useState("");
 
 	async function handleSearch() {
 		try {
-			const results = ['A result']; // TODO: Actual api call
+			const results = await search(query); // TODO: Add course selection
 			setQuery("");
 			if (handleResponse !== undefined) {
 				handleResponse(results);
@@ -31,11 +28,14 @@ export function SearchQuery({handleResponse}: SearchQueryProperties) {
 
 	return <Form>
 		<Form.Group>
-			<InputGroup>
-				<div>
-					Something for selecting what and where
-				</div>
-			</InputGroup>
+			<Form.Control as="select" onChange={event => setCourse((event.target as HTMLInputElement).value)}>
+				<option selected disabled>Select a course</option>
+				<option value="">No course</option>
+				<Loading<Course[]>
+					loader={getCourses}
+					component={courses => courses.map(course => <option value={course.ID}>{course.name}</option>)}
+				/>
+			</Form.Control>
 		</Form.Group>
 		<Form.Group>
 			<InputGroup>

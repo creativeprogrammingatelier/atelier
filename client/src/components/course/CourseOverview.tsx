@@ -1,6 +1,6 @@
 import React, {useState, Fragment, useEffect} from "react";
 import {Frame} from "../frame/Frame";
-import {DataBlockList} from "../general/data/DataBlockList";
+import {DataBlockList} from "../data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
 import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions} from "../../../helpers/APIHelper";
@@ -12,7 +12,7 @@ import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {CourseSettings} from "../settings/CourseSettings";
-import {DataList} from "../general/data/DataList";
+import {DataList} from "../data/DataList";
 
 interface CourseOverviewProps {
 	match: {
@@ -90,7 +90,7 @@ export function CourseOverview({match}: CourseOverviewProps) {
 			<CourseInvites courseID={match.params.courseId}/>
 			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
 				<DataList header="User Permission Settings">
-						<CourseSettings courseID={match.params.courseId}/>
+					<CourseSettings courseID={match.params.courseId}/>
 				</DataList>
 			}
 		</Frame>

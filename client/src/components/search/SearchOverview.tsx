@@ -5,11 +5,13 @@ import {Frame} from "../frame/Frame";
 import {search} from "../../../helpers/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {SearchQuery} from "./SearchQuery";
-import {DataList} from "../general/data/DataList";
+import {DataList} from "../data/DataList";
+import {SearchResult} from "../../../../models/api/SearchResult";
+import {SearchResults} from "./SearchResults";
 
 
 export function SearchOverview() {
-	const [searchResults, setSearchResults] = useState([] as string[]);
+	const [searchResults, setSearchResults] = useState(undefined as unknown as SearchResult);
 
 	return (
 		<Frame title="Search" sidebar>
@@ -19,6 +21,8 @@ export function SearchOverview() {
 			<div className="m-3">
 				<SearchQuery handleResponse={results => setSearchResults(results)}/>
 			</div>
+			{searchResults && <SearchResults results={searchResults}/>}
+
 		</Frame>
 	);
 }

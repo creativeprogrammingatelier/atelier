@@ -1,7 +1,7 @@
 import React from 'react';
 import {DataTagProperties} from "./DataTag";
 import {DataItem} from "./DataItem";
-import {Heading} from "../Heading";
+import {Heading} from "../general/Heading";
 
 interface DataListEntryProperties {
 	transport?: string,
