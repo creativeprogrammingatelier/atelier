@@ -11,9 +11,9 @@ import {Mention} from "../../../../models/api/Mention";
 import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
-import {CourseSettings} from "../settings/CourseSettings";
+import {PermissionSettings} from "../settings/PermissionSettings";
 import {DataList} from "../general/data/DataList";
-import {UpdateCourse} from "./UpdateCourse";
+import {UpdateCourse} from "../settings/Course/UpdateCourse";
 
 interface CourseOverviewProps {
     match: {
@@ -27,9 +27,6 @@ export function CourseOverview({match}: CourseOverviewProps) {
     const [reload, updateReload] = useState(0);
     const [permissions, setPermissions] = useState(0);
 
-    // Refresh course on course update
-    const [reloadCourse, setReloadCourse] = useState(0);
-    const courseUpdate = (course: Course) => setReloadCourse(x => x + 1);
 
     useEffect(() => {
         coursePermission(match.params.courseId, true)
@@ -42,8 +39,8 @@ export function CourseOverview({match}: CourseOverviewProps) {
         <Frame title="Course" sidebar search={"/course/../search"}>
             <Jumbotron>
                 <Loading<Course>
-                    loader={(courseId, reloadCourse) => getCourse(courseId, false)}
-                    params={[match.params.courseId, reloadCourse]}
+                    loader={(courseId) => getCourse(courseId, false)}
+                    params={[match.params.courseId]}
                     component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p>
                     </Fragment>}
                 />
@@ -90,26 +87,6 @@ export function CourseOverview({match}: CourseOverviewProps) {
                     />
                 }
             />
-            <CourseInvites courseID={match.params.courseId}/>
-            {
-                /* (permissions & (1 << PermissionEnum.manageUserPermissionsManager)) > 0) */
-                containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
-                <DataList
-                    header="User Permission Settings"
-                    children={
-                        <CourseSettings courseID={match.params.courseId}/>
-                    }
-                />
-            }
-            {
-                containsPermission(PermissionEnum.manageCourses, permissions) &&
-                <DataList
-                    header={"Course settings"}
-                    children={
-                        <UpdateCourse courseID={match.params.courseId} handleResponse={courseUpdate}/>
-                    }
-                />
-            }
         </Frame>
     );
 }

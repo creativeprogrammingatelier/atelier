@@ -41,6 +41,35 @@ export enum PermissionEnum {
     '39-reserved'
 }
 
+export const viewPermissions = [
+    ['View all user profiles' , 'viewAllUserProfiles'],
+    ['View all courses', 'viewAllCourses'],
+    ['View all submissions', 'viewAllSubmissions'],
+    ['View restricted comments', 'viewRestrictedComments']
+];
+
+export const managePermissions = [
+    ['Manage user permissions view', 'manageUserPermissionsView'],
+    ['Manage user permissions manager', 'manageUserPermissionsManager'],
+    ['Manage user role', 'manageUserRole'],
+
+    ['Manage user registration', 'manageUserRegistration'],
+
+    ['Add courses', 'addCourses'],
+    ['Manage courses', 'manageCourses'],
+
+    ['Add assignments - not used', 'addAssignments'],
+    ['Manage Assignments', 'manageAssignments'],
+
+    ['Add restricted comments', 'addRestrictedComments'],
+    ['Manage restricted comments', 'manageRestrictedComments'],
+
+    ['Mention all students', 'mentionAllStudents'],
+    ['Mention all assistants', 'mentionAllAssistants'],
+    ['Mention all teachers', 'mentionAllTeachers'],
+    ['No mention limit', 'mentionNoLimit']
+];
+
 export function containsPermission(permission : PermissionEnum, permissions : number) {
     return ((1 << permission) & permissions) > 0;
 }

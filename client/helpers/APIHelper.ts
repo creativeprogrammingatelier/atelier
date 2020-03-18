@@ -16,6 +16,7 @@ import {CourseInvite, Invite} from "../../models/api/Invite";
 import {threadState} from "../../models/enums/threadStateEnum";
 import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
 import {courseState} from "../../models/enums/courseStateEnum";
+import {CourseUser} from "../../models/database/CourseUser";
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -57,7 +58,7 @@ export function setUser(body : {name? : string, email? : string}, doCache? : boo
 	}, doCache);
 }
 export function getUsersByCourse(courseID : string, doCache? : boolean) {
-	return Fetch.fetchJson<CourseRegistrationOutput[]>(`/api/user/course/${courseID}`, undefined, doCache);
+	return Fetch.fetchJson<CourseUser[]>(`/api/user/course/${courseID}`, undefined, doCache);
 }
 
 // Submissions

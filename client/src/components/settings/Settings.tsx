@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {UserSettings} from "./UserSettings";
-import {CourseSettings} from "./CourseSettings";
+import {PermissionSettings} from "./PermissionSettings";
 import {DataList} from "../general/data/DataList";
 
 export function Settings() {

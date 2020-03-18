@@ -8,10 +8,11 @@ import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
-import {requirePermission} from "../helpers/PermissionHelper";
+import {requirePermission, requirePermissions} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
+import {CourseUser} from "../../../models/database/CourseUser";
 
 export const userRouter = express.Router();
 
@@ -36,17 +37,27 @@ userRouter.get('/all', capture(async(request : Request, response : Response) => 
 /**
  * Get users of a course
  * - requirements:
- *  - view all user permission
+ *  - either viewAllUserProfiles, manageUserPermissionsManager or manageUserPermissionsView
  */
 userRouter.get('/course/:courseID', capture(async(request: Request, response : Response) => {
 	const currentUserID : string = await getCurrentUserID(request);
 	const courseID : string = request.params.courseID;
 
-	// Require view all user profile permission
-	await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles, courseID);
+	// Either of these 3 permissions should be set. In this case managing user permissions
+	// implies permission to view all users.
+	await requirePermissions(currentUserID, [
+		PermissionEnum.viewAllUserProfiles,
+		PermissionEnum.manageUserPermissionsManager,
+		PermissionEnum.manageUserPermissionsView
+	], courseID);
+	//await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles, courseID);
+
+	const users: CourseUser[] = await CourseRegistrationDB.filterCourseRegistration({
+		courseID
+	});
 
 	// TODO get name of each user
-	const users : CourseRegistrationOutput[] = await CourseRegistrationDB.getEntriesByCourse(courseID);
+	//const users : CourseRegistrationOutput[] = await CourseRegistrationDB.getEntriesByCourse(courseID);
 	response.status(200).send(users);
 }));
 
