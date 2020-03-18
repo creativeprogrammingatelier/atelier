@@ -37,11 +37,16 @@ export function createWebhookRequest<T>(plugin: PluginConfiguration, event: stri
 }
 
 async function postWebhook<T>(plugin: PluginConfiguration, event: string, body: T) {
-    const res = await fetch(createWebhookRequest(plugin, event, body));
-    if (!res.ok) {
-        // TODO: store this somewhere the plugin owner can see it
-        const resText = await res.text();
-        console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.userID}). 
+    try {
+        const res = await fetch(createWebhookRequest(plugin, event, body));
+        if (!res.ok) {
+            // TODO: store this somewhere the plugin owner can see it
+            const resText = await res.text();
+            console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.userID}). 
             Got response ${res.status}: ${resText}`);
+        }
+    } catch (err) {
+        console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.userID}).
+        Caught error: `, err);
     }
 }

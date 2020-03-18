@@ -2,7 +2,7 @@
 
 import {Fetch} from "./FetchHelper";
 import {CommentThread} from "../../models/api/CommentThread";
-import {Course} from "../../models/api/Course";
+import {Course, CoursePartial} from "../../models/api/Course";
 import {Submission} from "../../models/api/Submission";
 import {User} from "../../models/api/User";
 import {Comment} from "../../models/api/Comment";
@@ -15,6 +15,7 @@ import {Mention} from '../../models/api/Mention';
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {threadState} from "../../models/enums/threadStateEnum";
 import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
+import {courseState} from "../../models/enums/courseStateEnum";
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -31,6 +32,13 @@ export function createCourse(course: {name: string, state: string}, doCache?: bo
 		method: "POST",
 		body: JSON.stringify(course),
 		headers: {"Content-Type": "application/json"}
+	}, doCache);
+}
+export function updateCourse(courseID : string, update : {name? : string, state? : courseState}, doCache? : boolean) {
+	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, {
+		method : "PUT",
+		body : JSON.stringify(update),
+		headers : {"Content-Type" : "application/json"}
 	}, doCache);
 }
 
