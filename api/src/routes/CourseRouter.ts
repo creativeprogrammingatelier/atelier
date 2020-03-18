@@ -108,6 +108,29 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 /** ---------- PUT REQUESTS ---------- */
 
 /**
+ * Update name/state of a course
+ *  - requirements:
+ *   - manageCourses permission
+ */
+courseRouter.put('/:courseID', capture(async(request : Request, response : Response) => {
+	const courseID : string = request.params.courseID;
+	const currentUserID : string = await getCurrentUserID(request);
+	const name : string | undefined = request.body.name;
+	const state : courseState | undefined = request.body.state as courseState;
+
+	// Require manageCourses permission
+	await requirePermission(currentUserID, PermissionEnum.manageCourses, courseID);
+
+	const course : CoursePartial = await CourseDB.updateCourse({
+		courseID,
+		courseName : name,
+		state
+	});
+
+	response.status(200).send(course);
+}));
+
+/**
  * Join a user in a course
  * - requirements:
  *  - manageUserRegistration permission
