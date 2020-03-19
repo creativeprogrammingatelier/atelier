@@ -1,7 +1,5 @@
 import 'mocha';
-import {app} from "../../api/src/app";
-import chai, {assert, expect} from "chai";
-import chaiHttp from "chai-http";
+import {assert, expect} from "chai";
 
 import {issueToken} from "../../api/src/helpers/AuthenticationHelper";
 import {User} from "../../models/api/User";
@@ -22,148 +20,31 @@ import {threadState} from "../../models/enums/threadStateEnum";
 import {Permission, Permissions} from "../../models/api/Permission";
 import {getAllUsers} from "../../client/helpers/APIHelper";
 import {CourseUser} from "../../models/database/CourseUser";
-
-chai.use(chaiHttp);
-
-let USER_ID = "";
-/** ID of an admin account to set permissions on the user */
-const ADMIN_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-
-/** Default permissions used by the database */
-const DEFAULT_PERMISSIONS = 1;
-
-/** Default IDs assumed to be in the database */
-/** COMMENT_THREAD_ID in FILE_ID in SUBMISSION_ID in COURSE_ID */
-const COURSE_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-const SUBMISSION_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-const FILE_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-const COMMENT_THREAD_ID = "AAAAAAAAAAAAAAAAAAAAAA";
-
-/** Authorization keys */
-let USER_AUTHORIZATION_KEY: string | undefined = undefined;
-const ADMIN_AUTHORIZATION_KEY = issueToken(ADMIN_ID);
-
-/** User requests */
-/** Comment requests */
-const getCommentsUser = () => chai.request(app)
-    .get(`/api/comment/user/${USER_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getCommentsByUserAndCourse = () => chai.request(app)
-    .get(`/api/comment/course/${COURSE_ID}/user/${USER_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-
-/** Comment thread requests */
-const getCommentThread = () => chai.request(app)
-    .get(`/api/commentThread/${COMMENT_THREAD_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getCommentThreadByFile = () => chai.request(app)
-    .get(`/api/commentThread/file/${FILE_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getCommentThreadBySubmission = () => chai.request(app)
-    .get(`/api/commentThread/submission/${SUBMISSION_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getCommentThreadBySubmissionRecent = () => chai.request(app)
-    .get(`/api/commentThread/submission/${SUBMISSION_ID}/recent`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-
-/** Course requests */
-const getCourse = () => chai.request(app)
-    .get(`/api/course/${COURSE_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getCourses = () => chai.request(app)
-    .get(`/api/course/`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getCoursesByOwnUser = () => chai.request(app)
-    .get(`/api/course/user/${USER_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getCoursesByOtherUser = () => chai.request(app)
-    .get(`/api/course/user/${ADMIN_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-
-/** Invite requests */
-const getInvitesByUserAndCourse = () => chai.request(app)
-    .get(`/api/invite/course/${COURSE_ID}/all`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getInviteStudent = () => chai.request(app)
-    .get(`/api/invite/course/${COURSE_ID}/role/student`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getInviteTA = () => chai.request(app)
-    .get(`/api/invite/course/${COURSE_ID}/role/TA`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getInviteTeacher = () => chai.request(app)
-    .get(`/api/invite/course/${COURSE_ID}/role/teacher`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getInvite = (INVITE_ID: string) => chai.request(app)
-    .get(`/api/invite/${INVITE_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-
-/** Permission requests */
-const getPermission = () => chai.request(app)
-    .get(`/api/permission`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getPermissionByCourse = () => chai.request(app)
-    .get(`/api/permission/course/${COURSE_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-
-/** Submission requests */
-const getSubmission = () => chai.request(app)
-    .get(`/api/submission/${SUBMISSION_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getSubmissionsByCourse = () => chai.request(app)
-    .get(`/api/submission/course/${COURSE_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getSubmissionsByOwnCourseUser = () => chai.request(app)
-    .get(`/api/submission/course/${COURSE_ID}/user/${USER_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getSubmissionsByOtherCourseUser = () => chai.request(app)
-    .get(`/api/submission/course/${COURSE_ID}/user/${ADMIN_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getSubmissionsByOwnUser = () => chai.request(app)
-    .get(`/api/submission/user/${USER_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getSubmissionsByOtherUser = () => chai.request(app)
-    .get(`/api/submission/user/${ADMIN_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-
-/** User requests */
-const getUsers = () => chai.request(app)
-    .get(`/api/user/all`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getUsersByCourse = () => chai.request(app)
-    .get(`/api/user/course/${COURSE_ID}`)
-    .set({'Authorization' : USER_AUTHORIZATION_KEY});
-const getOwnUser1 = () => chai.request(app)
-    .get(`/api/user`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getOwnUser2 = () => chai.request(app)
-    .get(`/api/user/${USER_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-const getOtherUser = () => chai.request(app)
-    .get(`/api/user/${ADMIN_ID}`)
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-
-/** Admin requests */
-const registerCourse = () => chai.request(app)
-    .put(`/api/course/${COURSE_ID}/user/${USER_ID}`)
-    .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
-const unregisterCourse = (course = COURSE_ID) => chai.request(app)
-    .delete(`/api/course/${course}/user/${USER_ID}`)
-    .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
-const coursesToUnregister = () => chai.request(app)
-    .get(`/api/course/user/${USER_ID}`)
-    .set({'Authorization' : ADMIN_AUTHORIZATION_KEY});
-const setPermissions = (permissions: Permissions) => chai.request(app)
-    .put(`/api/permission/user/${USER_ID}`)
-    .send({permissions})
-    .set({'Authorization': ADMIN_AUTHORIZATION_KEY, 'Content-Type': 'application/json'});
-const setCommentThreadPrivate = () => chai.request(app)
-    .put(`/api/commentThread/${COMMENT_THREAD_ID}`)
-    .send({"visibility": "private"})
-    .set({'Authorization': ADMIN_AUTHORIZATION_KEY, 'Content-Type': "application/json"});
-const setCommentThreadPublic = () => chai.request(app)
-    .put(`/api/commentThread/${COMMENT_THREAD_ID}`)
-    .send({"visibility": "public"})
-    .set({"Authorization": ADMIN_AUTHORIZATION_KEY, "Content-Type": "application/json"});
+import {
+    COURSE_ID,
+    coursesToUnregister, DEFAULT_PERMISSIONS,
+    getCommentsByUserAndCourse,
+    getCommentsUser,
+    getCommentThread,
+    getCommentThreadByFile,
+    getCommentThreadBySubmission,
+    getCommentThreadBySubmissionRecent,
+    getCourse,
+    getCourses,
+    getCoursesByOtherUser,
+    getCoursesByOwnUser, getOtherUser,
+    getOwnUser1, getOwnUser2,
+    getPermission,
+    getPermissionByCourse,
+    getSubmission,
+    getSubmissionsByCourse, getSubmissionsByOtherCourseUser,
+    getSubmissionsByOwnCourseUser, getUsers, getUsersByCourse,
+    registerCourse,
+    setAPITestUserValues,
+    setPermissions,
+    unregisterCourse,
+    USER_ID
+} from "./APIRequestHelper";
 
 describe("API Get Permissions", () => {
     /**
@@ -172,8 +53,9 @@ describe("API Get Permissions", () => {
      */
     before(async () => {
         // Get test user and set token
-        USER_ID = (await UserDB.filterUser({userName: 'test user', limit: 1}))[0].ID;
-        USER_AUTHORIZATION_KEY = issueToken(USER_ID);
+        const USER_ID = (await UserDB.filterUser({userName: 'test user', limit: 1}))[0].ID;
+        const USER_AUTHORIZATION_KEY = issueToken(USER_ID);
+        setAPITestUserValues(USER_ID, USER_AUTHORIZATION_KEY);
 
         // Unset course registrations and permissions at the start
         const response = await coursesToUnregister();
