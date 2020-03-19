@@ -11,7 +11,6 @@ import {capture} from "../helpers/ErrorHelper";
 import {requirePermission, requirePermissions} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {CourseUser} from "../../../models/database/CourseUser";
 
 export const userRouter = express.Router();
@@ -49,7 +48,7 @@ userRouter.get('/course/:courseID', capture(async(request: Request, response : R
 		PermissionEnum.viewAllUserProfiles,
 		PermissionEnum.manageUserPermissionsManager,
 		PermissionEnum.manageUserPermissionsView
-	], courseID);
+	], courseID, true);
 
 	const users: CourseUser[] = await CourseRegistrationDB.filterCourseRegistration({courseID});
 

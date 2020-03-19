@@ -17,7 +17,7 @@ import {raiseWebhookEvent} from '../helpers/WebhookHelper';
 import {filterSubmission} from "../helpers/APIFilterHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import { transaction } from '../database/HelperDB';
+import {transaction} from '../database/HelperDB';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -92,17 +92,22 @@ submissionRouter.get('/user/:userID', capture(async(request: Request, response: 
 
     const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
     response.status(200).send(submissions);
-    // TODO: Error handling
 }));
+
 /**
  * Get submissions of a user within a course
  */
 submissionRouter.get('/course/:courseID/user/:userID', capture(async(request: Request, response: Response) => {
     const courseID = request.params.courseID;
     const userID = request.params.userID;
+    const currentUserID : string = await getCurrentUserID(request);
+
+    // Requires enrolled in the course & view all permissions if you are not the user
+    await requireRegistered(currentUserID, courseID);
+    if (userID !== currentUserID) await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
+
     const submissions : Submission[] = await SubmissionDB.getRecents({userID, courseID});
     response.status(200).send(submissions);
-    // TODO: Error handling
 }));
 
 /**

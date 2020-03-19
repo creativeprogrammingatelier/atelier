@@ -30,9 +30,9 @@ permissionRouter.use(AuthMiddleware.requireAuth);
  * Get global permissions of user
  */
 permissionRouter.get('/', capture(async(request : Request, response : Response) => {
-    const userID : string = await getCurrentUserID(request);
-    const permissions : number = await getGlobalPermissions(userID);
-    response.status(200).send({permissions} );
+    const currentUserID : string = await getCurrentUserID(request);
+    const user : User = await UserDB.getUserByID(currentUserID);
+    response.status(200).send(user.permission);
 }));
 
 /** DEBUGGING PATH

@@ -19,11 +19,11 @@ roleRouter.use(AuthMiddleware.requireAuth);
  * - requirements:
  *  - manage user role permission
  */
-roleRouter.post('/course/:courseID/user/:userID/:role', capture(async(request : Request, response : Response) => {
+roleRouter.put('/course/:courseID/user/:userID/:role', capture(async(request : Request, response : Response) => {
     const currentUserID : string = await getCurrentUserID(request);
     const courseID : string = request.params.courseID;
     const userID : string = request.params.userID;
-    const role : string = request.params.role
+    const role : string = request.params.role;
 
     // Require manage user role permission
     await requirePermission(currentUserID, PermissionEnum.manageUserRole, courseID);
