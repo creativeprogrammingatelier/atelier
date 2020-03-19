@@ -32,8 +32,8 @@ pluginRouter.get('/', capture(async (request, response) => {
 
 /** Create a new plugin */
 pluginRouter.post('/', capture(async (request, response) => {
-    const userName = request.body.userName;
-    const email = request.body.email;
+    const userName = request.body.user?.userName;
+    const email = request.body.user?.email;
 
     const plugin: Plugin = await transaction(async client => {
         const user = await UserDB.createUser({
@@ -71,8 +71,8 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
         if (request.body.name || request.body.email) {
             user = await UserDB.updateUser({
                 userID,
-                userName: request.body.userName,
-                email: request.body.email,
+                userName: request.body.user?.userName,
+                email: request.body.user?.email,
                 client
             });
         } else {

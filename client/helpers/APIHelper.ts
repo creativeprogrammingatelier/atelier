@@ -16,6 +16,7 @@ import {CourseInvite, Invite} from "../../models/api/Invite";
 import {threadState} from "../../models/enums/threadStateEnum";
 import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
 import {courseState} from "../../models/enums/courseStateEnum";
+import {Plugin} from '../../models/api/Plugin';
 
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
@@ -199,4 +200,21 @@ export function getInvite(courseID : string, role : string, doCache? : boolean) 
 
 export function deleteInvite(courseID : string, role : string, doCache?: boolean) {
 	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, { method: "DELETE" }, doCache);
+}
+
+// Plugins
+export function getPlugins(doCache?: boolean) {
+    return Fetch.fetchJson<Plugin>('/api/plugin', undefined, doCache);
+}
+
+export function createPlugin(plugin: Partial<Plugin>, doCache?: boolean) {
+    return Fetch.fetchJson<Plugin>('/api/plugin', postJson(plugin), doCache);
+}
+
+export function updatePlugin(plugin: Partial<Plugin> & { pluginID: string }, doCache?: boolean) {
+    return Fetch.fetchJson<Plugin>(`/api/plugin/${plugin.pluginID}`, putJson(plugin), doCache);
+}
+
+export function deletePlugin(pluginID: string, doCache?: boolean) {
+    return Fetch.fetchJson<Plugin>(`/api/plugin/${pluginID}`, { method: "DELETE" }, doCache);
 }
