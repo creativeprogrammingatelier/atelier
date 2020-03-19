@@ -1,17 +1,25 @@
 import express from 'express';
-import { capture } from '../helpers/ErrorHelper';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { capture, captureNext } from '../helpers/ErrorHelper';
 import { UserDB } from '../database/UserDB';
 import { globalRole } from '../../../models/enums/globalRoleEnum';
 import { PluginsDB } from '../database/PluginsDB';
 import { transaction, one, map } from '../database/HelperDB';
 import { Plugin } from '../../../models/api/Plugin';
+import { requirePermission } from '../helpers/PermissionHelper';
+import { getCurrentUserID } from '../helpers/AuthenticationHelper';
+import { PermissionEnum } from '../../../models/enums/permissionEnum';
 
-export const adminRouter = express.Router()
+export const pluginRouter = express.Router()
 
-adminRouter.use(AuthMiddleware.requireRole(['admin']));
+/** All enpoints require the manageUserRegistration permission */
+pluginRouter.use(captureNext(async (request, response, next) => {
+    const userID = await getCurrentUserID(request);
+    await requirePermission(userID, PermissionEnum.manageUserRegistration);
+    next();
+}));
 
-adminRouter.get('/plugins', capture(async (request, response) => {
+/** Get all registered plugins */
+pluginRouter.get('/', capture(async (request, response) => {
     const barePlugins = await PluginsDB.filterPlugins({});
     const plugins: Plugin[] = await Promise.all(
         barePlugins.map(async plugin => {
@@ -22,7 +30,8 @@ adminRouter.get('/plugins', capture(async (request, response) => {
     response.send(plugins);
 }));
 
-adminRouter.post('/plugins', capture(async (request, response) => {
+/** Create a new plugin */
+pluginRouter.post('/', capture(async (request, response) => {
     const userName = request.body.userName;
     const email = request.body.email;
 
@@ -53,7 +62,8 @@ adminRouter.post('/plugins', capture(async (request, response) => {
     response.send(plugin);
 }));
 
-adminRouter.put('/plugins/:userID', capture(async (request, response) => {
+/** Update an already registered plugin */
+pluginRouter.put('/:userID', capture(async (request, response) => {
     const userID = request.params.userID;
 
     const plugin: Plugin = await transaction(async client => {
@@ -98,7 +108,8 @@ adminRouter.put('/plugins/:userID', capture(async (request, response) => {
     response.send(plugin);
 }));
 
-adminRouter.delete('/plugins/:userID', capture(async (request, response) => {
+/** Delete a plugin */
+pluginRouter.delete('/:userID', capture(async (request, response) => {
     const user = await UserDB.getUserByID(request.params.userID);
 
     if (user.permission.role === globalRole.plugin) {
