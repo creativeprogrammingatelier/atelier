@@ -23,6 +23,8 @@ import {
 import {filterCommentThread} from "../helpers/APIFilterHelper";
 import {getMentions} from '../helpers/MentionsHelper';
 import {MentionsDB} from '../database/MentionsDB';
+import {commentThreadOwner} from "../../../client/src/helpers/CommentThreadHelper";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -104,11 +106,24 @@ commentThreadRouter.get('/submission/:submissionID/recent', capture(async (reque
     response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
+/** ---------- PUT ---------- */
+/**
+ * Update comment thread state (visibility)
+ * - requirements:
+ *  - user is the owner of the comment thread (first comment)
+ *  - user has permission to manage restricted comment threads
+ */
 commentThreadRouter.put('/:commentThreadID', capture(async (request, response) => {
     const commentThreadID : string = request.params.commentThreadID;
     const visibilityState : threadState | undefined = request.body.visibility as threadState;
 
-    // TODO what requirements if you are not the creator?
+    const oldCommentThread : CommentThread = await ThreadDB.getThreadByID(commentThreadID);
+    const courseID : string = oldCommentThread.references.courseID;
+    const currentUserID : string = await getCurrentUserID(request);
+    // Either use is owner of a comment thread or has permission to manage restricted comments
+    if (commentThreadOwner(oldCommentThread) !== currentUserID) {
+        await requirePermission(currentUserID, PermissionEnum.manageRestrictedComments, courseID);
+    }
 
     const commentThread : CommentThread = await ThreadDB.updateThread({
         commentThreadID,

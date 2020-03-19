@@ -42,34 +42,82 @@ export enum PermissionEnum {
 }
 
 export const viewPermissions = [
-    ['View all user profiles' , 'viewAllUserProfiles'],
-    ['View all courses', 'viewAllCourses'],
-    ['View all submissions', 'viewAllSubmissions'],
-    ['View restricted comments', 'viewRestrictedComments']
+    {
+        display: 'View all user profiles',
+        name: 'viewAllUserProfiles'
+    },
+    {
+        display: 'View all courses',
+        name: 'viewAllCourses'
+    },
+    {
+        display: 'View all submissions',
+        name: 'viewAllSubmissions'
+    },
+    {
+        display: 'View restricted comments',
+        name: 'viewRestrictedComments'
+    }
 ];
 
 export const managePermissions = [
-    ['Manage user permissions view', 'manageUserPermissionsView'],
-    ['Manage user permissions manager', 'manageUserPermissionsManager'],
-    ['Manage user role', 'manageUserRole'],
-
-    ['Manage user registration', 'manageUserRegistration'],
-
-    ['Add courses', 'addCourses'],
-    ['Manage courses', 'manageCourses'],
-
-    ['Add assignments - not used', 'addAssignments'],
-    ['Manage Assignments', 'manageAssignments'],
-
-    ['Add restricted comments', 'addRestrictedComments'],
-    ['Manage restricted comments', 'manageRestrictedComments'],
-
-    ['Mention all students', 'mentionAllStudents'],
-    ['Mention all assistants', 'mentionAllAssistants'],
-    ['Mention all teachers', 'mentionAllTeachers'],
-    ['No mention limit', 'mentionNoLimit']
+    {
+        display: 'Manage user permissions view',
+        name: 'manageUserPermissionsView'
+    },
+    {
+        display: 'Manage user permissions manager',
+        name: 'manageUserPermissionsManager'
+    },
+    {
+        display: 'Manage user role',
+        name: 'manageUserRole'
+    },
+    {
+        display: 'Manage user registration',
+        name: 'manageUserRegistration'
+    },
+    {
+        display: 'Add courses',
+        name: 'addCourses'
+    },
+    {
+        display: 'Manage courses',
+        name: 'manageCourses'
+    }, {
+        display: 'Add assignments - not used',
+        name: 'addAssignments'
+    }
+    , {
+        display: 'Manage Assignments',
+        name: 'manageAssignments'
+    },
+    {
+        display: 'Add restricted comments',
+        name: 'addRestrictedComments'
+    },
+    {
+        display: 'Manage restricted comments',
+        name: 'manageRestrictedComments'
+    },
+    {
+        display: 'Mention all students',
+        name: 'mentionAllStudents'
+    },
+    {
+        display: 'Mention all assistants',
+        name: 'mentionAllAssistants'
+    },
+    {
+        display: 'Mention all teachers',
+        name: 'mentionAllTeachers'
+    },
+    {
+        display: 'No mention limit',
+        name: 'mentionNoLimit'
+    }
 ];
 
-export function containsPermission(permission : PermissionEnum, permissions : number) {
+export function containsPermission(permission: PermissionEnum, permissions: number) {
     return ((1 << permission) & permissions) > 0;
 }

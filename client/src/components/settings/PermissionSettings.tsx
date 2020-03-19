@@ -75,9 +75,9 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
      * @param userPermissions, permissions of the current user
      * @param permissions, (display) names of the permissions
      */
-    updatePermissions(userPermissions: number, permissions: string[][]) {
-        permissions.forEach((permission: string[]) => {
-            const permissionType: PermissionEnum = getEnum(PermissionEnum, permission[1]);
+    updatePermissions(userPermissions: number, permissions: Array<{display : string, name : string}>) {
+        permissions.forEach((permission) => {
+            const permissionType: PermissionEnum = getEnum(PermissionEnum, permission.name);
             const permissionName: string = PermissionEnum[permissionType];
             const permissionContained: boolean = containsPermission(permissionType, userPermissions);
             this.setState({[permissionName]: permissionContained});
@@ -122,8 +122,8 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
         }
 
         const allPermissions = [...viewPermissions, ...managePermissions];
-        allPermissions.forEach((permission: string[]) => {
-            const name = permission[1];
+        allPermissions.forEach((permission: {display : string, name : string}) => {
+            const name = permission.name;
             permissions = {
                 ...permissions,
                 [name]: getEnum(this.state, name)
@@ -152,7 +152,7 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
      * @param permissions, (display) names of the permissions
      * @param header, header for the set of permissions
      */
-    renderPermissions(permissions: string[][], header: string) {
+    renderPermissions(permissions: Array<{ display : string, name : string}>, header: string) {
         return (
             <div>
                 <h4>{header}</h4>
@@ -160,11 +160,11 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
                     permissions.map((permission) =>
                         <div>
                             <label>
-                                {permission[0]}
+                                {permission.display}
                                 <input
-                                    name={permission[1]}
+                                    name={permission.name}
                                     type="checkbox"
-                                    checked={getEnum(this.state, permission[1]) as boolean}
+                                    checked={getEnum(this.state, permission.name) as boolean}
                                     onChange={this.handleCheckboxChange}/>
                             </label>
                             <br/>

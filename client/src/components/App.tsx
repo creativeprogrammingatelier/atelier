@@ -68,18 +68,20 @@ class App extends React.Component<AppProps, AppState> {
 		});
 	}
 
+	//@deprecated
 	getAndSetRole() {
-		AuthHelper.getRole().then((response: Response) => {
-			response.json().then((json: any) => {
-				const userRole = json.role;
-				if (response.status === 200) {
-					this.setState({
-						role: userRole,
-						loggedIn: true
-					});
-				}
-			});
-		});
+		// Old Role get. API path does not currently exist
+		// AuthHelper.getRole().then((response: Response) => {
+		// 	response.json().then((json: any) => {
+		// 		const userRole = json.role;
+		// 		if (response.status === 200) {
+		// 			this.setState({
+		// 				role: userRole,
+		// 				loggedIn: true
+		// 			});
+		// 		}
+		// 	});
+		// });
 	}
 
 	render() {
