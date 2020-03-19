@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {File} from "../../../../models/api/File";
-import {CodeViewer2} from "../CodeViewer2";
+import {CodeViewer} from "../code/CodeViewer";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 export interface FileComment {
@@ -34,7 +34,7 @@ export function CodeTab({file, body, submissionID} : CodeProperties) {
 
 	return <div className="contentTab">
 		<div className="m-3">
-			<CodeViewer2
+			<CodeViewer
 				submissionID={submissionID}
 				file={file}
 				fileContents={body}

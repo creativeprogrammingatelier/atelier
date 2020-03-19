@@ -8,7 +8,7 @@ import {CommentThread} from "../../../../models/api/CommentThread";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
 import {createComment, setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {File} from "../../../../models/api/File";
-import {Snippet} from "./Snippet";
+import {Snippet} from "../code/Snippet";
 import {Link} from "react-router-dom";
 import {CommentCreator} from "./CommentCreator";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
