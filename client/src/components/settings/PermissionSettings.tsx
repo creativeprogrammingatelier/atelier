@@ -129,6 +129,7 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
                 [name]: getEnum(this.state, name)
             }
         });
+        console.log(permissions);
 
         // Send local / global permission request
         if (courseID === undefined) {

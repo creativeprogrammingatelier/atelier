@@ -50,14 +50,9 @@ userRouter.get('/course/:courseID', capture(async(request: Request, response : R
 		PermissionEnum.manageUserPermissionsManager,
 		PermissionEnum.manageUserPermissionsView
 	], courseID);
-	//await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles, courseID);
 
-	const users: CourseUser[] = await CourseRegistrationDB.filterCourseRegistration({
-		courseID
-	});
+	const users: CourseUser[] = await CourseRegistrationDB.filterCourseRegistration({courseID});
 
-	// TODO get name of each user
-	//const users : CourseRegistrationOutput[] = await CourseRegistrationDB.getEntriesByCourse(courseID);
 	response.status(200).send(users);
 }));
 

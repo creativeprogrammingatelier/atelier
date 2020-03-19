@@ -41,6 +41,9 @@ export enum PermissionEnum {
     '39-reserved'
 }
 
+export const viewPermissionBits = 71305281;
+export const managePermissionBits = 64827568271;
+
 export const viewPermissions = [
     {
         display: 'View all user profiles',
@@ -118,6 +121,15 @@ export const managePermissions = [
     }
 ];
 
+/**
+ * Checks whether the user has a certain permission. Has to use BigInt as javascript does not support
+ * big operation on numbers with more than 32 bits, even though numbers can obtain higher values in
+ * javascript.
+ * @param permission, permission to check
+ * @param permissions, permissions of the user
+ */
 export function containsPermission(permission: PermissionEnum, permissions: number) {
-    return ((1 << permission) & permissions) > 0;
+    const permissionsBigInt = BigInt(permissions);
+    const permissionBit = BigInt(1) << BigInt(permission);
+    return (permissionBit & permissionsBigInt) > BigInt(0);
 }

@@ -6,11 +6,16 @@ import express, {Request, Response} from 'express';
 import {capture} from "../helpers/ErrorHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
-import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {Permission} from "../../../models/api/Permission";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {Permission, Permissions} from "../../../models/api/Permission";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {getGlobalPermissions, requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {getGlobalPermissions, requirePermission} from "../helpers/PermissionHelper";
+import {
+    containsPermission,
+    managePermissionBits,
+    PermissionEnum,
+    viewPermissionBits
+} from "../../../models/enums/permissionEnum";
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
 import {courseRole} from "../../../models/enums/courseRoleEnum";
@@ -58,20 +63,31 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
 }));
 
 /** ---------- PUT REQUESTS ---------- */
-function getPermissions(setPermissions : any) {
-    let addPermissions = 0;
-    let removePermissions = 0;
+async function getPermissions(setPermissions : Permissions, currentUserID : string) {
+    // Get permission bits the user is allowed to set.
+    const user : User = await UserDB.getUserByID(currentUserID);
+    const userPermissions = user.permission.permissions;
+    const permissionsToSet =
+        (containsPermission(PermissionEnum.manageUserPermissionsView, userPermissions) ? BigInt(viewPermissionBits) : BigInt(0)) |
+        (containsPermission(PermissionEnum.manageUserPermissionsManager, userPermissions) ? BigInt(managePermissionBits) : BigInt(0));
+
+    let addPermissions = BigInt(0);
+    let removePermissions = BigInt(0);
 
     const permissions = Object.keys(setPermissions);
     const add : boolean[] = Object.values(setPermissions);
 
     for (let i = 0; i < permissions.length; i++) {
-        const permissionType : PermissionEnum = getEnum(PermissionEnum, permissions[i]); //PermissionEnum[permissions[i] as keyof typeof PermissionEnum];
-        if (add[i]) addPermissions |= (1 << permissionType);
-        else removePermissions |= (1 << permissionType);
+        const permissionType : PermissionEnum = getEnum(PermissionEnum, permissions[i]);
+        if (add[i]) addPermissions |= (BigInt(1) << BigInt(permissionType));
+        else removePermissions |= (BigInt(1) << BigInt(permissionType));
     }
 
-    return [addPermissions, removePermissions];
+    // Convert permissions back to number after bit operations
+    return [
+        (addPermissions & permissionsToSet).toString() as unknown as number,
+        (removePermissions & permissionsToSet).toString() as unknown as number
+    ];
 }
 
 /**
@@ -83,14 +99,9 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
     const currentUserID : string = await getCurrentUserID(request);
     const courseID : string = request.params.courseID;
 
-    // Can only set permissions based on permission bits
-    // TODO AND view bits with 0 if no view permission
-    // TODO AND manage bits with 0 if no manage permission
-
     const setPermissions = request.body.permissions;
     const userID : string = request.params.userID;
-    const permissions = getPermissions(setPermissions);
-
+    const permissions = await getPermissions(setPermissions, currentUserID);
 
     await CourseRegistrationDB.addPermission({
         courseID,
@@ -116,14 +127,10 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
 permissionRouter.put('/user/:userID/', capture(async(request : Request, response : Response) => {
     const currentUserID : string = await getCurrentUserID(request);
 
-    // Requires manageUserPermissionsManage
-    await requirePermission(currentUserID, PermissionEnum.manageUserPermissionsManager);
-
     const setPermissions = request.body.permissions;
     console.log(setPermissions);
     const userID : string = request.params.userID;
-    const permissions = getPermissions(setPermissions);
-    console.log(permissions);
+    const permissions = await getPermissions(setPermissions, currentUserID);
 
     await UserDB.addPermissionsUser(userID, permissions[0]);
     const user : User = await UserDB.removePermissionsUser(userID, permissions[1]);
