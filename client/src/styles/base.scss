@@ -90,7 +90,7 @@ textarea:focus, textarea:active {
 	height: 100vh;
 	background: $gradientVertical;
 	box-shadow: $shadowLarge;
-	z-index: 1030;
+	z-index: 1040;
 }
 .sidebarContent {
 	width: 100%;
@@ -201,6 +201,11 @@ textarea:focus, textarea:active {
 }
 .panel:not(:last-child) {
 	margin: 0 1rem 1rem 0;
+}
+
+.block {
+	background-color: $colorWhite;
+	border-left: 0.5rem solid $primaryColor;
 }
 
 .dataItem, .dataBlock {
@@ -327,6 +332,17 @@ textarea:focus, textarea:active {
 }
 .btn-primary:disabled {
 	background-color: gray;
+}
+.buttonFloating {
+	bottom: 44px;
+	right: 0;
+	width: 3rem;
+	height: 3rem;
+	margin: 0.5rem;
+	padding: 0;
+	position: fixed;
+	border-radius: 50%;
+	z-index: 1030;
 }
 .buttonBar {
 	background-color: $primaryColor;

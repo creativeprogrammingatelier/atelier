@@ -16,6 +16,9 @@ import {CommentThread} from "../../../../models/api/CommentThread";
 import {withRouter, RouteComponentProps} from "react-router-dom";
 import {File} from "../../../../models/api/File";
 import {getContextLines} from "../../helpers/CommentHelper";
+import {FiTag} from "react-icons/all";
+import {ButtonFloating} from "../general/ButtonFloating";
+import {Block} from "../general/Block";
 
 interface CodeViewerProperties extends RouteComponentProps {
 	submissionID: string,
@@ -335,7 +338,7 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	render() {
 		return (
 			<div>
-				<Toast>
+				<Block>
 					<CodeMirror
 						value={this.state.formattedCode}
 						options={codeViewerOptions}
@@ -356,7 +359,8 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 						}}
 						onChange={() => {}}
 					/>
-				</Toast>
+				</Block>
+				<ButtonFloating><FiTag size={22}/></ButtonFloating>
 				{
 					this.state.selecting ?
 						<div>

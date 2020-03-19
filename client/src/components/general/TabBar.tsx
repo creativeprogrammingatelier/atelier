@@ -14,6 +14,6 @@ interface TabBarProperties {
 }
 export function TabBar({active, tabs}: TabBarProperties) {
 	return <Nav fill justify variant="pills" className="fixed-bottom">
-			{tabs.map((tab) => <TabButton icon={tab.icon} text={tab.text} location={tab.location} active={tab.id === active}/>)}
-		</Nav>
+		{tabs.map((tab) => <TabButton icon={tab.icon} text={tab.text} location={tab.location} active={tab.id === active}/>)}
+	</Nav>
 }
