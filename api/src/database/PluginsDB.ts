@@ -2,6 +2,7 @@ import { PluginInput, convertPlugin, Plugin } from "../../../models/database/Plu
 import { checkAvailable, pool, pgDB, extract, map, one } from "./HelperDB";
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { convertPluginHook, PluginHookInput, PluginHook } from "../../../models/database/PluginHook";
+import { User } from "../../../models/database/User";
 
 
 export class PluginsDB {
@@ -9,7 +10,7 @@ export class PluginsDB {
 		const courseid = UUIDHelper.toUUID(courseID)
 		return client.query(`
 			SELECT p.*
-			FROM "CourseRegistrations" as cr, "Plugins" as p, "PluginHooks" as ph
+			FROM "CourseRegistration" as cr, "Plugins" as p, "PluginHooks" as ph
 			WHERE cr.courseID = $1
 			 AND cr.userID = p.pluginID
 			 AND p.pluginID = ph.pluginID
@@ -21,8 +22,8 @@ export class PluginsDB {
 		const {
 			pluginID = undefined,
 			publicKey = undefined,
-			webHookSecret = undefined,
-			webHookUrl = undefined,
+			webhookSecret = undefined,
+			webhookUrl = undefined,
 
 			limit = undefined,
 			offset = undefined,
@@ -35,21 +36,21 @@ export class PluginsDB {
 			WHERE
 				($1::uuid IS NULL OR pluginID=$1)
 			AND ($2::text IS NULL OR publicKey=$2)
-			AND ($3::text IS NULL OR webHookSecret=$3)
-			AND ($2::text IS NULL OR webHookUrl=$4)
+			AND ($3::text IS NULL OR webhookSecret=$3)
+			AND ($2::text IS NULL OR webhookUrl=$4)
 			ORDER BY pluginID
 			LIMIT $5
 			OFFSET $6
-		`, [pluginid, publicKey, webHookSecret, webHookUrl, limit, offset])
+		`, [pluginid, publicKey, webhookSecret, webhookUrl, limit, offset])
 		.then(extract).then(map(convertPlugin))
 	}
 
 	static async addPlugin(plugin : PluginInput){
-		checkAvailable(["pluginID", "publicKey", "webHookSecret", "webHookUrl"], plugin)
+		checkAvailable(["pluginID", "publicKey", "webhookSecret", "webhookUrl"], plugin)
 		const {
 			pluginID,
-			webHookUrl,
-			webHookSecret,
+			webhookUrl,
+			webhookSecret,
 			publicKey,
 
 			client = pool
@@ -59,7 +60,7 @@ export class PluginsDB {
 		INSERT INTO "Plugins" VALUES
 			($1,$2,$3,$4)
 		RETURNING *
-		`, [pluginid, webHookUrl, webHookSecret, publicKey])
+		`, [pluginid, webhookUrl, webhookSecret, publicKey])
 		.then(extract).then(map(convertPlugin)).then(one)
 	}
 
@@ -67,8 +68,8 @@ export class PluginsDB {
 		checkAvailable(["pluginID"], plugin)
 		const {
 			pluginID,
-			webHookUrl = undefined,
-			webHookSecret = undefined,
+			webhookUrl = undefined,
+			webhookSecret = undefined,
 			publicKey = undefined,
 
 			client = pool
@@ -76,13 +77,13 @@ export class PluginsDB {
 		const pluginid = UUIDHelper.toUUID(pluginID)
 		return client.query(`
 		UPDATE "Plugins" SET
-		webHookUrl = COALESCE($2, webHookUrl),
-		webHookSecret = COALESCE($3, webHookSecret),
+		webhookUrl = COALESCE($2, webhookUrl),
+		webhookSecret = COALESCE($3, webhookSecret),
 		publicKey = COALESCE($4, publicKey)
 		WHERE 
 			pluginID = $1
 		RETURNING *
-		`, [pluginid, webHookUrl, webHookSecret, publicKey])
+		`, [pluginid, webhookUrl, webhookSecret, publicKey])
 		.then(extract).then(map(convertPlugin)).then(one)
 	}
 	static async deletePlugin(pluginID : string, client : pgDB = pool){

@@ -1,51 +1,109 @@
 import express from 'express';
 import { capture } from '../helpers/ErrorHelper';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { config } from '../helpers/ConfigurationHelper';
 import { UserDB } from '../database/UserDB';
-import { NotFoundDatabaseError } from '../database/DatabaseErrors';
 import { globalRole } from '../../../models/enums/globalRoleEnum';
+import { PluginsDB } from '../database/PluginsDB';
+import { transaction, one, map } from '../database/HelperDB';
+import { Plugin } from '../../../models/api/Plugin';
 
 export const adminRouter = express.Router()
 
 adminRouter.use(AuthMiddleware.requireRole(['admin']));
 
 adminRouter.get('/plugins', capture(async (request, response) => {
-    // TODO: this should be database, not config files
-    response.send(config.plugins);
+    const barePlugins = await PluginsDB.filterPlugins({});
+    const plugins: Plugin[] = await Promise.all(
+        barePlugins.map(async plugin => {
+            const withHooks = await PluginsDB.addHooks(plugin);
+            const user = await UserDB.getUserByID(plugin.pluginID);
+            return { ...withHooks, user };
+        }));
+    response.send(plugins);
 }));
 
 adminRouter.post('/plugins', capture(async (request, response) => {
-    const name = request.body.name;
+    const userName = request.body.userName;
     const email = request.body.email;
-    const plugin = {
-        webhookUrl: request.body.webhookUrl,
-        webhookSecret: request.body.webhookSecret,
-        publicKey: request.body.publicKey,
-        hooks: request.body.hooks
-    }
-    const user = await UserDB.createUser({
-        userName: name,
-        email, 
-        role: globalRole.plugin
+
+    const plugin: Plugin = await transaction(async client => {
+        const user = await UserDB.createUser({
+            userName,
+            email, 
+            role: globalRole.plugin,
+            client
+        });
+
+        const plugin = await PluginsDB.addPlugin({
+            pluginID: user.ID,
+            webhookUrl: request.body.webhookUrl,
+            webhookSecret: request.body.webhookSecret,
+            publicKey: request.body.publicKey,
+            client
+        });
+
+        const hooks = await Promise.all(
+            (request.body.hooks as string[])
+                .map(hook => PluginsDB.addHook({ pluginID: plugin.pluginID, hook }))
+        );
+
+        return { ...plugin, hooks: hooks.map(ph => ph.hook), user };
     });
-    response.send({
-        message: "Add the following plugin object to your configuration file",
-        plugin: {
-            userID: user.ID,
-            ...plugin
+
+    response.send(plugin);
+}));
+
+adminRouter.put('/plugins/:userID', capture(async (request, response) => {
+    const userID = request.params.userID;
+
+    const plugin: Plugin = await transaction(async client => {
+        let user = undefined;
+        if (request.body.name || request.body.email) {
+            user = await UserDB.updateUser({
+                userID,
+                userName: request.body.userName,
+                email: request.body.email,
+                client
+            });
+        } else {
+            user = await UserDB.getUserByID(userID, { client });
         }
+
+        let plugin = undefined;
+        if (request.body.webhookUrl || request.body.webhookSecret || request.body.publicKey) {
+            plugin = await PluginsDB.updatePlugin({
+                pluginID: userID,
+                webhookUrl: request.body.webhookUrl,
+                webhookSecret: request.body.webhookSecret,
+                publicKey: request.body.publicKey
+            });
+        } else {
+            plugin = await PluginsDB.filterPlugins({ pluginID: userID }).then(one);
+        }
+
+        let hooks = await PluginsDB.filterHooks({ pluginID: userID }).then(map(ph => ph.hook));
+        if (request.body.hooks) {
+            const add = (request.body.hooks as string[]).filter(h => !hooks.some(ph => ph === h));
+            const remove = hooks.filter(h => !request.body.hooks.includes(h));
+
+            await Promise.all(add.map(hook => PluginsDB.addHook({ pluginID: userID, hook })));
+            await Promise.all(remove.map(hook => PluginsDB.deleteHook({ pluginID: userID, hook })));
+
+            hooks = request.body.hooks;
+        }
+
+        return { ...plugin, hooks, user };
     });
+
+    response.send(plugin);
 }));
 
 adminRouter.delete('/plugins/:userID', capture(async (request, response) => {
-    if (config.plugins.some(x => x.userID === request.params.userID)) {
+    const user = await UserDB.getUserByID(request.params.userID);
+
+    if (user.permission.role === globalRole.plugin) {
         await UserDB.deleteUser(request.params.userID);
-        response.status(200).send({
-            message: "The plugin was deleted from the database, you can now remove it from your configuration file"
-        });
-    } else {
-        // TODO: this is not a database, but it will be at some point
-        throw new NotFoundDatabaseError();
     }
+
+    response.status(204).send();
 }));

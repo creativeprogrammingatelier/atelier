@@ -74,7 +74,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     await Promise.all(
         dbFiles
             .filter(f => CODEFILE_EXTENSIONS.includes(path.extname(f.name)))
-            .map(file => raiseWebhookEvent("submission.file", file))
+            .map(file => raiseWebhookEvent(request.params.courseID, "submission.file", file))
     );
 }));
 
