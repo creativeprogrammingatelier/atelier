@@ -224,7 +224,7 @@ describe("API Get Permissions", () => {
      * - user should be registered in the course or have permission to view all courses
      */
     describe("Courses", () => {
-        async function courseEnrolled() {
+        async function coursePermissions(onlyEnrolled = false) {
             let response = await getCourse();
             expect(response).to.have.status(200);
             assert(instanceOfCoursePartial(response.body));
@@ -238,25 +238,12 @@ describe("API Get Permissions", () => {
             expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
 
             response = await getCoursesByOtherUser();
-            expect(response).to.have.status(401);
-        }
-
-        async function coursePermissions() {
-            let response = await getCourse();
-            expect(response).to.have.status(200);
-            assert(instanceOfCoursePartial(response.body));
-
-            response = await getCourses();
-            expect(response).to.have.status(200);
-            expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
-
-            response = await getCoursesByOwnUser();
-            expect(response).to.have.status(200);
-            expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
-
-            response = await getCoursesByOtherUser();
-            expect(response).to.have.status(200);
-            expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+            if (onlyEnrolled) {
+                expect(response).to.have.status(401);
+            } else {
+                expect(response).to.have.status(200);
+                expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+            }
         }
 
         async function courseNoPermissions() {
@@ -281,7 +268,7 @@ describe("API Get Permissions", () => {
 
         it("Should be possible to view courses if registered in a course", async () => {
             await registerCourse();
-            await courseEnrolled();
+            await coursePermissions(true);
             await unregisterCourse();
         });
 
@@ -367,7 +354,29 @@ describe("API Get Permissions", () => {
      * - requires user to be enrolled or have permission to view all courses
      */
     describe("Submissions", () => {
-        // TODO submission tests
+
+        async function submissionPermissions(onlyEnrolled = false) {
+            let response = await getSubmission();
+            expect(response).to.have.status(200);
+            assert(instanceOfSubmission(response.body));
+
+            response = await getSubmissionsByCourse();
+            expect(response).to.have.status(200);
+            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+
+            response = await getSubmissionsByOwnCourseUser();
+            expect(response).to.have.status(200);
+            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+
+            response = await getSubmissionsByOtherCourseUser();
+            if (onlyEnrolled) {
+                expect(response).to.have.status(401);
+            } else {
+                expect(response).to.have.status(200);
+                assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+            }
+        }
+
         it("Should not be possible to view submissions if no permission.", async() => {
             let response = await getSubmission();
             expect(response).to.have.status(401);
@@ -385,20 +394,7 @@ describe("API Get Permissions", () => {
         it("Should be possible to view own submissions in enrolled course. Not of others without permission.", async() => {
             await registerCourse();
 
-            let response = await getSubmission();
-            expect(response).to.have.status(200);
-            assert(instanceOfSubmission(response.body));
-
-            response = await getSubmissionsByCourse();
-            expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
-
-            response = await getSubmissionsByOwnCourseUser();
-            expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
-
-            response = await getSubmissionsByOtherCourseUser();
-            expect(response).to.have.status(401);
+            await submissionPermissions(true);
 
             await unregisterCourse();
         });
@@ -407,21 +403,7 @@ describe("API Get Permissions", () => {
             await registerCourse();
             await setPermissions({"viewAllSubmissions" : true});
 
-            let response = await getSubmission();
-            expect(response).to.have.status(200);
-            assert(instanceOfSubmission(response.body));
-
-            response = await getSubmissionsByCourse();
-            expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
-
-            response = await getSubmissionsByOwnCourseUser();
-            expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
-
-            response = await getSubmissionsByOtherCourseUser();
-            expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+            await submissionPermissions();
 
             await setPermissions({"viewAllSubmissions" : false});
             await unregisterCourse();
