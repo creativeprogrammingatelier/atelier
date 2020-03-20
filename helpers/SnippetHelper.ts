@@ -1,3 +1,5 @@
+import './Extensions';
+
 /** Amount of lines to display on a minimized snippet */
 export const MINIMIZED_LINES = 3;
 /** Amount of lines inclusive that count as a small snippet */
@@ -21,9 +23,21 @@ export function getContextLines(fileContent : string, lineStart : number, lineEn
     const topMargin = isSmallSnippet ? SMALL_SNIPPET_LINES_ABOVE : LARGE_SNIPPET_LINES_ABOVE;
     const btmMargin = isSmallSnippet ? SMALL_SNIPPET_LINES_BELOW : LARGE_SNIPPET_LINES_BELOW;
 
-    const contextBefore = lines.slice(lineStart - topMargin, lineStart).join('\n') + '\n';
-    const body = lines.slice(lineStart, lineEnd + 1).join('\n');
-    const contextAfter = '\n' + lines.slice(lineEnd + 1, lineEnd + 1 + btmMargin).join('\n');
+    const contextBefore = lines
+        .slice(lineStart - topMargin, lineStart)
+        .skipWhile(line => line.trim() === "")
+        .join('\n') + '\n';
+
+    const body = lines
+        .slice(lineStart, lineEnd + 1)
+        .join('\n');
+
+    const contextAfter = '\n' + lines
+        .slice(lineEnd + 1, lineEnd + 1 + btmMargin)
+        .reverse()
+        .skipWhile(line => line.trim() === "")
+        .reverse()
+        .join('\n');
 
     return { contextBefore, body, contextAfter };
 }
