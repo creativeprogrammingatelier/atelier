@@ -104,8 +104,8 @@ CREATE TABLE "Users" (
 
 CREATE TABLE "Plugins" (
 	pluginID 		uuid PRIMARY KEY REFERENCES "Users"(userID) ON DELETE CASCADE,
-	webHookURL		text NOT NULL,
-	webHookSecret	text NOT NULL,
+	webhookURL		text NOT NULL,
+	webhookSecret	text NOT NULL,
 	publicKey		text NOT NULL
 );
 

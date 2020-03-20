@@ -1,24 +1,23 @@
-import { PluginConfiguration, config } from './ConfigurationHelper';
 import fetch, { Request } from 'node-fetch';
 import crypto from 'crypto';
+import { PluginsDB } from '../database/PluginsDB';
+import { Plugin } from '../../../models/database/Plugin';
 
 interface WebhookRequest<T> {
     event: string,
     payload: T
 }
 
-export function getSubscribedPlugins(event: string) {
-    return config.plugins
-        .filter(plugin => plugin.hooks.includes(event));
+export function getSubscribedPlugins(courseID: string, event: string) {
+    return PluginsDB.getRelevantPlugins(courseID, event);
 }
 
-export function raiseWebhookEvent<T>(event: string, body: T) {
-    return Promise.all(
-        getSubscribedPlugins(event).map(plugin => postWebhook(plugin, event, body))
-    );
+export async function raiseWebhookEvent<T>(courseID: string, event: string, body: T) {
+    const plugins = await getSubscribedPlugins(courseID, event);
+    return Promise.all(plugins.map(plugin => postWebhook(plugin, event, body)));
 }
 
-export function createWebhookRequest<T>(plugin: PluginConfiguration, event: string, body: T) {
+export function createWebhookRequest<T>(plugin: Plugin, event: string, body: T) {
     const request: WebhookRequest<T> = {
         event,
         payload: body
@@ -36,17 +35,17 @@ export function createWebhookRequest<T>(plugin: PluginConfiguration, event: stri
     });
 }
 
-async function postWebhook<T>(plugin: PluginConfiguration, event: string, body: T) {
+async function postWebhook<T>(plugin: Plugin, event: string, body: T) {
     try {
         const res = await fetch(createWebhookRequest(plugin, event, body));
         if (!res.ok) {
             // TODO: store this somewhere the plugin owner can see it
             const resText = await res.text();
-            console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.userID}). 
+            console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.pluginID}). 
             Got response ${res.status}: ${resText}`);
         }
     } catch (err) {
-        console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.userID}).
+        console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.pluginID}).
         Caught error: `, err);
     }
 }

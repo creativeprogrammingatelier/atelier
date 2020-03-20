@@ -33,21 +33,17 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 
      INSERT INTO "Plugins" VALUES
           ((SELECT userID FROM "Users" WHERE globalRole='plugin' LIMIT 1), 
-          'http://localhost:5000/atelier/hook', 
+          'http://localhost:8080/atelier-pmd/hook', 
           'Super$ecretWebh00k$ecret', 
-          '-----BEGIN RSA PUBLIC KEY-----
-          MIICCgKCAgEA1y78vFFBb+bBWmVGqO9KWuHYBf2Xo0iFVoFYCF2XMFy32vXIF26H
-          5g0uTIE1p+fza/G58YRQYoCko2HtdC510Enx0+kGj1vvw3p6Kja3s3jv+bzv/6wB
-          zQPs+S7fQ7pGRAVyBEp869y1FpuDp4rengBkXz5OI3wZREvD1db4LhKTZNasAe+W
-          ilO7ohWlUG4u1T5spGHl+mjrxa7ooaKknfB8FP5Upm0fN58r8q3RfF5h1VcaNlpa
-          cFFEMrA7mlx+ZUmyE+YA7AhML1wORNVxDXS9l2ngISaq+7PVmhqDgabI503Sj+gY
-          MqlZ/ziIpS7oGCnfY8VF/sOQ/PEntbTjbiCrPy0nDCfUnKjuulBGqmRKO5DX2wAi
-          Nq9QYiHqXzU90PzADXrKCeT90cOcwXUiUQSDiNGhROp9LgiX1U5BOae1bRjchcNP
-          NDpMbogvgK/yfhTp1+huZbYd+vlp4VWH0BZssVT606u3pwej1lql+Y9JArW8GrRB
-          pYd9P4uTlyzcTtHSqP3on74MGsM9sGkMxZNMvFmgDsDEPCoMphlCCYLhUj7oa8EB
-          k/EiwCFulZ/0NAAK1rJG+LW5tj4uv68jzFRKDQQjwWpzEa+zT4uTfyDp852eaeAj
-          SdfHBttlTZZXgTfHffVPikkBZQueP/sfyUjPXu/QSHCyTv28GPuOH6sCAwEAAQ==
-          -----END RSA PUBLIC KEY-----');
+          '-----BEGIN CERTIFICATE-----
+         MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhtNUfBsngFxBI06YuRO3
+         b3MY7z0fzrnco0oQeUF8JUrk/zTTi99mZRsP9TH43pGglKgyQVfzhvLey+YZABKX
+         /Q5nMC4kqQqezQ6S2yO3H0T+OwAcJco2DZyaTp268aj8H3jF5wzPeqhW4ca+3I+U
+         SWTp831FHwLj3/Th5jiIpaScontQtCy+BJAKzj7OOIChUTOLE1xZGkthr65lSOkg
+         cTNM9OwfQfGNMPPTJr2WJP5lrM+emcnAt3G9QSMKaI6MgR5iodBjDBggiSmdSANH
+         VHj8DA+aZ4jrN1hF46nYIXXM3O2LlWoOhgOaogEAB98nqaG5y2zTStUhRQfB9Yse
+         YQIDAQAB
+         -----END CERTIFICATE-----');
      
      INSERT INTO "PluginHooks" VALUES
           ((SELECT pluginID FROM "Plugins" LIMIT 1),
