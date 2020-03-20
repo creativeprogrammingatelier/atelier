@@ -208,7 +208,7 @@ textarea:focus, textarea:active {
 	border-left: 0.5rem solid $primaryColor;
 }
 
-.dataItem, .dataBlock {
+.dataItem, .dataBlock, .dataToggle {
 	a {
 		color: unset;
 	}
@@ -221,9 +221,16 @@ textarea:focus, textarea:active {
 	}
 }
 .dataItem:hover, .dataBlock:hover {
+	a {
+		.toast {
+			box-shadow: $shadowMedium;
+		}
+	}
+}
+.dataToggle:hover {
 	box-shadow: $shadowMedium;
 }
-.dataItem:not(:last-child), .dataBlock:not(:last-child) {
+.dataItem:not(:last-child), .dataBlock:not(:last-child), .dataToggle:not(:last-child) {
 	margin-bottom: 0.5rem;
 }
 .list:not(:last-child) {
@@ -469,13 +476,13 @@ textarea:focus, textarea:active {
 .directoryNode {
 	margin: 0 0 0 0.5rem;
 
-	.dataItem {
+	.dataItem, .dataToggle {
 		margin: 0;
 	}
 	.directoryNode .toast-body {
 		padding: 0.25rem 0.5rem;
 	}
-	.directoryNode:last-of-type > .dataItem .toast-body {
+	.directoryNode:last-of-type > .dataItem .toast-body, .directoryNode:last-of-type > .dataToggle .toast-body {
 		padding-bottom: 0.5rem;
 	}
 }
