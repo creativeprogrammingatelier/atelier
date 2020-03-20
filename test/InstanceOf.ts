@@ -7,7 +7,7 @@ import { Snippet } from "../models/api/Snippet";
 import { Submission } from "../models/api/Submission";
 import { User } from "../models/api/User";
 import {APIError} from "../models/api/Error";
-import {CourseRegistrationOutput} from "../models/database/CourseRegistration";
+import { CourseUser } from "../models/api/CourseUser";
 
 /** Interface type checking, because this is not built in... */
 export function instanceOfCourse(object: any): object is Course {
@@ -29,8 +29,10 @@ export function instanceOfComment(object: any): object is Comment {
         && instanceOfUser(object.user)
         && 'text' in object
         && typeof object.text === 'string'
-        && 'date' in object
-        && typeof object.date === 'string'
+        && 'created' in object
+        && typeof object.created === 'string'
+        && 'edited' in object
+        && typeof object.edited === 'string'
         && 'references' in object
         && typeof object.references === 'object');
 }
@@ -55,10 +57,15 @@ export function instanceOfFile(object: any): object is File {
         && 'references' in object);
 }
 export function instanceOfPermission(object: any): object is Permission {
-    return ('role' in object
-        && typeof object.role === 'string'
+    console.log(object)
+    return ('globalRole' in object
+        && typeof object.globalRole === 'string'
         && 'permissions' in object
-        && typeof object.permissions === 'number');
+        && typeof object.permissions === 'number')
+        && (
+            !('courseRole' in object)
+            || typeof object.courseRole === 'string'
+        );
 }
 // TODO additional type checking depending on what search will contain
 export function instanceOfSearch(object: any) {
@@ -121,15 +128,25 @@ export function instanceOfCoursePartial(object: any) : object is CoursePartial {
         && instanceOfUser(object.creator)
     )
 }
-
-export function instanceOfCourseRegistration(object : any) : object is CourseRegistrationOutput {
+/*
+ * 
+ * @param object userID: string,
+	courseID: string,
+	userName: string,
+	email: string,
+	permission : Permission
+}
+ */
+export function instanceOfCourseRegistration(object : any) : object is CourseUser {
     return ('courseID' in object
         && typeof object.courseID === 'string'
         && 'userID' in object
         && typeof object.userID === 'string'
-        && 'role' in object
-        && typeof object.role === 'string'
+        && 'userName' in object
+        && typeof object.userName === 'string'
+        && 'email' in object
+        && typeof object.email === 'string'
         && 'permission' in object
-        && typeof object.permission === 'number'
+        && instanceOfPermission(object.permission)
     )
 }

@@ -35,7 +35,7 @@ export class CourseDB {
 			//creator
 			userName = undefined,
 			email = undefined,
-			role = undefined,
+			globalRole: role = undefined,
 			//dbtools
 			limit = undefined,
 			offset = undefined,

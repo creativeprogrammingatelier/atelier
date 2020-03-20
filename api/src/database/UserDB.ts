@@ -16,7 +16,7 @@ export class UserDB {
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
 	static async getAllStudents(params : DBTools = {}) {
-		return UserDB.filterUser({...params, role:globalRole.user})
+		return UserDB.filterUser({...params, globalRole:globalRole.user})
 	}
 
 	/**
@@ -30,6 +30,7 @@ export class UserDB {
 	 * returns a student based on its userID, without password hash
 	 */
 	static async getUserByID(userID : string, params : DBTools = {}) {
+		console.log('getUserByID')
 		return UserDB.filterUser({...params, userID}).then(one)
 	}
 
@@ -64,7 +65,7 @@ export class UserDB {
 			userID = undefined,
 			userName = undefined,
 			email = undefined,
-			role = undefined,
+			globalRole: role = undefined,
 			permission = undefined,
 
 			limit = undefined,
@@ -95,7 +96,7 @@ export class UserDB {
 			userID = undefined,
 			userName = undefined,
 			email = undefined,
-            role = undefined,
+            globalRole: role = undefined,
             courseID = undefined,
 
 			limit = undefined,
@@ -144,11 +145,11 @@ export class UserDB {
 	 * if a userID is present, it will be ignored.
 	 */
 	static async createUser(user : User) {
-		checkAvailable(['email','password','role','userName'], user)
+		checkAvailable(['email','password','globalRole','userName'], user)
 		const {
 			email,
 			password,
-			role,
+			globalRole: role,
 			userName,
 			permission = 0,
 			samlID = undefined,
@@ -178,7 +179,7 @@ export class UserDB {
 			userID, //primary key is required
 			email = undefined,
 			password = undefined,
-			role = undefined,
+			globalRole: role = undefined,
 			permission = undefined,
 			userName = undefined,
 
@@ -204,6 +205,7 @@ export class UserDB {
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	static async addPermissionsUser(userID : string, permission : number, params : DBTools={}){
+		console.log(userID, permission)
 		const userid = UUIDHelper.toUUID(userID),
 			binPerm = toBin(permission)
 		const {client = pool} = params
@@ -217,7 +219,7 @@ export class UserDB {
 		)
 		${usersView("update")}
 		`, [userid, binPerm])
-		.then(extract).then(map(userToAPI)).then(one)
+		.then(extract).then(e=>{console.log(e);return e}).then(map(userToAPI)).then(one)
 	}
 
 	static async removePermissionsUser(userID : string, permission : number, params : DBTools = {}){

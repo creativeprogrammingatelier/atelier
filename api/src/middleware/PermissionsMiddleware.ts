@@ -3,10 +3,12 @@ import {User} from '../../../models/database/User';
 import {Request, Response} from 'express';
 import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { UserDB } from '../database/UserDB';
+import { courseRole } from '../../../models/enums/courseRoleEnum';
+import { globalRole } from '../../../models/enums/globalRoleEnum';
 
 /**
-* @TODO this does in not the required behaviour
-*/
+ * @TODO this does in not the required behaviour
+ */
 export default class PermissionsMiddleware {
 
 	/*private static checkFileAccessPermission(file: IFile, user: User): boolean {
@@ -17,7 +19,7 @@ export default class PermissionsMiddleware {
 	}*/
 
 	private static checkCommentAccessPermission(comment: any, user: User): boolean {
-		if (comment && (user.email === comment.author.email || user.role === 'staff')) {
+		if (comment && (user.email === comment.author.email || user.globalRole === 'staff')) {
 			return true;
 		}
 		return false;
@@ -63,8 +65,8 @@ export default class PermissionsMiddleware {
 	static async isTa(request: Request, result: Response, onSuccess: Function) {
         const userID = await getCurrentUserID(request);
         const user = await UserDB.getUserByID(userID);
-        const teacherString = 'teacher';
-        if (user.permission.role.toLowerCase() === teacherString) {
+        const teacherString = courseRole.teacher;
+        if (user.permission.courseRole?.toLowerCase() === teacherString) {
             onSuccess();
         } else {
             result.status(401).send();
@@ -74,8 +76,8 @@ export default class PermissionsMiddleware {
 	static async isAdmin(request: Request, result: Response, onSuccess: Function) {
 		const userID = await getCurrentUserID(request);
         const user = await UserDB.getUserByID(userID);
-        const adminString = 'admin';
-        if (user.permission.role.toLowerCase() === adminString) {
+        const adminString = globalRole.admin;
+        if (user.permission.globalRole.toLowerCase() === adminString) {
             onSuccess();
         } else {
             result.status(401).send();

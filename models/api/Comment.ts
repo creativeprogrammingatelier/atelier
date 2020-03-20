@@ -4,7 +4,8 @@ export interface Comment {
 	ID: string,
 	user: User,
 	text: string,
-	date: string,
+	created: string,
+	edited: string,
 	references: {
 		courseID: string,
 		submissionID: string,

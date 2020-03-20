@@ -4,7 +4,7 @@ import { UUIDHelper } from "../helpers/UUIDHelper";
 import { commentsView } from "./ViewsDB";
 
 /**
- * commentID, commentThreadID, userID, date, body
+ * commentID, commentThreadID, userID, created, edited, body
  * @Author Rens Leendertz
  */
 
@@ -67,7 +67,8 @@ export class CommentDB {
 			submissionID = undefined,
 			courseID = undefined,
 			userID = undefined, 
-			date = undefined, 
+			created = undefined, 
+			edited = undefined,
 			body = undefined,
 			limit = undefined,
 			offset = undefined,
@@ -81,7 +82,7 @@ export class CommentDB {
 			bodysearch = searchify(body);
 
 		const args = [	commentid, commentthreadid, submissionid, courseid, userid, 
-						date, bodysearch, limit, offset]
+						created, edited, bodysearch, limit, offset]
 		type argType = typeof args;
 		return client.query<DBAPIComment, argType>(`
 			SELECT c.*
@@ -92,11 +93,12 @@ export class CommentDB {
 			AND ($3::uuid IS NULL OR submissionID=$3)
 			AND ($4::uuid IS NULL OR courseID=$4)
 			AND ($5::uuid IS NULL OR userID=$5)
-			AND ($6::timestamp IS NULL OR date >= $6)
-			AND ($7::text IS NULL OR body ILIKE $7)
-			ORDER BY date DESC, commentID --unique in case 2 comments same time
-			LIMIT $8
-			OFFSET $9
+			AND ($6::timestamp IS NULL OR created >= $6)
+			AND ($7::timestamp IS NULL OR edited >= $7)
+			AND ($8::text IS NULL OR body ILIKE $8)
+			ORDER BY created DESC, commentID --unique in case 2 comments same time
+			LIMIT $9
+			OFFSET $10
 			`, args)
 		.then(extract).then(map(commentToAPI))
 	}
@@ -104,31 +106,26 @@ export class CommentDB {
 	/**
 	 * 
 	 * @param comment 	the fields submissionID and courseID will be ignored, as well as limit and offset
-	 * 					date does not have to be supplied.
+	 * 					created/edited does not have to be supplied.
 	 */
 	static async addComment(comment : Comment){
 		checkAvailable(['commentThreadID', 'userID', 'body'], comment)
 		const {
 			commentThreadID, 
 			userID, 
-			date=new Date(), 
+			created=new Date(), 
+			edited=new Date(),
 			body,
 			client= pool
 		} = comment
 		const commentThreadid = UUIDHelper.toUUID(commentThreadID),
 			userid = UUIDHelper.toUUID(userID);
-		const args = [commentThreadid,userid,date,body];
+		const args = [commentThreadid,userid,created,edited,body];
 		type argType = typeof args;
 		return client.query<DBAPIComment, argType>(`
 			with insert as (
 				INSERT INTO "Comments" 
-				VALUES (
-					DEFAULT, 
-					$1, 
-					$2,
-					$3,
-					$4
-				)
+				VALUES (DEFAULT, $1, $2, $3, $4, $5)
 				RETURNING *
 			)
 			${commentsView('insert')}
@@ -148,7 +145,8 @@ export class CommentDB {
 			submissionID = undefined,
 			courseID = undefined,
 			userID = undefined, 
-			date = undefined, 
+			created = undefined,
+			edited = undefined, 
 			body = undefined,
 			client = pool
 		} = comment
@@ -164,7 +162,7 @@ export class CommentDB {
 			|| userID !== undefined) {
 			console.warn("Updating IDs is almost never a good idea")
 		}
-		const args = [commentid, commentThreadid, userid, date, body];
+		const args = [commentid, commentThreadid, userid, created, edited, body];
 		type argType = typeof args
 		
 		return client.query<DBAPIComment, argType>(`
@@ -172,8 +170,9 @@ export class CommentDB {
 				UPDATE "Comments" SET 
 				commentThreadID = COALESCE($2, commentThreadID),
 				userID = COALESCE($3,userID),
-				date = COALESCE($4, date),
-				body = COALESCE($5, body)
+				created = COALESCE($4, created),
+				edited = COALESCE($5, edited),
+				body = COALESCE($6, body)
 				WHERE commentID =$1
 				RETURNING *
 			)

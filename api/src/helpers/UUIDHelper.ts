@@ -5,10 +5,10 @@ export class UUIDError extends Error {
 }
 
 export class UUIDHelper {
-	static toUUID(id: ID64) : UUID;
-	static toUUID(id : undefined) : undefined;
-	static toUUID(id : ID64 | undefined) : UUID | undefined;
-	static toUUID(id : ID64 | undefined) : UUID | undefined {
+	static toUUID(id: string) : UUID;
+	static toUUID(id : null | undefined) : undefined;
+	static toUUID(id : string | null | undefined) : UUID | undefined;
+	static toUUID(id : string | null | undefined) : UUID | undefined {
         if (id === undefined || id === null) return undefined
         if (id.length !== 22) throw new UUIDError(id);
 		/*

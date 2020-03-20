@@ -110,7 +110,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                 }
 
                 user = await UserDB.createUser({
-                    samlID: extID, userName, email, role,
+                    samlID: extID, userName, email, globalRole: role,
                     password: UserDB.invalidPassword()
                 });
             } else {

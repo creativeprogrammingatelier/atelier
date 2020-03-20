@@ -1,6 +1,6 @@
 import React, {ChangeEvent} from 'react';
 import {Loading} from "../general/loading/Loading";
-import {CourseRegistrationOutput} from "../../../../models/database/CourseRegistration";
+import {CourseUser} from '../../../../models/api/CourseUser'
 import {getUsersByCourse, setPermission} from "../../../helpers/APIHelper";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 
@@ -73,24 +73,24 @@ export class CourseSettings extends React.Component<CourseSettingsProps, CourseS
 
         console.log("setting permissions");
         setPermission(this.state.courseID, userID, permissions, false)
-            .then((courseRegistration : CourseRegistrationOutput) => {
+            .then((courseUser : CourseUser) => {
                 // TODO feedback?
-                console.log(courseRegistration);
+                console.log(courseUser);
             });
     }
 
     render() {
         return (
-            <Loading<CourseRegistrationOutput[]>
+            <Loading<CourseUser[]>
                 loader={() => getUsersByCourse(this.state.courseID)}
                 params={[this.state.courseID]}
-                component={(users : CourseRegistrationOutput[]) => {
+                component={(users : CourseUser[]) => {
                     return (
                         <div>
                             <select
                                 onChange={this.handleUserChange}
                             >
-                                {users.map((user : CourseRegistrationOutput) => <option id={user.userID} value={user.userID + "-" + user.permission}>{user.userID}</option>)}
+                                {users.map((user : CourseUser) => <option id={user.userID} value={user.userID + "-" + user.permission}>{user.userName}</option>)}
                             </select>
 
 

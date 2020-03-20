@@ -39,7 +39,7 @@ pluginRouter.post('/', capture(async (request, response) => {
         const user = await UserDB.createUser({
             userName,
             email, 
-            role: globalRole.plugin,
+            globalRole: globalRole.plugin,
             client
         });
 
@@ -112,7 +112,7 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
 pluginRouter.delete('/:userID', capture(async (request, response) => {
     const user = await UserDB.getUserByID(request.params.userID);
 
-    if (user.permission.role === globalRole.plugin) {
+    if (user.permission.globalRole === globalRole.plugin) {
         await UserDB.deleteUser(request.params.userID);
     }
 

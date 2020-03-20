@@ -1,6 +1,6 @@
 import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
 import {courseRole} from '../../../models/enums/courseRoleEnum'
-import {RolePermission, DBRolePermission, convertRolePermission} from '../../../models/database/RolePermission'
+import {convertRolePermission} from '../../../models/database/RolePermission'
 import { removeItem, addItem } from "../../../models/enums/enumHelper";
 /**
  * interface for interacting with rolepermissions

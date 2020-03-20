@@ -11,33 +11,87 @@ import { isPostgresError } from '../../helpers/DatabaseErrorHelper';
  * but is generally not best practice, as it requires to know what names are used in the query.
  *
  */
+const uuid0 = `'00000000-0000-0000-0000-000000000000'`,
+      uuid1 = `'00000000-0000-0000-0000-000000000001'`,
+      uuid2 = `'00000000-0000-0000-0000-000000000002'`,
+      uuid3 = `'00000000-0000-0000-0000-000000000003'`,
+      uuid4 = `'00000000-0000-0000-0000-000000000004'`,
+      uuid5 = `'00000000-0000-0000-0000-000000000005'`,
+      uuid6 = `'00000000-0000-0000-0000-000000000006'`,
+      permissionType = `0::bit(${permissionBits})`
 
 export function databaseSamples(client : pgDB = pool) : Promise<void> {
-	const query = `
+     const query = `
+     INSERT INTO "Users" VALUES
+          (DEFAULT, NULL, 'normal', 'Cas@Caaas', 'admin', ${permissionType}, '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
+          (${uuid0}, 'samling_admin','Cs', 'admin@Cas', 'admin', ${permissionType}, ''),
+          (DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', ${permissionType}, ''),
+          (DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', ${permissionType}, ''),
+          (DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', ${permissionType}, ''),
+          (DEFAULT, NULL, 'PMD', 'pmd@plugin', 'plugin', ${permissionType}, ''),
+          (${uuid6}, NULL, 'test user', 'test@test', 'user', ${permissionType}, '');
+
+     INSERT INTO "Plugins" VALUES
+          ((SELECT userID FROM "Users" WHERE globalRole='plugin' LIMIT 1), 
+          'http://localhost:8080/atelier-pmd/hook', 
+          'Super$ecretWebh00k$ecret', 
+          '-----BEGIN CERTIFICATE-----
+         MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhtNUfBsngFxBI06YuRO3
+         b3MY7z0fzrnco0oQeUF8JUrk/zTTi99mZRsP9TH43pGglKgyQVfzhvLey+YZABKX
+         /Q5nMC4kqQqezQ6S2yO3H0T+OwAcJco2DZyaTp268aj8H3jF5wzPeqhW4ca+3I+U
+         SWTp831FHwLj3/Th5jiIpaScontQtCy+BJAKzj7OOIChUTOLE1xZGkthr65lSOkg
+         cTNM9OwfQfGNMPPTJr2WJP5lrM+emcnAt3G9QSMKaI6MgR5iodBjDBggiSmdSANH
+         VHj8DA+aZ4jrN1hF46nYIXXM3O2LlWoOhgOaogEAB98nqaG5y2zTStUhRQfB9Yse
+         YQIDAQAB
+         -----END CERTIFICATE-----');
+     
+     INSERT INTO "PluginHooks" VALUES
+          ((SELECT pluginID FROM "Plugins" LIMIT 1),
+          'submission.file'
+          );
 	
-	INSERT INTO "Courses" VALUES 
-		('00000000-0000-0000-0000-000000000001', 'Art, Impact and Technology', DEFAULT, (SELECT userID from "Users" LIMIT 1));
+     INSERT INTO "Courses" VALUES 
+          (${uuid0}, 'Pearls of Computer Science', DEFAULT, (SELECT userID from "Users" LIMIT 1)),
+		(${uuid1}, 'Art, Impact and Technology', DEFAULT, (SELECT userID from "Users" LIMIT 1));
 	
 	
-	INSERT INTO "CourseRegistration" VALUES
-	    ('00000000-0000-0000-0000-000000000001', (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', 0::bit(${permissionBits})),
-	    ('00000000-0000-0000-0000-000000000001', (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', 0::bit(${permissionBits})),
-	    ('00000000-0000-0000-0000-000000000001', (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', 0::bit(${permissionBits})),
-	    ('00000000-0000-0000-0000-000000000001', (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', 0::bit(${permissionBits}));
+     INSERT INTO "CourseRegistration" VALUES
+          ((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3${permissionType}),
+          (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', ${permissionType}),
+          (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', ${permissionType}),
+          (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', ${permissionType}),
+          (${uuid0}, (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', ${permissionType}),
+	    (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', ${permissionType}),
+	    (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', ${permissionType}),
+	    (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', ${permissionType}),
+	    (${uuid1}, (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', ${permissionType});
 	    
-	INSERT INTO "Submissions" VALUES
-		('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', (SELECT userID from "Users" WHERE samlID='samling_user'), 'Planets', DEFAULT, DEFAULT);
+     INSERT INTO "Submissions" VALUES
+          (${uuid0}, ${uuid0}, ${uuid0}, 'MyFirstSubmission', DEFAULT, DEFAULT),
+		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'Planets', DEFAULT, DEFAULT);
 		
-	INSERT INTO "Files" VALUES
-	     ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/Perlin.pde', 'processing'),
-	     ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/Planets.pde', 'processing'),
-	     ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000001', 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/mercury', 'image/jpg'),
-	     ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000001', 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/planet', 'image/jpg'),
-	     ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000001', 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/starfield', 'image/jpg'),
-	     ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000001', 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/sun', 'image/jpg');
+     INSERT INTO "Files" VALUES
+	     (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
+	     (${uuid1}, ${uuid1}, 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/Perlin.pde', 'processing'),
+	     (${uuid2}, ${uuid1}, 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/Planets.pde', 'processing'),
+	     (${uuid3}, ${uuid1}, 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/mercury', 'image/jpg'),
+	     (${uuid4}, ${uuid1}, 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/planet', 'image/jpg'),
+	     (${uuid5}, ${uuid1}, 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/starfield', 'image/jpg'),
+	     (${uuid6}, ${uuid1}, 'uploads/4159c5396e18328f30afc1dd0edcf2e7/Planets/data/sun', 'image/jpg');
 	     
-	INSERT INTO "Snippets" VALUES
-	     ('00000000-0000-0000-0000-000000000001', 
+     INSERT INTO "Snippets" VALUES
+          (    ${uuid0}, 
+               0, 1, 0, 0, 
+               'this is a snippet of a file',
+               'head context',
+               'footer context'
+          ),
+          ( -- a null snippet
+               'ffffffff-ffff-ffff-ffff-ffffffffffff',
+               -1, -1, -1, -1,
+               '','',''
+          ),
+	     (${uuid1}, 
 	          29, 58, 2, 4, 
 	          '/*
   // The clouds texture will "move" having the values of its u
@@ -70,13 +124,13 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
   cloudtex.updatePixels();
   */','before context works!','after context works too!'
 	     ),
-	     ('00000000-0000-0000-0000-000000000002', 
+	     (${uuid2}, 
 	          57, 57, 2, 10, 
                'cloudtex',
                'this is a line before the item, as context',
                'this is a line after the item, as context'
 	     ),
-	     ('00000000-0000-0000-0000-000000000003', 
+	     (${uuid3}, 
 	          178, 204, 4, 23, 
 	          'q = g3[b00 + bz0]; 
     u = at3(q, rx0, ry0, rz0);
@@ -108,23 +162,33 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
     '',''
 	     ),
      ( -- a null snippet
-          '00000000-0000-0000-0000-000000000004',
+          ${uuid4},
           -1, -1, -1, -1,
           '','',''
      );
 	     
-	INSERT INTO "CommentThread" VALUES
-		('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', DEFAULT),
-		('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', DEFAULT),
-		('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000003', DEFAULT),
-		('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000001', (SELECT fileid FROM "Files" WHERE submissionid='00000000-0000-0000-0000-000000000001' AND type='undefined/undefined'), '00000000-0000-0000-0000-000000000004', DEFAULT);
+     INSERT INTO "CommentThread" VALUES
+          (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), ${uuid0}, DEFAULT),
+          (DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT),
+		(${uuid1}, ${uuid1}, ${uuid2}, ${uuid1}, DEFAULT),
+		(${uuid2}, ${uuid1}, ${uuid2}, ${uuid2}, DEFAULT),
+		(${uuid3}, ${uuid1}, ${uuid1}, ${uuid3}, DEFAULT),
+		(${uuid4}, ${uuid1}, (SELECT fileid FROM "Files" WHERE submissionid=${uuid1} AND type='undefined/undefined'), ${uuid4}, DEFAULT);
 	
-	INSERT INTO "Comments" VALUES
-		('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
-		('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, 'Bad names'),
-		('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000003', (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, 'All these names are totally incomprehensible to anyone, horrible to do this!'),
-		('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000004', (SELECT userID from "Users" WHERE samlID='samling_teacher'), DEFAULT, 'Youre missing some planets, Pluto example');
-	
+     INSERT INTO "Comments" VALUES
+          (${uuid0}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
+          (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a multi\\nline comment!'),
+          (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a comment about nothing at all..'),
+		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
+		(${uuid2}, ${uuid2}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Bad names'),
+		(${uuid3}, ${uuid3}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'All these names are totally incomprehensible to anyone, horrible to do this!'),
+		(${uuid4}, ${uuid4}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), DEFAULT, DEFAULT, 'Youre missing some planets, Pluto example');
+     
+          INSERT INTO "Mentions" VALUES 
+               (${uuid0}, ${uuid0}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'), null),
+               (${uuid1}, ${uuid0}, NULL, 'teacher');
+
+          
      `
      return client.query(query).then(() => {
           console.log("inserted values into db")
