@@ -90,7 +90,7 @@ export class CourseSettings extends React.Component<CourseSettingsProps, CourseS
                             <select
                                 onChange={this.handleUserChange}
                             >
-                                {users.map((user : CourseUser) => <option id={user.userID} value={user.userID + "-" + user.permission}>{user.userID}</option>)}
+                                {users.map((user : CourseUser) => <option id={user.userID} value={user.userID + "-" + user.permission}>{user.userName}</option>)}
                             </select>
 
 
