@@ -25,18 +25,20 @@ export function getContextLines(fileContent : string, lineStart : number, lineEn
 
     const contextBefore = lines
         .slice(lineStart - topMargin, lineStart)
+        .concat("")
         .skipWhile(line => line.trim() === "")
-        .join('\n') + '\n';
+        .join('\n');
 
     const body = lines
         .slice(lineStart, lineEnd + 1)
         .join('\n');
 
-    const contextAfter = '\n' + lines
+    const contextAfter = lines
         .slice(lineEnd + 1, lineEnd + 1 + btmMargin)
         .reverse()
         .skipWhile(line => line.trim() === "")
         .reverse()
+        .map((line, i) => i === 0 ? "\n" + line : line)
         .join('\n');
 
     return { contextBefore, body, contextAfter };
