@@ -1,7 +1,7 @@
 /** Contains functions to access all API endpoints */
 
 import {Fetch} from "./FetchHelper";
-import {CommentThread} from "../../models/api/CommentThread";
+import {CommentThread, CreateCommentThread} from "../../models/api/CommentThread";
 import {Course, CoursePartial} from "../../models/api/Course";
 import {Submission} from "../../models/api/Submission";
 import {User} from "../../models/api/User";
@@ -127,23 +127,14 @@ export function setCommentThreadVisibility(commentThreadID : string, visible : b
     );
 }
 
-interface CommentThreadProperties {
-	contextBefore? : string,
-	snippetBody?: string,
-	contextAfter? : string,
-	lineStart?: number,
-	charStart?: number,
-	lineEnd?: number,
-	charEnd?: number,
-	visibilityState?: threadState,
-	commentBody: string,
-	submissionID: string
-}
-export function createFileCommentThread(fileID: string, thread: CommentThreadProperties, doCache?: boolean) {
+export function createFileCommentThread(fileID: string, thread: CreateCommentThread, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread), doCache);
 }
-export function createSubmissionCommentThread(submissionID: string, body: {commentBody: string}, doCache?: boolean) {
-	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(body), doCache);
+export function createSubmissionCommentThread(
+        submissionID: string, 
+        thread: {commentBody: string, visiblityState?: string}, 
+        doCache?: boolean) {
+	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread), doCache);
 }
 export function createComment(commentThreadID: string, comment: {commentBody: string}, doCache?: boolean) {
 	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson(comment), doCache);
