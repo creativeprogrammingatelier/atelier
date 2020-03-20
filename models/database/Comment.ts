@@ -42,6 +42,7 @@ export function convertComment(db : DBComment) : Comment {
 		userID: UUIDHelper.fromUUID(db.userid),
 		created: db.created,
 		edited: db.edited,
+		
 		body: db.body
 	}
 }

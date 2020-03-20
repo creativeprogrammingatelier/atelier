@@ -2,10 +2,8 @@ import {courseState} from "../enums/courseStateEnum"
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Course as APICourse, CoursePartial as APICoursePartial } from "../api/Course"
 import { DBAPIUser, userToAPI} from "./User"
-import { DBAPICourseRegistration } from "./CourseRegistration"
-import { courseRegToAPI } from "./CourseRegistration"
 import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB"
-import { APIPermission } from "./RolePermission"
+import { Permission } from "../api/Permission"
 import { getEnum, checkEnum } from "../enums/enumHelper"
 
 export interface Course extends DBTools {
@@ -46,6 +44,6 @@ export function courseToAPIPartial(db : DBAPICourse) : APICoursePartial {
 	}
 }
 
-export function coursePartialToAPI(partial : APICoursePartial, permission : APIPermission) : APICourse {
+export function coursePartialToAPI(partial : APICoursePartial, permission : Permission) : APICourse {
 	return {...partial, currentUserPermission: permission}
 }

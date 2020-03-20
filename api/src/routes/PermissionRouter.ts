@@ -5,9 +5,8 @@
 import express, {Request, Response} from 'express';
 import {capture} from "../helpers/ErrorHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {Permission} from "../../../models/api/Permission";
+import {Permission, CoursePermission} from "../../../models/api/Permission";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {getGlobalPermissions, requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
@@ -15,6 +14,7 @@ import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
 import {courseRole} from "../../../models/enums/courseRoleEnum";
 import {getEnum} from "../../../models/enums/enumHelper";
+import { CourseUser } from '../../../models/api/CourseUser';
 
 export const permissionRouter = express.Router();
 permissionRouter.use(AuthMiddleware.requireAuth);
@@ -46,13 +46,13 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
     const userID : string = await getCurrentUserID(request);
 
     // If user not registered in the course, return global permissions and localRole.none
-    const coursePermissions : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-    const coursePermission : number = coursePermissions.length > 0 ? coursePermissions[0].permission : 0;
-    const globalPermission : number = await getGlobalPermissions(userID);
-
+    const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    const coursePermissions = courseUser.permission
+    const permissions : number = coursePermissions.permissions;
     const permission : Permission = {
-        role : coursePermissions.length > 0 ? coursePermissions[0].role : courseRole.unregistered,
-        permissions : coursePermission | globalPermission
+        globalRole : coursePermissions.globalRole,
+        courseRole : coursePermissions.courseRole,
+        permissions
     };
     response.status(200).send(permission);
 }));
@@ -97,13 +97,13 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
         permission : permissions[0]
     });
 
-    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.removePermission({
+    const CourseUser : CourseUser = await CourseRegistrationDB.removePermission({
         courseID,
         userID,
         permission : permissions[1]
     });
 
-    response.status(200).send(courseRegistrationOutput);
+    response.status(200).send(CourseUser);
 }));
 
 
@@ -116,16 +116,18 @@ permissionRouter.put('/user/:userID/', capture(async(request : Request, response
     const currentUserID : string = await getCurrentUserID(request);
 
     // Requires manageUserPermissionsManage
+    console.log(0)
     await requirePermission(currentUserID, PermissionEnum.manageUserPermissionsManager);
-
+    console.log(1)
     const setPermissions = request.body.permissions;
     console.log(setPermissions);
     const userID : string = request.params.userID;
     const permissions = getPermissions(setPermissions);
-    console.log(permissions);
+    console.log(3, permissions);
 
     await UserDB.addPermissionsUser(userID, permissions[0]);
+    console.log(4)
     const user : User = await UserDB.removePermissionsUser(userID, permissions[1]);
-
+    console.log(5, user)
     response.status(200).send(user);
 }));

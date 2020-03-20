@@ -4,6 +4,10 @@ import { convertMention, Mention, mentionToAPI } from "../../../models/database/
 import { MentionsView } from "./ViewsDB";
 
 export class MentionsDB {
+	static async getMentionsUserCourse(){
+		
+	}
+
 	static async getAllMentions(params : DBTools = {}){
 		return MentionsDB.filterMentions(params);
 	}

@@ -8,7 +8,7 @@ import { globalRole } from '../../../models/enums/globalRoleEnum';
 
 export const adminRouter = express.Router()
 
-adminRouter.use(AuthMiddleware.requireRole(['admin']));
+adminRouter.use(AuthMiddleware.requireGlobalRole([globalRole.admin]));
 
 adminRouter.get('/plugins', capture(async (request, response) => {
     // TODO: this should be database, not config files
@@ -27,7 +27,7 @@ adminRouter.post('/plugins', capture(async (request, response) => {
     const user = await UserDB.createUser({
         userName: name,
         email, 
-        role: globalRole.plugin
+        globalRole: globalRole.plugin
     });
     response.send({
         message: "Add the following plugin object to your configuration file",

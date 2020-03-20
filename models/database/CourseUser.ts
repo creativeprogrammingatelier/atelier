@@ -1,22 +1,23 @@
 
-import { DBTools, checkAvailable } from "../../api/src/database/HelperDB";
+import { DBTools, checkAvailable, toDec } from "../../api/src/database/HelperDB";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { getEnum } from "../enums/enumHelper";
 import { courseRole } from "../enums/courseRoleEnum";
 import { globalRole } from "../enums/globalRoleEnum";
+import {CourseUser as APICourseUser } from '../api/CourseUser'
+export {APICourseUser}
+export interface CourseUserOutput{
+	userID: string,
+	courseID: string,
 
+	userName: string,
+	email: string,
 
-export interface CourseUser extends DBTools{
-	userID?: string,
-	courseID?: string,
-
-	userName?: string,
-	email?: string,
-
-	globalRole?: globalRole,
-	courseRole?: courseRole,
-	permission?: number,
+	globalRole: globalRole,
+	courseRole: courseRole,
+	permission: number,
 }
+export type CourseUser = Partial<CourseUserOutput> & DBTools
 
 export interface DBCourseUser {
 	userid: string,
@@ -27,10 +28,10 @@ export interface DBCourseUser {
 	
 	globalrole: string,
 	courserole: string,
-	permission: number,
+	permission: string,
 }
 
-export function convertCourseUser(db : DBCourseUser) : CourseUser{
+export function convertCourseUser(db : DBCourseUser) : CourseUserOutput{
 	checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"],db)
 	return {
 		userID: UUIDHelper.fromUUID(db.userid),
@@ -39,7 +40,22 @@ export function convertCourseUser(db : DBCourseUser) : CourseUser{
 		email: db.email,
 		globalRole: getEnum(globalRole, db.globalrole),
 		courseRole: getEnum(courseRole, db.courserole),
-		//shhh: this actually comes back as a string, don't tell anyone
-		// tslint:disable-next-line: ban
-		permission: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission	}
+		permission: toDec(db.permission)
+	}
+}
+
+
+export function CourseUserToAPI(db : DBCourseUser) : APICourseUser{
+	checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"],db)
+	return {
+		userID: UUIDHelper.fromUUID(db.userid),
+		courseID: UUIDHelper.fromUUID(db.courseid),
+		userName: db.username,
+		email: db.email,
+		permission: {
+			globalRole: getEnum(globalRole, db.globalrole),
+			courseRole: getEnum(courseRole, db.courserole),
+			permissions: toDec(db.permission)
+		}
+	}
 }

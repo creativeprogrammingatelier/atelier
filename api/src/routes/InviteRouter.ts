@@ -9,10 +9,10 @@ import {requirePermission, requireRegistered} from "../helpers/PermissionHelper"
 import {capture} from "../helpers/ErrorHelper";
 import {CourseInviteDB} from "../database/CourseInviteDB";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {CourseInvite} from "../../../models/api/Invite";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {courseRole} from "../../../models/enums/courseRoleEnum";
+import { CourseUser } from "../../../models/api/CourseUser";
 
 export const inviteRouter = express.Router();
 
@@ -91,7 +91,7 @@ inviteRouter.get("/:inviteID", capture(async(request: Request, response: Respons
 
     // Check if user is already enrolled
     const courseID : string = courseInvite.courseID!;
-    const enrolledCourses : CourseRegistrationOutput[] = await CourseRegistrationDB.getSubset([courseID], [currentUserID]);
+    const enrolledCourses : CourseUser[] = await CourseRegistrationDB.getSubset([courseID], [currentUserID]);
     if (enrolledCourses.length > 0) {
         response.status(200).redirect(`/course/${courseID}`);
         return;
@@ -101,7 +101,7 @@ inviteRouter.get("/:inviteID", capture(async(request: Request, response: Respons
     await CourseRegistrationDB.addEntry({
         courseID,
         userID : currentUserID,
-        role : courseInvite.joinRole,
+        courseRole : courseInvite.joinRole,
     });
 
     response.status(200).redirect(`/course/${courseID}`);

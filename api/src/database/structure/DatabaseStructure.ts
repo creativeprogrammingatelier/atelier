@@ -1,5 +1,5 @@
 import {end, pool, permissionBits, getClient, pgDB} from "../HelperDB";
-import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseRegistrationViewAll, CourseUsersView} from "../ViewsDB";
+import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersView} from "../ViewsDB";
 import { isPostgresError, PostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
 
@@ -35,16 +35,29 @@ if (require.main === module){
 }
 
 async function makeDB(client : pgDB = pool){
-     const query = makeDBString()
+	 const query = makeDBString()
+	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
+	//  console.log(singles)
+	//  for (const item of singles){
+	// 	 await client.query(item).then(()=>
+	// 	 		console.log('database creation successful')
+	// 		).catch((e : Error) =>{
+	// 			if (isPostgresError(e) && e.position!==undefined){
+	// 				console.log(item.substring(Number(e.position)-60, Number(e.position)+60))
+	// 			}
+	// 			throw e
+	// 		});
+	//  };
+	//  return;
 	 return client.query(query
 	 ).then(()=>
 		 console.log('database creation successful')
-	)/*.catch((e : Error) =>{
+	).catch((e : Error) =>{
 		if (isPostgresError(e) && e.position!==undefined){
-			console.log(query.substring(Number(e.position)-50, Number(e.position)+50))
+			console.log(query.substring(Number(e.position)-60, Number(e.position)+60))
 		}
 		throw e
-	});*/
+	});
 }
 
 function makeDBString(){
@@ -57,8 +70,7 @@ DROP VIEW IF EXISTS
 	"SubmissionsView", "FilesView",
 	"SnippetsView", "CommentsView",
 	"CommentThreadView", "CourseRegistrationView",
-	"MentionsView", "CourseRegistrationViewAll", 
-	"CourseUsersView";
+	"MentionsView", "CourseUsersView";
 
 DROP TABLE IF EXISTS 
 	"GlobalRolePermissions",
@@ -174,8 +186,10 @@ CREATE TABLE "Comments" (
 
 CREATE TABLE "Mentions" (
 	mentionID      uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-	commentID      uuid REFERENCES "Comments"(commentID) ON DELETE CASCADE,
-	userID         uuid REFERENCES "Users"(userID) ON DELETE CASCADE
+	commentID      uuid NOT NULL REFERENCES "Comments"(commentID) ON DELETE CASCADE,
+	userID         uuid REFERENCES "Users"(userID) ON DELETE CASCADE,
+	userGroup	   text REFERENCES "CourseRolePermissions"(courseRoleID) ON DELETE CASCADE,
+	CONSTRAINT either_or CHECK ((userID IS NULL) != (userGroup IS NULL))
 );
 	
 
@@ -228,7 +242,7 @@ CREATE VIEW "CommentThreadRefs" AS (
 );
 
 CREATE VIEW "UsersView" AS (
-	${usersView(`"Users"`)}
+	${usersView()}
 );
 CREATE VIEW "CourseRegistrationView" AS (
 	${CourseRegistrationView()}
@@ -236,10 +250,6 @@ CREATE VIEW "CourseRegistrationView" AS (
 
 CREATE VIEW "CoursesView" AS (
 	${CoursesView()}
-);
-
-CREATE VIEW "CourseRegistrationViewAll" AS (
-	${CourseRegistrationViewAll()}
 );
 
 CREATE VIEW "CourseUsersView" AS (
