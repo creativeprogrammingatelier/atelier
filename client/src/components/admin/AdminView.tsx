@@ -24,16 +24,16 @@ class AdminView extends React.Component<AdminViewProps, AdminViewState> {
 	}
 
 	componentDidMount() {
-		UserHelper.getUsers((users: any) => this.setState({users: users}), (error: Error) => alert('Failed to get users'));
+		UserHelper.getUsers((users: any) => this.setState({users}), (error: Error) => alert('Failed to get users'));
 	}
 
 	populateUsers(): any[] {
-		let userRows = [];
+		const userRows = [];
 		for (const user of this.state.users) {
 			userRows.push(
 				<tr>
 					<td>{user.email}</td>
-					<td>{user.permission.role}</td>
+					<td>{user.permission.globalRole}</td>
 					<td><Button onClick={() => this.openEditModal(user)}><Octicon icon={Pencil}/></Button></td>
 				</tr>
 			);

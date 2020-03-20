@@ -12,7 +12,7 @@ class EditUserModal extends React.Component<EditUserModalProps, EditUserModalSta
 	constructor(props: EditUserModalProps) {
 		super(props);
 		this.state = {
-			role: (this.props.user) ? this.props.user.permission.role : '',
+			role: (this.props.user) ? this.props.user.permission.globalRole : '',
 			password: 'newPassword123',
 			updated: false
 		};

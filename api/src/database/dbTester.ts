@@ -25,6 +25,7 @@ import { CourseInviteDB as CI, CourseInviteDB } from './CourseInviteDB'
 import { PluginsDB as P } from './PluginsDB'
 import { getEnum } from '../../../models/enums/enumHelper'
 import { globalRole } from '../../../models/enums/globalRoleEnum'
+import { User } from '../../../models/database/User'
 
 const ok = "✓",
 	fail = "✖"
@@ -58,15 +59,20 @@ function error(pre : string){
 function promise<T>(pr : Promise<T>, s : string) : Promise<T>{
 	return pr.then(logger(s)).catch(error(s))
 }
-async function usersHelper() {
-	log("\n\nUSERSHELPER\n\n")
-	const user = {userName:"C", email:"C@CAA", role:globalRole.admin,password:"C", permission:1}
+async function DBusersTest() {
+	log("\n\nUSERSTEST\n\n")
+	const user : User = {userName:"C", email:"C@CAA", globalRole:globalRole.admin,password:"C", permission:1}
 	const t1 = new Date()
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
 	await promise(UH.getUserByID(uuid), 'getUserById')
+	await promise(UH.searchUser('CAS'), "searchUser")
+	await promise(UH.getUserByPossibleMentionInCourse('Caas rest of comment', uuid), 'UserMention')
+	const u1 = await promise(UH.getUserBySamlID('samling_admin'), 'samlgetter')
+	const samlid = await promise(UH.getSamlIDForUserID(u1.ID), 'saml by user')
+	equal(samlid, 'samling_admin', 'samlid should still be equal for the same user')
 	const {ID:userID} = await promise(UH.createUser(user), 'createUser')
-	await promise(UH.updateUser({userID, role:globalRole.user}), 'updateUser')
+	await promise(UH.updateUser({userID, globalRole:globalRole.user}), 'updateUser')
 	const {permission : {permissions:p1}} = await promise(UH.addPermissionsUser(userID, 15), 'addPermissions')
 	equal(p1, 15, "addPermissions")
 	const {permission: {permissions:p2}} = await promise(UH.removePermissionsUser(userID, 6), 'addPermissions')
@@ -74,8 +80,8 @@ async function usersHelper() {
 	await promise(UH.deleteUser(userID!), 'deleteUser')
 }
 
-async function coursesHelper() {
-	log("\n\nCOURSESHELPER\n\n")
+async function DBcoursesTest() {
+	log("\n\nCOURSESTEST\n\n")
 	const course : Course= {courseName:"cname",creatorID:uuid,state:courseState.open}
 	const course2 = {courseName:"newname",creatorID:uuid,state:courseState.hidden}
 	const res = await promise(CH.getAllCourses(), 'getAllCourses')
@@ -87,8 +93,8 @@ async function coursesHelper() {
 	await promise(CH.deleteCourseByID(ID), 'delete')
 }
 
-async function rolesHelper(){
-	log("\n\nROLESHELPER\n\n")
+async function DBrolesTest(){
+	log("\n\nROLESTEST\n\n")
 	const role = "DEBUG"
 	const perm = 64
 	let noError;
@@ -127,10 +133,10 @@ async function rolesHelper(){
 	equal(noError, false, "role DEBUG should no longer exist in the courseRoleEnum");
 }
 
-async function courseRegistrationHelper(){
+async function courseRegistrationDBTest(){
 
-	log("\n\nCOURSEREGISTRATIONHELPER\n\n")
-	const newEntry = {userID:uuid, courseID:uuid, role:courseRole.teacher,permission:5}
+	log("\n\nCOURSEREGISTRATIONTEST\n\n")
+	const newEntry = {userID:uuid, courseID:uuid, courseRole:courseRole.teacher,permission:5}
 	equal(newEntry.permission, 5)
 	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid), 'getEntriesByCourse')
@@ -140,7 +146,7 @@ async function courseRegistrationHelper(){
 	await promise(CRH.filterCourseRegistration({permission:0}), 'filterCourseReg4')
 	await promise(CRH.filterCourseRegistration({permission:3}), 'filterCourseReg5')
 	const res = await promise(CRH.addEntry(newEntry), 'addEntry')
-	const upd = {userID:res.userID, courseID:res.courseID, role:courseRole.TA}
+	const upd = {userID:res.userID, courseID:res.courseID, courseRole:courseRole.TA}
 	await promise(CRH.getEntriesByUser(uuid), 'getEntriesByUser')
 	await promise(CRH.updateRole(upd), 'updateRole')
 	await promise(CRH.addPermission({...newEntry, permission:2048}), "addPermission")
@@ -148,12 +154,13 @@ async function courseRegistrationHelper(){
 	await promise(CRH.deleteEntry(newEntry), 'deleteEntry')
 }
 
-async function submissionHelper(){
-	log("\n\nSUBMISSIONHELPER\n\n")
+async function DBsubmissionTest(){
+	log("\n\nSUBMISSIONTEST\n\n")
 	await promise(SH.getAllSubmissions(), 'getAllSubmissions')
 	await promise(SH.getSubmissionById(uuid), 'getSubmissionById')
 	await promise(SH.getUserSubmissions(uuid), 'getUserSubmissions')
 	await promise(SH.getSubmissionsByCourse(uuid), 'getSubmissionsByCourse')
+	await promise(SH.getRecents({addFiles:true}), 'addFiles')
 	const sub = {submissionID: undefined, courseID: uuid, title: "myProject", userID:uuid, date:undefined, state: submissionStatus.new}
 	const sub2 = {submissionID: undefined, title: "mySecondProject", userID:uuid, date:undefined, state: submissionStatus.closed}
 	const res = await promise(SH.addSubmission(sub), 'addSubmission')
@@ -162,8 +169,8 @@ async function submissionHelper(){
 	await promise(SH.deleteSubmission(res.ID), "deleteSubmission")
 }
 
-async function fileHelper(){
-	log("\n\nFILEHELPER\n\n")
+async function DBfileTest(){
+	log("\n\nFILETEST\n\n")
 	await promise(FH.getNullFileID(uuid), 'nullfile')
 	const list = await promise(FH.getAllFiles(), 'getAllFiles')
 	await promise(FH.getFilesBySubmission(uuid), 'getFilesBySubmission')
@@ -178,8 +185,8 @@ async function fileHelper(){
 	await promise(FH.deleteFile(res2.ID), "deleteFile")
 }
 
-async function snippetHelper(){
-	log("\n\nSNIPPETHELPER\n\n")
+async function DBsnippetTest(){
+	log("\n\nSNIPPETTEST\n\n")
 	await promise(SPH.getAllSnippets(), 'getAllSnippets')
 	await promise(SPH.getSnippetsByFile(uuid), 'getSnippetsByFile')
 	const snip = await promise(SPH.getSnippetByID(uuid), 'getSnippetByID')
@@ -193,8 +200,8 @@ async function snippetHelper(){
 
 }
 
-async function ThreadHelper() {
-	log("\n\nTHREADHELPER\n\n")
+async function TDBhreadTest() {
+	log("\n\nTHREADTEST\n\n")
 	const snippetID = await promise(SPH.createNullSnippet(), "addSnippet")
 	const fileID = await promise(FH.createNullFile(uuid), "createNULL")
 	notEqual(fileID, undefined, "fileID not null"+fileID )
@@ -223,8 +230,8 @@ async function ThreadHelper() {
 	await promise(FH.deleteFile(fileID), "deleteNullFile")
 }
 
-async function commentHelper(){
-	log("\n\nCOMMENTHELPER\n\n")
+async function DBcommentTest(){
+	log("\n\nCOMMENTTEST\n\n")
 	await promise(C.getAllComments(), "getAllComments")
 	await promise(C.getCommentByID(uuid), "getCommentByID")
 	await promise(C.getCommentsByThread(uuid), "getCommentsBySubmission")
@@ -234,7 +241,7 @@ async function commentHelper(){
 	await promise(C.filterComment({body:'comment'}), "textSearch")
 }
 
-async function mentionHelper(){
+async function DBmentionTest(){
 	await promise(M.getAllMentions(), "getAllMentions")
 	await promise(M.getMentionByID(uuid), "getMentionByID")
 	await promise(M.getMentionsByComment(uuid), "getMentionsByComment")
@@ -246,14 +253,14 @@ async function mentionHelper(){
 	await promise(M.deleteMention(m1.mentionID), "deleteMention")
 }
 
-async function courseInviteHelper(){
+async function courseIDBnviteTest(){
 	const invite = {creatorID: uuid, courseID: uuid, type:'', joinRole: courseRole.TA}
 	await promise(CI.filterInvite({}), "filterInvite")
 	const resinv = await promise(CI.addInvite(invite), "addInvite")
 	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))
 }
 
-async function pluginHelper(){
+async function DBpluginTest(){
 	const plugins = await promise(P.filterPlugins({}),"filterPlugin")
 	const ID = plugins[0].pluginID
 	await promise(P.filterHooks({}), "filterHooks")
@@ -292,18 +299,18 @@ async function run(...funs : Function[]){
 }
 export async function main(){
 	return run(
-		rolesHelper,
-		commentHelper, 
-		snippetHelper, 
-		fileHelper, 
-		ThreadHelper,
-		submissionHelper,
-		courseRegistrationHelper,
-		coursesHelper,
-		usersHelper,
-		mentionHelper,
-		courseInviteHelper,
-		pluginHelper,
+		DBrolesTest,
+		DBcommentTest, 
+		DBsnippetTest, 
+		DBfileTest, 
+		TDBhreadTest,
+		DBsubmissionTest,
+		courseRegistrationDBTest,
+		DBcoursesTest,
+		DBusersTest,
+		DBmentionTest,
+		courseIDBnviteTest,
+		DBpluginTest,
 		)
 }
 if (require.main === module){

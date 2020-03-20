@@ -12,10 +12,10 @@ import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {courseRole} from "../../../models/enums/courseRoleEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {getClient, transaction} from "../database/HelperDB";
-import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {filterCourse} from "../helpers/APIFilterHelper";
+import { CourseUser } from "../../../models/api/CourseUser";
 
 export const courseRouter = express.Router();
 
@@ -33,8 +33,9 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
 	const userID : string = await getCurrentUserID(request);
 	const courses : CoursePartial[] = await CourseDB.getAllCourses();
 	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).filter(item =>{
-		return item.role !== courseRole.unregistered
-	}).map((course : CourseRegistrationOutput) => course.courseID);
+		return item.permission.courseRole !== courseRole.unregistered
+	}).map((course : CourseUser) => course.courseID);
+	console.log(enrolled)
 	response.status(200).send(await filterCourse(courses, enrolled, userID));
 }));
 
@@ -47,7 +48,7 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
 courseRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
 	const userID = request.params.userID;
 	// TODO: Authentication, only admins and the user itself should be able to see this
-	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course: CourseRegistrationOutput) => course.courseID);
+	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course: CourseUser) => course.courseID);
 	const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
 	response.status(200).send(courses);
 	// TODO: Error handling
@@ -95,7 +96,7 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 		await CourseRegistrationDB.addEntry({
 			courseID : course.ID,
 			userID : currentUserID,
-			role : courseRole.student,
+			courseRole : courseRole.student,
 			client
 		});
 
@@ -143,10 +144,10 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 	// Require manageUserRegistration permission
 	await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
 
-	const courseRegistration : CourseRegistrationOutput = await CourseRegistrationDB.addEntry({
+	const courseRegistration : CourseUser = await CourseRegistrationDB.addEntry({
 		courseID,
 		userID,
-		role : courseRole.student
+		courseRole : courseRole.student
 	});
 	response.status(200).send(courseRegistration);
 }));
@@ -160,7 +161,7 @@ courseRouter.delete('/:courseID/user/:userID', capture(async(request : Request, 
 	// Require manage user registration
 	await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
 
-	const result : CourseRegistrationOutput = await CourseRegistrationDB.deleteEntry({
+	const result : CourseUser = await CourseRegistrationDB.deleteEntry({
 		courseID,
 		userID
 	});

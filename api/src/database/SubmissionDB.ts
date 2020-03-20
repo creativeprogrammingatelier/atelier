@@ -67,7 +67,7 @@ export class SubmissionDB {
 			//user
 			userName: name = undefined,
 			email = undefined,
-			role = undefined,
+			globalRole: role = undefined,
 
 			limit = undefined,
 			offset = undefined,

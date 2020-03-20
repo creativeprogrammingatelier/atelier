@@ -1,5 +1,5 @@
 import {end, pool, permissionBits, getClient, pgDB} from "../HelperDB";
-import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseRegistrationViewAll, CourseUsersView} from "../ViewsDB";
+import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersView} from "../ViewsDB";
 import { isPostgresError, PostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
 
@@ -33,15 +33,28 @@ if (require.main === module){
 } else {
 	// makeDB(()=>{console.log("made the database")}, console.error)
 }
-const uuid = "'00000000-0000-0000-0000-000000000000'"
+
 async function makeDB(client : pgDB = pool){
-     const query = makeDBString()
+	 const query = makeDBString()
+	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
+	//  console.log(singles)
+	//  for (const item of singles){
+	// 	 await client.query(item).then(()=>
+	// 	 		console.log('database creation successful')
+	// 		).catch((e : Error) =>{
+	// 			if (isPostgresError(e) && e.position!==undefined){
+	// 				console.log(item.substring(Number(e.position)-60, Number(e.position)+60))
+	// 			}
+	// 			throw e
+	// 		});
+	//  };
+	//  return;
 	 return client.query(query
 	 ).then(()=>
 		 console.log('database creation successful')
 	).catch((e : Error) =>{
 		if (isPostgresError(e) && e.position!==undefined){
-			console.log(query.substring(Number(e.position)-20, Number(e.position)+20))
+			console.log(query.substring(Number(e.position)-60, Number(e.position)+60))
 		}
 		throw e
 	});
@@ -57,8 +70,7 @@ DROP VIEW IF EXISTS
 	"SubmissionsView", "FilesView",
 	"SnippetsView", "CommentsView",
 	"CommentThreadView", "CourseRegistrationView",
-	"MentionsView", "CourseRegistrationViewAll", 
-	"CourseUsersView";
+	"MentionsView", "CourseUsersView";
 
 DROP TABLE IF EXISTS 
 	"GlobalRolePermissions",
@@ -73,22 +85,11 @@ CREATE TABLE "CourseRolePermissions" (
    courseRoleID      text PRIMARY KEY,
    permission        bit(${permissionBits}) NOT NULL
 );
-INSERT INTO "CourseRolePermissions" VALUES
-   ('student', 1::bit(${permissionBits})),
-   ('TA', 3::bit(${permissionBits})),
-	('teacher', 7::bit(${permissionBits})),
-	('unregistered', 0::bit(${permissionBits})),
-	('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "GlobalRolePermissions" (
 	globalRoleID        text PRIMARY KEY,
 	permission          bit(${permissionBits}) NOT NULL
 );
-INSERT INTO "GlobalRolePermissions" VALUES
-	('admin', '${'1'.repeat(permissionBits)}'),
-	('user', 1::bit(${permissionBits})),
-	('unregistered', 0::bit(${permissionBits})),
-	('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Users" (
 	userID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -99,15 +100,6 @@ CREATE TABLE "Users" (
 	permission     bit(${permissionBits}) NOT NULL,
 	hash           char(60) NOT NULL
 );
-INSERT INTO "Users" VALUES
-	(DEFAULT, NULL, 'normal', 'Cas@Caaas', 'admin', 0::bit(${permissionBits}), '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
-	(${uuid}, 'samling_admin','Cs', 'admin@Cas', 'admin', 0::bit(${permissionBits}), ''),
-	(DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', 0::bit(${permissionBits}), ''),
-	(DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', 0::bit(${permissionBits}), ''),
-	(DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', 0::bit(${permissionBits}), ''),
-	(DEFAULT, NULL, 'PMD', 'pmd@plugin', 'plugin', 0::bit(${permissionBits}), ''),
-	(DEFAULT, NULL, 'test user', 'test@test', 'user', 0::bit(${permissionBits}), '');
-
 
 CREATE TABLE "Plugins" (
 	pluginID 		uuid PRIMARY KEY REFERENCES "Users"(userID) ON DELETE CASCADE,
@@ -115,29 +107,13 @@ CREATE TABLE "Plugins" (
 	webhookSecret	text NOT NULL,
 	publicKey		text NOT NULL
 );
-INSERT INTO "Plugins" VALUES
-	((SELECT userID FROM "Users" WHERE globalRole='plugin' LIMIT 1), 
-	'http://localhost:8080/atelier-pmd/hook', 
-	'Super$ecretWebh00k$ecret', 
-	'-----BEGIN CERTIFICATE-----
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhtNUfBsngFxBI06YuRO3
-    b3MY7z0fzrnco0oQeUF8JUrk/zTTi99mZRsP9TH43pGglKgyQVfzhvLey+YZABKX
-    /Q5nMC4kqQqezQ6S2yO3H0T+OwAcJco2DZyaTp268aj8H3jF5wzPeqhW4ca+3I+U
-    SWTp831FHwLj3/Th5jiIpaScontQtCy+BJAKzj7OOIChUTOLE1xZGkthr65lSOkg
-    cTNM9OwfQfGNMPPTJr2WJP5lrM+emcnAt3G9QSMKaI6MgR5iodBjDBggiSmdSANH
-    VHj8DA+aZ4jrN1hF46nYIXXM3O2LlWoOhgOaogEAB98nqaG5y2zTStUhRQfB9Yse
-    YQIDAQAB
-    -----END CERTIFICATE-----');
 
 CREATE TABLE "PluginHooks" (
 	pluginID		uuid NOT NULL REFERENCES "Plugins"(pluginID) ON DELETE CASCADE,
 	hook			text NOT NULL,
 	UNIQUE (pluginID, hook)
 );
-INSERT INTO "PluginHooks" VALUES
-	((SELECT pluginID FROM "Plugins" LIMIT 1),
-	'submission.file'
-	);
+
 
 CREATE TABLE "Courses" (
 	courseID    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -145,9 +121,6 @@ CREATE TABLE "Courses" (
 	state       text NOT NULL DEFAULT 'open',
 	creator     uuid REFERENCES "Users" (userID)
 );
-INSERT INTO "Courses" VALUES
-   (${uuid}, 'Pearls of Computer Science', DEFAULT, (SELECT userID from "Users" LIMIT 1));
-
 
 CREATE TABLE "CourseRegistration" (
 	courseID       uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE,
@@ -156,13 +129,6 @@ CREATE TABLE "CourseRegistration" (
 	permission     bit(${permissionBits}) NOT NULL,
 	PRIMARY KEY (courseID, userID)
 );
-INSERT INTO "CourseRegistration" VALUES
-   ((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3::bit(40)),
-	(${uuid}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', 0::bit(${permissionBits})),
-	(${uuid}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', 0::bit(${permissionBits})),
-	(${uuid}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', 0::bit(${permissionBits})),
-	(${uuid}, (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', 0::bit(${permissionBits}));
-
 
 CREATE TABLE "CourseInvites" (
 	inviteID 		uuid PRIMARY KEY DEFAULT gen_random_uuid(), 
@@ -180,8 +146,6 @@ CREATE TABLE "Submissions" (
 	date           timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	state          text NOT NULL DEFAULT 'new'
 );
-INSERT INTO "Submissions" VALUES
-   (${uuid}, ${uuid}, ${uuid}, 'MyFirstSubmission', DEFAULT, DEFAULT);
 
 CREATE TABLE "Files" (
 	fileID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -189,9 +153,7 @@ CREATE TABLE "Files" (
 	pathname       text NOT NULL,
 	type           text NOT NULL DEFAULT 'unsupported'
 );
-INSERT INTO "Files" VALUES
-	(${uuid}, (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
-	('ffffffff-ffff-ffff-ffff-ffffffffffff', (SELECT submissionID from "Submissions" LIMIT 1), '', 'undefined/undefined');
+
 
 CREATE TABLE "Snippets" (
 	snippetID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -203,18 +165,7 @@ CREATE TABLE "Snippets" (
 	contextBefore	  text NOT NULL,
 	contextAfter	  text NOT NULL
 );
-INSERT INTO "Snippets" VALUES
-	(    ${uuid}, 
-		 0, 1, 0, 0, 
-		 'this is a snippet of a file',
-		 'head context',
-		'footer context'
-	),
-	( -- a null snippet
-		 'ffffffff-ffff-ffff-ffff-ffffffffffff',
-		 -1, -1, -1, -1,
-		 '','',''
-	);
+
 
 CREATE TABLE "CommentThread" (
 	commentThreadID   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -224,29 +175,23 @@ CREATE TABLE "CommentThread" (
 	visibilityState   text NOT NULL DEFAULT 'public'
 );
 
-INSERT INTO "CommentThread" VALUES
-   (${uuid}, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), ${uuid}, DEFAULT),
-   (DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT);
-
 CREATE TABLE "Comments" (
 	commentID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	commentThreadID   uuid NOT NULL REFERENCES "CommentThread"(commentThreadID) ON DELETE CASCADE,
 	userID            uuid NOT NULL REFERENCES "Users"(userID),
-	date              timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created           timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	edited			  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	body              text NOT NULL
 );
-INSERT INTO "Comments" VALUES
-   (${uuid}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
-   (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a multi\\nline comment!'),
-   (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, 'This is a comment about nothing at all..');
 
 CREATE TABLE "Mentions" (
 	mentionID      uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-	commentID      uuid REFERENCES "Comments"(commentID) ON DELETE CASCADE,
-	userID         uuid REFERENCES "Users"(userID) ON DELETE CASCADE
+	commentID      uuid NOT NULL REFERENCES "Comments"(commentID) ON DELETE CASCADE,
+	userID         uuid REFERENCES "Users"(userID) ON DELETE CASCADE,
+	userGroup	   text REFERENCES "CourseRolePermissions"(courseRoleID) ON DELETE CASCADE,
+	CONSTRAINT either_or CHECK ((userID IS NULL) != (userGroup IS NULL))
 );
-INSERT INTO "Mentions" VALUES
-	(${uuid}, ${uuid}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'));
+	
 
 CREATE OR REPLACE FUNCTION delSnippet() 
 	returns trigger AS
@@ -297,7 +242,7 @@ CREATE VIEW "CommentThreadRefs" AS (
 );
 
 CREATE VIEW "UsersView" AS (
-	${usersView(`"Users"`)}
+	${usersView()}
 );
 CREATE VIEW "CourseRegistrationView" AS (
 	${CourseRegistrationView()}
@@ -305,10 +250,6 @@ CREATE VIEW "CourseRegistrationView" AS (
 
 CREATE VIEW "CoursesView" AS (
 	${CoursesView()}
-);
-
-CREATE VIEW "CourseRegistrationViewAll" AS (
-	${CourseRegistrationViewAll()}
 );
 
 CREATE VIEW "CourseUsersView" AS (
@@ -336,5 +277,24 @@ CREATE VIEW "CommentThreadView" as (
 );
 CREATE VIEW "MentionsView" as (
 	${MentionsView()}
-)`;
+);
+
+
+-- the standard roles
+
+INSERT INTO "CourseRolePermissions" VALUES
+   ('student', 1::bit(${permissionBits})),
+   ('TA', 3::bit(${permissionBits})),
+	('teacher', 7::bit(${permissionBits})),
+	('unregistered', 0::bit(${permissionBits})),
+	('plugin', 0::bit(${permissionBits}));
+
+INSERT INTO "GlobalRolePermissions" VALUES
+	('admin', '${'1'.repeat(permissionBits)}'),
+	('user', 1::bit(${permissionBits})),
+	('unregistered', 0::bit(${permissionBits})),
+	('plugin', 0::bit(${permissionBits}));
+
+
+`;
 }

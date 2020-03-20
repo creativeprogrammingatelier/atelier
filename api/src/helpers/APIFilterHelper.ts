@@ -43,7 +43,7 @@ export async function filterComment(comments : Comment[], userID : string) {
 
 function userMatch(userID : string, commentThread : CommentThread) {
     const sorted : Comment[] = commentThread.comments.sort((a : Comment, b : Comment) => {
-        return (new Date(a.date).getUTCMilliseconds()) - (new Date(b.date).getUTCMilliseconds());
+        return (new Date(a.created).getUTCMilliseconds()) - (new Date(b.created).getUTCMilliseconds());
     });
     if (sorted.length === 0) return false;
     return sorted[0].user.ID === userID;
