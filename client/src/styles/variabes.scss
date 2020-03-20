@@ -54,3 +54,14 @@ $shadowLarge: 0 0 100px 20px #00000085;
 
 //$red: $colorDanger;
 //$alert-bg-level: 0;
+
+$spacer: 0.25rem;
+$spacers: map-merge((
+		1: ($spacer),
+		2: ($spacer * 2),
+		3: ($spacer * 4),
+		4: ($spacer * 8),
+		5: ($spacer * 12),
+		6: ($spacer * 16),
+		7: ($spacer * 20)
+), ());

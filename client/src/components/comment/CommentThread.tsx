@@ -66,7 +66,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 			{opened ?
 				<Fragment>
 					{comments.map(comment => <CommentComponent comment={comment}/>)}
-					<CommentCreator sendHandler={handleCommentSend}/>
+					<CommentCreator placeholder="Reply..." sendHandler={handleCommentSend}/>
 				</Fragment>
 				:
 				comments[0] !== undefined && <CommentComponent comment={comments[0]}/>

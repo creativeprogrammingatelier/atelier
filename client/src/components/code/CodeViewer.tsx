@@ -19,6 +19,7 @@ import {getContextLines} from "../../helpers/CommentHelper";
 import {FiTag} from "react-icons/all";
 import {ButtonFloating} from "../general/ButtonFloating";
 import {Block} from "../general/Block";
+import {CommentSelector} from "../comment/CommentSelector";
 
 interface CodeViewerProperties extends RouteComponentProps {
 	submissionID: string,
@@ -44,6 +45,7 @@ interface SelectionRange {
 	anchor: CodeMirror.Position
 }
 
+// TODO: This component does way to many things, simplify it, and break it into pieces
 class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> {
 	codeMirror!: CodeMirror.Editor;
 	constructor(props: CodeViewerProperties) {
@@ -360,7 +362,8 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 						onChange={() => {}}
 					/>
 				</Block>
-				<ButtonFloating><FiTag size={22}/></ButtonFloating>
+				{/*<ButtonFloating><FiTag size={22}/></ButtonFloating>*/}
+				<CommentSelector/>
 				{
 					this.state.selecting ?
 						<div>

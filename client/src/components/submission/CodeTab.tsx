@@ -33,7 +33,7 @@ export function CodeTab({file, body, submissionID} : CodeProperties) {
 	useEffect(() => ScrollHelper.scrollToHash(), []);
 
 	return <div className="contentTab">
-		<div className="m-3">
+		<div className="m-3 mb-6">
 			<CodeViewer
 				submissionID={submissionID}
 				file={file}
