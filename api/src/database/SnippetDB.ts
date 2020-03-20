@@ -80,7 +80,6 @@ export class SnippetDB {
 	}
 
 	static async addSnippet(snippet : Snippet) : Promise<string>{
-		// console.log("this function only adds a single snippet. you might want to use a function that also makes the thread immediately.")
 		checkAvailable(['lineStart','lineEnd','charStart','charEnd', 'body', 'contextBefore','contextAfter'], snippet)
 		const {
 			lineStart,

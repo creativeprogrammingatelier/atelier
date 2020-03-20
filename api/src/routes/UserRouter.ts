@@ -56,7 +56,6 @@ userRouter.get('/course/:courseID', capture(async(request: Request, response : R
  *  - view all users (if you are not the user)
  */
 userRouter.get('/:userID', capture(async(request : Request, response : Response) => {
-	console.log(0)
 	const userID : string = request.params.userID;
 	const currentUserID : string = await getCurrentUserID(request);
 	const user : User = await UserDB.getUserByID(userID);

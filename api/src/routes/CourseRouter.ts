@@ -35,7 +35,6 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
 	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).filter(item =>{
 		return item.permission.courseRole !== courseRole.unregistered
 	}).map((course : CourseUser) => course.courseID);
-	console.log(enrolled)
 	response.status(200).send(await filterCourse(courses, enrolled, userID));
 }));
 

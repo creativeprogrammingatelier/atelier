@@ -70,7 +70,7 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 		`, [courses, users]).then(extract).then(map(CourseUserToAPI))
 	}
 
-	static async filterCourseRegistration(registration : CourseUser){
+	static async filterCourseRegistration(registration : CourseUser) : Promise<APICourseUser[]>{
 		const {
 			userID = undefined,
 			courseID = undefined,

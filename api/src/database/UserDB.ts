@@ -30,7 +30,6 @@ export class UserDB {
 	 * returns a student based on its userID, without password hash
 	 */
 	static async getUserByID(userID : string, params : DBTools = {}) {
-		console.log('getUserByID')
 		return UserDB.filterUser({...params, userID}).then(one)
 	}
 
@@ -205,7 +204,6 @@ export class UserDB {
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	static async addPermissionsUser(userID : string, permission : number, params : DBTools={}){
-		console.log(userID, permission)
 		const userid = UUIDHelper.toUUID(userID),
 			binPerm = toBin(permission)
 		const {client = pool} = params
@@ -219,7 +217,7 @@ export class UserDB {
 		)
 		${usersView("update")}
 		`, [userid, binPerm])
-		.then(extract).then(e=>{console.log(e);return e}).then(map(userToAPI)).then(one)
+		.then(extract).then(map(userToAPI)).then(one)
 	}
 
 	static async removePermissionsUser(userID : string, permission : number, params : DBTools = {}){
