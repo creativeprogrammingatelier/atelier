@@ -1,4 +1,6 @@
 import React from "react";
+import "codemirror/lib/codemirror.css";
+import "../../styles/codemirror.scss";
 
 import {Snippet} from "../../../../models/api/Snippet";
 import {MINIMIZED_LINES} from "../../helpers/CommentHelper";
