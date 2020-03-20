@@ -70,7 +70,8 @@ DROP VIEW IF EXISTS
 	"SubmissionsView", "FilesView",
 	"SnippetsView", "CommentsView",
 	"CommentThreadView", "CourseRegistrationView",
-	"MentionsView", "CourseUsersView";
+	"MentionsView", "CourseUsersView",
+	"CourseRegistrationViewAll";
 
 DROP TABLE IF EXISTS 
 	"GlobalRolePermissions",

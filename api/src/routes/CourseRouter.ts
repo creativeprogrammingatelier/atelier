@@ -11,7 +11,7 @@ import {courseState} from "../../../models/enums/courseStateEnum";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {courseRole} from "../../../models/enums/courseRoleEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {getClient, transaction} from "../database/HelperDB";
+import {transaction} from "../database/HelperDB";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {filterCourse} from "../helpers/APIFilterHelper";
@@ -35,22 +35,34 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
 	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).filter(item =>{
 		return item.permission.courseRole !== courseRole.unregistered
 	}).map((course : CourseUser) => course.courseID);
+	console.log(enrolled);
 	response.status(200).send(await filterCourse(courses, enrolled, userID));
 }));
 
 /**
  * Get user courses
- *  - admin: receives all of the users courses
+ *  - view all courses permission: receives all of the users courses
  *  - user self: receives all of the users courses
  *  - rest: not allowed
  */
 courseRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
 	const userID = request.params.userID;
-	// TODO: Authentication, only admins and the user itself should be able to see this
-	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID)).map((course: CourseUser) => course.courseID);
+
+	const currentUserID : string = await getCurrentUserID(request);
+
+	console.log("userID: " + userID);
+	console.log("requesting user: " + currentUserID);
+
+	if (currentUserID !== userID) await requirePermission(currentUserID, PermissionEnum.viewAllCourses);
+
+	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID))
+		.filter((courseUser : CourseUser) => courseUser.permission.courseRole !== courseRole.unregistered)
+		.map((course: CourseUser) => course.courseID);
+	console.log("enrolled: " + enrolledCourses);
+
 	const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
+	console.log("filtered: " + courses);
 	response.status(200).send(courses);
-	// TODO: Error handling
 }));
 
 /**

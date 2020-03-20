@@ -23,6 +23,7 @@ import {Bootstrap} from "./Bootstrap";
 import {CourseUserOverview} from "./user/CourseUserOverview";
 import {Settings} from "./settings/Settings";
 import {globalRole} from "../../../models/enums/globalRoleEnum";
+import {CourseSettings} from "./course/CourseSettings";
 
 
 /**
@@ -67,18 +68,20 @@ class App extends React.Component<AppProps, AppState> {
 		});
 	}
 
+	//@deprecated
 	getAndSetRole() {
-		AuthHelper.getRole().then((response: Response) => {
-			response.json().then((json: any) => {
-				const userRole = json.role;
-				if (response.status === 200) {
-					this.setState({
-						role: userRole,
-						loggedIn: true
-					});
-				}
-			});
-		});
+		// Old Role get. API path does not currently exist
+		// AuthHelper.getRole().then((response: Response) => {
+		// 	response.json().then((json: any) => {
+		// 		const userRole = json.role;
+		// 		if (response.status === 200) {
+		// 			this.setState({
+		// 				role: userRole,
+		// 				loggedIn: true
+		// 			});
+		// 		}
+		// 	});
+		// });
 	}
 
 	render() {
@@ -102,6 +105,7 @@ class App extends React.Component<AppProps, AppState> {
 				<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={CourseUserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings} />
 				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
 				<AuthenticatedRoute path='/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/settings' component={Settings}/>

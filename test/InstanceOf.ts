@@ -6,10 +6,14 @@ import { Permission } from "../models/api/Permission";
 import { Snippet } from "../models/api/Snippet";
 import { Submission } from "../models/api/Submission";
 import { User } from "../models/api/User";
-import {APIError} from "../models/api/Error";
 import { CourseUser } from "../models/api/CourseUser";
 
-/** Interface type checking, because this is not built in... */
+/**
+ * Interface type checking, because this is not built in...
+ * Constructor takes any, as it should be able to check any object to match the interface.
+ */
+
+// tslint:disable-next-line:no-any
 export function instanceOfCourse(object: any): object is Course {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -22,6 +26,23 @@ export function instanceOfCourse(object: any): object is Course {
         && 'currentUserPermission' in object
         && instanceOfPermission(object.currentUserPermission));
 }
+
+// tslint:disable-next-line:no-any
+export function instanceOfCourseUser(object : any): object is CourseUser {
+    return ('userID' in object
+        && typeof object.userID === 'string'
+        && 'courseID' in object
+        && typeof object.courseID === 'string'
+        && 'userName' in object
+        && typeof object.userName === 'string'
+        && 'email' in object
+        && typeof object.email === 'string'
+        && 'permission' in object
+        && instanceOfPermission(object.permission)
+    )
+}
+
+// tslint:disable-next-line:no-any
 export function instanceOfComment(object: any): object is Comment {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -36,6 +57,8 @@ export function instanceOfComment(object: any): object is Comment {
         && 'references' in object
         && typeof object.references === 'object');
 }
+
+// tslint:disable-next-line:no-any
 export function instanceOfCommentThread(object: any): object is CommentThread {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -43,10 +66,12 @@ export function instanceOfCommentThread(object: any): object is CommentThread {
         && typeof object.visibility === 'string'
         && 'comments' in object
         && object.comments.every(instanceOfComment)
-        && (object.file == undefined || instanceOfFile(object.file))
-        && (object.snippet == undefined || instanceOfSnippet(object.snippet))
+        && (object.file === undefined || instanceOfFile(object.file))
+        && (object.snippet === undefined || instanceOfSnippet(object.snippet))
         && 'references' in object);
 }
+
+// tslint:disable-next-line:no-any
 export function instanceOfFile(object: any): object is File {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -56,6 +81,8 @@ export function instanceOfFile(object: any): object is File {
         && typeof object.type === 'string'
         && 'references' in object);
 }
+
+// tslint:disable-next-line:no-any
 export function instanceOfPermission(object: any): object is Permission {
     console.log(object)
     return ('globalRole' in object
@@ -67,11 +94,15 @@ export function instanceOfPermission(object: any): object is Permission {
             || typeof object.courseRole === 'string'
         );
 }
+
 // TODO additional type checking depending on what search will contain
+// tslint:disable-next-line:no-any
 export function instanceOfSearch(object: any) {
     return ('comments' in object
         && 'users' in object);
 }
+
+// tslint:disable-next-line:no-any
 export function instanceOfSnippet(object: any): object is Snippet {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -91,6 +122,8 @@ export function instanceOfSnippet(object: any): object is Snippet {
         && typeof object.end.character === 'number'
         && 'references' in object);
 }
+
+// tslint:disable-next-line:no-any
 export function instanceOfSubmission(object: any): object is Submission {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -106,6 +139,8 @@ export function instanceOfSubmission(object: any): object is Submission {
         && object.files.every(instanceOfFile)
         && 'references' in object);
 }
+
+// tslint:disable-next-line:no-any
 export function instanceOfUser(object: any): object is User {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -117,6 +152,7 @@ export function instanceOfUser(object: any): object is User {
         && instanceOfPermission(object.permission));
 }
 
+// tslint:disable-next-line:no-any
 export function instanceOfCoursePartial(object: any) : object is CoursePartial {
     return ('ID' in object
         && typeof object.ID === 'string'
@@ -128,6 +164,7 @@ export function instanceOfCoursePartial(object: any) : object is CoursePartial {
         && instanceOfUser(object.creator)
     )
 }
+
 /*
  * 
  * @param object userID: string,

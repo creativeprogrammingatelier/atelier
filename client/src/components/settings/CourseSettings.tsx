@@ -1,7 +1,7 @@
 import React, {ChangeEvent} from 'react';
 import {Loading} from "../general/loading/Loading";
 import {CourseUser} from '../../../../models/api/CourseUser'
-import {getUsersByCourse, setPermission} from "../../../helpers/APIHelper";
+import {getUsersByCourse, setPermissionCourse} from "../../../helpers/APIHelper";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 
 interface CourseSettingsProps {
@@ -72,7 +72,7 @@ export class CourseSettings extends React.Component<CourseSettingsProps, CourseS
         };
 
         console.log("setting permissions");
-        setPermission(this.state.courseID, userID, permissions, false)
+        setPermissionCourse(this.state.courseID, userID, permissions, false)
             .then((courseUser : CourseUser) => {
                 // TODO feedback?
                 console.log(courseUser);

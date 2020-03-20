@@ -18,8 +18,9 @@ import { CourseUser } from "../../../models/api/CourseUser";
  * @param userID, ID of the user
  * @param requiredPermissions, required permissions. If any doesn't match, and error is thrown.
  * @param courseID, ID of the course if applicable
+ * @param anyPermission, true if 1 or more of the permissions should be set
  */
-export async function requirePermissions(userID : string, requiredPermissions : PermissionEnum[], courseID? : string) {
+export async function requirePermissions(userID : string, requiredPermissions : PermissionEnum[], courseID? : string, anyPermission = false) {
     
     let permissions = 0;
     if (courseID !== undefined) {
@@ -29,7 +30,9 @@ export async function requirePermissions(userID : string, requiredPermissions : 
         permissions = (await UserDB.getUserByID(userID)).permission.permissions;
     }
 
-    const access : boolean = requiredPermissions.every((permission : PermissionEnum) => containsPermission(permission, permissions));
+    const access : boolean = anyPermission ?
+        requiredPermissions.some((permission : PermissionEnum) => containsPermission(permission, permissions)) :
+        requiredPermissions.every((permission : PermissionEnum) => containsPermission(permission, permissions));
     if (!access) throw new AuthError("permission.notAllowed", "You don't have the permissions to view/manage this data.");
 }
 

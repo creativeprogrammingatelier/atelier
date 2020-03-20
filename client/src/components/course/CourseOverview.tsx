@@ -36,63 +36,58 @@ export function CourseOverview({match}: CourseOverviewProps) {
 			});
 	}, []);
 
-	return (
-		<Frame title="Course" sidebar search={"/course/../search"}>
-			<Jumbotron>
-				<Loading<Course>
-					loader={getCourse}
-					params={[match.params.courseId]}
-					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
-				/>
-			</Jumbotron>
-			<Loading<Submission[]>
-				loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
-				params={[match.params.courseId, reload]}
-				component={submissions =>
-					<DataBlockList
-						header="Submissions"
-						list={submissions.map(submission => {
-							console.log(submission);
-							return {
-								transport: `/submission/${submission.ID}`,
-								title: submission.name,
-								text: "Submitted by " + submission.user.name,
-								time: new Date(submission.date),
-								tags: []
-								//tags: submission.tags
-							};
-						})}
-					/>
-				}
-			/>
-			<div className="m-3">
-				<Uploader
-					courseId={match.params.courseId}
-					onUploadComplete={() => updateReload(rel => rel + 1)}
-				/>
-			</div>
-			<Loading<Mention[]>
-				loader={courseID => getCourseMentions(courseID)}
-				params={[match.params.courseId]}
-				component={mentions =>
-					<DataBlockList
-						header="Mentions"
-						list={mentions.map(mention => ({
-							transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
-							title: mention.commentID,
-							text: "You've been mentioned!",
-							time: new Date(),
-							tags: []
-						}))}
-					/>
-				}
-			/>
-			<CourseInvites courseID={match.params.courseId}/>
-			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
-				<DataList header="User Permission Settings">
-					<CourseSettings courseID={match.params.courseId}/>
-				</DataList>
-			}
-		</Frame>
-	);
+    return (
+        <Frame title="Course" sidebar search={"/course/../search"}>
+            <Jumbotron>
+                <Loading<Course>
+                    loader={(courseId) => getCourse(courseId, false)}
+                    params={[match.params.courseId]}
+                    component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p>
+                    </Fragment>}
+                />
+            </Jumbotron>
+            <Loading<Submission[]>
+                loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
+                params={[match.params.courseId, reload]}
+                component={submissions =>
+                    <DataBlockList
+                        header="Submissions"
+                        list={submissions.map(submission => {
+                            console.log(submission);
+                            return {
+                                transport: `/submission/${submission.ID}`,
+                                title: submission.name,
+                                text: submission.name,
+                                time: new Date(submission.date),
+                                tags: []
+                                //tags: submission.tags
+                            };
+                        })}
+                    />
+                }
+            />
+            <div className="m-3">
+                <Uploader
+                    courseId={match.params.courseId}
+                    onUploadComplete={() => updateReload(rel => rel + 1)}
+                />
+            </div>
+            <Loading<Mention[]>
+                loader={courseID => getCourseMentions(courseID)}
+                params={[match.params.courseId]}
+                component={mentions =>
+                    <DataBlockList
+                        header="Mentions"
+                        list={mentions.map(mention => ({
+                            transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
+                            title: mention.commentID,
+                            text: "You've been mentioned!",
+                            time: new Date(),
+                            tags: []
+                        }))}
+                    />
+                }
+            />
+        </Frame>
+    );
 }

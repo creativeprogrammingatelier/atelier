@@ -51,6 +51,9 @@ export function getCurrentUser(doCache?: boolean) {
 export function getUser(userId: string, doCache?: boolean) {
 	return Fetch.fetchJson<User>(`/api/user/${userId}`, undefined, doCache);
 }
+export function getAllUsers(doCache? : boolean) {
+	return Fetch.fetchJson<User[]>(`/api/user/all`, undefined, doCache);
+}
 export function setUser(body : {name? : string, email? : string}, doCache? : boolean) {
 	return Fetch.fetchJson<User>(`/api/user/`, putJson(body), doCache);
 }
@@ -181,11 +184,16 @@ export function coursePermission(courseID: string, doCache?: boolean) {
 export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
 }
-export function setPermission(courseID : string, userID : string, permissions : { permissions : Permissions}, doCache?: boolean) {
-	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, 
-        putJson(permissions), 
-        doCache
-    );
+
+export function setPermissionCourse(courseID : string, userID : string, permissions : { permissions : Permissions}, doCache?: boolean) {
+	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson(permissions), doCache);
+}
+export function setPermissionGlobal(userID : string, permissions : { permissions : Permissions}, doCache? : boolean) {
+	return Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, {
+		method : "PUT",
+		body : JSON.stringify(permissions),
+		headers : {"Content-Type" : "application/json"}
+	}, doCache);
 }
 
 // Invites
