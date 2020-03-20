@@ -28,10 +28,10 @@ roleRouter.post('/course/:courseID/user/:userID/:role', capture(async(request : 
     // Require manage user role permission
     await requirePermission(currentUserID, PermissionEnum.manageUserRole, courseID);
 
-    const courseRegistrationOutput : CourseUser = await CourseRegistrationDB.updateRole({
+    const courseRegistration : CourseUser = await CourseRegistrationDB.updateRole({
         userID,
         courseID,
         courseRole : getEnum(courseRole, role)
     });
-    response.status(200).send(courseRegistrationOutput);
+    response.status(200).send(courseRegistration);
 }));
