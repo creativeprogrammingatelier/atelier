@@ -53,7 +53,7 @@ pluginRouter.post('/', capture(async (request, response) => {
 
         const hooks = await Promise.all(
             (request.body.hooks as string[])
-                .map(hook => PluginsDB.addHook({ pluginID: plugin.pluginID, hook }))
+                .map(hook => PluginsDB.addHook({ pluginID: plugin.pluginID, hook, client }))
         );
 
         return { ...plugin, hooks: hooks.map(ph => ph.hook), user };
@@ -85,19 +85,20 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
                 pluginID: userID,
                 webhookUrl: request.body.webhookUrl,
                 webhookSecret: request.body.webhookSecret,
-                publicKey: request.body.publicKey
+                publicKey: request.body.publicKey,
+                client
             });
         } else {
-            plugin = await PluginsDB.filterPlugins({ pluginID: userID }).then(one);
+            plugin = await PluginsDB.filterPlugins({ pluginID: userID, client }).then(one);
         }
 
-        let hooks = await PluginsDB.filterHooks({ pluginID: userID }).then(map(ph => ph.hook));
+        let hooks = await PluginsDB.filterHooks({ pluginID: userID, client }).then(map(ph => ph.hook));
         if (request.body.hooks) {
             const add = (request.body.hooks as string[]).filter(h => !hooks.some(ph => ph === h));
             const remove = hooks.filter(h => !request.body.hooks.includes(h));
 
-            await Promise.all(add.map(hook => PluginsDB.addHook({ pluginID: userID, hook })));
-            await Promise.all(remove.map(hook => PluginsDB.deleteHook({ pluginID: userID, hook })));
+            await Promise.all(add.map(hook => PluginsDB.addHook({ pluginID: userID, hook, client })));
+            await Promise.all(remove.map(hook => PluginsDB.deleteHook({ pluginID: userID, hook, client })));
 
             hooks = request.body.hooks;
         }
