@@ -216,5 +216,5 @@ export function updatePlugin(plugin: Partial<Plugin> & { pluginID: string }, doC
 }
 
 export function deletePlugin(pluginID: string, doCache?: boolean) {
-    return Fetch.fetchJson<Plugin>(`/api/plugin/${pluginID}`, { method: "DELETE" }, doCache);
+    return Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, { method: "DELETE" }, doCache);
 }

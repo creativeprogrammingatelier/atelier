@@ -116,5 +116,5 @@ pluginRouter.delete('/:userID', capture(async (request, response) => {
         await UserDB.deleteUser(request.params.userID);
     }
 
-    response.status(204).send();
+    response.send(user);
 }));
