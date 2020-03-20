@@ -4,7 +4,7 @@ import {Jumbotron} from "react-bootstrap";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
 import {getCourseSubmissions, getCourseUserSubmissions, getUserSubmissions} from "../../../helpers/APIHelper";
-import {DataBlockList} from "../general/data/DataBlockList";
+import {DataBlockList} from "../data/DataBlockList";
 import {Frame} from "../frame/Frame";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 import { Course } from "../../../../models/api/Course";

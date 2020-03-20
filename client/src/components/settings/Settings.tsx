@@ -3,7 +3,7 @@ import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {UserSettings} from "./UserSettings";
 import {CourseSettings} from "./CourseSettings";
-import {DataList} from "../general/data/DataList";
+import {DataList} from "../data/DataList";
 
 export function Settings() {
     return (

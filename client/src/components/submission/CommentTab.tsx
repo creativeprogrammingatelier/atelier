@@ -1,10 +1,11 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import {CommentThread} from "../comment/CommentThread";
 import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {CommentThread as APICommentThread} from "../../../../models/api/CommentThread";
 import {getFileComments} from "../../../helpers/APIHelper";
+import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 interface CommentTabProperties {
     body: string,

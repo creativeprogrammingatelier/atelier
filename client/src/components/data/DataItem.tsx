@@ -2,7 +2,7 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {Toast, ToastBody} from "react-bootstrap";
 import {DataTag, DataTagProperties} from "./DataTag";
-import {ParentalProperties} from "../../../helpers/ParentHelper";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
 interface DataItemProperties extends ParentalProperties {
 	transport?: string,

@@ -1,5 +1,5 @@
 import React from "react";
-import {DataList} from "../general/data/DataList";
+import {DataList} from "../data/DataList";
 import {Loading} from "../general/loading/Loading";
 import {Course} from "../../../../models/api/Course";
 import {getUserCourses} from "../../../helpers/APIHelper";

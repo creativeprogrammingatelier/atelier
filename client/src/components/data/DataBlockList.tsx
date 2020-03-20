@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {DataBlock} from './DataBlock';
 import {DataTagProperties} from "./DataTag";
-import {Heading} from "../Heading";
 import { DataList } from './DataList';
 
 interface DataListEntryProperties {
