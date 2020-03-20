@@ -8,7 +8,7 @@ import {Loading} from "../general/loading/Loading";
 import {CommentThread} from "../../../../models/api/CommentThread";
 import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
 import {Submission} from "../../../../models/api/Submission";
-import {DataList} from "../general/data/DataList";
+import {DataList} from "../data/DataList";
 import {Course} from "../../../../models/api/Course";
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";

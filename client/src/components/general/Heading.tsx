@@ -3,19 +3,17 @@ import {Navbar} from 'react-bootstrap';
 import {IconType} from "react-icons";
 import {HeaderButton} from "../frame/HeaderButton";
 
+interface HeadingButtonProperties {
+	icon: IconType,
+	click: React.MouseEventHandler
+}
 interface HeadingProperties {
 	title?: string,
 	large?: boolean,
 	transparent?: boolean,
 	position?: string,
-	leftButton?: {
-		icon: IconType,
-		click: React.MouseEventHandler
-	},
-	rightButton?: {
-		icon: IconType,
-		click: React.MouseEventHandler
-	}
+	leftButton?: HeadingButtonProperties,
+	rightButton?: HeadingButtonProperties
 }
 export function Heading({ title, large, transparent, position, leftButton, rightButton}: HeadingProperties) {
 	return (

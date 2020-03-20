@@ -8,9 +8,8 @@ import {
 } from "../../../../models/enums/permissionEnum";
 import {Loading} from "../general/loading/Loading";
 import {getAllUsers, getUsersByCourse, setPermissionCourse, setPermissionGlobal} from "../../../helpers/APIHelper";
-import {CourseRegistrationOutput} from "../../../../models/database/CourseRegistration";
 import {User} from "../../../../models/api/User";
-import {CourseUser} from "../../../../models/database/CourseUser";
+import {CourseUser} from "../../../../models/api/CourseUser";
 
 interface CourseSettingsProps {
     courseID?: string,
@@ -135,15 +134,15 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
         if (courseID === undefined) {
             console.log("Global permissions");
             setPermissionGlobal(user, {permissions})
-                .then((permission: CourseRegistrationOutput) => {
-                    console.log(permission);
+                .then((courseUser: CourseUser) => {
+                    console.log(courseUser);
                     // TODO handle response
                 });
         } else {
             console.log("Local permissions");
-            setPermissionCourse(courseID, user, {permissions}).then((permission: CourseRegistrationOutput) => {
+            setPermissionCourse(courseID, user, {permissions}).then((courseUser : CourseUser) => {
                 // TODO handle response
-                console.log(permission);
+                console.log(courseUser);
             });
         }
     }
@@ -197,7 +196,7 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
                                         if ("userID" in user) {
                                             const user2 : CourseUser = user as CourseUser;
                                             userID = user2.userID!;
-                                            permission = user2.permission!;
+                                            permission = user2.permission.permissions!;
                                             userName = user2.userName!;
                                         } else {
                                             const user2 : User = user as User;

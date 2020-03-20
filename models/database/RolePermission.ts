@@ -1,35 +1,26 @@
 import {courseRole} from '../enums/courseRoleEnum'
-import {Permission as APIPermission} from '../api/Permission'
-import { pgDB, DBTools, checkAvailable } from '../../api/src/database/HelperDB'
+import {CoursePermission as APICoursePermission} from '../api/Permission'
+import { pgDB, DBTools, checkAvailable, toDec } from '../../api/src/database/HelperDB'
 import { getEnum } from '../enums/enumHelper'
-export interface RolePermission{
-	role?:courseRole,
-	permission : number
-}
+import { globalRole } from '../enums/globalRoleEnum'
+export type CoursePermission = Partial<APICoursePermission>
 
-export {APIPermission}
+export {APICoursePermission}
 
 export interface DBRolePermission extends DBTools {
 	courseroleid : string,
-	permission : number | string
+	permission : string
 }
 export type DBAPIRolePermission = DBRolePermission
 
-export function convertRolePermission(db : DBRolePermission) : RolePermission {
+
+export function convertRolePermission(db : DBRolePermission) : CoursePermission {
 	checkAvailable(["courseroleid", "permission"], db)
 	return {
-		role: getEnum(courseRole, db.courseroleid),
-		//shhh: this actually comes back as a string, don't tell anyone
-		// tslint:disable-next-line: ban
-		permission: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission
+		courseRole: getEnum(courseRole, db.courseroleid),
+		permissions: toDec(db.permission)
 	}
 }
-export function rolePermToAPI(db : DBAPIRolePermission) : APIPermission {
-	checkAvailable(["courseroleid", "permission"], db)
-	return {
-		role: getEnum(courseRole, db.courseroleid),
-		//shhh: this actually comes back as a string, don't tell anyone
-		// tslint:disable-next-line: ban
-		permissions: typeof db.permission === 'string' ? parseInt(db.permission, 2) : db.permission
-	}
+export function rolePermToAPI(db : DBAPIRolePermission) : CoursePermission {
+	return convertRolePermission(db)
 }

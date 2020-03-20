@@ -4,10 +4,10 @@ import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {UserSettings} from "./UserSettings";
 import {PermissionSettings} from "./PermissionSettings";
-import {DataList} from "../general/data/DataList";
 import {getCurrentUser} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {DataList} from "../data/DataList";
 
 export function Settings() {
     const [permissions, setPermissions] = useState(0);

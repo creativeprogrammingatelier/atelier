@@ -1,25 +1,28 @@
-import React, {useState} from 'react';
+import React, {useState} from "react";
 
-import {SearchBar} from './SearchBar';
-import {Frame} from '../frame/Frame';
-import { search } from '../../../helpers/APIHelper';
+import {SearchBar} from "./SearchBar";
+import {Frame} from "../frame/Frame";
+import {search} from "../../../helpers/APIHelper";
+import {Jumbotron} from "react-bootstrap";
+import {SearchQuery} from "./SearchQuery";
+import {DataList} from "../data/DataList";
+import {SearchResult} from "../../../../models/api/SearchResult";
+import {SearchResults} from "./SearchResults";
 
 
 export function SearchOverview() {
-    const [searchTerm, updateSearchTerm] = useState("");
+	const [searchResults, setSearchResults] = useState(undefined as unknown as SearchResult);
 
-    // TODO get result from api: determine interface of what comes back from the API
-    const getResults = (term: string): any => search(term)
-        .then(data => ({
-               // TODO Process data
-            }));
+	return (
+		<Frame title="Search" sidebar>
+			<Jumbotron>
+				<h1>Search</h1>
+			</Jumbotron>
+			<div className="m-3">
+				<SearchQuery handleResponse={results => setSearchResults(results)}/>
+			</div>
+			{searchResults && <SearchResults results={searchResults}/>}
 
-    // TODO add tables for search
-    return (
-        <Frame title="Search" sidebar>
-            <h1>Search Overview Page</h1>
-            <SearchBar handleSearch={updateSearchTerm} />
-
-        </Frame>
-    )
+		</Frame>
+	);
 }

@@ -10,6 +10,9 @@ import { RequestHandler } from 'express';
 import { UserDB } from '../database/UserDB';
 import { captureNext } from '../helpers/ErrorHelper';
 import {User} from "../../../models/api/User";
+import { courseRole } from '../../../models/enums/courseRoleEnum';
+import { globalRole } from '../../../models/enums/globalRoleEnum';
+import { getEnum } from '../../../models/enums/enumHelper';
 
 export class AuthMiddleware {
     /** Middleware function that will refresh tokens in cookies */
@@ -46,12 +49,15 @@ export class AuthMiddleware {
     /** 
      * Middleware function that requires the user to have a specified role,
      * implies `requireAuth`
+     * @param inCourse default is false. if set to true, check the users courseRole instead of globalRole
+     * this is needed because there is no way to infer with certainty the type of array presented as input.
      */
-    static requireRole(roles: string[]): RequestHandler {
+    static requireGlobalRole(roles: globalRole[], inCourse = false): RequestHandler {
         const handler: RequestHandler = captureNext(async (request, response, next) => {
             const userID : string = await getCurrentUserID(request);
             const user : User = await UserDB.getUserByID(userID);
-            if (roles.includes(user.permission.role)) {
+            const role = getEnum(globalRole, user.permission.globalRole);
+            if (roles.includes(role)) {
                 next();
             } else {
                 next(new AuthError("role.notAllowed", "You're not qualified to access this information."));
@@ -61,4 +67,24 @@ export class AuthMiddleware {
         return async (req, res, next) => 
             this.requireAuth(req, res, (err?) => err ? next(err) : handler(req, res, next));
     }
+    static requireCourseRole(roles: courseRole[], inCourse = false): RequestHandler {
+        const handler: RequestHandler = captureNext(async (request, response, next) => {
+            const userID : string = await getCurrentUserID(request);
+            const user : User = await UserDB.getUserByID(userID);
+            try {
+                const role = getEnum(courseRole, user.permission.courseRole!)
+                if (!roles.includes(role)){
+                    throw new Error();
+                }
+            } catch (e) {
+                next(new AuthError("role.notAllowed", "You're not qualified to access this information."));
+            }
+            next();
+             
+        });
+
+        return async (req, res, next) => 
+            this.requireAuth(req, res, (err?) => err ? next(err) : handler(req, res, next));
+    }
+
 }

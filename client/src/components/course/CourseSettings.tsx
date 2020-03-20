@@ -8,8 +8,8 @@ import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {PermissionSettings} from "../settings/PermissionSettings";
-import {DataList} from "../general/data/DataList";
 import {UpdateCourse} from "../settings/Course/UpdateCourse";
+import {DataList} from "../data/DataList";
 
 interface CourseOverviewProps {
     match: {

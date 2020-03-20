@@ -1,7 +1,6 @@
 /**
  * Middleware function that requires user to have a specified role in a course for a certain request.
  */
-import {CourseRegistrationOutput} from "../../../models/database/CourseRegistration";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {AuthError} from "./AuthenticationHelper";
 import {User} from "../../../models/api/User";
@@ -11,6 +10,7 @@ import {FileDB} from "../database/FileDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {SubmissionDB} from "../database/SubmissionDB";
 import { courseRole } from "../../../models/enums/courseRoleEnum";
+import { CourseUser } from "../../../models/api/CourseUser";
 
 /**
  * Check permissions of a user. Unions global and course permissions (if courseID provided), then checks
@@ -24,8 +24,8 @@ export async function requirePermissions(userID : string, requiredPermissions : 
     
     let permissions = 0;
     if (courseID !== undefined) {
-        const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-        permissions = courseRegistrationOutput.permission;
+        const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+        permissions = courseUser.permission.permissions;
     } else {
         permissions = (await UserDB.getUserByID(userID)).permission.permissions;
     }
@@ -59,8 +59,8 @@ export async function requireRegistered(userID : string, courseID : string) {
     if (containsPermission(PermissionEnum.viewAllCourses, globalPermissions)) return;
 
     // Check registration
-    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-    if (courseRegistrationOutput.role === courseRole.unregistered) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
+    const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    if (courseUser.permission.courseRole === courseRole.unregistered) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
 }
 
 /**
@@ -103,8 +103,8 @@ export async function getGlobalPermissions(userID : string) {
  * @param courseID, ID of the course
  */
 export async function getCoursePermissions(userID : string, courseID : string) {
-    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-    const permissions = courseRegistrationOutput.permission;
+    const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    const permissions = courseUser.permission.permissions;
     return permissions;
 }
 
@@ -114,7 +114,7 @@ export async function getCoursePermissions(userID : string, courseID : string) {
  */
 export async function getGlobalRole(userID : string) {
     const user : User = await UserDB.getUserByID(userID);
-    return user.permission.role;
+    return user.permission.globalRole;
 }
 
 /**
@@ -123,6 +123,6 @@ export async function getGlobalRole(userID : string) {
  * @param courseID, ID of the course
  */
 export async function getCurrentRole(userID : string, courseID: string) {
-    const courseRegistrationOutput : CourseRegistrationOutput = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-    return courseRegistrationOutput.role;
+    const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    return courseUser.permission.courseRole;
 }

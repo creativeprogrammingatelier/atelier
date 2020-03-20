@@ -1,14 +1,14 @@
 import React, { Fragment } from "react";
 import {User} from "../../../../models/api/User";
-import {DataList} from "../general/data/DataList";
+import {DataList} from "../data/DataList";
 import {Loading} from "../general/loading/Loading";
 import {Course} from "../../../../models/api/Course";
 import {getCourseUserComments, getUserComments, getUserCourses} from "../../../helpers/APIHelper";
 import {PanelButton} from "../general/PanelButton";
 import {Comment} from "../../../../models/api/Comment";
-import {DataItem} from "../general/data/DataItem";
-import {DataBlock} from "../general/data/DataBlock";
-import {DataBlockList} from "../general/data/DataBlockList";
+import {DataItem} from "../data/DataItem";
+import {DataBlock} from "../data/DataBlock";
+import {DataBlockList} from "../data/DataBlockList";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 
 interface CommentTabProperties {
@@ -27,7 +27,7 @@ export function CommentTab({user, course}: CommentTabProperties) {
 						return {
 							title: comment.user.name,
 							text: comment.text,
-							time: TimeHelper.fromString(comment.date),
+							time: TimeHelper.fromString(comment.created),
 							transport: "" // TODO: Link to correct /submission/:submissionId/:fileId/comments#:commentThreadId
 						};
 					})}

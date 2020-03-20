@@ -77,7 +77,7 @@ export function CourseRegistrationView(courseRegistrationTable = `"CourseRegistr
      WHERE 1=1
      `
 }
-export function CourseRegistrationViewAll(){
+export function CourseUsersView(courseRegistrationTable=`"CourseRegistration"`){
      return `
      WITH allButPermissions AS (
           SELECT 
@@ -87,7 +87,7 @@ export function CourseRegistrationViewAll(){
              COALESCE( -- if no entry present, use 'unregistered'
                 (
                    SELECT e.courseRole 
-                   FROM "CourseRegistration" as e
+                   FROM ${courseRegistrationTable} as e
                    WHERE e.courseID=c.courseID 
                      AND e.userID=u.userID
                 ), 
@@ -96,34 +96,51 @@ export function CourseRegistrationViewAll(){
           FROM  
              "UsersView" as u, 
              "Courses" as c
-       )
-       SELECT abp.courseID, abp.userID, abp.courseRole,
-          abp.permission 
-          | COALESCE( -- if entry not present, use 0 for no permissions
-             (
-                SELECT e.permission
-                FROM "CourseRegistration" as e
-                WHERE e.courseID=abp.courseID 
-                  AND e.userID=abp.userID
-             ),
-             0::bit(40)
-          ) | ( -- the permissions of this role in a course
-             SELECT permission 
-             FROM "CourseRolePermissions" 
-             WHERE courseRoleID=courseRole
-          ) AS permission
-       FROM allButPermissions as abp
+     )
+     SELECT abp.courseID, abp.userID, abp.courseRole,
+        abp.permission 
+        | COALESCE( -- if entry not present, use 0 for no permissions
+           (
+              SELECT e.permission
+              FROM ${courseRegistrationTable} as e
+              WHERE e.courseID=abp.courseID 
+                AND e.userID=abp.userID
+           ),
+           0::bit(40)
+        ) | ( -- the permissions of this role in a course
+           SELECT permission 
+           FROM "CourseRolePermissions" 
+           WHERE courseRoleID=courseRole
+        ) AS permission,
+     u.userName, 
+     u.email,
+     u.globalRole
+
+       FROM allButPermissions as abp, "UsersView" as u
+       WHERE u.userID = abp.userID
      `
 }
 
-export function CourseUsersView(){
+/** NOTE: this is almost the same as CourseUsers, but now there is no filler for non-existent rows, to be used specifically with some table */
+export function CourseUsersSingle(courseRegistrationTable=`"CourseRegistration"`){
+
      return `
-          SELECT u.userName, u.email, u.globalRole, crv.*
-          FROM "UsersView" as u, "CourseRegistrationViewAll" as crv
-          WHERE u.userID = crv.userID
-
-     `
+     SELECT 
+          c.courseID, u.userID, e.courseRole,
+          u.userName, u.email, u.globalRole,
+          u.permission | e.permission | crp.permission AS permission,
+          e.courseRole
+     FROM  
+          "UsersView" as u, 
+          "Courses" as c,
+          "CourseRolePermissions" as crp,
+          ${courseRegistrationTable} as e
+     WHERE e.courseID = c.courseID 
+          AND e.userID = u.userID
+          AND e.courseRole = crp.courseRoleID
+  `
 }
+
 
 /*
  * 
@@ -145,7 +162,8 @@ export function CoursesView(coursesTable=`"Courses"`, usersView=`"UsersView"`){
 }
 
 export function submissionsView(submissionsTable=`"Submissions"`, usersView=`"UsersView"`){
-     return `SELECT s.*, u.userName, u.globalrole, u.email, u.permission
+     return `
+     SELECT s.*, u.userName, u.globalrole, u.email, u.permission
      FROM ${submissionsTable} as s, ${usersView} as u
      WHERE s.userID = u.userID`
 }
@@ -184,9 +202,19 @@ export function commentThreadView(commentThreadTable=`"CommentThread"`){
 
 export function MentionsView(mentionsTable=`"Mentions"`){
      return `
-          SELECT m.mentionID, uv.*, cv.commentID, cv.commentThreadID, cv.submissionID, cv.courseID
-          FROM ${mentionsTable} as m, "CommentsView" as cv, "UsersView" as uv
+          SELECT m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
+                 cv.submissionID, cv.courseID, cu.userID, cu.userName, 
+                 cu.email, cu.globalRole, cu.courseRole, cu.permission
+          FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersView" as cu
           WHERE m.commentID = cv.commentID
-            AND m.userID = uv.userID
+            AND m.userID = cu.userID
+            AND cv.courseID = cu.courseID
+          UNION -- if addressing a group, user is null. account for that.
+          SELECT m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
+                 cv.submissionID, cv.courseID, NULL, NULL,
+                 NULL, NULL, NULL, NULL
+          FROM ${mentionsTable} as m , "CommentsView" as cv
+          WHERE m.commentID = cv.commentID
+            AND m.userID IS NULL
      `
 }

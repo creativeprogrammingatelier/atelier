@@ -11,7 +11,7 @@ import {capture} from "../helpers/ErrorHelper";
 import {requirePermission, requirePermissions} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {CourseUser} from "../../../models/database/CourseUser";
+import { CourseUser } from "../../../models/api/CourseUser";
 
 export const userRouter = express.Router();
 
@@ -50,8 +50,7 @@ userRouter.get('/course/:courseID', capture(async(request: Request, response : R
 		PermissionEnum.manageUserPermissionsView
 	], courseID, true);
 
-	const users: CourseUser[] = await CourseRegistrationDB.filterCourseRegistration({courseID});
-
+	const users : CourseUser[] = await CourseRegistrationDB.getEntriesByCourse(courseID);
 	response.status(200).send(users);
 }));
 
@@ -61,6 +60,7 @@ userRouter.get('/course/:courseID', capture(async(request: Request, response : R
  *  - view all users (if you are not the user)
  */
 userRouter.get('/:userID', capture(async(request : Request, response : Response) => {
+	console.log(0)
 	const userID : string = request.params.userID;
 	const currentUserID : string = await getCurrentUserID(request);
 	const user : User = await UserDB.getUserByID(userID);

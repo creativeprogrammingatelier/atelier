@@ -14,9 +14,8 @@ import {SearchResult} from '../../models/api/SearchResult';
 import {Mention} from '../../models/api/Mention';
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {threadState} from "../../models/enums/threadStateEnum";
-import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
+import {CourseUser} from "../../models/api/CourseUser";
 import {courseState} from "../../models/enums/courseStateEnum";
-import {CourseUser} from "../../models/database/CourseUser";
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -191,15 +190,16 @@ export function coursePermission(courseID: string, doCache?: boolean) {
 export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
 }
+
 export function setPermissionCourse(courseID : string, userID : string, permissions : { permissions : Permissions}, doCache?: boolean) {
-	return Fetch.fetchJson<CourseRegistrationOutput>(`/api/permission/course/${courseID}/user/${userID}`, {
+	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, {
 		method : "PUT",
 		body: JSON.stringify(permissions),
 		headers : {"Content-Type" : "application/json"}
 	}, doCache);
 }
 export function setPermissionGlobal(userID : string, permissions : { permissions : Permissions}, doCache? : boolean) {
-	return Fetch.fetchJson<CourseRegistrationOutput>(`/api/permission/user/${userID}`, {
+	return Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, {
 		method : "PUT",
 		body : JSON.stringify(permissions),
 		headers : {"Content-Type" : "application/json"}

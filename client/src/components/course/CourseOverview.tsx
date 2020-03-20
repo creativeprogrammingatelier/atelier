@@ -1,6 +1,6 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {useState, Fragment, useEffect} from "react";
 import {Frame} from "../frame/Frame";
-import {DataBlockList} from "../general/data/DataBlockList";
+import {DataBlockList} from "../data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
 import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions} from "../../../helpers/APIHelper";
@@ -11,29 +11,30 @@ import {Mention} from "../../../../models/api/Mention";
 import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
-import {PermissionSettings} from "../settings/PermissionSettings";
-import {DataList} from "../general/data/DataList";
-import {UpdateCourse} from "../settings/Course/UpdateCourse";
+import {CourseSettings} from "../settings/CourseSettings";
+import {DataList} from "../data/DataList";
 
 interface CourseOverviewProps {
-    match: {
-        params: {
-            courseId: string
-        }
-    }
+	match: {
+		params: {
+			courseId: string
+		}
+	}
 }
 
 export function CourseOverview({match}: CourseOverviewProps) {
-    const [reload, updateReload] = useState(0);
-    const [permissions, setPermissions] = useState(0);
+	const [reload, updateReload] = useState(0);
+	const [permissions, setPermissions] = useState(0);
 
+	const [reloadCourse, setReloadCourse] = useState(0);
+	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
-    useEffect(() => {
-        coursePermission(match.params.courseId, true)
-            .then((permission: Permission) => {
-                setPermissions(permission.permissions);
-            })
-    }, []);
+	useEffect(() => {
+		coursePermission(match.params.courseId, true)
+			.then((permission: Permission) => {
+				setPermissions(permission.permissions);
+			});
+	}, []);
 
     return (
         <Frame title="Course" sidebar search={"/course/../search"}>

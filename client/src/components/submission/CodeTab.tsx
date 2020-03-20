@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, {useEffect} from "react";
 import {File} from "../../../../models/api/File";
 import {CodeViewer2} from "../CodeViewer2";
-import {FileNameHelper} from "../../helpers/FileNameHelper";
+import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 export interface FileComment {
 	startLine: number,
@@ -30,6 +30,8 @@ interface CodeProperties {
 }
 
 export function CodeTab({file, body, submissionID} : CodeProperties) {
+	useEffect(() => ScrollHelper.scrollToHash(), []);
+
 	return <div className="contentTab">
 		<div className="m-3">
 			<CodeViewer2

@@ -16,9 +16,9 @@ import {CommentThread} from "../../models/api/CommentThread";
 import {CoursePartial} from "../../models/api/Course";
 import {Submission} from "../../models/api/Submission";
 import {UserDB} from '../../api/src/database/UserDB';
+
 import {threadState} from "../../models/enums/threadStateEnum";
-import {Permission, Permissions} from "../../models/api/Permission";
-import {getAllUsers} from "../../client/helpers/APIHelper";
+import {Permissions} from "../../models/api/Permission";
 import {CourseUser} from "../../models/database/CourseUser";
 import {
     COURSE_ID,
@@ -224,6 +224,23 @@ describe("API Get Permissions", () => {
      * - user should be registered in the course or have permission to view all courses
      */
     describe("Courses", () => {
+        async function courseEnrolled() {
+            let response = await getCourse();
+            expect(response).to.have.status(200);
+            assert(instanceOfCoursePartial(response.body));
+
+            response = await getCourses();
+            expect(response).to.have.status(200);
+            expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+
+            response = await getCoursesByOwnUser();
+            expect(response).to.have.status(200);
+            expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+
+            response = await getCoursesByOtherUser();
+            expect(response).to.have.status(401);
+        }
+
         async function coursePermissions() {
             let response = await getCourse();
             expect(response).to.have.status(200);
@@ -264,7 +281,7 @@ describe("API Get Permissions", () => {
 
         it("Should be possible to view courses if registered in a course", async () => {
             await registerCourse();
-            await coursePermissions();
+            await courseEnrolled();
             await unregisterCourse();
         });
 
@@ -422,9 +439,6 @@ describe("API Get Permissions", () => {
      * - response should be User[]
      */
     describe("Users", () => {
-        async function userPermissions() {
-
-        }
 
         it("Should be possible to get own user profile", async() => {
             let response = await getOwnUser1();

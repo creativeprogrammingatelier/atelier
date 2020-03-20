@@ -1,6 +1,12 @@
 export interface Permission {
-	role: string,
+	globalRole: string,
+	courseRole?: string,
 	permissions: number;
+}
+
+export interface CoursePermission {
+	courseRole: string,
+	permissions: number,
 }
 
 export interface Permissions {
