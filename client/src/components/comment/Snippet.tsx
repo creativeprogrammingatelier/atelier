@@ -1,7 +1,7 @@
 import React from "react";
 
 import {Snippet} from "../../../../models/api/Snippet";
-import {MINIMIZED_LINES} from "../../helpers/CommentHelper";
+import {MINIMIZED_LINES} from "../../../../helpers/SnippetHelper";
 import {Controlled as CodeMirror} from "react-codemirror2";
 
 interface SnippetProperties {

@@ -18,7 +18,6 @@ import { Range, getRanges } from "../helpers/HighlightingHelper";
 import {CommentThread} from "../../../models/api/CommentThread";
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { File } from '../../../models/api/File';
-import {getContextLines} from "../helpers/CommentHelper";
 
 interface CodeViewer2Props extends RouteComponentProps {
 	submissionID : string,
@@ -296,13 +295,6 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 		const submissionID = this.props.submissionID;
 		const snippetBody : string | undefined = (this.state.commentSelection === "") ? undefined : this.state.commentSelection;
 
-
-		const {contextBefore, center, contextAfter} = getContextLines(this.codeMirror, this.state.commentStartLine, this.state.commentEndLine);
-		console.log(contextBefore);
-		console.log(center);
-		console.log(contextAfter);
-
-
 		console.log("Snippet body: " + snippetBody);
 		console.log("Line start: " + this.state.commentStartLine);
 		console.log("Line end: " + this.state.commentEndLine);
@@ -314,14 +306,13 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
         try {
             const thread = await createFileCommentThread(fileID, {
                 submissionID,
-				contextBefore,
-                snippetBody : center,
-				contextAfter,
-                lineStart : this.state.commentStartLine,
-                lineEnd : this.state.commentEndLine,
-                charStart : this.state.commentStartCharacter,
-                charEnd : this.state.commentEndCharacter,
-				commentBody : this.state.commentText
+                commentBody : this.state.commentText,
+                snippet: {
+                    lineStart : this.state.commentStartLine,
+                    lineEnd : this.state.commentEndLine,
+                    charStart : this.state.commentStartCharacter,
+                    charEnd : this.state.commentEndCharacter,
+                }
             });
             this.setSelecting(false);
             this.setState(state => ({ 

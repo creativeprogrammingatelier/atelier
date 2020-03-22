@@ -14,3 +14,15 @@ export interface CommentThread {
 		submissionID : string,
 	}
 }
+
+export interface CreateCommentThread {
+    snippet?: {
+        lineStart: number,
+        charStart: number,
+        lineEnd: number,
+        charEnd: number
+    }
+	visibilityState?: threadState,
+	commentBody: string,
+	submissionID: string
+}
