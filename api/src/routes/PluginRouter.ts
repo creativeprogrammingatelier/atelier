@@ -14,7 +14,7 @@ export const pluginRouter = express.Router()
 /** All enpoints require the manageUserRegistration permission */
 pluginRouter.use(captureNext(async (request, response, next) => {
     const userID = await getCurrentUserID(request);
-    await requirePermission(userID, PermissionEnum.manageUserRegistration);
+    await requirePermission(userID, PermissionEnum.managePlugins);
     next();
 }));
 
