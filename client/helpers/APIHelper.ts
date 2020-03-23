@@ -194,7 +194,7 @@ export function deleteInvite(courseID : string, role : string, doCache?: boolean
 
 // Plugins
 export function getPlugins(doCache?: boolean) {
-    return Fetch.fetchJson<Plugin>('/api/plugin', undefined, doCache);
+    return Fetch.fetchJson<Plugin[]>('/api/plugin', undefined, doCache);
 }
 
 export function createPlugin(plugin: Partial<Plugin>, doCache?: boolean) {
