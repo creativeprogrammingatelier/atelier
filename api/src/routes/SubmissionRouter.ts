@@ -48,6 +48,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     await requireRegistered(userID, request.params.courseID);
     
     const files = request.files as Express.Multer.File[];
+    const fileLocation = (request as FileUploadRequest).fileLocation!;
     validateProjectServer(request.body["project"], files);
 
     const { submission, dbFiles } = await transaction(async client => {
@@ -60,17 +61,17 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         const dbFiles = await Promise.all(
             files.map(file => 
                 FileDB.addFile({
-                    pathname: file.path,
+                    pathname: file.path.replace(fileLocation, submission.ID),
                     type: file.mimetype,
                     submissionID: submission.ID,
                     client
                 }))
         );
         
-        const oldPath = path.join(UPLOADS_PATH, (request as FileUploadRequest).fileLocation!);
+        const oldPath = path.join(UPLOADS_PATH, fileLocation);
         await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
         await archiveProject(submission.ID, request.body["project"]);
-        await deleteNonCodeFiles(files);
+        await deleteNonCodeFiles(dbFiles);
 
         return { submission, dbFiles };
     });

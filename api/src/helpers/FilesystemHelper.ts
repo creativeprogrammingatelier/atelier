@@ -5,6 +5,7 @@ import fs from 'fs';
 import archiver, { ArchiverError } from 'archiver';
 import { randomBytes } from 'crypto';
 
+import { File } from '../../../models/api/File';
 import { UPLOADS_PATH } from '../lib/constants';
 import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE } from '../../../helpers/Constants';
 
@@ -96,9 +97,9 @@ export const deleteFile = (filePath: fs.PathLike): Promise<void> =>
     );
 
 /** Delete all non-code files from a list of files */
-export async function deleteNonCodeFiles(files: Express.Multer.File[]) {
-    const nonCodeFiles = files.filter(f => !CODEFILE_EXTENSIONS.includes(path.extname(f.filename)));
-    await Promise.all(nonCodeFiles.map(file => deleteFile(file.path)));
+export async function deleteNonCodeFiles(files: File[]) {
+    const nonCodeFiles = files.filter(f => !CODEFILE_EXTENSIONS.includes(path.extname(f.name)));
+    await Promise.all(nonCodeFiles.map(file => deleteFile(file.name)));
 }
 
 /** Read a file as a string with UTF-8 encoding */
