@@ -15,9 +15,6 @@ import {Range, getRanges} from "../../helpers/HighlightingHelper";
 import {CommentThread} from "../../../../models/api/CommentThread";
 import {withRouter, RouteComponentProps} from "react-router-dom";
 import {File} from "../../../../models/api/File";
-import {getContextLines} from "../../helpers/CommentHelper";
-import {FiTag} from "react-icons/all";
-import {ButtonFloating} from "../general/ButtonFloating";
 import {Block} from "../general/Block";
 import {CommentSelector} from "../comment/CommentSelector";
 
@@ -48,22 +45,24 @@ interface SelectionRange {
 // TODO: This component does way to many things, simplify it, and break it into pieces
 class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> {
 	codeMirror!: CodeMirror.Editor;
-	constructor(props: CodeViewerProperties) {
+
+
+	constructor(props : CodeViewerProperties) {
 		super(props);
 
 		this.state = {
-			formattedCode: props.fileContents,
-			selecting: false,
-			commentSelection: "",
+			formattedCode : props.fileContents,
+			selecting : false,
+			commentSelection : "",
 
-			snippets: [],
-			commentThreads: [],
+			snippets : [],
+			commentThreads : [],
 
-			commentText: "",
-			commentStartLine: 0,
-			commentStartCharacter: 0,
-			commentEndLine: 0,
-			commentEndCharacter: 0
+			commentText : "",
+			commentStartLine : 0,
+			commentStartCharacter : 0,
+			commentEndLine : 0,
+			commentEndCharacter : 0
 		};
 
 		// Bind methods that are called from onClick methods
@@ -78,16 +77,16 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 
 	componentDidUpdate(prevProps: Readonly<CodeViewerProperties>, prevState: Readonly<CodeViewerState>): void {
 		if (this.state.commentThreads !== prevState.commentThreads) {
-			const snippets: FileSnippet[] = [];
-			this.state.commentThreads.map((commentThread: CommentThread) => {
+			const snippets : FileSnippet[] = [];
+			this.state.commentThreads.map((commentThread : CommentThread) => {
 				if (commentThread.snippet !== undefined) {
 					const snippet = commentThread.snippet;
 					snippets.push({
-						startLine: snippet.start.line,
-						startCharacter: snippet.start.character,
-						endLine: snippet.end.line,
-						endCharacter: snippet.end.character,
-						onClick: () => {
+						startLine : snippet.start.line,
+						startCharacter : snippet.start.character,
+						endLine : snippet.end.line,
+						endCharacter : snippet.end.character,
+						onClick : () => {
 							console.log("clicked comment");
 							const submissionID = this.props.submissionID;
 							const fileID = this.props.file.ID;
@@ -95,12 +94,12 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 							const path = `/submission/${submissionID}/${fileID}/comments#${threadID}`;
 							this.props.history.push(path);
 						},
-						snippetID: snippet.ID,
-						commentThreadID: commentThread.ID
+						snippetID : snippet.ID,
+						commentThreadID : commentThread.ID
 					});
 				}
 			});
-			this.setState({snippets});
+			this.setState({ snippets });
 		}
 		if (this.state.snippets !== prevState.snippets) {
 			this.highlightComments();
@@ -110,7 +109,7 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	async getCommentThreads() {
 		try {
 			const threads = await getFileComments(this.props.file.ID);
-			this.setState({commentThreads: threads});
+			this.setState({ commentThreads : threads });
 		} catch (err) {
 			if (err instanceof JsonFetchError) {
 				console.log(err);
@@ -124,7 +123,7 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * Initialization when editor is created.
 	 */
 	initialize() {
-		this.codeMirror.setSize("100%", "100%");
+		this.codeMirror.setSize('100%', '100%');
 
 		// Highlight comments
 		this.highlightComments();
@@ -148,31 +147,30 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * Highlights comments passed to the code viewer.
 	 */
 	highlightComments() {
-		const color = "#3FDAC1";
-		const opacityRange = ["00", "6F", "BF", "FF"];
+		const color = '#dc3339';
+		const opacityRange = ['00', '6F', 'BF', 'FF'];
 
 		/** Highlight based on ranges */
 		if (this.state.snippets !== undefined) {
-			const ranges: Range[] = this.state.snippets.map(snippet => {
+			const ranges : Range[] = this.state.snippets.map(snippet => {
 				return {
-					startLine: snippet.startLine,
-					startChar: snippet.startCharacter,
-					endLine: snippet.endLine,
-					endChar: snippet.endCharacter,
-					overlap: 1
-				};
+					startLine : snippet.startLine,
+					startChar : snippet.startCharacter,
+					endLine : snippet.endLine,
+					endChar : snippet.endCharacter,
+					overlap : 1
+				}
 			});
 
-			const highlightRanges: Range[] = getRanges(ranges);
+			const highlightRanges : Range[] = getRanges(ranges);
 			for (const {startLine, startChar, endLine, endChar, overlap} of highlightRanges) {
 				const opacity = opacityRange[Math.min(overlap, opacityRange.length - 1)];
 
 				this.codeMirror.markText(
-					{line: startLine, ch: startChar},
-					{line: endLine, ch: endChar},
+					{line : startLine, ch : startChar},
+					{line : endLine, ch : endChar},
 					{
-						css: `background-color: ${color}${opacity};`
-					}
+						css: `background-color: ${color}${opacity};`}
 				);
 			}
 		}
@@ -183,19 +181,19 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * @param editor, codemirror editor instance
 	 * @param data, data from the selection
 	 */
-	onSelection(editor: Editor, data: {ranges: SelectionRange[]}) {
+	onSelection(editor : Editor, data : { ranges: SelectionRange[] }) {
 
 		// Store comment ranges
-		const head: CodeMirror.Position = data.ranges[0].head;
-		const anchor: CodeMirror.Position = data.ranges[0].anchor;
+		const head : CodeMirror.Position = data.ranges[0].head;
+		const anchor : CodeMirror.Position = data.ranges[0].anchor;
 		this.setCommentRanges(head, anchor);
 
-		const startPosition = {line: this.state.commentStartLine, ch: this.state.commentStartCharacter};
-		const endPosition = {line: this.state.commentEndLine, ch: this.state.commentEndCharacter};
-		const formattedSelection = editor.getRange(startPosition, endPosition, "\r\n");
+		const startPosition = {line : this.state.commentStartLine, ch : this.state.commentStartCharacter};
+		const endPosition = {line : this.state.commentEndLine, ch : this.state.commentEndCharacter};
+		const formattedSelection = editor.getRange(startPosition, endPosition, '\r\n');
 
 		this.setState({
-			commentSelection: formattedSelection
+			commentSelection : formattedSelection
 		});
 	};
 
@@ -204,7 +202,7 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * @param a, first head/anchor object
 	 * @param b, second head/anchor object
 	 */
-	compareRanges(a: CodeMirror.Position, b: CodeMirror.Position) {
+	compareRanges(a : CodeMirror.Position, b : CodeMirror.Position) {
 		return (a.line !== b.line) ? a.line - b.line : a.ch - b.ch;
 	}
 
@@ -213,17 +211,17 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * @param head, start of the selection
 	 * @param anchor, end of the selection
 	 */
-	setCommentRanges(head: CodeMirror.Position, anchor: CodeMirror.Position) {
+	setCommentRanges(head : CodeMirror.Position, anchor : CodeMirror.Position) {
 		// Sort head / anchor
 		const ranges = [head, anchor];
 		ranges.sort(this.compareRanges);
 
 		// Store comment ranges
 		this.setState({
-			commentStartLine: ranges[0].line,
-			commentStartCharacter: ranges[0].ch,
-			commentEndLine: ranges[1].line,
-			commentEndCharacter: ranges[1].ch
+			commentStartLine : ranges[0].line,
+			commentStartCharacter : ranges[0].ch,
+			commentEndLine : ranges[1].line,
+			commentEndCharacter : ranges[1].ch
 		});
 	}
 
@@ -232,7 +230,7 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * @param editor, codemirror object instance
 	 * @param event, type of event
 	 */
-	onClick(editor: Editor, event: Event) {
+	onClick(editor : Editor, event : Event) {
 		if (!this.state.selecting) {
 			setTimeout(() => {
 				const line = editor.getCursor().line;
@@ -251,17 +249,17 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * @param line, line number of the click
 	 * @param character, character location in the line of the click
 	 */
-	clickComment(line: number, character: number) {
-		const snippets: FileSnippet[] | undefined = this.state.snippets;
+	clickComment(line : number, character : number) {
+		const snippets : FileSnippet[] | undefined = this.state.snippets;
 		if (snippets === undefined) return;
 
 		// Find earliest comment that was clicked
-		let first: FileSnippet | undefined;
+		let first : FileSnippet | undefined;
 		for (const snippet of snippets) {
 			const {startLine, startCharacter, endLine, endCharacter} = snippet;
 			if ((startLine < line || (startLine === line && startCharacter <= character)) &&
 				(line < endLine || (line === endLine && character <= endCharacter))) {
-				if (first === undefined || startLine < first.startLine || (startLine === first.startLine && startCharacter < first.startCharacter)) {
+				if (first === undefined || startLine < first.startLine || (startLine === first.startLine && startCharacter < first.startCharacter)){
 					first = snippet;
 				}
 			}
@@ -276,8 +274,8 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	 * Setting selecting to true causes comment clicks to be ignored
 	 * @param selecting, whether user is currently selecting a comment
 	 */
-	setSelecting(selecting: boolean) {
-		this.setState({selecting});
+	setSelecting(selecting : boolean) {
+		this.setState({ selecting });
 		if (!selecting) {
 			// Clear the selection in the editor
 			this.codeMirror.setSelection({
@@ -293,14 +291,7 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 	async addComment() {
 		const fileID = this.props.file.ID;
 		const submissionID = this.props.submissionID;
-		const snippetBody: string | undefined = (this.state.commentSelection === "") ? undefined : this.state.commentSelection;
-
-
-		const {contextBefore, center, contextAfter} = getContextLines(this.codeMirror, this.state.commentStartLine, this.state.commentEndLine);
-		console.log(contextBefore);
-		console.log(center);
-		console.log(contextAfter);
-
+		const snippetBody : string | undefined = (this.state.commentSelection === "") ? undefined : this.state.commentSelection;
 
 		console.log("Snippet body: " + snippetBody);
 		console.log("Line start: " + this.state.commentStartLine);
@@ -313,14 +304,13 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 		try {
 			const thread = await createFileCommentThread(fileID, {
 				submissionID,
-				contextBefore,
-				snippetBody: center,
-				contextAfter,
-				lineStart: this.state.commentStartLine,
-				lineEnd: this.state.commentEndLine,
-				charStart: this.state.commentStartCharacter,
-				charEnd: this.state.commentEndCharacter,
-				commentBody: this.state.commentText
+				commentBody : this.state.commentText,
+				snippet: {
+					lineStart : this.state.commentStartLine,
+					lineEnd : this.state.commentEndLine,
+					charStart : this.state.commentStartCharacter,
+					charEnd : this.state.commentEndCharacter,
+				}
 			});
 			this.setSelecting(false);
 			this.setState(state => ({
