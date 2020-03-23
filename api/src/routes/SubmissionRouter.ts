@@ -7,7 +7,7 @@ import {SubmissionDB} from '../database/SubmissionDB';
 import {Submission} from '../../../models/api/Submission';
 import {capture} from '../helpers/ErrorHelper';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
-import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware, renamePath} from '../helpers/FilesystemHelper';
+import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware, renamePath, readFile} from '../helpers/FilesystemHelper';
 import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
 import {getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
@@ -124,4 +124,19 @@ submissionRouter.get('/:submissionID', capture(async(request: Request, response:
     await requireRegistered(currentUserID, submission.references.courseID);
 
     response.status(200).send(submission);
+}));
+
+/** Get the archive for a specific submission */
+submissionRouter.get('/:submissionID/archive', capture(async (request, response) => {
+    const submission = await SubmissionDB.getSubmissionById(request.params.submissionID);
+    const currentUserID = await getCurrentUserID(request);
+    await requireRegistered(currentUserID, submission.references.courseID);
+
+    const zipFileName = path.join(UPLOADS_PATH, submission.ID, submission.name + ".zip");
+    const fileBody : Buffer = await readFile(zipFileName);
+
+    response.status(200)
+        .set("Content-Type", "application/zip")
+        .set("Content-Disposition", `attachment; filename="${path.basename(zipFileName)}"`)
+        .send(fileBody);
 }));
