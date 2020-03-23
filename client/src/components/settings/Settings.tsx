@@ -4,6 +4,7 @@ import {Frame} from "../frame/Frame";
 import {UserSettings} from "./UserSettings";
 import {CourseSettings} from "./CourseSettings";
 import {DataList} from "../data/DataList";
+import { PluginSettings } from './PluginSettings';
 
 export function Settings() {
     return (
@@ -14,6 +15,9 @@ export function Settings() {
             </Jumbotron>
 
             <DataList header="User Details" children = {<UserSettings />} />
+            <DataList header="Plugins">
+                <PluginSettings />
+            </DataList>
         </Frame>
     )
 }
