@@ -337,7 +337,8 @@ class CodeViewer2 extends React.Component<CodeViewer2Props, CodeViewer2State> {
 					options = {{
 						mode : 'clike',
 						theme : 'base16-light',
-						lineNumbers : true
+                        lineNumbers : true,
+                        readOnly: true
 					}}
 					editorDidMount={
 						editor => {
