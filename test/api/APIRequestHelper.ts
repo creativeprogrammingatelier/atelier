@@ -3,6 +3,7 @@ import chai from "chai";
 import {app} from "../../api/src/app";
 import {Permissions} from "../../models/api/Permission";
 import chaiHttp from "chai-http";
+import {courseState} from "../../models/enums/courseStateEnum";
 
 chai.use(chaiHttp);
 
@@ -51,6 +52,14 @@ export const getCommentThreadBySubmission = () => chai.request(app)
 export const getCommentThreadBySubmissionRecent = () => chai.request(app)
     .get(`/api/commentThread/submission/${SUBMISSION_ID}/recent`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const setCommentThreadPrivate = () => chai.request(app)
+    .put(`/api/commentThread/${COMMENT_THREAD_ID}`)
+    .send({"visibility": "private"})
+    .set({'Authorization': USER_AUTHORIZATION_KEY, 'Content-Type': "application/json"});
+export const setCommentThreadPublic = () => chai.request(app)
+    .put(`/api/commentThread/${COMMENT_THREAD_ID}`)
+    .send({"visibility": "public"})
+    .set({"Authorization": USER_AUTHORIZATION_KEY, "Content-Type": "application/json"});
 
 /** Course requests */
 export const getCourse = () => chai.request(app)
@@ -65,6 +74,23 @@ export const getCoursesByOwnUser = () => chai.request(app)
 export const getCoursesByOtherUser = () => chai.request(app)
     .get(`/api/course/user/${ADMIN_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const createCourse = (name : string, state : courseState) => chai.request(app)
+    .post(`/api/course`)
+    .send({"name" : name, "state" : state})
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const updateCourse = (courseID : string, update : {name? : string, state? : courseState}) => chai.request(app)
+    .put(`/api/course/${courseID}`)
+    .send(update)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const deleteCourse = (courseID : string) => chai.request(app)
+    .delete(`/api/course/${courseID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const registerUserCourse = (courseID : string, userID : string) => chai.request(app)
+    .put(`/api/course/${courseID}/user/${userID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const unregisterUserCourse = (courseID : string, userID : string) => chai.request(app)
+    .delete(`/api/course/${courseID}/user/${userID}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
 
 /** Invite requests */
 export const getInvitesByUserAndCourse = () => chai.request(app)
@@ -142,11 +168,3 @@ export const setPermissions = (permissions: Permissions) => chai.request(app)
     .put(`/api/permission/user/${USER_ID}`)
     .send({permissions})
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY, 'Content-Type': 'application/json'});
-export const setCommentThreadPrivate = () => chai.request(app)
-    .put(`/api/commentThread/${COMMENT_THREAD_ID}`)
-    .send({"visibility": "private"})
-    .set({'Authorization': ADMIN_AUTHORIZATION_KEY, 'Content-Type': "application/json"});
-export const setCommentThreadPublic = () => chai.request(app)
-    .put(`/api/commentThread/${COMMENT_THREAD_ID}`)
-    .send({"visibility": "public"})
-    .set({"Authorization": ADMIN_AUTHORIZATION_KEY, "Content-Type": "application/json"});

@@ -15,7 +15,8 @@ import {transaction} from "../database/HelperDB";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {filterCourse} from "../helpers/APIFilterHelper";
-import { CourseUser } from "../../../models/api/CourseUser";
+import {CourseUser} from "../../../models/api/CourseUser";
+import {CourseInviteDB} from "../database/CourseInviteDB";
 
 export const courseRouter = express.Router();
 
@@ -164,6 +165,8 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 }));
 
 /** ---------- DELETE REQUESTS ---------- */
+
+
 courseRouter.delete('/:courseID/user/:userID', capture(async(request : Request, response : Response) => {
 	const courseID : string = request.params.courseID;
 	const userID : string = request.params.userID;
@@ -178,5 +181,16 @@ courseRouter.delete('/:courseID/user/:userID', capture(async(request : Request, 
 	});
 
 	response.status(200).send(result);
+}));
 
+courseRouter.delete('/:courseID', capture(async(request : Request, response : Response) => {
+	const courseID : string = request.params.courseID;
+	const currentUserID : string = await getCurrentUserID(request);
+
+	// Require manage courses permission
+	await requirePermission(currentUserID, PermissionEnum.manageCourses, courseID);
+
+	const result : CoursePartial = await CourseDB.deleteCourseByID(courseID);
+
+	response.status(200).send(result);
 }));

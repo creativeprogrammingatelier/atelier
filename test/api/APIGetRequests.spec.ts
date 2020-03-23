@@ -22,7 +22,11 @@ import {Permissions} from "../../models/api/Permission";
 import {CourseUser} from "../../models/database/CourseUser";
 import {
     COURSE_ID,
-    coursesToUnregister, DEFAULT_PERMISSIONS,
+    DEFAULT_PERMISSIONS,
+    USER_ID,
+    coursesToUnregister,
+    createCourse,
+    deleteCourse,
     getCommentsByUserAndCourse,
     getCommentsUser,
     getCommentThread,
@@ -32,21 +36,35 @@ import {
     getCourse,
     getCourses,
     getCoursesByOtherUser,
-    getCoursesByOwnUser, getOtherUser,
-    getOwnUser1, getOwnUser2,
+    getCoursesByOwnUser,
+    getOtherUser,
+    getOwnUser1,
+    getOwnUser2,
     getPermission,
     getPermissionByCourse,
     getSubmission,
-    getSubmissionsByCourse, getSubmissionsByOtherCourseUser,
-    getSubmissionsByOwnCourseUser, getUsers, getUsersByCourse,
+    getSubmissionsByCourse,
+    getSubmissionsByOtherCourseUser,
+    getSubmissionsByOtherUser,
+    getSubmissionsByOwnCourseUser,
+    getSubmissionsByOwnUser,
+    getUsers,
+    getUsersByCourse,
     registerCourse,
+    registerUserCourse,
     setAPITestUserValues,
+    setCommentThreadPrivate,
+    setCommentThreadPublic,
     setPermissions,
     unregisterCourse,
-    USER_ID
+    unregisterUserCourse,
+    updateCourse
 } from "./APIRequestHelper";
+import {courseState} from "../../models/enums/courseStateEnum";
 
-describe("API Get Permissions", () => {
+let createdCourseID : string | undefined = undefined;
+
+describe("API Tests", () => {
     /**
      * Set user to set user, and receive a token for the API
      * Unregister user from default course, and remove permissions.
@@ -68,7 +86,9 @@ describe("API Get Permissions", () => {
             "addCourses": false,
             "viewAllCourses": false,
             "viewAllSubmissions": false,
-            "viewAllUserProfiles": false
+            "viewAllUserProfiles": false,
+            "manageCourses" : false,
+            "manageUserRegistration" : false
         });
     });
 
@@ -98,6 +118,7 @@ describe("API Get Permissions", () => {
     });
 
     /**
+     * GET requests:
      * /api/comment/user/:userID
      * - response should be Comment[]
      * - comments should belong to userID
@@ -127,6 +148,7 @@ describe("API Get Permissions", () => {
     });
 
     /**
+     * GET requests:
      * /api/commentThread/:commentThread
      * - response should be CommentThread
      * - user should be enrolled in the course or have permission to view all courses.
@@ -142,6 +164,12 @@ describe("API Get Permissions", () => {
      * - response should be CommentThread[]
      * - user should be enrolled in teh course of have permission to view all courses.
      * - user should have permission to view private comment threads
+     *
+     * PUT requests:
+     * /api/commentThread/:commentThread
+     * - response should be a comment thread
+     * - user should be able to update visibility
+     * - user should have permission to manage the comment thread
      */
     describe("Comment threads", () => {
         async function commentThreadsPermissions(threadStates = [threadState.public, threadState.private]) {
@@ -201,18 +229,33 @@ describe("API Get Permissions", () => {
             await setPermissions({"viewAllCourses": false});
         });
 
-        it("Should not be possible to view hidden comment threads without permission", async () => {
-            // TODO check default thread to author and comments
-            // TODO test should not have a comment to check visibility
+        it("Should not be possible to set visibility without permission.", async() => {
+            let response = await setCommentThreadPrivate();
+            expect(response).to.have.status(401);
+
+            response = await setCommentThreadPublic();
+            expect(response).to.have.status(401);
         });
 
-        it("Should be possible to view hidden comment threads with permission", async () => {
-            // TODO check permission of view restricted comments
-            // TODO check visible if user owns a comment
+        it("Should be possible to set visibility with permission", async() => {
+            await setPermissions({"manageRestrictedComments" : true});
+
+            let response = await setCommentThreadPrivate();
+            expect(response).to.have.status(200);
+            expect(instanceOfCommentThread(response.body));
+            expect(response.body.visibility === "private");
+
+            response = await setCommentThreadPublic();
+            expect(response).to.have.status(200);
+            expect(instanceOfCommentThread(response.body));
+            expect(response.body.visibility === "public");
+
+            await setPermissions({"manageRestrictedComments" : false});
         });
     });
 
     /**
+     * GET requests:
      * /api/course
      * - response should be CoursePartial[]
      * - user should be enrolled or have permission to view all courses.
@@ -222,6 +265,28 @@ describe("API Get Permissions", () => {
      * /api/course/:courseID
      * - response should be CoursePartial
      * - user should be registered in the course or have permission to view all courses
+     *
+     * PUT requests:
+     * /api/course/:courseID
+     * - response should be a CoursePartial
+     * - user should be able to update a course name
+     * - user should be able to update a course state
+     * - user should have permission to manage courses
+     * /api/course/:courseID/user/:userID
+     * - response should be a CourseUser
+     * - user should be able to register users in a course
+     * - user should have permission to manage user registration
+     *
+     * DELETE requests:
+     * /api/course/:courseID
+     * - response should be a CoursePartial
+     * - user should be able to delete a course
+     * - user should have permission to manage courses
+     * /api/course/:courseID/user/:userID
+     * - response should be a CourseUser
+     * - user should be able to remove a user from a course
+     * - user should have permission to manage user registration
+     *
      */
     describe("Courses", () => {
         async function coursePermissions(onlyEnrolled = false) {
@@ -277,9 +342,101 @@ describe("API Get Permissions", () => {
             await coursePermissions();
             await setPermissions({"viewAllCourses": false});
         });
+
+        it("Should not be possible to create a course without permission.", async() => {
+            const response = await createCourse("Test Course", courseState.open);
+            expect(response).to.have.status(401);
+        });
+
+        it("Should be possible to create a course with permission.", async() => {
+            await setPermissions({"addCourses" : true});
+
+            const response = await createCourse("Test Course", courseState.open);
+            expect(response).to.have.status(200);
+            assert(instanceOfCoursePartial(response.body));
+            expect(response.body.state).to.equal(courseState.open);
+            expect(response.body.name).to.equal("Test Course");
+            createdCourseID = response.body.ID;
+
+            await setPermissions({"addCourses" : false});
+        });
+
+        it("Should enroll a user after creating a course", async() => {
+            const response = await getCourses();
+            expect(response).to.have.status(200);
+            assert(response.body.every((course : CoursePartial) => instanceOfCoursePartial(course)));
+
+            const courses : CoursePartial[] = response.body;
+            assert(courses.some((course : CoursePartial) => course.ID === createdCourseID));
+        });
+
+        it("Should not be possible to set name / state of a course without permission", async() => {
+            assert(createdCourseID !== undefined);
+            const response = await updateCourse(createdCourseID!, {name : "Test Course 2", state : courseState.hidden});
+            expect(response).to.have.status(401);
+        });
+
+        it("Should be possible to set name / state of a course with permission.", async() => {
+            await setPermissions({"manageCourses" : true});
+
+            const response = await updateCourse(createdCourseID!, {name : "Test Course 3", state : courseState.hidden});
+            expect(response).to.have.status(200);
+            assert(instanceOfCoursePartial(response.body));
+            expect(response.body.name).to.equal("Test Course 3");
+            expect(response.body.state).to.equal(courseState.hidden);
+
+            await setPermissions({"manageCourses" : false});
+        });
+
+        it("Should not be possible to remove a user from a course without permission.", async() => {
+            assert(createdCourseID !== undefined);
+            const response = await registerUserCourse(createdCourseID!, USER_ID);
+            expect(response).to.have.status(401);
+        });
+
+        it("Should be possible to remove a user from a course with permission.", async() => {
+            await setPermissions({"manageUserRegistration" : true});
+
+            assert(createdCourseID !== undefined);
+            const response = await unregisterUserCourse(createdCourseID!, USER_ID);
+            expect(response).to.have.status(200);
+            assert(instanceOfCourseUser(response.body));
+
+            await setPermissions({"manageUserRegistration" : false});
+        });
+
+        it("Should be possible to enroll a user in a course with permission.", async() => {
+            await setPermissions({"manageUserRegistration" : true});
+
+            assert(createdCourseID !== undefined);
+            const response = await registerUserCourse(createdCourseID!, USER_ID);
+            expect(response).to.have.status(200);
+            assert(instanceOfCourseUser(response.body));
+
+            await unregisterUserCourse(createdCourseID!, USER_ID);
+            await setPermissions({"manageUserRegistration" : false});
+        });
+
+        it("Should not be possible to delete a course without permission", async() => {
+            assert(createdCourseID !== undefined);
+            const response = await deleteCourse(createdCourseID!);
+            expect(response).to.have.status(401);
+        });
+
+        it("Should be possible to delete a course with permission.", async() => {
+            await setPermissions({"manageCourses" : true});
+
+            assert(createdCourseID !== undefined);
+            const response = await deleteCourse(createdCourseID!);
+            expect(response).to.have.status(200);
+            assert(instanceOfCoursePartial(response.body));
+
+            await setPermissions({"manageCourses" : false});
+        });
     });
 
     /**
+     * GET requests:
      * /api/invite/course/:courseID/all
      * - response should be {student : Invite, TA : Invite, teacher : Invite}
      * - invites should be undefined if no permission to manage user registration
@@ -300,12 +457,23 @@ describe("API Get Permissions", () => {
     });
 
     /**
+     * GET requests:
      * /api/permission
      * - response should be Permission
      * /api/permission/course/:courseID
      * - response should be Permission
      * - should be possible if registered and not registered
      * - should return 0 permissions if not registered
+     *
+     * PUT requests:
+     * /api/permission/course/:courseID/user/:userID
+     * - response should be Permission
+     * - user can set view permissions with permission to manage view permissions
+     * - user can set manage permissions with permission to manage manage permissions
+     * /api/permission/user/:userID
+     * - response should be Permission
+     * - user can set view permissions with permission to manage view permissions
+     * - user can set manage permission with permission to manage manage permissions
      */
     describe("Permissions", async() => {
         it("Should be possible to get own global permissions", async() => {
@@ -330,13 +498,66 @@ describe("API Get Permissions", () => {
             assert(instanceOfPermission(response.body));
             expect(response.body.permissions).to.equal(DEFAULT_PERMISSIONS);
         });
+
+        it("Should not be possible to update global user permissions without permission.", async() => {
+            // TODO
+        });
+
+        it("Should not be possible to update course user permissions without permission", async() => {
+            // TODO
+        });
+
+        it("Should be possible to update view user permissions in a course with permission", async() => {
+            // TODO
+        });
+
+        it("Should be possible to update view user permissions globally with permission", async() => {
+            // TODO
+        });
+
+        it("Should be possible to update manage user permissions in a course with permission", async() => {
+            // TODO
+        });
+
+        it("Should be possible to update manage user permissions globally with permission.", async() => {
+            // TODO
+        });
     });
 
+    /**
+     * GET requests:
+     */
     describe("Search", () => {
         // TODO test search after finished
     });
 
     /**
+     * PUT requests:
+     * /api/role/course/:courseID/user/:userID/:role
+     * - response should be CourseUser
+     * - user should be able to update a role of a user in a course
+     * - user should have permission to manage user permissions
+     * /api/role/user/:userID/:role
+     * - response should be User
+     * - user should be able to update a role of a user globally
+     * - user should have permission to manage user permissions
+     */
+    describe("Role", () => {
+       it("Should not be possible to set a role without permission.", async() => {
+           // TODO
+       });
+
+       it("Should be possible to set global role with permission.", async() => {
+           // TODO
+       });
+
+       it("Should be possible to set course role with permission.", async() => {
+           // TODO
+       });
+    });
+
+    /**
+     * GET requests:
      * /api/submission/course/:courseID
      * - response should be Submission[]
      * - requires user be to enrolled or have permission to view all courses
@@ -368,6 +589,18 @@ describe("API Get Permissions", () => {
             expect(response).to.have.status(200);
             assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
 
+            response = await getSubmissionsByOwnUser();
+            expect(response).to.have.status(200);
+            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+
+            response = await getSubmissionsByOtherUser();
+            if (onlyEnrolled) {
+                expect(response).to.have.status(401);
+            } else {
+                expect(response).to.have.status(200);
+                assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+            }
+
             response = await getSubmissionsByOtherCourseUser();
             if (onlyEnrolled) {
                 expect(response).to.have.status(401);
@@ -388,6 +621,9 @@ describe("API Get Permissions", () => {
             expect(response).to.have.status(401);
 
             response = await getSubmissionsByOtherCourseUser();
+            expect(response).to.have.status(401);
+
+            response = await getSubmissionsByOtherUser();
             expect(response).to.have.status(401);
         });
 
@@ -411,6 +647,7 @@ describe("API Get Permissions", () => {
     });
 
     /**
+     * GET requests:
      * /api/user/all
      * - response should be User[]
      * /api/user/course/:courseID
@@ -419,6 +656,12 @@ describe("API Get Permissions", () => {
      * - response should be User[]
      * /api/user
      * - response should be User[]
+     *
+     * PUT requests:
+     * /api/user
+     * - response should be User
+     * - user should be able to set name
+     * - user should be able to set email
      */
     describe("Users", () => {
 
@@ -477,6 +720,14 @@ describe("API Get Permissions", () => {
             assert(response.body.every((user : User) => instanceOfUser(user)));
 
             await setPermissions({"viewAllUserProfiles" : false});
+        });
+
+        it("Should be possible for a user to update name.", async() => {
+            // TODO
+        });
+
+        it("Should be possible for a user to update email.", async() => {
+            // TODO
         });
     });
 });
