@@ -22,11 +22,9 @@ export function Settings() {
             <Loading<Permission>
                 loader={permission}
                 component={permission => 
-                    containsPermission(PermissionEnum.managePlugins, permission.permissions) && (
-                        <DataList header="Plugins">
-                            <PluginSettings />
-                        </DataList>
-                    )
+                    containsPermission(PermissionEnum.managePlugins, permission.permissions)
+                    ? <DataList header="Plugins"><PluginSettings /></DataList> 
+                    : []
                 } />
         </Frame>
     )
