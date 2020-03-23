@@ -91,7 +91,7 @@ inviteRouter.get("/:inviteID", capture(async(request: Request, response: Respons
 
     // Check if user is already enrolled
     const courseID : string = courseInvite.courseID!;
-    const enrolledCourses : CourseUser[] = await CourseRegistrationDB.getSubset([courseID], [currentUserID]);
+    const enrolledCourses : CourseUser[] = await CourseRegistrationDB.getSubset([courseID], [currentUserID], true);
     if (enrolledCourses.length > 0) {
         response.status(200).redirect(`/course/${courseID}`);
         return;

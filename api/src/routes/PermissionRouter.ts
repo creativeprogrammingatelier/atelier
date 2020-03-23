@@ -49,7 +49,7 @@ permissionRouter.get('/course/:courseID', capture(async(request :Request, respon
     const courseID : string = request.params.courseID;
     const userID : string = await getCurrentUserID(request);
 
-    // If user not registered in the course, return global permissions and localRole.none
+    // If user not registered in the course, return global permissions and localRole.unregistered
     const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
     const coursePermissions = courseUser.permission
     const permissions : number = coursePermissions.permissions;
