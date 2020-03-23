@@ -3,22 +3,23 @@
  */
 
 import express, {Request, Response} from 'express';
-import {SubmissionDB} from "../database/SubmissionDB";
-import {Submission} from "../../../models/api/Submission";
-import {capture} from "../helpers/ErrorHelper";
+import {SubmissionDB} from '../database/SubmissionDB';
+import {Submission} from '../../../models/api/Submission';
+import {capture} from '../helpers/ErrorHelper';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
-import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware} from '../helpers/FilesystemHelper';
+import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware, renamePath} from '../helpers/FilesystemHelper';
 import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
 import {getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
 import {CODEFILE_EXTENSIONS} from '../../../helpers/Constants';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
-import {filterSubmission} from "../helpers/APIFilterHelper";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
-import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import { transaction } from '../database/HelperDB';
-import { WebhookEvent } from '../../../models/enums/webhookEventEnum';
+import {filterSubmission} from '../helpers/APIFilterHelper';
+import {PermissionEnum} from '../../../models/enums/permissionEnum';
+import {requirePermission, requireRegistered} from '../helpers/PermissionHelper';
+import {transaction} from '../database/HelperDB';
+import {WebhookEvent} from '../../../models/enums/webhookEventEnum';
+import {UPLOADS_PATH} from '../lib/constants';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -65,8 +66,10 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
                     client
                 }))
         );
-                
-        await archiveProject((request as FileUploadRequest).fileLocation!, request.body["project"]);
+        
+        const oldPath = path.join(UPLOADS_PATH, (request as FileUploadRequest).fileLocation!);
+        await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
+        await archiveProject(submission.ID, request.body["project"]);
         await deleteNonCodeFiles(files);
 
         return { submission, dbFiles };
