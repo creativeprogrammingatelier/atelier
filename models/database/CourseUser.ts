@@ -17,7 +17,9 @@ export interface CourseUserOutput{
 	courseRole: courseRole,
 	permission: number,
 }
-export type CourseUser = Partial<CourseUserOutput> & DBTools
+export interface CourseUser extends Partial<CourseUserOutput>, DBTools {
+	registeredOnly? : boolean
+}
 
 export interface DBCourseUser {
 	userid: string,

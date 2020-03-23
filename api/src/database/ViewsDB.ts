@@ -60,24 +60,24 @@ export function usersView(userTable = `"Users"`){
      WHERE 1=1`
 }
 
-export function CourseRegistrationView(courseRegistrationTable = `"CourseRegistration"`){
-     return `SELECT
-          cr.userID, 
-          cr.courseID, 
-          cr.courseRole, 
-          cr.permission | (
-                              SELECT permission 
-                              FROM "CourseRolePermissions" 
-                              WHERE courseRoleID=courseRole
-                         ) | (SELECT permission
-                              FROM "UsersView" as uv
-                              WHERE uv.userID = cr.userID
-                         ) AS permission
-     FROM ${courseRegistrationTable} as cr
-     WHERE 1=1
+export function CourseUsersView(courseRegistrationTable = `"CourseRegistration"`){
+     return `
+     SELECT 
+          c.courseID, u.userID, e.courseRole,
+          u.userName, u.email, u.globalRole,
+          u.permission | e.permission | crp.permission AS permission
+     FROM  
+          "UsersView" as u, 
+          "Courses" as c,
+          "CourseRolePermissions" as crp,
+          ${courseRegistrationTable} as e
+     WHERE e.courseID = c.courseID 
+          AND e.userID = u.userID
+          AND e.courseRole = crp.courseRoleID
      `
 }
-export function CourseUsersView(courseRegistrationTable=`"CourseRegistration"`){
+/** NOTE: this is almost the same as CourseUsersView, but now non-existent rows are added with nulls in the right locations */
+export function CourseUsersViewAll(courseRegistrationTable=`"CourseRegistration"`){
      return `
      WITH allButPermissions AS (
           SELECT 
@@ -121,25 +121,6 @@ export function CourseUsersView(courseRegistrationTable=`"CourseRegistration"`){
      `
 }
 
-/** NOTE: this is almost the same as CourseUsers, but now there is no filler for non-existent rows, to be used specifically with some table */
-export function CourseUsersSingle(courseRegistrationTable=`"CourseRegistration"`){
-
-     return `
-     SELECT 
-          c.courseID, u.userID, e.courseRole,
-          u.userName, u.email, u.globalRole,
-          u.permission | e.permission | crp.permission AS permission,
-          e.courseRole
-     FROM  
-          "UsersView" as u, 
-          "Courses" as c,
-          "CourseRolePermissions" as crp,
-          ${courseRegistrationTable} as e
-     WHERE e.courseID = c.courseID 
-          AND e.userID = u.userID
-          AND e.courseRole = crp.courseRoleID
-  `
-}
 
 
 /*
@@ -205,7 +186,7 @@ export function MentionsView(mentionsTable=`"Mentions"`){
           SELECT m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
                  cv.submissionID, cv.courseID, cu.userID, cu.userName, 
                  cu.email, cu.globalRole, cu.courseRole, cu.permission
-          FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersView" as cu
+          FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersViewAll" as cu
           WHERE m.commentID = cv.commentID
             AND m.userID = cu.userID
             AND cv.courseID = cu.courseID

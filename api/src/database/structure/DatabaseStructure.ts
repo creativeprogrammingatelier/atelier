@@ -1,5 +1,5 @@
 import {end, pool, permissionBits, getClient, pgDB} from "../HelperDB";
-import {usersView, CourseRegistrationView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersView} from "../ViewsDB";
+import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
 import { isPostgresError, PostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
 
@@ -245,16 +245,16 @@ CREATE VIEW "CommentThreadRefs" AS (
 CREATE VIEW "UsersView" AS (
 	${usersView()}
 );
-CREATE VIEW "CourseRegistrationView" AS (
-	${CourseRegistrationView()}
+CREATE VIEW "CourseUsersView" AS (
+	${CourseUsersView()}
 );
 
 CREATE VIEW "CoursesView" AS (
 	${CoursesView()}
 );
 
-CREATE VIEW "CourseUsersView" AS (
-	${CourseUsersView()}
+CREATE VIEW "CourseUsersViewAll" AS (
+	${CourseUsersViewAll()}
 );
 
 CREATE VIEW "SubmissionsView" AS (

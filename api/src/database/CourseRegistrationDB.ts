@@ -5,12 +5,13 @@ import { CoursePartial } from "../../../models/api/Course";
 import { User } from "../../../models/database/User";
 import { Permission } from "../../../models/api/Permission";
 import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
-import { CourseUsersSingle} from "./ViewsDB";
+
 import { CourseUser, CourseUserToAPI, APICourseUser } from "../../../models/database/CourseUser";
 import { getEnum } from "../../../models/enums/enumHelper";
 import { globalRole } from "../../../models/enums/globalRoleEnum";
 import { courseRole } from "../../../models/enums/courseRoleEnum";
 import { InvalidDatabaseResponseError } from "./DatabaseErrors";
+import { CourseUsersView } from "./ViewsDB";
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
@@ -34,7 +35,7 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 			userID,
 			client = pool
 		} = user
-		const result = await CourseRegistrationDB.getSubset(courseIDs, [noNull(userID)], params)
+		const result = await CourseRegistrationDB.getSubset(courseIDs, [noNull(userID)], false, params)
 		result.forEach(item => {
 			const id = item.courseID;
 			mapping[id] = item.permission
@@ -56,14 +57,14 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 	 * @param users a subset of users to return for
 	 * @param params 
 	 */
-	static async getSubset(courses : string[] | undefined, users : string[] | undefined, params : DBTools = {}) {
+	static async getSubset(courses : string[] | undefined, users : string[] | undefined, registeredOnly = true, params : DBTools = {}) {
 		const {client = pool} = params
 		if (courses) courses = courses.map<string>(UUIDHelper.toUUID)
 		if (users) users = users.map<string>(UUIDHelper.toUUID)
 
 		return client.query(`
 			SELECT *
-			FROM "CourseUsersView"
+			FROM "${registeredOnly?'CourseUsersView':'CourseUsersViewAll'}"
 			WHERE 
 				($1::uuid[] IS NULL OR courseID = ANY($1))
 			AND ($2::uuid[] IS NULL OR userID = ANY($2))
@@ -81,13 +82,15 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 			courseRole = undefined,
 			permission = undefined,
 
+			registeredOnly = true,
+
 			client = pool
 		}=registration
 		const userid = UUIDHelper.toUUID(userID),
 			courseid = UUIDHelper.toUUID(courseID)
 		return client.query(`
 			SELECT *
-			FROM "CourseUsersView"
+			FROM "${registeredOnly?'CourseUsersView':'CourseUsersViewAll'}"
 			WHERE
 				($1::uuid IS NULL OR userID = $1)
 			AND ($2::uuid IS NULL OR courseID = $2)
@@ -104,25 +107,25 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 	 * return all entries in this table, with permissions set correctly
 	 */
 	 static async getAllEntries(params : DBTools = {}) {
-		return CourseRegistrationDB.getSubset(undefined,undefined,params);
+		return CourseRegistrationDB.getSubset(undefined,undefined,true, params);
 	 }
 
 	/**
 	 * get all users entered in a specific course. permissions set correctly
 	 */
 	static async getEntriesByCourse(courseID : ID64, params : DBTools = {}) {
-		return CourseRegistrationDB.getSubset([courseID],undefined, params)
+		return CourseRegistrationDB.getSubset([courseID],undefined, true, params)
 	}
 
 	/**
 	 * get all courses a user is entered into. permissions set correctly
 	 */
 	static async getEntriesByUser(userID : ID64, params : DBTools = {}) {
-		return 	CourseRegistrationDB.getSubset(undefined, [userID], params)
+		return 	CourseRegistrationDB.getSubset(undefined, [userID], true, params)
 	}
-
+	/** get a single user entry. even if this specific user is not enrolled in this course */
 	static async getSingleEntry(courseID : string, userID : string, params : DBTools = {}){
-		return CourseRegistrationDB.getSubset([courseID], [userID], params).then(one)
+		return CourseRegistrationDB.getSubset([courseID], [userID], false, params).then(one)
 	}
 
 	/**
@@ -149,7 +152,7 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 			VALUES ($1,$2,$3,$4) 
 			RETURNING *
 		)
-		${CourseUsersSingle('insert')}
+		${CourseUsersView('insert')}
 		`, [courseid, userid, role, perm])
 		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
@@ -177,7 +180,7 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		${CourseUsersSingle('update')}
+		${CourseUsersView('update')}
 	 	`, [courseid, userid, role])
 		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
@@ -206,7 +209,7 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		${CourseUsersSingle('update')}
+		${CourseUsersView('update')}
 		 `, [courseid, userid, perm])
 		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
@@ -236,7 +239,7 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		${CourseUsersSingle('update')}
+		${CourseUsersView('update')}
 		`, [courseid, userid, perm])
 		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
@@ -261,7 +264,7 @@ import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 			WHERE courseID=$1 AND userID=$2 
 			RETURNING *
 		)
-		${CourseUsersSingle('delete')}
+		${CourseUsersView('delete')}
 		 `, [courseid, userid])
 		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
