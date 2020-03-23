@@ -2,22 +2,23 @@ import fetch, { Request } from 'node-fetch';
 import crypto from 'crypto';
 import { PluginsDB } from '../database/PluginsDB';
 import { Plugin } from '../../../models/database/Plugin';
+import { WebhookEvent } from '../../../models/enums/webhookEventEnum';
 
 interface WebhookRequest<T> {
-    event: string,
+    event: WebhookEvent,
     payload: T
 }
 
-export function getSubscribedPlugins(courseID: string, event: string) {
+export function getSubscribedPlugins(courseID: string, event: WebhookEvent) {
     return PluginsDB.getRelevantPlugins(courseID, event);
 }
 
-export async function raiseWebhookEvent<T>(courseID: string, event: string, body: T) {
+export async function raiseWebhookEvent<T>(courseID: string, event: WebhookEvent, body: T) {
     const plugins = await getSubscribedPlugins(courseID, event);
     return Promise.all(plugins.map(plugin => postWebhook(plugin, event, body)));
 }
 
-export function createWebhookRequest<T>(plugin: Plugin, event: string, body: T) {
+export function createWebhookRequest<T>(plugin: Plugin, event: WebhookEvent, body: T) {
     const request: WebhookRequest<T> = {
         event,
         payload: body
@@ -35,7 +36,7 @@ export function createWebhookRequest<T>(plugin: Plugin, event: string, body: T) 
     });
 }
 
-async function postWebhook<T>(plugin: Plugin, event: string, body: T) {
+async function postWebhook<T>(plugin: Plugin, event: WebhookEvent, body: T) {
     try {
         const res = await fetch(createWebhookRequest(plugin, event, body));
         if (!res.ok) {

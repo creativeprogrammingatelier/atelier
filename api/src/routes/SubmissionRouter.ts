@@ -18,6 +18,7 @@ import {filterSubmission} from "../helpers/APIFilterHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import { transaction } from '../database/HelperDB';
+import { WebhookEvent } from '../../../models/enums/webhookEventEnum';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -76,7 +77,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     await Promise.all(
         dbFiles
             .filter(f => CODEFILE_EXTENSIONS.includes(path.extname(f.name)))
-            .map(file => raiseWebhookEvent(request.params.courseID, "submission.file", file))
+            .map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
     );
 }));
 
