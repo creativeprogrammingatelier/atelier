@@ -25,7 +25,7 @@ export const COMMENT_THREAD_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 let USER_AUTHORIZATION_KEY: string | undefined = undefined;
 const ADMIN_AUTHORIZATION_KEY = issueToken(ADMIN_ID);
 
-export function setAPITestUserValues(userID : string, userKey : string) {
+export function setAPITestUserValues(userID: string, userKey: string) {
     USER_ID = userID;
     USER_AUTHORIZATION_KEY = userKey;
 }
@@ -74,23 +74,23 @@ export const getCoursesByOwnUser = () => chai.request(app)
 export const getCoursesByOtherUser = () => chai.request(app)
     .get(`/api/course/user/${ADMIN_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
-export const createCourse = (name : string, state : courseState) => chai.request(app)
+export const createCourse = (name: string, state: courseState) => chai.request(app)
     .post(`/api/course`)
-    .send({"name" : name, "state" : state})
-    .set({'Authorization' : USER_AUTHORIZATION_KEY});
-export const updateCourse = (courseID : string, update : {name? : string, state? : courseState}) => chai.request(app)
+    .send({"name": name, "state": state})
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const updateCourse = (courseID: string, update: { name?: string, state?: courseState }) => chai.request(app)
     .put(`/api/course/${courseID}`)
     .send(update)
-    .set({'Authorization' : USER_AUTHORIZATION_KEY});
-export const deleteCourse = (courseID : string) => chai.request(app)
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const deleteCourse = (courseID: string) => chai.request(app)
     .delete(`/api/course/${courseID}`)
-    .set({'Authorization' : USER_AUTHORIZATION_KEY});
-export const registerUserCourse = (courseID : string, userID : string) => chai.request(app)
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const registerUserCourse = (courseID: string, userID: string) => chai.request(app)
     .put(`/api/course/${courseID}/user/${userID}`)
-    .set({'Authorization' : USER_AUTHORIZATION_KEY});
-export const unregisterUserCourse = (courseID : string, userID : string) => chai.request(app)
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const unregisterUserCourse = (courseID: string, userID: string) => chai.request(app)
     .delete(`/api/course/${courseID}/user/${userID}`)
-    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
 
 /** Invite requests */
 export const getInvitesByUserAndCourse = () => chai.request(app)
@@ -108,6 +108,16 @@ export const getInviteTeacher = () => chai.request(app)
 export const getInvite = (INVITE_ID: string) => chai.request(app)
     .get(`/api/invite/${INVITE_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const deleteInviteStudent = () => chai.request(app)
+    .delete(`/api/invite/course/${COURSE_ID}/role/student`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const deleteInviteTA = () => chai.request(app)
+    .delete(`/api/invite/course/${COURSE_ID}/role/TA`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const deleteInviteTeacher = () => chai.request(app)
+    .delete(`/api/invite/course/${COURSE_ID}/role/teacher`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+
 
 /** Permission requests */
 export const getPermission = () => chai.request(app)
@@ -143,7 +153,7 @@ export const getUsers = () => chai.request(app)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
 export const getUsersByCourse = () => chai.request(app)
     .get(`/api/user/course/${COURSE_ID}`)
-    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
 export const getOwnUser1 = () => chai.request(app)
     .get(`/api/user`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
@@ -153,18 +163,43 @@ export const getOwnUser2 = () => chai.request(app)
 export const getOtherUser = () => chai.request(app)
     .get(`/api/user/${ADMIN_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const updateUserName = (name: string) => chai.request(app)
+    .put(`/api/user/`)
+    .send({name})
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const updateUserEmail = (email: string) => chai.request(app)
+    .put(`/api/user/`)
+    .send({email})
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
+
+/** Permissions */
+export const setPermissionsGlobal = (permissions : Permissions) => chai.request(app)
+    .put(`/api/permission/user/${USER_ID}`)
+    .send({permissions})
+    .set({'Authorization' : USER_AUTHORIZATION_KEY, 'Content-Type' : 'application/json'});
+export const setPermissionsCourse = (permissions : Permissions) => chai.request(app)
+    .put(`/api/permission/course/${COURSE_ID}/user/${USER_ID}`)
+    .send({permissions})
+    .set({'Authorization' : USER_AUTHORIZATION_KEY, 'Content-Type' : 'application/json'});
 
 /** Admin requests */
-export const registerCourse = () => chai.request(app)
+export const adminRegisterCourse = () => chai.request(app)
     .put(`/api/course/${COURSE_ID}/user/${USER_ID}`)
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
-export const unregisterCourse = (course = COURSE_ID) => chai.request(app)
+export const adminUnregisterCourse = (course = COURSE_ID) => chai.request(app)
     .delete(`/api/course/${course}/user/${USER_ID}`)
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
-export const coursesToUnregister = () => chai.request(app)
+export const adminCoursesToUnregister = () => chai.request(app)
     .get(`/api/course/user/${USER_ID}`)
-    .set({'Authorization' : ADMIN_AUTHORIZATION_KEY});
-export const setPermissions = (permissions: Permissions) => chai.request(app)
+    .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
+export const adminSetPermissions = (permissions: Permissions) => chai.request(app)
     .put(`/api/permission/user/${USER_ID}`)
     .send({permissions})
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY, 'Content-Type': 'application/json'});
+
+/**
+ * Random string generator
+ * Has some flaws, but good enough for the use case
+ */
+export const randomString = () => Math.random().toString(36).substring(7);
+

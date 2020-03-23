@@ -60,6 +60,8 @@ export async function requireRegistered(userID : string, courseID : string) {
 
     // Check registration
     const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    console.log(courseUser);
+    console.log(courseUser.permission.courseRole);
     if (courseUser.permission.courseRole === courseRole.unregistered) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
 }
 

@@ -7,25 +7,13 @@ import { Snippet } from "../models/api/Snippet";
 import { Submission } from "../models/api/Submission";
 import { User } from "../models/api/User";
 import { CourseUser } from "../models/api/CourseUser";
+import {CourseInvite} from "../models/api/Invite";
+import {courseRole} from "../models/enums/courseRoleEnum";
 
 /**
  * Interface type checking, because this is not built in...
  * Constructor takes any, as it should be able to check any object to match the interface.
  */
-
-// tslint:disable-next-line:no-any
-export function instanceOfCourse(object: any): object is Course {
-    return ('ID' in object
-        && typeof object.ID === 'string'
-        && 'name' in object
-        && typeof object.name === 'string'
-        && 'state' in object
-        && typeof object.state === 'string'
-        && 'creator' in object
-        && instanceOfUser(object.creator)
-        && 'currentUserPermission' in object
-        && instanceOfPermission(object.currentUserPermission));
-}
 
 // tslint:disable-next-line:no-any
 export function instanceOfCourseUser(object : any): object is CourseUser {
@@ -84,7 +72,6 @@ export function instanceOfFile(object: any): object is File {
 
 // tslint:disable-next-line:no-any
 export function instanceOfPermission(object: any): object is Permission {
-    console.log(object)
     return ('globalRole' in object
         && typeof object.globalRole === 'string'
         && 'permissions' in object
@@ -95,7 +82,6 @@ export function instanceOfPermission(object: any): object is Permission {
         );
 }
 
-// TODO additional type checking depending on what search will contain
 // tslint:disable-next-line:no-any
 export function instanceOfSearch(object: any) {
     return ('comments' in object
@@ -165,15 +151,7 @@ export function instanceOfCoursePartial(object: any) : object is CoursePartial {
     )
 }
 
-/*
- * 
- * @param object userID: string,
-	courseID: string,
-	userName: string,
-	email: string,
-	permission : Permission
-}
- */
+// tslint:disable-next-line:no-any
 export function instanceOfCourseRegistration(object : any) : object is CourseUser {
     return ('courseID' in object
         && typeof object.courseID === 'string'
@@ -185,5 +163,20 @@ export function instanceOfCourseRegistration(object : any) : object is CourseUse
         && typeof object.email === 'string'
         && 'permission' in object
         && instanceOfPermission(object.permission)
+    )
+}
+
+// tslint:disable-next-line:no-any
+export function instanceOfInvite(object : any) : object is CourseInvite {
+    return ('inviteID' in object
+        && typeof object.inviteID === 'string'
+        && 'creatorID' in object
+        && typeof object.creatorID === 'string'
+        && 'courseID' in object
+        && typeof object.courseID === 'string'
+        && 'type' in object
+        && typeof object.type === 'string'
+        && 'joinRole' in object
+        && typeof object.joinRole === 'string'
     )
 }

@@ -122,6 +122,7 @@ submissionRouter.get('/:submissionID', capture(async(request: Request, response:
     const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
 
     // Requires registration in the course
+    console.log("checkung submission erolled");
     await requireRegistered(currentUserID, submission.references.courseID);
 
     response.status(200).send(submission);
