@@ -51,12 +51,12 @@ export function CommentCreator({placeholder, transparent, round, allowRestricted
 		}
 	};
 
-	return <Form className={"commentCreator" + (round ? " commentCreatorRound" : "") + (restricted ? " commentCreatorRestricted" : "") + (transparent ? " bg-transparent" : "")}>
+	return <Form className={"commentCreator" + (round ? " commentCreatorRound" : "") + (restricted ? " restricted" : "") + (transparent ? " bg-transparent" : "")}>
 		<Form.Group>
 			<InputGroup className={"bg-transparent" + (round ? " pl-1" : "")}>
 				<Form.Control type="text" placeholder={placeholder} className={"bg-transparent" + (round ? " pl-2" : "")} value={comment} onChange={handleCommentChange} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}/>
 				<InputGroup.Append>
-					{allowRestricted && <Button onClick={() => setRestricted(!restricted)}>{restricted ? <FiEye size={14} color="#FFFFFF"/> : <FiEyeOff size={14} color="#FFFFFF"/>}</Button>}
+					{allowRestricted && <Button onClick={() => setRestricted(!restricted)}>{restricted ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>}
 					<Button onClick={handleCommentSubmit} disabled={sending}><FiSend size={14} color="#FFFFFF"/></Button>
 				</InputGroup.Append>
 			</InputGroup>
