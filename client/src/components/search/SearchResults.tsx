@@ -38,7 +38,7 @@ export function SearchResults({results}: SearchResultProperties) {
 					:
 					`/submission/${comment.submission.ID}/${comment.comment.references.fileID}/comments#${comment.comment.references.commentThreadID}`
 				}
-				time={TimeHelper.toDateString(TimeHelper.fromString(comment.comment.date))}
+				time={TimeHelper.toDateString(TimeHelper.fromString(comment.comment.created))}
 			/>)}
 		</SearchResultSection>}
 		{results.files.length > 0 && <SearchResultSection header="Files" query="">

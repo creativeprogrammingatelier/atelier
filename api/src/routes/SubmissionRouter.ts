@@ -42,9 +42,11 @@ submissionRouter.get('/course/:courseID', capture(async(request: Request, respon
  * Create a new submission containing the files submitted in the body of the request
  */
 submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capture(async (request, response) => {
+    const userID = await getCurrentUserID(request);
+    await requireRegistered(userID, request.params.courseID);
+    
     const files = request.files as Express.Multer.File[];
     validateProjectServer(request.body["project"], files);
-    const userID = await getCurrentUserID(request);
 
     const { submission, dbFiles } = await transaction(async client => {
         const submission = await SubmissionDB.addSubmission({ 
@@ -74,7 +76,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     await Promise.all(
         dbFiles
             .filter(f => CODEFILE_EXTENSIONS.includes(path.extname(f.name)))
-            .map(file => raiseWebhookEvent("submission.file", file))
+            .map(file => raiseWebhookEvent(request.params.courseID, "submission.file", file))
     );
 }));
 

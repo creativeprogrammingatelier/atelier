@@ -7,52 +7,61 @@ import { Fetch } from './FetchHelper';
  */
 export default class UserHelper {
 
-	static getStudents = (onSuccess: Function, onFailure: Function) => {
+	static getStudents = (
+		onSuccess: (students : User[]) => void, 
+		onFailure: Function) => {
 		Fetch.fetch(`users/students`, {
 			method: 'GET'
 		}).then((response) => {
 			response.json().then((json: User[]) => {
 				onSuccess(json);
 			});
-		}).catch(function(error) {
+		}).catch((error) => {
 			console.error(error);
 			onFailure(error);
 		});
 	};
 
-	static getUsers = (onSuccess: Function, onFailure: Function) => {
+	static getUsers = (
+		onSuccess: (students : User[]) => void, 
+		onFailure: Function) => {
 		Fetch.fetch(`users`, {
 			method: 'GET'
 		}).then((response) => {
 			response.json().then((json: User[]) => {
 				onSuccess(json);
 			});
-		}).catch(function(error) {
+		}).catch((error) => {
 			console.error(error);
 			onFailure(error);
 		});
 	};
 
-	static deleteUser = (userId: any, onSuccess: Function, onFailure: Function) => {
+	static deleteUser = (
+		userId: any, 		
+		onSuccess: (students : User[]) => void, 
+		onFailure: Function) => {
 		Fetch.fetch(`users/${userId}`, {
 			method: 'delete'
 		}).then((response) => {
 			response.json().then((res: any) => {
 				onSuccess(res);
 			});
-		}).catch(function(error) {
+		}).catch((error) => {
 			console.error(error);
 			onFailure(error);
 		});
 	};
 
-	static updateUser = (user: any, onSuccess: Function, onFailure: Function) => {
+	static updateUser = (user: any, 
+		onSuccess: () => void, 
+		onFailure: Function) => {
 		Fetch.fetch(`users`, {
             body: JSON.stringify({ user })
         }).then((response) => {
 			onSuccess();
 
-		}).catch(function(error) {
+		}).catch((error) => {
 			onFailure();
 		});
 

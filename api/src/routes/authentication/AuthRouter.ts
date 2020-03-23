@@ -11,6 +11,10 @@ import { capture } from '../../helpers/ErrorHelper';
 import { getSamlRouter } from './SamlRouter';
 import { loginRouter } from './LoginRouter';
 import { LoginProvider } from '../../../../models/api/LoginProvider';
+import { UserDB } from '../../database/UserDB';
+import { PluginsDB } from '../../database/PluginsDB';
+import { NotFoundDatabaseError } from '../../database/DatabaseErrors';
+import { one } from '../../database/HelperDB';
 
 export const authRouter = express.Router();
 
@@ -45,24 +49,33 @@ authRouter.get('/logout', (request, response) => {
 });
 
 /** 
- * Helper that converts a certificate into a public key, 
- * or does nothing if it is not a certificate 
+ * Helper that converts a certificate into a public key
+ * and removes invalid spacing
  */
-function certToPublicKey(keyOrCertificate: string) {
+function preparePublicKey(keyOrCertificate: string) {
     return keyOrCertificate
         .replace("-----BEGIN CERTIFICATE-----", "-----BEGIN PUBLIC KEY-----")
-        .replace("-----END CERTIFICATE-----", "-----END PUBLIC KEY-----");
+        .replace("-----END CERTIFICATE-----", "-----END PUBLIC KEY-----")
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .join('\n');
 }
 
 /** Get an access token for a plugin */
 authRouter.get('/token', capture(async (request, response) => {
     const token = getToken(request);
     const { iss: userID } = decodeToken<{ iss: string }>(token);
-    const plugin = config.plugins.find(p => p.userID === userID);
-    if (plugin === undefined) {
-        throw new AuthError("plugin.unknown", "This plugin has not been registered with Atelier.");
+    let plugin = undefined;
+    try {
+        plugin = await PluginsDB.filterPlugins({ pluginID: userID }).then(one);
+    } catch (err) {
+        if (err instanceof NotFoundDatabaseError) {
+            throw new AuthError("plugin.unknown", "This plugin has not been registered with Atelier.");
+        } else {
+            throw err;
+        }
     }
-    const { exp, iat } = await verifyToken(token, certToPublicKey(plugin.publicKey), {
+    const { exp, iat } = await verifyToken(token, preparePublicKey(plugin.publicKey), {
         algorithms: [ "RS256" ],
         issuer: userID
     });

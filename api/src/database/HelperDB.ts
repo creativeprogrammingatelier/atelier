@@ -86,6 +86,19 @@ export function toBin(n : number | undefined, size = permissionBits) {
 	if (n === undefined) return undefined
 	return (n*1).toString(2).padStart(size, '0')
 }
+
+export function toDec(n : string) : number {
+	let x = 0;
+	([...n]).forEach((digit : string) => {
+		if (digit !== '0' && digit !== '1'){
+			throw new Error("a binary string should only contain 1s and 0s, but found: "+digit)
+		}
+		x = x*2+Number(digit)
+	});
+	return x;
+}
+
+
 /**
  * function to make sure that an @param obj has some properties.
  *  
@@ -100,6 +113,17 @@ export function checkAvailable(required : string[], obj : {}){
 		}
 	});
 }
+/**
+ * check if some object is null, if this is the case, throw an error. otherwise, return it.
+ * @param obj some object that is expected to not be null
+ */
+export function noNull<T>(obj : T | undefined | null) : T{
+	if (obj === undefined || obj === null){
+		throw new Error("object was expected to not be null, but was")
+	}
+	return obj;
+}
+
 /**
  * check if an object has some key.
  * 

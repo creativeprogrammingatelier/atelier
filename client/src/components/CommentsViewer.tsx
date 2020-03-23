@@ -4,13 +4,12 @@ import CommentView from './CommentView';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import CommentCreator from './CommentCreator';
-//@ts-ignore
 import io from 'socket.io-client';
 import { Comment } from '../../../models/api/Comment';
 import {File} from '../../../models/api/File';
 
-type CommentViewerProps = {updateCurrentLineNumber: Function, currentLineNumber: number, file: File}
-type CommentsViewerState = {file: File, currentLineNumber: number, comments: Comment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function}
+interface CommentViewerProps {updateCurrentLineNumber: Function, currentLineNumber: number, file: File}
+interface CommentsViewerState {file: File, currentLineNumber: number, comments: Comment[], commentCreatorToggle: boolean, updateCurrentLineNumber: Function}
 
 class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerState> {
 	private readonly commentRefreshFrequency = 1000;
@@ -43,15 +42,15 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 			let newComments: Comment[] | undefined = this.state.comments;
 			if (data.type === 'put') {
 				newComments.push(data.comment);
-				let sortedComments = newComments.sort(CommentsViewer.sortComments);
+				const sortedComments = newComments.sort(CommentsViewer.sortComments);
 				this.setState({
 					comments: sortedComments
 				});
 			} else {
 				newComments = CommentsViewer.removeComment(newComments, data.comment);
-				if (newComments != undefined) {
-					let newCommentsDefined: Comment[] = newComments;
-					let sortedComments = newCommentsDefined.sort(CommentsViewer.sortComments);
+				if (newComments !== undefined) {
+					const newCommentsDefined: Comment[] = newComments;
+					const sortedComments = newCommentsDefined.sort(CommentsViewer.sortComments);
 					this.setState({
 						comments: sortedComments
 					});
@@ -71,8 +70,8 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 	}
 
 	static sortComments(a: Comment, b: Comment) {
-		let aDate = new Date(a.date!);
-		let bDate = new Date(b.date!);
+		const aDate = new Date(a.created!);
+		const bDate = new Date(b.created!);
 
 		if (aDate < bDate) {
 			return 1;
@@ -92,7 +91,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 
 	fetchComments = (hideCommentCreator?: boolean) => {
 		CommentHelper.getFileComments(this.state.file.ID, (comments: Comment[]) => {
-				let sortedComments = comments.sort(CommentsViewer.sortComments);
+				const sortedComments = comments.sort(CommentsViewer.sortComments);
 				this.setState({
 					comments: sortedComments,
 					commentCreatorToggle: (hideCommentCreator) ? false : this.state.commentCreatorToggle
@@ -102,7 +101,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 			, (error: Error) => console.log(error));
 	};
 
-	deleteComment = (commentId: String) => {
+	deleteComment = (commentId: string) => {
 		CommentHelper.deleteComment(commentId, () => this.fetchComments, () => alert('Failed to delete Comment'));
 	};
 
@@ -114,7 +113,7 @@ class CommentsViewer extends React.Component<CommentViewerProps, CommentsViewerS
 	}
 
 	populate = () => {
-		let comments = [];
+		const comments = [];
 		if (this.state.comments != null) {
 			for (const comment of this.state.comments) {
 				comments.push(

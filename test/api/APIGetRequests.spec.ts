@@ -19,7 +19,7 @@ import {UserDB} from '../../api/src/database/UserDB';
 
 chai.use(chaiHttp);
 
-let USER_ID = "";
+const USER_ID = 'AAAAAAAAAAAAAAAAAAAABg';
 /** ID of an admin account to set permissions on the user */
 const ADMIN_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 
@@ -31,7 +31,7 @@ const FILE_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 const COMMENT_THREAD_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 
 /** Authorization keys */
-let USER_AUTHORIZATION_KEY: string | undefined = undefined;
+const USER_AUTHORIZATION_KEY = issueToken(USER_ID);
 const ADMIN_AUTHORIZATION_KEY = issueToken(ADMIN_ID);
 
 /** User requests */
@@ -103,9 +103,6 @@ const setPermissions = (permissions: any) => chai.request(app)
 
 describe("API permissions", () => {
     before(async () => {
-        USER_ID = (await UserDB.filterUser({userName: 'test user', limit: 1}))[0].ID;
-        USER_AUTHORIZATION_KEY = issueToken(USER_ID);
-
         await unregisterCourse();
         await setPermissions({
             "addCourses": false,

@@ -1,7 +1,7 @@
 /** Contains functions to access all API endpoints */
 
 import {Fetch} from "./FetchHelper";
-import {CommentThread} from "../../models/api/CommentThread";
+import {CommentThread, CreateCommentThread} from "../../models/api/CommentThread";
 import {Course, CoursePartial} from "../../models/api/Course";
 import {Submission} from "../../models/api/Submission";
 import {User} from "../../models/api/User";
@@ -14,8 +14,18 @@ import {SearchResult} from '../../models/api/SearchResult';
 import {Mention} from '../../models/api/Mention';
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {threadState} from "../../models/enums/threadStateEnum";
-import {CourseRegistrationOutput} from "../../models/database/CourseRegistration";
+import {CourseUser} from "../../models/api/CourseUser";
 import {courseState} from "../../models/enums/courseStateEnum";
+import {Plugin} from '../../models/api/Plugin';
+
+// Helpers
+const jsonBody = <T>(method: string, body: T) => ({
+    method,
+    body: JSON.stringify(body),
+    headers: {"Content-Type": "application/json"}
+});
+const postJson = <T>(body: T) => jsonBody("POST", body);
+const putJson = <T>(body: T) => jsonBody("PUT", body);
 
 // Courses
 export function getCourse(courseID: string, doCache?: boolean) {
@@ -28,18 +38,10 @@ export function getUserCourses(userId: string, doCache?: boolean) {
 	return Fetch.fetchJson<Course[]>(`/api/course/user/${userId}`, undefined, doCache);
 }
 export function createCourse(course: {name: string, state: string}, doCache?: boolean) {
-	return Fetch.fetchJson<Course>("/api/course", {
-		method: "POST",
-		body: JSON.stringify(course),
-		headers: {"Content-Type": "application/json"}
-	}, doCache);
+	return Fetch.fetchJson<Course>("/api/course", postJson(course), doCache);
 }
 export function updateCourse(courseID : string, update : {name? : string, state? : courseState}, doCache? : boolean) {
-	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, {
-		method : "PUT",
-		body : JSON.stringify(update),
-		headers : {"Content-Type" : "application/json"}
-	}, doCache);
+	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update), doCache);
 }
 
 // Users
@@ -50,14 +52,10 @@ export function getUser(userId: string, doCache?: boolean) {
 	return Fetch.fetchJson<User>(`/api/user/${userId}`, undefined, doCache);
 }
 export function setUser(body : {name? : string, email? : string}, doCache? : boolean) {
-	return Fetch.fetchJson<User>(`/api/user/`, {
-		method : "PUT",
-		body : JSON.stringify(body),
-		headers : {"Content-Type" : "application/json"}
-	}, doCache);
+	return Fetch.fetchJson<User>(`/api/user/`, putJson(body), doCache);
 }
 export function getUsersByCourse(courseID : string, doCache? : boolean) {
-	return Fetch.fetchJson<CourseRegistrationOutput[]>(`/api/user/course/${courseID}`, undefined, doCache);
+	return Fetch.fetchJson<CourseUser[]>(`/api/user/course/${courseID}`, undefined, doCache);
 }
 
 // Submissions
@@ -115,48 +113,31 @@ export function getProjectComments(submissionID: string, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}`, undefined, doCache);
 }
 export function getRecentComments(submissionID: string, doCache?: boolean) {
-	return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`, undefined, doCache);
+	return Fetch.fetchJson<CommentThread[]>(
+        `/api/commentThread/submission/${submissionID}/recent`, 
+        undefined, 
+        doCache
+    );
 }
 export function setCommentThreadVisibility(commentThreadID : string, visible : boolean, doCache? : boolean) {
-	return Fetch.fetchJson<CommentThread>(`/api/commentThread/${commentThreadID}`, {
-		method : "PUT",
-		body : JSON.stringify({ visibility : visible ? "public" : "private"}),
-		headers : {"Content-Type" : "application/json"}
-	}, doCache);
+	return Fetch.fetchJson<CommentThread>(
+        `/api/commentThread/${commentThreadID}`, 
+        putJson({ visibility : visible ? "public" : "private" }),
+        doCache
+    );
 }
 
-interface CommentThreadProperties {
-	contextBefore? : string,
-	snippetBody?: string,
-	contextAfter? : string,
-	lineStart?: number,
-	charStart?: number,
-	lineEnd?: number,
-	charEnd?: number,
-	visibilityState?: threadState,
-	commentBody: string,
-	submissionID: string
+export function createFileCommentThread(fileID: string, thread: CreateCommentThread, doCache?: boolean) {
+	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread), doCache);
 }
-export function createFileCommentThread(fileID: string, thread: CommentThreadProperties, doCache?: boolean) {
-	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, {
-		method: "POST",
-		body: JSON.stringify(thread),
-		headers: {"Content-Type": "application/json"}
-	}, doCache);
-}
-export function createSubmissionCommentThread(submissionID: string, body: {commentBody: string}, doCache?: boolean) {
-	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, {
-		method: "POST",
-		body: JSON.stringify(body),
-		headers: {"Content-Type": "application/json"}
-	}, doCache);
+export function createSubmissionCommentThread(
+        submissionID: string, 
+        thread: {commentBody: string, visiblityState?: string}, 
+        doCache?: boolean) {
+	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread), doCache);
 }
 export function createComment(commentThreadID: string, comment: {commentBody: string}, doCache?: boolean) {
-	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, {
-		method: "PUT",
-		body: JSON.stringify(comment),
-		headers: {"Content-Type": "application/json"}
-	}, doCache);
+	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson(comment), doCache);
 }
 
 // Mentions
@@ -172,7 +153,11 @@ export function search(query: string, limit = 20, offset = 0, doCache?: boolean)
 	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`, undefined, doCache);
 }
 export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0, doCache?: boolean) {
-	return Fetch.fetchJson<User[]>(`/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`, undefined, doCache);
+	return Fetch.fetchJson<User[]>(
+        `/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`, 
+        undefined, 
+        doCache
+    );
 }
 
 // Auth
@@ -188,11 +173,10 @@ export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
 }
 export function setPermission(courseID : string, userID : string, permissions : { permissions : Permissions}, doCache?: boolean) {
-	return Fetch.fetchJson<CourseRegistrationOutput>(`/api/permission/course/${courseID}/user/${userID}`, {
-		method : "PUT",
-		body: JSON.stringify(permissions),
-		headers : {"Content-Type" : "application/json"}
-	}, doCache);
+	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, 
+        putJson(permissions), 
+        doCache
+    );
 }
 
 // Invites
@@ -205,8 +189,22 @@ export function getInvite(courseID : string, role : string, doCache? : boolean) 
 }
 
 export function deleteInvite(courseID : string, role : string, doCache?: boolean) {
-	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {
-		method: "DELETE",
-		headers: {"Content-Type": "application/json"}
-	}, doCache);
+	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, { method: "DELETE" }, doCache);
+}
+
+// Plugins
+export function getPlugins(doCache?: boolean) {
+    return Fetch.fetchJson<Plugin>('/api/plugin', undefined, doCache);
+}
+
+export function createPlugin(plugin: Partial<Plugin>, doCache?: boolean) {
+    return Fetch.fetchJson<Plugin>('/api/plugin', postJson(plugin), doCache);
+}
+
+export function updatePlugin(plugin: Partial<Plugin> & { pluginID: string }, doCache?: boolean) {
+    return Fetch.fetchJson<Plugin>(`/api/plugin/${plugin.pluginID}`, putJson(plugin), doCache);
+}
+
+export function deletePlugin(pluginID: string, doCache?: boolean) {
+    return Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, { method: "DELETE" }, doCache);
 }

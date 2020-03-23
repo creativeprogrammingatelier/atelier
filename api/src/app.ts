@@ -14,7 +14,7 @@ import logger from 'morgan';
 
 // API routes
 import { authRouter } from './routes/authentication/AuthRouter';
-import { adminRouter } from './routes/AdminRouter';
+import { pluginRouter } from './routes/PluginRouter';
 import { courseRouter } from './routes/CourseRouter';
 import { fileRouter } from './routes/FileRouter';
 import { indexRouter } from './routes/IndexRouter';
@@ -62,7 +62,6 @@ app.use(express.static(path.join(__dirname, '../../client/')));
 
 // Define all API endpoints
 app.use('/api/auth', authRouter);
-app.use('/api/admin', adminRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
@@ -70,6 +69,7 @@ app.use('/api/file', fileRouter);
 app.use('/api/invite', inviteRouter);
 app.use('/api/mentions', mentionsRouter);
 app.use('/api/permission', permissionRouter);
+app.use('/api/plugin', pluginRouter);
 app.use('/api/role', roleRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);

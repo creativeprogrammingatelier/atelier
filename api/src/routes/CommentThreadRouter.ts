@@ -7,7 +7,7 @@ import {threadState} from "../../../models/enums/threadStateEnum";
 import {ThreadDB} from "../database/ThreadDB";
 import {SnippetDB} from "../database/SnippetDB";
 
-import {CommentThread} from "../../../models/api/CommentThread";
+import {CommentThread, CreateCommentThread} from "../../../models/api/CommentThread";
 import {capture} from "../helpers/ErrorHelper";
 import {FileDB} from "../database/FileDB";
 import {CommentDB} from "../database/CommentDB";
@@ -23,6 +23,8 @@ import {
 import {filterCommentThread} from "../helpers/APIFilterHelper";
 import {getMentions} from '../helpers/MentionsHelper';
 import {MentionsDB} from '../database/MentionsDB';
+import { readFileAsString } from '../helpers/FilesystemHelper';
+import { getContextLines } from '../../../helpers/SnippetHelper';
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -189,32 +191,34 @@ commentThreadRouter.post('/submission/:submissionID', capture(async (request, re
 commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
     const fileID = request.params.fileID;
     const currentUserID = await getCurrentUserID(request);
+    const ct = request.body as CreateCommentThread;
 
     // User should be registered in course
     await requireRegisteredFileID(currentUserID, fileID);
 
     const commentThread = await transaction(async client => {
-        //const snippetContext = getCommentLines()
-
-        // Snippet creation
-        let snippetID: string | undefined;
-        if (request.body.snippetBody === undefined) {
+        let snippetID: string;
+        if (ct.snippet === undefined) {
             snippetID = await SnippetDB.createNullSnippet({client});
         } else {
+            const file = await FileDB.getFileByID(fileID, {client});
+            const fileContent = await readFileAsString(file.name);
+            const { contextBefore, body, contextAfter } = 
+                getContextLines(fileContent, ct.snippet.lineStart, ct.snippet.lineEnd);
             snippetID = await SnippetDB.addSnippet({
-                lineStart: request.body.lineStart,
-                charStart: request.body.charStart,
-                lineEnd: request.body.lineEnd,
-                charEnd: request.body.charEnd,
-                contextBefore : request.body.contextBefore,
-                body: request.body.snippetBody,
-                contextAfter : request.body.contextAfter,
+                lineStart: ct.snippet.lineStart,
+                charStart: ct.snippet.charStart,
+                lineEnd: ct.snippet.lineEnd,
+                charEnd: ct.snippet.charEnd,
+                contextBefore,
+                body,
+                contextAfter,
                 client
             });
         }
 
         // Thread creation
-        const submissionID: string = request.body.submissionID;
+        const submissionID: string = ct.submissionID;
         return createCommentThread(request, client, snippetID, fileID, submissionID);
     });
 

@@ -3,7 +3,7 @@ interface EnumType {
 	[id : string] : string
 }
 
-export function getEnum<T >(enumer : T, item : string) {
+export function getEnum<T>(enumer : T, item : string) {
 	if (checkEnum(enumer, item)){
 		return enumer[item];
 	} else {

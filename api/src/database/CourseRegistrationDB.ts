@@ -1,14 +1,16 @@
-import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools, permissionBits } from "./HelperDB";
-
-import {CourseRegistration, convertCourseReg, DBCourseRegistration, DBAPICourseRegistration, courseRegToAPI, APICourseRegistration} from '../../../models/database/CourseRegistration';
+import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools, permissionBits, noNull } from "./HelperDB";
 import {CourseRoleDB} from './CourseRoleDB'
 import { UUIDHelper, ID64 } from "../helpers/UUIDHelper";
 import { CoursePartial } from "../../../models/api/Course";
 import { User } from "../../../models/database/User";
-import { APIPermission } from "../../../models/database/RolePermission";
+import { Permission } from "../../../models/api/Permission";
 import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
-import { CourseRegistrationView} from "./ViewsDB";
-import { CourseUser, convertCourseUser } from "../../../models/database/CourseUser";
+import { CourseUsersSingle} from "./ViewsDB";
+import { CourseUser, CourseUserToAPI, APICourseUser } from "../../../models/database/CourseUser";
+import { getEnum } from "../../../models/enums/enumHelper";
+import { globalRole } from "../../../models/enums/globalRoleEnum";
+import { courseRole } from "../../../models/enums/courseRoleEnum";
+import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 /**
  * courseID, userID, role, permission
  * @Author Rens Leendertz
@@ -16,6 +18,12 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 
  export class CourseRegistrationDB {
 
+	/**
+	 * add info about roles & permissions to a list of courses.
+	 * @param partials a course without a currentUserPermissions object
+	 * @param user the user that is requesting its permissions
+	 * @param params extra params in case a client is used
+	 */
 	static async addPermissionsCourse(partials : CoursePartial[], user: User, params : DBTools = {}){
 		checkAvailable(['userID'], user)
 		const courseIDs = partials.map(part => part.ID)
@@ -26,17 +34,16 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 			userID,
 			client = pool
 		} = user
-		const result = await CourseRegistrationDB.getSubset(courseIDs, [userID!], params)
+		const result = await CourseRegistrationDB.getSubset(courseIDs, [noNull(userID)], params)
 		result.forEach(item => {
 			const id = item.courseID;
-			const obj :APICourseRegistration= {role:item.role, permissions:item.permission}
-			mapping[id] = obj
+			mapping[id] = item.permission
 		});
 		const total : APICourse[] = partials.map(part => {
 			if (!(part.ID in mapping)){
-				return coursePartialToAPI(part, {role:'unauthorised', permissions:0})
+				throw new InvalidDatabaseResponseError("getSubset somoehow did not return entries for a requested courseID.")
 			}
-			return coursePartialToAPI(part, mapping[part.ID] as APIPermission)
+			return coursePartialToAPI(part, mapping[part.ID] as Permission)
 		})
 		return total
 	}
@@ -49,18 +56,18 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 	 * @param users a subset of users to return for
 	 * @param params 
 	 */
-	static async getSubset(courses : string[] | undefined, users : string[] | undefined, params : DBTools = {}){
+	static async getSubset(courses : string[] | undefined, users : string[] | undefined, params : DBTools = {}) {
 		const {client = pool} = params
 		if (courses) courses = courses.map<string>(UUIDHelper.toUUID)
 		if (users) users = users.map<string>(UUIDHelper.toUUID)
 
 		return client.query(`
 			SELECT *
-			FROM "CourseRegistrationViewAll"
+			FROM "CourseUsersView"
 			WHERE 
 				($1::uuid[] IS NULL OR courseID = ANY($1))
 			AND ($2::uuid[] IS NULL OR userID = ANY($2))
-		`, [courses, users]).then(extract).then(map(convertCourseReg))
+		`, [courses, users]).then(extract).then(map(CourseUserToAPI))
 	}
 
 	static async filterCourseRegistration(registration : CourseUser){
@@ -90,7 +97,7 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 			AND ($6::text IS NULL OR courseRole =$6)
 			AND ($7::bit(${permissionBits}) IS NULL OR (permission & $7) = $7)
 		`, [userid, courseid, userName, email, globalRole, courseRole, toBin(permission)])
-		.then(extract).then(map(convertCourseUser))
+		.then(extract).then(map(CourseUserToAPI))
 	}
 
 	/**
@@ -119,14 +126,16 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 	}
 
 	/**
-	 * add a new entry, all is required but permission. This defaults to no elevated permissions.
+	 * add a new entry.
+	 * courseID, userID and courseRole are required. permission will default to no elevation
+	 * others will be ignored.
 	 */
-	static async addEntry(entry : CourseRegistration){
-		checkAvailable(['courseID','userID','role'], entry);
+	static async addEntry(entry : CourseUser){
+		checkAvailable(['courseID','userID','courseRole'], entry);
 		const {
 			courseID,
 			userID,
-			role,
+			courseRole: role,
 			permission = 0,
 
 			client =pool
@@ -140,9 +149,9 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 			VALUES ($1,$2,$3,$4) 
 			RETURNING *
 		)
-		${CourseRegistrationView('insert')}
+		${CourseUsersSingle('insert')}
 		`, [courseid, userid, role, perm])
-		.then(extract).then(map(convertCourseReg)).then(one)
+		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
 
 	/**
@@ -150,12 +159,12 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 	 *
 	 * permission field will be ignored
 	 */
-	static async updateRole(entry : CourseRegistration){
-		checkAvailable(['courseID','userID','role'], entry)
+	static async updateRole(entry : CourseUser){
+		checkAvailable(['courseID','userID','courseRole'], entry)
 		const {
 			courseID,
 			userID,
-			role,
+			courseRole: role,
 
 			client = pool
 		} = entry;
@@ -168,9 +177,9 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		${CourseRegistrationView('update')}
+		${CourseUsersSingle('update')}
 	 	`, [courseid, userid, role])
-		.then(extract).then(map(convertCourseReg)).then(one)
+		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
 
 	/**
@@ -178,7 +187,7 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 	 * The given field will be unioned with the current state.
 	 * the role field will be ignored, others are mandatory.
 	 */
-	static async addPermission(entry : CourseRegistration){
+	static async addPermission(entry : CourseUser){
 		checkAvailable(['courseID','userID','permission'], entry)
 		const {
 			courseID,
@@ -197,9 +206,9 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		${CourseRegistrationView('update')}
+		${CourseUsersSingle('update')}
 		 `, [courseid, userid, perm])
-		.then(extract).then(map(convertCourseReg)).then(one)
+		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
 
 	/**
@@ -208,7 +217,7 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 	 * A user will keep the permissions associated with its role. these cannot be removed.
 	 * the role field will be ignored, others are mandatory.
 	 */
-	static async removePermission(entry : CourseRegistration){
+	static async removePermission(entry : CourseUser){
 		checkAvailable(['courseID','userID','permission'], entry)
 		const {
 			courseID,
@@ -227,16 +236,16 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 			WHERE courseID=$1 AND userID=$2
 			RETURNING *
 		)
-		${CourseRegistrationView('update')}
+		${CourseUsersSingle('update')}
 		`, [courseid, userid, perm])
-		.then(extract).then(map(convertCourseReg)).then(one)
+		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
 
 	/**
 	 * remove a user from a course. 
 	 * permission and role will be ignored.
 	 */
-	static async deleteEntry(entry : CourseRegistration){
+	static async deleteEntry(entry : CourseUser){
 		checkAvailable(['courseID','userID'], entry)
 		const {
 			courseID,
@@ -252,8 +261,8 @@ import { CourseUser, convertCourseUser } from "../../../models/database/CourseUs
 			WHERE courseID=$1 AND userID=$2 
 			RETURNING *
 		)
-		${CourseRegistrationView('delete')}
+		${CourseUsersSingle('delete')}
 		 `, [courseid, userid])
-		.then(extract).then(map(convertCourseReg)).then(one)
+		.then(extract).then(map(CourseUserToAPI)).then(one)
 	}
 }
