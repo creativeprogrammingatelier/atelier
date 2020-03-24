@@ -4,7 +4,7 @@ import express from 'express';
 import path from 'path'
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { FileDB } from '../database/FileDB';
-import { readFile } from '../helpers/FilesystemHelper';
+import { readFile, getFilePathOnDisk } from '../helpers/FilesystemHelper';
 import { capture } from '../helpers/ErrorHelper';
 import { File } from '../../../models/api/File';
 import { UPLOADS_PATH } from '../lib/constants';
@@ -14,31 +14,18 @@ export const fileRouter = express.Router();
 // Authentication is required for all endpoints
 fileRouter.use(AuthMiddleware.requireAuth);
 
-function normalizePath(file: File): File {
-    return { 
-        ...file, 
-        // Remove the uploads/random chars prefix from files
-        name: 
-            path.join(...path
-                    .relative(UPLOADS_PATH, file.name)
-                    .split(path.sep)
-                    .slice(1))
-                .replace(/\\/g, "/")
-    }
-}
-
 /** Get information of type `File` about a file */
 fileRouter.get('/:fileID', capture(async (request, response) => {
     const fileID : string = request.params.fileID;
     const file : File = await FileDB.getFileByID(fileID);
-    response.status(200).send(normalizePath(file));
+    response.status(200).send(file);
 }));
 
 /** Get a list of files related to a submission */
 fileRouter.get('/submission/:submissionID', capture(async (request, response) => {
     const submissionID: string = request.params.submissionID;
     const files : File[] = await FileDB.getFilesBySubmission(submissionID);
-    response.status(200).send(files.map(normalizePath));
+    response.status(200).send(files);
 }));
 
 /** 
@@ -48,7 +35,7 @@ fileRouter.get('/submission/:submissionID', capture(async (request, response) =>
 fileRouter.get('/:fileID/body', capture(async (request, response) => {
     const fileID : string = request.params.fileID;
     const file : File = await FileDB.getFileByID(fileID);
-    const fileBody : Buffer = await readFile(file.name);
+    const fileBody : Buffer = await readFile(getFilePathOnDisk(file));
     response.status(200).set("Content-Type", file.type).send(fileBody);
 }));
 
@@ -59,7 +46,7 @@ fileRouter.get('/:fileID/body', capture(async (request, response) => {
 fileRouter.get('/:fileID/download', capture(async (request, response) => {
     const fileID: string = request.params.fileID;
     const file : File = await FileDB.getFileByID(fileID);
-    const fileBody : Buffer = await readFile(file.name);
+    const fileBody : Buffer = await readFile(getFilePathOnDisk(file));
     response.status(200)
         .set("Content-Type", file.type!)
         .set("Content-Disposition", `attachment; filename="${path.basename(file.name!)}"`)

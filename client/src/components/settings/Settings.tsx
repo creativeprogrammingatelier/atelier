@@ -8,6 +8,10 @@ import {getCurrentUser} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {DataList} from "../data/DataList";
+import { PluginSettings } from './PluginSettings';
+import { Loading } from '../general/loading/Loading';
+import { permission } from '../../../helpers/APIHelper';
+import { Permission } from '../../../../models/api/Permission';
 
 export function Settings() {
     const [permissions, setPermissions] = useState(0);
@@ -19,7 +23,7 @@ export function Settings() {
     }, []);
 
     return (
-        <Frame title="Settings" sidebar search="/search">
+        <Frame title="Settings" sidebar search>
             <Jumbotron>
                 <h1>Settings</h1>
                 <Button>Have a button!</Button>
@@ -43,6 +47,13 @@ export function Settings() {
                 />
             }
 
+            <Loading<Permission>
+                loader={permission}
+                component={permission => 
+                    containsPermission(PermissionEnum.managePlugins, permission.permissions)
+                    ? <DataList header="Plugins"><PluginSettings /></DataList> 
+                    : []
+                } />
         </Frame>
     )
 }

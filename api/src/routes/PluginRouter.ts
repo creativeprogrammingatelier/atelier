@@ -14,7 +14,7 @@ export const pluginRouter = express.Router()
 /** All enpoints require the manageUserRegistration permission */
 pluginRouter.use(captureNext(async (request, response, next) => {
     const userID = await getCurrentUserID(request);
-    await requirePermission(userID, PermissionEnum.manageUserRegistration);
+    await requirePermission(userID, PermissionEnum.managePlugins);
     next();
 }));
 
@@ -32,7 +32,7 @@ pluginRouter.get('/', capture(async (request, response) => {
 
 /** Create a new plugin */
 pluginRouter.post('/', capture(async (request, response) => {
-    const userName = request.body.user?.userName;
+    const userName = request.body.user?.name;
     const email = request.body.user?.email;
 
     const plugin: Plugin = await transaction(async client => {
@@ -40,6 +40,7 @@ pluginRouter.post('/', capture(async (request, response) => {
             userName,
             email, 
             globalRole: globalRole.plugin,
+            password: UserDB.invalidPassword(),
             client
         });
 
@@ -53,7 +54,7 @@ pluginRouter.post('/', capture(async (request, response) => {
 
         const hooks = await Promise.all(
             (request.body.hooks as string[])
-                .map(hook => PluginsDB.addHook({ pluginID: plugin.pluginID, hook }))
+                .map(hook => PluginsDB.addHook({ pluginID: plugin.pluginID, hook, client }))
         );
 
         return { ...plugin, hooks: hooks.map(ph => ph.hook), user };
@@ -68,10 +69,10 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
 
     const plugin: Plugin = await transaction(async client => {
         let user = undefined;
-        if (request.body.name || request.body.email) {
+        if (request.body.user) {
             user = await UserDB.updateUser({
                 userID,
-                userName: request.body.user?.userName,
+                userName: request.body.user?.name,
                 email: request.body.user?.email,
                 client
             });
@@ -85,19 +86,20 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
                 pluginID: userID,
                 webhookUrl: request.body.webhookUrl,
                 webhookSecret: request.body.webhookSecret,
-                publicKey: request.body.publicKey
+                publicKey: request.body.publicKey,
+                client
             });
         } else {
-            plugin = await PluginsDB.filterPlugins({ pluginID: userID }).then(one);
+            plugin = await PluginsDB.filterPlugins({ pluginID: userID, client }).then(one);
         }
 
-        let hooks = await PluginsDB.filterHooks({ pluginID: userID }).then(map(ph => ph.hook));
+        let hooks = await PluginsDB.filterHooks({ pluginID: userID, client }).then(map(ph => ph.hook));
         if (request.body.hooks) {
             const add = (request.body.hooks as string[]).filter(h => !hooks.some(ph => ph === h));
             const remove = hooks.filter(h => !request.body.hooks.includes(h));
 
-            await Promise.all(add.map(hook => PluginsDB.addHook({ pluginID: userID, hook })));
-            await Promise.all(remove.map(hook => PluginsDB.deleteHook({ pluginID: userID, hook })));
+            await Promise.all(add.map(hook => PluginsDB.addHook({ pluginID: userID, hook, client })));
+            await Promise.all(remove.map(hook => PluginsDB.deleteHook({ pluginID: userID, hook, client })));
 
             hooks = request.body.hooks;
         }

@@ -3,21 +3,23 @@
  */
 
 import express, {Request, Response} from 'express';
-import {SubmissionDB} from "../database/SubmissionDB";
-import {Submission} from "../../../models/api/Submission";
-import {capture} from "../helpers/ErrorHelper";
+import {SubmissionDB} from '../database/SubmissionDB';
+import {Submission} from '../../../models/api/Submission';
+import {capture} from '../helpers/ErrorHelper';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
-import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware} from '../helpers/FilesystemHelper';
+import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware, renamePath, readFile} from '../helpers/FilesystemHelper';
 import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
 import {getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
 import {CODEFILE_EXTENSIONS} from '../../../helpers/Constants';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
-import {filterSubmission} from "../helpers/APIFilterHelper";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
-import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
+import {filterSubmission} from '../helpers/APIFilterHelper';
+import {PermissionEnum} from '../../../models/enums/permissionEnum';
+import {requirePermission, requireRegistered} from '../helpers/PermissionHelper';
 import {transaction} from '../database/HelperDB';
+import {WebhookEvent} from '../../../models/enums/webhookEventEnum';
+import {UPLOADS_PATH} from '../lib/constants';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -46,6 +48,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     await requireRegistered(userID, request.params.courseID);
     
     const files = request.files as Express.Multer.File[];
+    const fileLocation = (request as FileUploadRequest).fileLocation!;
     validateProjectServer(request.body["project"], files);
 
     const { submission, dbFiles } = await transaction(async client => {
@@ -55,18 +58,21 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
             userID
         }, client);
         
+        const oldPath = path.join(UPLOADS_PATH, fileLocation);
+
         const dbFiles = await Promise.all(
             files.map(file => 
                 FileDB.addFile({
-                    pathname: file.path,
+                    pathname: file.path.replace(oldPath, "").replace(/\\/g, "/"),
                     type: file.mimetype,
                     submissionID: submission.ID,
                     client
                 }))
         );
-                
-        await archiveProject((request as FileUploadRequest).fileLocation!, request.body["project"]);
-        await deleteNonCodeFiles(files);
+        
+        await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
+        await archiveProject(submission.ID, request.body["project"]);
+        await deleteNonCodeFiles(dbFiles);
 
         return { submission, dbFiles };
     });
@@ -76,7 +82,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     await Promise.all(
         dbFiles
             .filter(f => CODEFILE_EXTENSIONS.includes(path.extname(f.name)))
-            .map(file => raiseWebhookEvent(request.params.courseID, "submission.file", file))
+            .map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
     );
 }));
 
@@ -126,4 +132,19 @@ submissionRouter.get('/:submissionID', capture(async(request: Request, response:
     await requireRegistered(currentUserID, submission.references.courseID);
 
     response.status(200).send(submission);
+}));
+
+/** Get the archive for a specific submission */
+submissionRouter.get('/:submissionID/archive', capture(async (request, response) => {
+    const submission = await SubmissionDB.getSubmissionById(request.params.submissionID);
+    const currentUserID = await getCurrentUserID(request);
+    await requireRegistered(currentUserID, submission.references.courseID);
+
+    const zipFileName = path.join(UPLOADS_PATH, submission.ID, submission.name + ".zip");
+    const fileBody : Buffer = await readFile(zipFileName);
+
+    response.status(200)
+        .set("Content-Type", "application/zip")
+        .set("Content-Disposition", `attachment; filename="${path.basename(zipFileName)}"`)
+        .send(fileBody);
 }));

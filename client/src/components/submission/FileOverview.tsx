@@ -9,18 +9,14 @@ import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import {getCourse, getFile, getFileContents, getSubmission} from "../../../helpers/APIHelper";
-import {Jumbotron} from "react-bootstrap";
+import {getFile, getFileContents, getSubmission} from "../../../helpers/APIHelper";
+import {Button, Jumbotron} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {Course} from "../../../../models/api/Course";
 import {Submission} from "../../../../models/api/Submission";
+import {Snippet} from "../../../../models/api/Snippet";
 
-export interface FileProperties {
-	id: string,
-	name: string,
-	body: string,
-	path: string,
-	url: string
+export interface SnippetHighlight extends Snippet {
+	onClick: Function,
 }
 interface FileOverviewProperties {
 	match: {
@@ -57,14 +53,15 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 			loader={getFile}
 			params={[fileId]}
 			component={
-				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={filePath + "/search"}>
+				file => <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={{course: file.references.courseID}}>
 					<Jumbotron>
 						<h1>{FileNameHelper.fromPath(file.name)}</h1>
 						<Loading<Submission>
 							loader={getSubmission}
 							params={[submissionId]}
-							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link></p>}
+							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>}
 						/>
+						{activeTab === "code" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
 					</Jumbotron>
 					<Loading<[File, string]>
 						loader={(fileId: string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
@@ -92,7 +89,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 					/>
 				</Frame>
 			}
-			wrapper={children => <Frame title="File" sidebar search={filePath + "/search"}>{children}</Frame>}
+			wrapper={children => <Frame title="File" sidebar search>{children}</Frame>}
 		/>
 	);
 }

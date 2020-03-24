@@ -8,7 +8,7 @@ import {CommentThread} from "../../../../models/api/CommentThread";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
 import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {File} from "../../../../models/api/File";
-import {Snippet} from "./Snippet";
+import {Snippet} from "../code/Snippet";
 import {Link} from "react-router-dom";
 import {CommentCreator} from "./CommentCreator";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
@@ -83,12 +83,12 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	}, []);
 
 	return (
-		<div id={thread.ID} className="commentThread">
+		<div id={thread.ID} className={"commentThread block" + (restricted ? " restricted" : "")}>
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
 			{opened ?
 				<Fragment>
 					{comments.map(comment => <CommentComponent comment={comment}/>)}
-					<CommentCreator sendHandler={handleCommentSend}/>
+					<CommentCreator placeholder="Reply..." sendHandler={handleCommentSend}/>
 				</Fragment>
 				:
 				comments[0] !== undefined && <CommentComponent comment={comments[0]}/>
@@ -97,7 +97,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				{manageRestrictedComments &&
 					<Fragment>
 						<Button onClick={handleDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
-						<Button onClick={handleVisibility}>{restricted ? <FiEye size={14} color="#FFFFFF"/> : <FiEyeOff size={14} color="#FFFFFF"/>}</Button>
+						<Button onClick={handleVisibility}>{restricted ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
 					</Fragment>
 				}
 				{thread.file && thread.snippet &&

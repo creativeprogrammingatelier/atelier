@@ -1,9 +1,5 @@
 import React, {Fragment} from "react";
-import {SearchResult, SearchResultComment, SearchResultFile, SearchResultSnippet} from "../../../../models/api/SearchResult";
-import {User} from "../../../../models/api/User";
-import { Course } from "../../../../models/api/Course";
-import {Submission} from "../../../../models/api/Submission";
-import {DataItemList} from "../data/DataItemList";
+import {SearchResult} from "../../../../models/api/SearchResult";
 import {DataList} from "../data/DataList";
 import {DataItem} from "../data/DataItem";
 import {ParentalProperties} from "../../helpers/ParentHelper";
@@ -72,7 +68,7 @@ function SearchResultSection({header, query, children}: SearchResultSectionPrope
 	const loadMore = (limit: number, offset: number) => <p>Loaded more</p>;
 
 	return <DataList
-		header="Users"
+		header={header}
 		collapse
 		more={loadMore}
 	>

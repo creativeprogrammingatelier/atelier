@@ -52,9 +52,7 @@ export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: U
 			loader={getUser}
 			params={[userId]}
 			component={user =>
-				<Frame
-					title={user.name}
-					sidebar search={`/user/${user.ID}/search`}>
+				<Frame title={user.name} sidebar search>
 					<Loading<Course>
 						loader={getCourse}
 						params={[courseId]}
@@ -83,7 +81,7 @@ export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: U
 					/>
 				</Frame>
 			}
-			wrapper={() => <Frame title="User" sidebar search=""/>}
+			wrapper={() => <Frame title="User" sidebar search/>}
 		/>
 	);
 }
