@@ -31,7 +31,7 @@ export class MentionsDB {
                         AND cr.courseRole = m.userGroup
                     )
                 )
-            ) ORDER BY m.created LIMIT $3 OFFSET $4
+            ) ORDER BY m.created DESC LIMIT $3 OFFSET $4
         `, [userid, courseid, limit, offset])
         .then(extract).then(map(mentionToAPI))
     }
@@ -74,7 +74,7 @@ export class MentionsDB {
 			AND ($5::uuid IS NULL OR submissionID = $5)
             AND ($6::uuid IS NULL OR courseID = $6)
             AND ($7 IS NULL OR mentionGroup = $7)
-			ORDER BY created
+			ORDER BY created DESC
 			LIMIT $8
 			OFFSET $9
 		`, [mentionid, userid, commentid, commentthreadid, submissionid, courseid, mentionGroup, limit, offset])
@@ -87,7 +87,7 @@ export class MentionsDB {
         }
 		const {
 			userID,
-			commentID,
+            commentID,
             mentionGroup,
 			client = pool
 		} = mention
