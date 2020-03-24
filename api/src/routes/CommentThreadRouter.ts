@@ -154,7 +154,7 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
     });
 
     // Comment creation
-    const commentBody : string = request.body.commentBody;
+    const commentBody : string = request.body.comment;
     const userID : string = await getCurrentUserID(request);
 
     const comment = await CommentDB.addComment({
