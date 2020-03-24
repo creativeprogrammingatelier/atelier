@@ -71,7 +71,7 @@ import { CourseUsersView } from "./ViewsDB";
 		`, [courses, users]).then(extract).then(map(CourseUserToAPI))
 	}
 
-	static async filterCourseRegistration(registration : CourseUser) : Promise<APICourseUser[]>{
+	static async filterCourseUser(registration : CourseUser) : Promise<APICourseUser[]>{
 		const {
 			userID = undefined,
 			courseID = undefined,

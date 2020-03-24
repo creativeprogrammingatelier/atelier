@@ -19,6 +19,7 @@ import { SearchResult } from '../../../models/api/SearchResult';
 import { getCommonQueryParams, InvalidParamsError } from '../helpers/ParamsHelper';
 import { CourseRegistrationDB } from '../database/CourseRegistrationDB';
 import { CourseDB } from '../database/CourseDB';
+import { CourseUserToUser } from '../../../models/database/CourseUser';
 
 export const searchRouter = express.Router();
 
@@ -47,7 +48,8 @@ function filterUser(user: User & { courseID?: string }) {
 searchRouter.get('/', capture(async (request, response) => {
     const { query, common } = getSearchParams(request);
     if (common.courseID) {
-        const users = await CourseRegistrationDB.filterCourseRegistration({ userName: query, ...common });
+        const users = (await CourseRegistrationDB.filterCourseUser({ userName: query, ...common }))
+                    .map(CourseUserToUser);
         const comments = await CommentDB.searchComments(query, common);
         const snippets = await SnippetDB.SearchSnippets(query, common);
         response.send({

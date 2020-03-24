@@ -20,7 +20,7 @@ export interface SearchResultSnippet {
 	submission: Submission
 }
 export interface SearchResult {
-	users: CourseUser[],
+	users: User[],
 	courses: Course[],
 	submissions: Submission[],
 	comments: SearchResultComment[],

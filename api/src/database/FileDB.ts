@@ -100,22 +100,32 @@ export class FileDB {
 			courseid = UUIDHelper.toUUID(courseID),
 
 			searchFile = searchify(pathname)
-
+/*
+SELECT f.* 
+FROM "FilesView" as f, "SubmissionsView" as s
+WHERE
+	s.submissionID = f.submissionID
+AND f.pathname ILIKE (s.title||'%.pde%')
+ORDER BY f.pathname, f.type, f.fileID;
+*/
 		return client.query(`
-			SELECT * FROM "FilesView" as f, "CourseUsersViewAll" as c
+			SELECT * 
+			FROM "FilesView" as f, "CourseUsersViewAll" as c, "SubmissionsView" as s
 			WHERE
 				c.courseID = f.courseID
-			AND c.userID = $6
+			AND s.submissionID = f.submissionID
+			AND cu.userID = $6
 			AND (c.permission & $7) > 0
 			AND ($1::uuid IS NULL OR f.fileID=$1)
 			AND ($2::uuid IS NULL OR f.submissionID=$2)
 			AND ($3::uuid IS NULL OR f.courseID=$3)
-			AND ($4::text IS NULL OR f.pathname=$4)
 			AND ($5::text IS NULL OR f.type=$5)
+
+			AND ($4::text IS NULL OR f.pathname ILIKE (s.title||$4))
 			ORDER BY f.pathname, f.type, f.fileID
 			LIMIT $6
 			OFFSET $7
-			`, [fileid, submissionid, courseid, pathname, type, limit, offset])
+			`, [fileid, submissionid, courseid, searchFile, type, limit, offset])
 		.then(extract).then(map(fileToAPI)).then(filterNullFiles).then(doIf(!includeNulls, filterNullFiles))
 	}
 
