@@ -337,12 +337,6 @@ textarea:focus, textarea:active {
 	color: $colorOffWhite;
 	background-color: $secondaryColor;
 }
-//.btn-primary:hover {
-//	background-color: $secondaryColor;
-//}
-//.btn-primary:disabled {
-//	background-color: gray;
-//}
 .buttonFloating {
 	bottom: 44px;
 	right: 0;
@@ -376,9 +370,6 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowSmallDown;
 }
 .commentThread {
-	background-color: $colorWhite;
-	border-left: 10px solid $primaryColor;
-
 	h3 {
 		box-shadow: $shadowSmallDown;
 	}
@@ -509,6 +500,12 @@ textarea:focus, textarea:active {
 	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
 		background-color: $colorRestrictedAlternate;
 	}
+	.buttonBar {
+		background-color: $colorRestricted;
+	}
+}
+.restricted.block {
+	border-color: $colorRestricted;
 }
 
 .floater {

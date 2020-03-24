@@ -61,7 +61,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	useEffect(() => ScrollHelper.scrollToHash(), []);
 
 	return (
-		<div id={thread.ID} className="commentThread">
+		<div id={thread.ID} className={"commentThread block" + (restricted ? " restricted" : "")}>
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
 			{opened ?
 				<Fragment>
@@ -75,7 +75,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				{manageRestrictedComments &&
 					<Fragment>
 						<Button onClick={handleDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
-						<Button onClick={handleVisibility}>{restricted ? <FiEye size={14} color="#FFFFFF"/> : <FiEyeOff size={14} color="#FFFFFF"/>}</Button>
+						<Button onClick={handleVisibility}>{restricted ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
 					</Fragment>
 				}
 				{thread.file && thread.snippet &&
