@@ -60,7 +60,6 @@ export interface DBMention {
     cmuusername : string,
     cmuemail : string,
     cmuglobalrole : string,
-    cmucourserole : string,
     cmupermission : string,
 
     submtitle : string,
@@ -115,7 +114,6 @@ export function mentionToAPI(db : DBMention) : APIMention{
                 email: db.cmuemail,
                 permission: {
                     globalRole: getEnum(globalRole, db.cmuglobalrole),
-                    courseRole: getEnum(courseRole, db.cmucourserole),
                     permissions: toDec(db.cmupermission)
                 }
             },

@@ -207,10 +207,10 @@ export function MentionsView(mentionsTable=`"Mentions"`){
                  cv.body, cu.userID, cu.userName, cu.email, cu.globalRole, 
                  cu.courseRole, cu.permission, cmu.userID as cmuUserID, 
                  cmu.userName as cmuUserName, cmu.email as cmuEmail, 
-                 cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
+                 cmu.globalRole as cmuGlobalRole,
                  cmu.permission as cmuPermission, subm.title as submTitle, c.courseName
           FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersView" as cu,
-               "CourseUsersView" as cmu, "Submissions" as subm, "Courses" as c
+               "UsersView" as cmu, "Submissions" as subm, "Courses" as c
           WHERE m.commentID = cv.commentID
             AND m.userID = cu.userID
             AND cv.courseID = cu.courseID
@@ -223,7 +223,7 @@ export function MentionsView(mentionsTable=`"Mentions"`){
                  cv.body, NULL, NULL, NULL, NULL, 
                  NULL, NULL, cmu.userID as cmuUserID, 
                  cmu.userName as cmuUserName, cmu.email as cmuEmail, 
-                 cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
+                 cmu.globalRole as cmuGlobalRole,
                  cmu.permission as cmuPermission, subm.title as submTitle, c.courseName
           FROM ${mentionsTable} as m , "CommentsView" as cv, "CourseUsersView" as cmu, "Submissions" as subm, "Courses" as c
           WHERE m.commentID = cv.commentID
