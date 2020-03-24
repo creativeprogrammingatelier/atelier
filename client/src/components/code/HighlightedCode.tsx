@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Code, CodeProperties} from "./Code";
 import {getRanges, Range} from "../../helpers/HighlightingHelper";
 import {FileSnippet} from "../submission/CodeTab";
@@ -8,18 +8,16 @@ export interface HighlightedCodeProperties extends CodeProperties {
 	snippets: FileSnippet[]
 }
 export function HighlightedCode({code, options, snippets, handleInitialize = () => {}, handleSelect = () => {}, handleClick = () => {}, handleChange = () => {}}: HighlightedCodeProperties) {
-	let codeMirror: CodeMirror.Editor;
-
-
+	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 
 	/**
 	 * Highlights comments passed to the code viewer.
 	 */
 	function setCommentHighlights() {
-		const color = "#dc3339";
+		const color = "#3fdac1";
 		const opacityRange = ["00", "6F", "BF", "FF"];
 
-		/** Highlight based on ranges */
+		// Highlight based on ranges
 		if (snippets !== undefined) {
 			// Transform each snippet into a range of characters
 			const ranges: Range[] = snippets.map(snippet => {
@@ -66,7 +64,7 @@ export function HighlightedCode({code, options, snippets, handleInitialize = () 
 			for (const snippet of snippets) {
 				const {startLine, startCharacter, endLine, endCharacter} = snippet;
 				if ((startLine < line || (startLine === line && startCharacter <= character)) && (line < endLine || (line === endLine && character <= endCharacter))) {
-					if (first === undefined || startLine < first.startLine || (startLine === first.startLine && startCharacter < first.startCharacter)) {
+					if (first === undefined || startLine < first.startLine || (startLine === first.startLine && startCharacter < first.startCharacter)) { // TODO: WebStorm doesnt like this line, and neither do I
 						first = snippet;
 					}
 				}
@@ -79,14 +77,15 @@ export function HighlightedCode({code, options, snippets, handleInitialize = () 
 		}
 	}
 
+	useEffect(setCommentHighlights, [codeMirror, snippets]);
+
 	return <Code
 		code={code}
 		options={options}
 		handleInitialize={
 			editor => {
 				handleInitialize(editor);
-				codeMirror = editor;
-				setCommentHighlights();
+				setCodeMirror(editor);
 			}}
 		handleSelect={handleSelect}
 		handleClick={(editor, event) => {

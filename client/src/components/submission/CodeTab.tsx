@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {File} from "../../../../models/api/File";
-import {CodeViewer} from "../code/CodeViewer";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
 import {createFileCommentThread, getFileComments} from "../../../helpers/APIHelper";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
@@ -43,11 +42,13 @@ export function CodeTab({file, body, submissionID}: CodeProperties) {
 
 	const getCommentThreads = () => {
 		try {
-			getFileComments(file.ID).then(commentThreads => setCommentThreads(commentThreads));
+			getFileComments(file.ID).then(commentThreads => {
+				setCommentThreads(commentThreads)
+			});
 		} catch (error) {
 			if (error instanceof JsonFetchError) {
 				console.log(error);
-				// Give error to the user
+				// TODO: Give error to the user
 			} else {
 				throw error;
 			}
