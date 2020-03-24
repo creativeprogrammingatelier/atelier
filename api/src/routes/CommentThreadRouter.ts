@@ -21,8 +21,7 @@ import {
     requireRegisteredSubmissionID
 } from "../helpers/PermissionHelper";
 import {filterCommentThread} from "../helpers/APIFilterHelper";
-import {getMentions} from '../helpers/MentionsHelper';
-import {MentionsDB} from '../database/MentionsDB';
+import {createMentions} from '../helpers/MentionsHelper';
 import { readFileAsString, getFilePathOnDisk } from '../helpers/FilesystemHelper';
 import { getContextLines } from '../../../helpers/SnippetHelper';
 
@@ -150,10 +149,7 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
         client
     });
 
-    const mentionedUsers = await getMentions(commentBody, comment.references.courseID, client);
-    for (const user of mentionedUsers) {
-        await MentionsDB.addMention({ userID: user.ID, commentID: comment.ID, client });
-    }
+    await createMentions(commentBody, comment.ID, comment.references.courseID, userID, client);
 
     return { ...commentThread, comments: commentThread.comments.concat(comment) };
 }

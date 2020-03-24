@@ -87,7 +87,7 @@ export function mentionToAPI(db : DBMention) : APIMention{
 	if ((db.usergroup == undefined) === (db.userid == undefined)){
 		throw new InvalidDatabaseResponseError('a mention should have either a user, or a group as target.')
 	}
-	const isUser = db.userid === undefined || db.userid === null
+	const isUser = db.userid !== undefined && db.userid !== null
 	if (!isUser) checkEnum(courseRole, db.usergroup!)
 	let user : User | undefined = undefined;
 	if (isUser){

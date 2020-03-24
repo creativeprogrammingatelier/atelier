@@ -2,6 +2,7 @@ import { pool, DBTools, extract, map, one, checkAvailable } from "./HelperDB"
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { convertMention, Mention, mentionToAPI } from "../../../models/database/Mention";
 import { MentionsView } from "./ViewsDB";
+import { MissingFieldDatabaseError } from "./DatabaseErrors";
 
 export class MentionsDB {
 	static async getMentionsUserCourse(){
@@ -80,10 +81,14 @@ export class MentionsDB {
 		.then(extract).then(map(mentionToAPI))
 	}
 	static async addMention(mention : Mention){
-		checkAvailable(['userID', "commentID"], mention)
+        checkAvailable(["commentID"], mention);
+        if (!mention.userID && !mention.mentionGroup) {
+            throw new MissingFieldDatabaseError("Mention requires either a userID or a mentionGroup");
+        }
 		const {
 			userID,
 			commentID,
+            mentionGroup,
 			client = pool
 		} = mention
 		const userid = UUIDHelper.toUUID(userID),
@@ -91,11 +96,11 @@ export class MentionsDB {
 		return client.query(`
 		WITH insert AS (
 			INSERT INTO "Mentions"
-			VALUES (DEFAULT, $1, $2)
+			VALUES (DEFAULT, $1, $2, $3)
 			RETURNING *
 		)
 		${MentionsView('insert')}
-		`,[commentid, userid])
+		`,[commentid, userid, mentionGroup])
 		.then(extract).then(map(mentionToAPI)).then(one)
 	}
 
