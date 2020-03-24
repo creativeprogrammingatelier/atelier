@@ -73,7 +73,7 @@ export class MentionsDB {
 			AND ($4::uuid IS NULL OR commentThreadID = $4)
 			AND ($5::uuid IS NULL OR submissionID = $5)
             AND ($6::uuid IS NULL OR courseID = $6)
-            AND ($7 IS NULL OR mentionGroup = $7)
+            AND ($7::text IS NULL OR userGroup = $7)
 			ORDER BY created DESC
 			LIMIT $8
 			OFFSET $9
