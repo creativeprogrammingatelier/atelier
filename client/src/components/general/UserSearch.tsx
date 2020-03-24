@@ -1,10 +1,11 @@
 import React from 'react';
 import {useState} from "react";
 import {MentionSuggestions} from "../comment/MentionSuggestions";
+import {User} from "../../../../models/api/User";
 
 interface UserSearchProps {
     courseID? : string,
-    onSelected : (x : string) => void
+    onSelected : (x : User) => void
 }
 
 export function UserSearch({courseID, onSelected} : UserSearchProps) {

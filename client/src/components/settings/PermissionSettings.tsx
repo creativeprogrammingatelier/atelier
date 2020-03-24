@@ -10,6 +10,7 @@ import {Loading} from "../general/loading/Loading";
 import {getAllUsers, getUsersByCourse, setPermissionCourse, setPermissionGlobal} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {CourseUser} from "../../../../models/api/CourseUser";
+import {UserSearch} from "../general/UserSearch";
 
 interface CourseSettingsProps {
     courseID?: string,
@@ -27,6 +28,7 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
         super(props);
         this.state = {
             courseID: props.courseID,
+            settingsUserName : "Select a User",
             settingsUser: "",
             settingsPermission: 0,
 
@@ -84,24 +86,17 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
     }
 
     /**
-     * Keep track of current user.
-     * @param event, select event
+     * Keep track of current user
+     * @param user
      */
-    handleUserChange(event: ChangeEvent<HTMLSelectElement>) {
-        const value = event.target.value;
-
-        let permissions = 0;
-        let userID = "";
-
-        if (value !== DEFAULT_USER) {
-            const values = value.split("-");
-            userID = values[0];
-            permissions = values[1] as unknown as number;
-        }
+    handleUserChange(user : User) {
+        const userID = user.ID;
+        const permissions = user.permission.permissions;
 
         this.setState({
-            settingsUser: userID,
-            settingsPermission: permissions
+            settingsUserName : user.name,
+            settingsUser : userID,
+            settingsPermission : permissions
         });
 
         this.updatePermissions(permissions, viewPermissions);
@@ -177,51 +172,17 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
 
     render() {
         return (
-            <Loading<Array<CourseUser | User>>
-                loader={() => getEnum(this.state, "courseID") === undefined ?
-                    getAllUsers()
-                    : getUsersByCourse(getEnum(this.state, "courseID"))}
-                component={(users: Array<User | CourseUser>) => {
-                    return (
-                        <div>
-                            <h4>User</h4>
-                            <select onChange={this.handleUserChange}>
-                                <option selected={true}>{DEFAULT_USER}</option>
-                                {
-                                    users.map((user: User | CourseUser) => {
-                                        let userID = "";
-                                        let permission = 0;
-                                        let userName = "";
+            <div>
+                <h4>User: {getEnum(this.state, "settingsUserName")}</h4>
+                <UserSearch
+                    courseID={getEnum(this.state, "courseID")}
+                    onSelected={this.handleUserChange}
+                />
+                {this.props.viewPermissions && this.renderPermissions(viewPermissions, 'View Permissions')}
+                {this.props.managePermissions && this.renderPermissions(managePermissions, 'Manage permissions')}
 
-                                        if ("userID" in user) {
-                                            const user2 : CourseUser = user as CourseUser;
-                                            userID = user2.userID!;
-                                            permission = user2.permission.permissions!;
-                                            userName = user2.userName!;
-                                        } else {
-                                            const user2 : User = user as User;
-                                            userID = user2.ID;
-                                            permission = user2.permission.permissions;
-                                            userName = user2.name;
-                                        }
-
-                                        return (
-                                            <option id={userID} value={userID + "-" + permission}>
-                                                {userName} - {user.email}
-                                            </option>
-                                        )
-                                    })
-                                }
-                            </select>
-
-                            {this.props.viewPermissions && this.renderPermissions(viewPermissions, 'View Permissions')}
-                            {this.props.managePermissions && this.renderPermissions(managePermissions, 'Manage permissions')}
-
-                            <button onClick={() => this.setPermissions()}> Set permissions for user</button>
-                        </div>
-                    )
-                }}
-            />
-        )
+                <button onClick={() => this.setPermissions()}> Set permissions for user</button>
+            </div>
+            )
     }
 }

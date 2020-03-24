@@ -12,6 +12,7 @@ import {UpdateCourse} from "../settings/Course/UpdateCourse";
 import {DataList} from "../data/DataList";
 import {MentionSuggestions} from "../comment/MentionSuggestions";
 import {UserSearch} from "../general/UserSearch";
+import {User} from "../../../../models/api/User";
 
 interface CourseOverviewProps {
     match: {
@@ -75,7 +76,7 @@ export function CourseSettings({match}: CourseOverviewProps) {
 
             <UserSearch
                 courseID={match.params.courseId}
-                onSelected={(x : string) => console.log(x)}
+                onSelected={(x : User) => console.log(x.name)}
             />
         </Frame>
     );

@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {searchUsers} from "../../../helpers/APIHelper";
+import {User} from "../../../../models/api/User";
 
 interface MentionSuggestionsProperties {
 	/** Already inserted text to match with the start of suggestions */
@@ -7,18 +8,18 @@ interface MentionSuggestionsProperties {
     /** The ID of the course the comment is written for */
     courseID?: string,
 	/** Callback that's called when a suggestion is selected */
-	onSelected: (name: string) => void
+	onSelected: (user : User) => void
     /** Prefix for display */
     prefix? : string
 }
 
 export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected}: MentionSuggestionsProperties) {
-	const [suggestions, updateSuggestions] = useState({ s: [] as string[], base: suggestionBase });
+	const [suggestions, updateSuggestions] = useState({ s: [] as User[], base: suggestionBase });
 
 	const displayPrefix : string = prefix === undefined ? "" : prefix;
 
-    function filterSuggestions(suggestions: string[], base: string) {
-        return suggestions.filter(s => s.toLowerCase().includes(base.toLowerCase()));
+    function filterSuggestions(suggestions: User[], base: string) {
+        return suggestions.filter(s => s.name.toLowerCase().includes(base.toLowerCase()));
     }
 
 	useEffect(() => {
@@ -35,14 +36,14 @@ export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected
                 && suggestionBase.length < 25) {
                 const oldBase = suggestionBase;
                 searchUsers(suggestionBase, courseID, 10).then(users => {
-                    const names = users.map(u => u.name);
+                    //const names = users.map(u => u.name);
                     updateSuggestions(({ s, base }) => {
                         // If the base is exactly the same, we're fine
                         if (oldBase === base) {
-                            return { s: names, base };
+                            return { s: users, base };
                         // If the base has grown, filter on what's still relevant
                         } else if (base.includes(oldBase)) {
-                            return { s: filterSuggestions(names, base), base };
+                            return { s: filterSuggestions(users, base), base };
                         // If the base is smaller or has changed, we don't want to use these results
                         } else {
                             return { s, base };
@@ -53,17 +54,17 @@ export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected
 		}
 	}, [suggestionBase]);
 
-	function Suggestion({text}: {text: string}) {
+	function Suggestion({user}: {user: User}) {
 		return (
-			<li onClick={() => onSelected(text)} className="mention">
-                {displayPrefix}{text}
+			<li onClick={() => onSelected(user)} className="mention">
+                {displayPrefix}{user.name}
 			</li>
 		);
     }
 
     return (
         <ul className="m-0 px-1 pb-1">
-            {suggestions.s.map(s => <Suggestion text={s}/>)}
+            {suggestions.s.map(s => <Suggestion user={s}/>)}
         </ul>
     );
 }
