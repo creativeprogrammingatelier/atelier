@@ -1,4 +1,4 @@
-import {Snippet} from "./Snippet";
+import {Selection, Snippet} from "./Snippet";
 import {Comment} from "./Comment";
 import {File} from "./File";
 import {threadState} from "../enums/threadStateEnum";
@@ -16,13 +16,8 @@ export interface CommentThread {
 }
 
 export interface CreateCommentThread {
-    snippet?: {
-        lineStart: number,
-        charStart: number,
-        lineEnd: number,
-        charEnd: number
-    }
-	visibilityState?: threadState,
-	commentBody: string,
+	comment: string,
+    snippet?: Selection,
+	visibility?: threadState,
 	submissionID: string
 }

@@ -9,6 +9,7 @@ import {HighlightedCode, HighlightedCodeProperties} from "../code/HighlightedCod
 import {useHistory} from "react-router-dom";
 import {Selection} from "../../../../models/api/Snippet";
 import {SnippetHighlight} from "./FileOverview";
+import {threadState} from "../../../../models/enums/threadStateEnum";
 
 export interface FileComment {
 	startLine: number,
@@ -74,13 +75,9 @@ export function CodeTab({file, body, submissionID}: CodeProperties) {
 		try {
 			const thread = await createFileCommentThread(file.ID, {
 				submissionID,
-				commentBody: comment,
-				snippet: {
-					lineStart: selection.start.line,
-					lineEnd: selection.start.character,
-					charStart: selection.end.line,
-					charEnd: selection.end.character
-				}
+				comment,
+				snippet: selection,
+				visibility: restricted ? threadState.private : threadState.public
 			});
 			return true;
 		} catch (error) {
