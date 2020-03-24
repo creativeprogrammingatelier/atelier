@@ -40,7 +40,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 							<small className="text-light">{submission.date}</small>
 						</p>}
 					/>
-					<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+					<Button className="mb-2 mr-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
                     <Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
 				</Jumbotron>
 				<DataList header="Files">
