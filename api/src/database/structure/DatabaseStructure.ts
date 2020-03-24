@@ -1,7 +1,8 @@
-import {end, pool, permissionBits, getClient, pgDB} from "../HelperDB";
+import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
 import { isPostgresError, PostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
+import { PermissionEnum } from "../../../../models/enums/permissionEnum";
 
 if (require.main === module){
 	//args without node & path name
@@ -70,7 +71,7 @@ DROP VIEW IF EXISTS
 	"SubmissionsView", "FilesView",
 	"SnippetsView", "CommentsView",
 	"CommentThreadView", "CourseRegistrationView",
-	"MentionsView", "CourseUsersView",
+	"MentionsView", "CourseUsersView", "CourseUsersViewAll",
 	"CourseRegistrationViewAll";
 
 DROP TABLE IF EXISTS 
@@ -280,6 +281,59 @@ CREATE VIEW "MentionsView" as (
 	${MentionsView()}
 );
 
+
+CREATE OR REPLACE FUNCTION _viewableSubmissions (userID uuid, courseID uuid)   
+	RETURNS TABLE (submissionID uuid) AS $$  
+	DECLARE  
+	course_user "CourseUsersViewAll"%ROWTYPE;
+	BEGIN  
+
+	SELECT * INTO course_user -- get extra info on the current user
+	FROM "CourseUsersViewAll" as c
+	WHERE c.userID = $1
+		AND c.courseID = $2;
+	
+	-- if a user can see all, return all
+	IF ((${toBin(2**PermissionEnum.viewAllSubmissions)} & course_user.permission) > 0::bit(${permissionBits})) THEN
+		RETURN QUERY (
+			SELECT s.submissionID 
+			FROM "SubmissionsView" as s
+			WHERE s.courseID=$2
+		);
+	ELSE
+		RETURN QUERY ( -- your submission
+			SELECT s.submissionID 
+			FROM "SubmissionsView" as s
+			WHERE s.courseID=$2
+			AND s.userID = $1
+		);
+		RETURN QUERY ( -- you commented on it
+			SELECT c.submissionID
+			FROM "CommentsView" as c
+			WHERE c.courseID=$2
+			AND c.userID=$1
+		);
+		RETURN QUERY ( -- you are mentioned in a comment
+			SELECT m.submissionID
+			FROM "MentionsView" as m
+			WHERE m.courseID = $2
+			AND ( m.userID = $1
+				OR m.courseRole = course_user.courseRole
+				)
+		);
+	END IF;
+	END; $$ LANGUAGE plpgsql;  
+
+
+	CREATE OR REPLACE FUNCTION viewableSubmissions(userID uuid, courseID uuid)   
+	RETURNS TABLE (submissionID uuid) AS $$
+	BEGIN
+	RETURN QUERY (
+		SELECT DISTINCT *
+		FROM _viewableSubmissions($1, $2)
+	);
+	END; $$ LANGUAGE plpgsql;
+	 
 
 -- the standard roles
 

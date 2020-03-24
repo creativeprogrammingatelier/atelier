@@ -76,13 +76,15 @@ export class SnippetDB {
 		.then(extract).then(map(snippetToAPI)).then(doIf(!includeNulls, filterNullSnippet))
 		
 	}
-	static async SearchSnippets(searchString : string, snippet : Snippet) : Promise<SearchResultSnippet[]>{
+	static async SearchSnippets(searchString : string, snippet : Snippet & {userID? : string}) : Promise<SearchResultSnippet[]>{
 		const {
 			snippetID = undefined,
 			commentThreadID = undefined,
 			submissionID = undefined,
 			courseID = undefined,
 			fileID = undefined,
+			userID = undefined,
+
 			lineStart = undefined,
 			lineEnd = undefined,
 			charStart = undefined,
@@ -100,6 +102,7 @@ export class SnippetDB {
 			fileid = UUIDHelper.toUUID(fileID),
 			commentthreadid = UUIDHelper.toUUID(commentThreadID),
 			submissionid = UUIDHelper.toUUID(submissionID),
+			userid = UUIDHelper.fromUUID(userID),
 			courseid = UUIDHelper.toUUID(courseID),
 			searchBody = searchify(body),
 			searchBefore = searchify(contextBefore),
@@ -123,11 +126,14 @@ export class SnippetDB {
 			AND ($10::text IS NULL OR s.body ILIKE $10)
 			AND ($11::text IS NULL OR s.contextBefore ILIKE $11)
 			AND ($12::text IS NULL OR s.contextAfter ILIKE $12)
+
+			AND s.submissionID = ANY(viewableSubmissions($13, $5))
 			ORDER BY s.snippetID
-			LIMIT $13
-			OFFSET $14
+			LIMIT $14
+			OFFSET $15
 			`,[snippetid, fileid, commentthreadid, submissionid, courseid, 
 				lineStart, lineEnd, charStart, charEnd, searchBody, searchBefore, searchAfter,
+				userid,
 				limit, offset ])
 		.then(extract).then(map(entry => ({
 			//no checks for null snippets/files, since we are literally searching inside a snippet body

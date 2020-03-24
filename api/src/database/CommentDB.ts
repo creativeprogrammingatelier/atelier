@@ -147,6 +147,8 @@ export class CommentDB {
 			AND ($6::timestamp IS NULL OR c.created >= $6)
 			AND ($7::timestamp IS NULL OR c.edited >= $7)
 			AND ($8::text IS NULL OR c.body ILIKE $8)
+			
+			AND c.submissionID = ANY(viewableSubmissions($5, $1))
 			ORDER BY c.created DESC, c.commentID --unique in case 2 comments same time
 			LIMIT $9
 			OFFSET $10
