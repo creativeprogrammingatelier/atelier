@@ -36,7 +36,7 @@ export function CourseSettings({match}: CourseOverviewProps) {
     }, []);
 
     return (
-        <Frame title="Course" sidebar search={"/course/../search"}>
+        <Frame title="Course" sidebar search={{course: match.params.courseId}}>
             <Jumbotron>
                 <Loading<Course>
                     loader={(courseId, reloadCourse) => getCourse(courseId, false)}
