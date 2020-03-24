@@ -85,6 +85,10 @@ export class SelectionHelper {
 	 * @returns boolean: Whether the position is inside the selection
 	 */
 	static in(a: Selection, b: Position) {
-		return a.start.line <= b.line && a.end.line >= b.line && a.start.character <= b.character && a.end.character >= b.character;
+		return (
+			(a.start.line < b.line && a.end.line > b.line) ||
+			(a.start.line === b.line && a.start.character <= b.character) ||
+			(a.end.line === b.line && a.end.character >= b.character)
+		);
 	}
 }

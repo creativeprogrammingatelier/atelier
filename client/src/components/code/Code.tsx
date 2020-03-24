@@ -1,7 +1,8 @@
 import {Block} from "../general/Block";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import React from "react";
+import React, {useEffect} from "react";
 import * as codemirror from "codemirror";
+import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 // TODO: Resolve inconsistent naming around Controlled, CodeMirror and codemirror
 
@@ -20,6 +21,8 @@ export interface CodeProperties {
 	handleChange?: (editor: codemirror.Editor, data: codemirror.EditorChange, value: string) => void | boolean
 }
 export function Code({code, options = {}, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: CodeProperties) {
+	useEffect(ScrollHelper.scrollToHash, []);
+
 	/**
 	 * Add Id's to line in the code to allow #lineNumber in the url
 	 */

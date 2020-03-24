@@ -91,7 +91,6 @@ export function CodeTab({file, body, submissionID}: CodeProperties) {
 		return false;
 	};
 
-	useEffect(ScrollHelper.scrollToHash, []);
 	useEffect(getCommentThreads, []);
 	useEffect(getSnippets, [commentThreads]);
 

@@ -2,9 +2,10 @@ import React, {useEffect, useState} from "react";
 import {Code, CodeProperties, defaultHandler} from "./Code";
 import {getRanges, Range} from "../../helpers/HighlightingHelper";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import {noPosition} from "../../../../models/api/Snippet";
+import {Position, noPosition} from "../../../../models/api/Snippet";
 import {SnippetHighlight} from "../submission/FileOverview";
 import {SelectionHelper} from "../../helpers/SelectionHelper";
+import {ClickHelper} from "../../helpers/ClickHelper";
 
 export interface HighlightedCodeProperties extends CodeProperties {
 	snippets: SnippetHighlight[]
@@ -12,6 +13,8 @@ export interface HighlightedCodeProperties extends CodeProperties {
 export function HighlightedCode({code, options, snippets, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
 	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 	const [click, setClick] = useState(noPosition);
+
+	console.log("Rendering a highlighted code viewer");
 
 	/**
 	 * Highlights comments passed to the code viewer.
@@ -58,9 +61,9 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 	 */
 	const clickComment = () => {
 		console.log("Clicked a comment");
-		console.log(click);
-		console.log(snippets);
-		if (snippets) {
+		if (snippets && click !== noPosition) {
+			console.log(click);
+			console.log(snippets);
 			let topPriority: SnippetHighlight | undefined = undefined;
 
 			// Find the topPriority snippet matching the click location
@@ -81,6 +84,7 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 		}
 	};
 
+
 	useEffect(setCommentHighlights, [codeMirror, snippets]);
 	useEffect(clickComment, [click]);
 
@@ -95,7 +99,14 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 		handleSelect={handleSelect}
 		handleClick={(editor, event) => {
 			if (handleClick(editor, event) !== false) {
-				setClick({line: editor.getCursor().line, character: editor.getCursor().ch});
+				const pagePosition = ClickHelper.pagePosition(event);
+				const cursor = editor.coordsChar({left: pagePosition.x, top: pagePosition.y});
+				setClick({line: cursor.line, character: cursor.ch});
+				// console.log("Click handling");
+				// console.log(event);
+				// console.log(pagePosition);
+				// console.log(editor.coordsChar({left: pagePosition.x, top: pagePosition.y}));
+				// console.log({line: editor.getCursor().line, character: editor.getCursor().ch});
 			}
 		}}
 		handleChange={handleChange}
