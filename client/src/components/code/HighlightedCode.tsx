@@ -67,13 +67,15 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 			for (const snippet of snippets) {
 				console.log("Checking snippet");
 				console.log(snippet);
-				if (SelectionHelper.priority(snippet, topPriority)) {
-					topPriority = snippet;
+				if (SelectionHelper.in(snippet, click)) {
+					if (SelectionHelper.priority(snippet, topPriority)) {
+						topPriority = snippet;
+					}
 				}
 			}
 
 			// Call on click for comment
-			if (topPriority !== undefined) {
+			if (topPriority) {
 				topPriority.onClick();
 			}
 		}

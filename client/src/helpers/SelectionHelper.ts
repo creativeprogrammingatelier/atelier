@@ -1,4 +1,4 @@
-import {Selection} from "../../../models/api/Snippet";
+import {Position, Selection} from "../../../models/api/Snippet";
 
 export class SelectionHelper {
 	/**
@@ -75,5 +75,16 @@ export class SelectionHelper {
 	 */
 	static after(a: Selection, b: Selection) {
 		return a.end.line > b.end.line || (a.end.line === b.end.line && a.end.character > b.end.character);
+	}
+
+	/**
+	 * Checks if the position is inside the selection
+	 *
+	 * @param a: Selection
+	 * @param b: Position
+	 * @returns boolean: Whether the position is inside the selection
+	 */
+	static in(a: Selection, b: Position) {
+		return a.start.line <= b.line && a.end.line >= b.line && a.start.character <= b.character && a.end.character >= b.character;
 	}
 }
