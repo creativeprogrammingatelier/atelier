@@ -10,6 +10,7 @@ import {containsPermission, PermissionEnum} from "../../../../models/enums/permi
 import {PermissionSettings} from "../settings/PermissionSettings";
 import {UpdateCourse} from "../settings/Course/UpdateCourse";
 import {DataList} from "../data/DataList";
+import {CourseRegistration} from "./CourseRegistration";
 
 interface CourseOverviewProps {
     match: {
@@ -35,7 +36,7 @@ export function CourseSettings({match}: CourseOverviewProps) {
     }, []);
 
     return (
-        <Frame title="Course" sidebar search={"/course/../search"}>
+        <Frame title="Course" sidebar search={{course: match.params.courseId}}>
             <Jumbotron>
                 <Loading<Course>
                     loader={(courseId, reloadCourse) => getCourse(courseId, false)}
@@ -45,7 +46,10 @@ export function CourseSettings({match}: CourseOverviewProps) {
                 />
             </Jumbotron>
 
-            <CourseInvites courseID={match.params.courseId}/>
+            {
+                containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
+                <CourseInvites courseID={match.params.courseId}/>
+            }
 
             {
                 containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
@@ -67,6 +71,16 @@ export function CourseSettings({match}: CourseOverviewProps) {
                     header={"Course settings"}
                     children={
                         <UpdateCourse courseID={match.params.courseId} handleResponse={courseUpdate}/>
+                    }
+                />
+            }
+
+            {
+                containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
+                <DataList
+                    header={"Enroll a user"}
+                    children={
+                        <CourseRegistration courseID={match.params.courseId} />
                     }
                 />
             }

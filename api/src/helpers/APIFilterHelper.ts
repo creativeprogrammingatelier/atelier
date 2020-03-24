@@ -100,5 +100,5 @@ export async function filterComment(comments : Comment[], userID : string, permi
 }
 
 function userPartOfCommentThread(userID : string, commentThread : CommentThread) {
-    return commentThread.comments.some((comment : Comment) => comment.ID === userID);
+    return commentThread.comments.some((comment : Comment) => comment.user.ID === userID);
 }

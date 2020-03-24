@@ -8,7 +8,6 @@ import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {Permission, Permissions} from "../../../models/api/Permission";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {requirePermission} from "../helpers/PermissionHelper";
 import {
     containsPermission,
     managePermissionBits,
@@ -18,7 +17,7 @@ import {
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
 import {getEnum} from "../../../models/enums/enumHelper";
-import { CourseUser } from '../../../models/api/CourseUser';
+import {CourseUser} from '../../../models/api/CourseUser';
 
 export const permissionRouter = express.Router();
 permissionRouter.use(AuthMiddleware.requireAuth);
@@ -121,7 +120,7 @@ permissionRouter.put('/course/:courseID/user/:userID/', capture(async(request : 
 /**
  * Add user permissions globally
  * - requirements:
- *  - manageUserPermissionsManager permission
+ *  - manageUserPermissionsManager or manageUserPermissionsView depending on the permission
  */
 permissionRouter.put('/user/:userID/', capture(async(request : Request, response : Response) => {
     const currentUserID : string = await getCurrentUserID(request);

@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 
 import {MentionSuggestions} from "./MentionSuggestions";
+import {User} from "../../../../models/api/User";
 
 interface WriteCommentProperties {
     courseID: string,
@@ -75,7 +76,8 @@ export function WriteComment({courseID, placeholder, text, updateText}: WriteCom
 			<MentionSuggestions
                 courseID={courseID}
 				suggestionBase={suggestionBase}
-				onSelected={handleMentionSelected}
+				onSelected={(user : User) => handleMentionSelected(user.name)}
+				prefix='@'
 			/>
 		</form>
 	);

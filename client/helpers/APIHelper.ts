@@ -17,6 +17,8 @@ import {threadState} from "../../models/enums/threadStateEnum";
 import {CourseUser} from "../../models/api/CourseUser";
 import {courseState} from "../../models/enums/courseStateEnum";
 import {Plugin} from '../../models/api/Plugin';
+import {globalRole} from "../../models/enums/globalRoleEnum";
+import {inviteRole} from "../../models/enums/inviteRoleEnum";
 
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
@@ -42,6 +44,9 @@ export function createCourse(course: {name: string, state: string}, doCache?: bo
 }
 export function updateCourse(courseID : string, update : {name? : string, state? : courseState}, doCache? : boolean) {
 	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update), doCache);
+}
+export function courseEnrollUser(courseID : string, userID : string, doCache? : boolean) {
+	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, putJson({}), doCache);
 }
 
 // Users
@@ -155,6 +160,16 @@ export function getCourseMentions(courseID: string, doCache?: boolean) {
 export function search(query: string, limit = 20, offset = 0, doCache?: boolean) {
 	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`, undefined, doCache);
 }
+// If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
+export function searchUsers(query : string, courseID? : string, limit = 20, offset = 0, doCache? : boolean) {
+	const courseSearch = courseID === undefined ? "" : `&courseID=${courseID}`;
+	return Fetch.fetchJson<User[]>(
+		`/api/search/users?q=${query}${courseSearch}&limit=${limit}&offset=${offset}`,
+		undefined,
+		doCache
+	)
+}
+//@deprecated searchUsers is more general.
 export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0, doCache?: boolean) {
 	return Fetch.fetchJson<User[]>(
         `/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`, 
@@ -192,12 +207,21 @@ export function getInvites(courseID : string, doCache? : boolean) {
 	return Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`, undefined, doCache);
 }
 
-export function getInvite(courseID : string, role : string, doCache? : boolean) {
+export function getInvite(courseID : string, role : inviteRole, doCache? : boolean) {
 	return Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`, undefined, doCache);
 }
 
-export function deleteInvite(courseID : string, role : string, doCache?: boolean) {
+export function deleteInvite(courseID : string, role : inviteRole, doCache?: boolean) {
 	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, { method: "DELETE" }, doCache);
+}
+
+// Role
+export function updateGlobalRole(userID : string, role : globalRole, doCache? : boolean) {
+	return Fetch.fetchJson<User>(`/api/role/user/${userID}/${role}`, putJson({}), doCache);
+}
+
+export function updateCourseRole(userID : string, courseID : string, role : courseState, doCache? : boolean) {
+	return Fetch.fetchJson<CourseUser>(`/api/role/course/${courseID}/user/${userID}/${role}`, putJson({}), doCache);
 }
 
 // Plugins
