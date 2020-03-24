@@ -61,7 +61,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 							params={[submissionId]}
 							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>}
 						/>
-                        <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>
+						{activeTab === "code" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
 					</Jumbotron>
 					<Loading<[File, string]>
 						loader={(fileId: string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
