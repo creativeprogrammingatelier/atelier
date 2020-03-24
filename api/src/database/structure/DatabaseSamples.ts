@@ -177,7 +177,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 	
      INSERT INTO "Comments" VALUES
           (${uuid0}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
-          (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a multi\\nline comment!'),
+          (${uuid5}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a multi\\nline comment, mentioning \\nall @teachers in one go!'),
           (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a comment about nothing at all..'),
 		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
 		(${uuid2}, ${uuid2}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Bad names'),
@@ -186,7 +186,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
      
           INSERT INTO "Mentions" VALUES 
                (${uuid0}, ${uuid0}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'), null),
-               (${uuid1}, ${uuid0}, NULL, 'teacher');
+               (${uuid1}, ${uuid5}, NULL, 'teacher');
 
           
      `
