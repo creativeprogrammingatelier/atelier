@@ -4,6 +4,8 @@ import {app} from "../../api/src/app";
 import {Permissions} from "../../models/api/Permission";
 import chaiHttp from "chai-http";
 import {courseState} from "../../models/enums/courseStateEnum";
+import {courseRole} from "../../models/enums/courseRoleEnum";
+import {globalRole} from "../../models/enums/globalRoleEnum";
 
 chai.use(chaiHttp);
 
@@ -118,7 +120,6 @@ export const deleteInviteTeacher = () => chai.request(app)
     .delete(`/api/invite/course/${COURSE_ID}/role/teacher`)
     .set({'Authorization' : USER_AUTHORIZATION_KEY});
 
-
 /** Permission requests */
 export const getPermission = () => chai.request(app)
     .get(`/api/permission`)
@@ -126,6 +127,14 @@ export const getPermission = () => chai.request(app)
 export const getPermissionByCourse = () => chai.request(app)
     .get(`/api/permission/course/${COURSE_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
+
+/** Role requests */
+export const setCourseRole = (role : courseRole) => chai.request(app)
+    .put(`/api/role/course/${COURSE_ID}/user/${USER_ID}/${role}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const setGlobalRole = (role : globalRole) => chai.request(app)
+    .put(`/api/role/user/${USER_ID}/${role}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
 
 /** Submission requests */
 export const getSubmission = () => chai.request(app)
@@ -196,6 +205,12 @@ export const adminSetPermissions = (permissions: Permissions) => chai.request(ap
     .put(`/api/permission/user/${USER_ID}`)
     .send({permissions})
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY, 'Content-Type': 'application/json'});
+export const adminSetRoleGlobal = () => chai.request(app)
+    .put(`/api/role/user/${USER_ID}/user`)
+    .set({'Authorization' : ADMIN_AUTHORIZATION_KEY});
+export const adminSetRoleCourse = () => chai.request(app)
+    .put(`/api/role/course/${COURSE_ID}/user/${USER_ID}/student`)
+    .set({'Authorization' : ADMIN_AUTHORIZATION_KEY});
 
 /**
  * Random string generator

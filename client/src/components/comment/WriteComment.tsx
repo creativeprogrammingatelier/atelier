@@ -77,6 +77,7 @@ export function WriteComment({courseID, placeholder, text, updateText}: WriteCom
                 courseID={courseID}
 				suggestionBase={suggestionBase}
 				onSelected={(user : User) => handleMentionSelected(user.name)}
+				prefix='@'
 			/>
 		</form>
 	);

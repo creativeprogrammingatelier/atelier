@@ -10,9 +10,7 @@ import {containsPermission, PermissionEnum} from "../../../../models/enums/permi
 import {PermissionSettings} from "../settings/PermissionSettings";
 import {UpdateCourse} from "../settings/Course/UpdateCourse";
 import {DataList} from "../data/DataList";
-import {MentionSuggestions} from "../comment/MentionSuggestions";
-import {UserSearch} from "../general/UserSearch";
-import {User} from "../../../../models/api/User";
+import {CourseRegistration} from "./CourseRegistration";
 
 interface CourseOverviewProps {
     match: {
@@ -48,7 +46,10 @@ export function CourseSettings({match}: CourseOverviewProps) {
                 />
             </Jumbotron>
 
-            <CourseInvites courseID={match.params.courseId}/>
+            {
+                containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
+                <CourseInvites courseID={match.params.courseId}/>
+            }
 
             {
                 containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
@@ -74,10 +75,15 @@ export function CourseSettings({match}: CourseOverviewProps) {
                 />
             }
 
-            <UserSearch
-                courseID={match.params.courseId}
-                onSelected={(x : User) => console.log(x.name)}
-            />
+            {
+                containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
+                <DataList
+                    header={"Enroll a user"}
+                    children={
+                        <CourseRegistration courseID={match.params.courseId} />
+                    }
+                />
+            }
         </Frame>
     );
 }

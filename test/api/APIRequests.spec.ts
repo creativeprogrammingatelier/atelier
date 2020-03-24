@@ -6,7 +6,9 @@ import {User} from "../../models/api/User";
 import {
     instanceOfComment,
     instanceOfCommentThread,
-    instanceOfCoursePartial, instanceOfCourseUser, instanceOfInvite,
+    instanceOfCoursePartial,
+    instanceOfCourseUser,
+    instanceOfInvite,
     instanceOfPermission,
     instanceOfSubmission,
     instanceOfUser
@@ -21,12 +23,19 @@ import {threadState} from "../../models/enums/threadStateEnum";
 import {Permissions} from "../../models/api/Permission";
 import {CourseUser} from "../../models/database/CourseUser";
 import {
-    COURSE_ID,
-    DEFAULT_PERMISSIONS,
-    USER_ID,
     adminCoursesToUnregister,
+    adminRegisterCourse,
+    adminSetPermissions,
+    adminSetRoleCourse,
+    adminSetRoleGlobal,
+    adminUnregisterCourse,
+    COURSE_ID,
     createCourse,
+    DEFAULT_PERMISSIONS,
     deleteCourse,
+    deleteInviteStudent,
+    deleteInviteTA,
+    deleteInviteTeacher,
     getCommentsByUserAndCourse,
     getCommentsUser,
     getCommentThread,
@@ -37,6 +46,10 @@ import {
     getCourses,
     getCoursesByOtherUser,
     getCoursesByOwnUser,
+    getInvitesByUserAndCourse,
+    getInviteStudent,
+    getInviteTA,
+    getInviteTeacher,
     getOtherUser,
     getOwnUser1,
     getOwnUser2,
@@ -50,25 +63,20 @@ import {
     getSubmissionsByOwnUser,
     getUsers,
     getUsersByCourse,
-    adminRegisterCourse,
+    randomString,
     registerUserCourse,
     setAPITestUserValues,
     setCommentThreadPrivate,
     setCommentThreadPublic,
-    adminSetPermissions,
-    adminUnregisterCourse,
+    setCourseRole,
+    setGlobalRole,
+    setPermissionsCourse,
+    setPermissionsGlobal,
     unregisterUserCourse,
     updateCourse,
-    updateUserName,
-    randomString,
     updateUserEmail,
-    setPermissionsGlobal,
-    setPermissionsCourse,
-    getInvitesByUserAndCourse,
-    getInviteStudent,
-    getInviteTA,
-    getInviteTeacher,
-    deleteInviteStudent, deleteInviteTA, deleteInviteTeacher
+    updateUserName,
+    USER_ID
 } from "./APIRequestHelper";
 import {courseState} from "../../models/enums/courseStateEnum";
 import {
@@ -78,6 +86,8 @@ import {
     viewPermissions
 } from "../../models/enums/permissionEnum";
 import {getEnum} from "../../models/enums/enumHelper";
+import {courseRole} from "../../models/enums/courseRoleEnum";
+import {globalRole} from "../../models/enums/globalRoleEnum";
 
 let createdCourseID : string | undefined = undefined;
 
@@ -101,6 +111,7 @@ describe("API Tests", () => {
     beforeEach(async() => {
         await removeAllPermissions();
         await removeAllRegistrations();
+        await setDefaultRoles();
     });
 
     async function removeAllPermissions() {
@@ -133,6 +144,11 @@ describe("API Tests", () => {
             assert(instanceOfCoursePartial(course));
             await adminUnregisterCourse(course.ID);
         }
+    }
+
+    async function setDefaultRoles() {
+        await adminSetRoleCourse();
+        await adminSetRoleGlobal()
     }
 
     /**
@@ -780,15 +796,45 @@ describe("API Tests", () => {
      */
     describe("Role", () => {
        it("Should not be possible to set a role without permission.", async() => {
-           // TODO
+           let response = await setCourseRole(courseRole.TA);
+           expect(response).to.have.status(401);
+
+           response = await setGlobalRole(globalRole.staff);
+           expect(response).to.have.status(401);
        });
 
        it("Should be possible to set global role with permission.", async() => {
-           // TODO
+           await adminSetPermissions({"manageUserRole" : true});
+
+           let response = await setGlobalRole(globalRole.admin);
+           expect(response).to.have.status(200);
+           assert(instanceOfUser(response.body));
+           expect(response.body.permission.globalRole).to.equal(globalRole.admin);
+
+           response = await setGlobalRole(globalRole.user);
+           expect(response).to.have.status(200);
+           assert(instanceOfUser(response.body));
+           expect(response.body.permission.globalRole).to.equal(globalRole.user);
+
+           await adminSetPermissions({"manageUserRole" : false});
        });
 
        it("Should be possible to set course role with permission.", async() => {
-           // TODO
+           await adminRegisterCourse();
+           await adminSetPermissions({"manageUserRole" : true});
+
+           let response = await setCourseRole(courseRole.TA);
+           expect(response).to.have.status(200);
+           assert(instanceOfCourseUser(response.body));
+           expect(response.body.permission.courseRole).to.equal(courseRole.TA);
+
+           response = await setCourseRole(courseRole.student);
+           expect(response).to.have.status(200);
+           assert(instanceOfCourseUser(response.body));
+           expect(response.body.permission.courseRole).to.equal(courseRole.student);
+
+           await adminSetPermissions({"manageUserRole" : false});
+           await adminUnregisterCourse();
        });
     });
 
