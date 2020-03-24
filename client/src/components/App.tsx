@@ -24,6 +24,7 @@ import {CourseUserOverview} from "./user/CourseUserOverview";
 import {Settings} from "./settings/Settings";
 import {globalRole} from "../../../models/enums/globalRoleEnum";
 import { Activity } from './Activity';
+import {CourseSettings} from "./course/CourseSettings";
 
 
 /**
@@ -68,18 +69,20 @@ class App extends React.Component<AppProps, AppState> {
 		});
 	}
 
+	//@deprecated
 	getAndSetRole() {
-		AuthHelper.getRole().then((response: Response) => {
-			response.json().then((json: any) => {
-				const userRole = json.role;
-				if (response.status === 200) {
-					this.setState({
-						role: userRole,
-						loggedIn: true
-					});
-				}
-			});
-		});
+		// Old Role get. API path does not currently exist
+		// AuthHelper.getRole().then((response: Response) => {
+		// 	response.json().then((json: any) => {
+		// 		const userRole = json.role;
+		// 		if (response.status === 200) {
+		// 			this.setState({
+		// 				role: userRole,
+		// 				loggedIn: true
+		// 			});
+		// 		}
+		// 	});
+		// });
 	}
 
 	render() {
@@ -93,16 +96,15 @@ class App extends React.Component<AppProps, AppState> {
 				<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
 				<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
 				<PrivateRoute path='/logout' component={Logout}/>
-				<AuthenticatedRoute path='/submission/:submissionId/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
 				<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
 				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
-				<AuthenticatedRoute path='/user/:userId/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
 				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={CourseUserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
+				<AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings} />
 				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
 				<AuthenticatedRoute path='/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/settings' component={Settings}/>

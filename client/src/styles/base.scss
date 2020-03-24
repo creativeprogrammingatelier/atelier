@@ -90,7 +90,7 @@ textarea:focus, textarea:active {
 	height: 100vh;
 	background: $gradientVertical;
 	box-shadow: $shadowLarge;
-	z-index: 1030;
+	z-index: 1040;
 }
 .sidebarContent {
 	width: 100%;
@@ -203,7 +203,12 @@ textarea:focus, textarea:active {
 	margin: 0 1rem 1rem 0;
 }
 
-.dataItem, .dataBlock {
+.block {
+	background-color: $colorWhite;
+	border-left: 0.5rem solid $primaryColor;
+}
+
+.dataItem, .dataBlock, .dataToggle {
 	a {
 		color: unset;
 	}
@@ -216,9 +221,16 @@ textarea:focus, textarea:active {
 	}
 }
 .dataItem:hover, .dataBlock:hover {
+	a {
+		.toast {
+			box-shadow: $shadowMedium;
+		}
+	}
+}
+.dataToggle:hover {
 	box-shadow: $shadowMedium;
 }
-.dataItem:not(:last-child), .dataBlock:not(:last-child) {
+.dataItem:not(:last-child), .dataBlock:not(:last-child), .dataToggle:not(:last-child) {
 	margin-bottom: 0.5rem;
 }
 .list:not(:last-child) {
@@ -308,25 +320,33 @@ textarea:focus, textarea:active {
 	border-radius: 0;
 	transition: none;
 }
-.btn:hover, .btn:focus, .btn:active {
+.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):focus, .btn:not(:disabled):not(.disabled):active {
 	box-shadow: $shadowMedium;
+}
+.btn:disabled {
+	background-color: $colorGray;
+}
+.btn:not(:disabled):not(.disabled):active:focus {
+	box-shadow: initial;
 }
 .btn-primary {
 	color: $colorWhite;
 	background-color: $primaryColor;
 }
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
+.btn-primary:not(:disabled):not(.disabled):hover, .btn-primary:not(:disabled):not(.disabled):focus, .btn-primary:not(:disabled):not(.disabled):active {
 	color: $colorOffWhite;
-	background-color: $primaryColor;
-}
-.btn-primary:hover {
 	background-color: $secondaryColor;
 }
-.btn-primary:not(:disabled):not(.disabled):active:focus {
-	box-shadow: initial;
-}
-.btn-primary:disabled {
-	background-color: gray;
+.buttonFloating {
+	bottom: 44px;
+	right: 0;
+	width: 3rem;
+	height: 3rem;
+	margin: 0.5rem;
+	padding: 0;
+	position: fixed;
+	border-radius: 50%;
+	z-index: 1030;
 }
 .buttonBar {
 	background-color: $primaryColor;
@@ -350,9 +370,6 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowSmallDown;
 }
 .commentThread {
-	background-color: $colorWhite;
-	border-left: 10px solid $primaryColor;
-
 	h3 {
 		box-shadow: $shadowSmallDown;
 	}
@@ -453,13 +470,13 @@ textarea:focus, textarea:active {
 .directoryNode {
 	margin: 0 0 0 0.5rem;
 
-	.dataItem {
+	.dataItem, .dataToggle {
 		margin: 0;
 	}
 	.directoryNode .toast-body {
 		padding: 0.25rem 0.5rem;
 	}
-	.directoryNode:last-of-type > .dataItem .toast-body {
+	.directoryNode:last-of-type > .dataItem .toast-body, .directoryNode:last-of-type > .dataToggle .toast-body {
 		padding-bottom: 0.5rem;
 	}
 }
@@ -470,6 +487,61 @@ textarea:focus, textarea:active {
 	padding-bottom: 0.5rem;
 }
 
+.round {
+	border-radius: 50%;
+}
 .transparent {
 	background: transparent;
+}
+.restricted {
+	.btn:not(:disabled):not(.disabled) {
+		background-color: $colorRestricted;
+	}
+	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
+		background-color: $colorRestrictedAlternate;
+	}
+	.buttonBar {
+		background-color: $colorRestricted;
+	}
+}
+.restricted.block {
+	border-color: $colorRestricted;
+}
+
+.floater {
+	position: fixed;
+	z-index: 1040;
+
+	.btn {
+		width: 100%;
+		height: 100%;
+	}
+}
+.floater > * {
+	box-shadow: $shadowMedium;
+}
+
+
+.commentCreator {
+	background-color: $colorWhite;
+
+	.btn {
+		width: 3rem;
+		height: 3rem;
+	}
+	.form-control {
+		height: 3rem;
+	}
+}
+.commentCreatorRound {
+	border-radius: 1.5rem;
+
+	.btn:first-of-type {
+		border-top-left-radius: 1.5rem;
+		border-bottom-left-radius: 1.5rem;
+	}
+	.btn:last-of-type {
+		border-top-right-radius: 1.5rem;
+		border-bottom-right-radius: 1.5rem;
+	}
 }

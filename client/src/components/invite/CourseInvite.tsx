@@ -4,8 +4,9 @@ import {coursePermission, deleteInvite, getInvite, getInvites} from "../../../he
 import {CourseInvite, Invite} from "../../../../models/api/Invite";
 import {Permission} from "../../../../models/api/Permission";
 import {DataItem} from "../data/DataItem";
-import {DataList} from "../data/DataList";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {inviteRole} from "../../../../models/enums/inviteRoleEnum";
+import {DataList} from "../data/DataList";
 
 export function CourseInvites({ courseID } : {courseID : string}) {
     return (
@@ -22,10 +23,10 @@ export function CourseInvites({ courseID } : {courseID : string}) {
     )
 }
 
-export function RoleInvite({courseID, link, role} : {courseID : string, link : string | undefined, role : string}) {
+export function RoleInvite({courseID, link, role} : {courseID : string, link : string | undefined, role : inviteRole}) {
     const [inviteLink, setInviteLink] = useState(link === undefined ? link : window.location.origin + link);
 
-    const createLink = (role : string) => {
+    const createLink = (role : inviteRole) => {
         getInvite(courseID, role)
             .then((courseInvite : CourseInvite) => {
                 setInviteLink(window.location.origin + `/api/invite/${courseInvite.inviteID}`);
@@ -57,9 +58,9 @@ export function Invites({permission, invite, courseID} : {permission : Permissio
         return <div/>
     }
 
-    const studentInvite = <RoleInvite courseID = {courseID} link = {invite.student} role = 'student' />;
-    const taInvite = <RoleInvite courseID = {courseID} link = {invite.TA} role = 'TA' />;
-    const teacherInvite = <RoleInvite courseID = {courseID} link = {invite.teacher} role = 'teacher' />;
+    const studentInvite = <RoleInvite courseID = {courseID} link = {invite.student} role = {inviteRole.student} />;
+    const taInvite = <RoleInvite courseID = {courseID} link = {invite.TA} role = {inviteRole.TA} />;
+    const teacherInvite = <RoleInvite courseID = {courseID} link = {invite.teacher} role = {inviteRole.teacher} />;
 
     return (
         <DataList

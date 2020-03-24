@@ -8,7 +8,7 @@ import { DataBlockList } from './data/DataBlockList';
 
 export function Activity() {
     return (
-		<Frame title="Home" sidebar search="/search">
+		<Frame title="Home" sidebar search>
 			<Jumbotron>
 				<h1>Activity</h1>
 			</Jumbotron>

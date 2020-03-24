@@ -12,6 +12,7 @@ import {DataList} from "../data/DataList";
 import {Course} from "../../../../models/api/Course";
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";
+import {TimeHelper} from "../../../helpers/TimeHelper";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -28,7 +29,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		loader={getSubmission}
 		params={[submissionId]}
 		component={
-			submission => <Frame title={submission.name!} sidebar search={submissionPath + "/search"}>
+			submission => <Frame title={submission.name!} sidebar search={{course: submission.references.courseID}}>
 				<Jumbotron>
 					<h1>{submission.name}</h1>
 					<Loading<Course>
@@ -37,10 +38,10 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 						component={course => <p>
 							Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
 							<br/>
-							<small className="text-light">{submission.date}</small>
+							<small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
 						</p>}
 					/>
-					<Button className="mb-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+					<Button className="mb-2 mr-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
                     <Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
 				</Jumbotron>
 				<DataList header="Files">
@@ -78,6 +79,6 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				 ]}/>*/}
 			</Frame>
 		}
-		wrapper={children => <Frame title="Submission" sidebar search={submissionPath + "/search"}>{children}</Frame>}
+		wrapper={children => <Frame title="Submission" sidebar search>{children}</Frame>}
 	/>;
 }

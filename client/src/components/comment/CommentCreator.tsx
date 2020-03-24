@@ -1,14 +1,23 @@
 import React, {useState} from "react";
 import {Button, Form, InputGroup} from "react-bootstrap";
-import {FiSend} from "react-icons/all";
+import {FiEye, FiEyeOff, FiSend} from "react-icons/all";
+import {Controlled as CodeMirror} from "react-codemirror2";
+import {Editor} from "codemirror";
 
 interface CommentCreatorProperties {
-	sendHandler: (comment: string) => Promise<boolean>
+	placeholder: string,
+	transparent?: boolean,
+	round?: boolean,
+	allowRestricted?: boolean,
+	code?: CodeMirror.Editor,
+	sendHandler: (comment: string, restricted: boolean) => Promise<boolean>
 }
-export function CommentCreator({sendHandler}: CommentCreatorProperties) {
+export function CommentCreator({placeholder, transparent, round, allowRestricted, sendHandler}: CommentCreatorProperties) {
 	const [comment, setComment] = useState("");
+	const [restricted, setRestricted] = useState(false);
 	const [sending, setSending] = useState(false);
 	const [shift, setShift] = useState(false);
+
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		console.log("Pressed a key: "+event.key);
@@ -38,7 +47,7 @@ export function CommentCreator({sendHandler}: CommentCreatorProperties) {
 		if (!sending) {
 			setSending(true);
 
-			if (await sendHandler(comment)) {
+			if (await sendHandler(comment, restricted)) {
 				setComment("");
 			}
 
@@ -46,11 +55,12 @@ export function CommentCreator({sendHandler}: CommentCreatorProperties) {
 		}
 	};
 
-	return <Form>
+	return <Form className={"commentCreator" + (round ? " commentCreatorRound" : "") + (restricted ? " restricted" : "") + (transparent ? " bg-transparent" : "")}>
 		<Form.Group>
-			<InputGroup className="bg-transparent">
-				<Form.Control type="text" placeholder="Reply..." className="bg-transparent" value={comment} onChange={handleCommentChange} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}/>
+			<InputGroup className={"bg-transparent" + (round ? " pl-1" : "")}>
+				<Form.Control type="text" placeholder={placeholder} className={"bg-transparent" + (round ? " pl-2" : "")} value={comment} onChange={handleCommentChange} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}/>
 				<InputGroup.Append>
+					{allowRestricted && <Button onClick={() => setRestricted(!restricted)}>{restricted ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>}
 					<Button onClick={handleCommentSubmit} disabled={sending}><FiSend size={14} color="#FFFFFF"/></Button>
 				</InputGroup.Append>
 			</InputGroup>

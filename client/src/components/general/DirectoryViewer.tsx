@@ -1,17 +1,30 @@
 import React, { Fragment } from "react";
-import {DataList} from "../data/DataList";
-import {DataItem} from "../data/DataItem";
+import {DirectoryNode} from "./DirectoryNode";
 
+class File {
+    name: string;
+	transport?: string;
 
-interface File {
-	name: string,
-	transport?: string
+	constructor(name: string, transport?: string) {
+		this.name = name;
+		this.transport = transport;
+	}
 }
-interface Node extends File {
-	children: Node[]
+export class Node extends File {
+	children: Node[];
+
+	constructor(name: string, children: Node[], transport?: string) {
+		super(name, transport);
+		this.children = children;
+	}
 }
-interface TopLevelNode extends Node {
-	paths: File[]
+export class TopLevelNode extends Node {
+	paths: File[];
+
+	constructor(name: string, children: Node[], paths: File[], transport?: string) {
+		super(name, children, transport);
+		this.paths = paths;
+	}
 }
 interface DirectoryViewerProperties {
 	/** List of file consisting of a path and possibly a location as given by `webkitRelativePath` */
@@ -29,10 +42,10 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 	}
 
 	const projectFolder = filePaths[0].name.split("/")[0];
-	const projectPaths = filePaths.map(path => ({name: path.name.substr(projectFolder.length + 1), transport: path.transport}));
+	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + 1), path.transport));
 
-	console.log(projectFolder);
-	console.log(projectPaths);
+	// console.log(projectFolder);
+	// console.log(projectPaths);
 
 	const topLevelNodes: {[folder: string]: TopLevelNode} = {};
 	for (const path of projectPaths) {
@@ -40,43 +53,36 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 		const file = path.name.substr(folder.length + 1);
 
 		if (file.length === 0) {
-			topLevelNodes[folder] = {name: folder, transport: path.transport, paths: [], children: []};
+			topLevelNodes[folder] = new TopLevelNode(folder, [], [], path.transport);
 		} else if (topLevelNodes.hasOwnProperty(folder)) {
-			topLevelNodes[folder].paths.push({name: file, transport: path.transport});
+			topLevelNodes[folder].paths.push(new File(file, path.transport));
 		} else {
-			topLevelNodes[folder] = {name: folder, transport: path.transport, paths: [{name: path.name.substr(folder.length + 1), transport:path.transport}], children: []};
+			topLevelNodes[folder] = new TopLevelNode(folder, [], [new File(path.name.substr(folder.length + 1), path.transport)], path.transport);
 		}
 	}
 	for (const folder in topLevelNodes) {
 		// TSLint wants this check
 		if (topLevelNodes.hasOwnProperty(folder)) {
-			console.log(folder);
-			console.log(topLevelNodes[folder]);
+			// console.log(folder);
+			// console.log(topLevelNodes[folder]);
 
 			for (const path of topLevelNodes[folder].paths) {
 				let current = topLevelNodes[folder] as Node;
 				for (const folder of path.name.split("/")) {
 					let next = current.children.find(child => child.name === folder);
 					if (next === undefined) {
-						next = {name: folder, children: []};
+						next = new Node(folder, []);
 						current.children.push(next);
 					}
 					current = next;
 				}
-				console.log(current);
+				// console.log(current);
 				current.transport = path.transport;
 			}
 
-			console.log(topLevelNodes[folder]);
+			// console.log(topLevelNodes[folder]);
 		}
 	}
 
-	return <Fragment>{Object.values(topLevelNodes).map(renderTopLevelNode)}</Fragment>;
-}
-
-function renderTopLevelNode(node: TopLevelNode) {
-	return <div className="directoryNode directoryTopLevel"><DataItem text={node.name} transport={node.transport}/>{node.children.map(renderNode)}</div>
-}
-function renderNode(node: Node) {
-	return <div className="directoryNode"><DataItem text={node.name} transport={node.transport}/>{node.children.map(renderNode)}</div>
+	return <Fragment>{Object.values(topLevelNodes).map(node => <DirectoryNode node={node}/>)}</Fragment>;
 }
