@@ -68,7 +68,7 @@ const nonEmptyRange : (a : Range) => boolean = (a : Range) => {
  * 
  * @param ranges, input ranges that can overlap
  */
-export function getRanges(ranges : Range[]) {
+export function getRanges(ranges : Range[]) { // TODO: Unclear function name
     let q = new FastPriorityQueue(rangeSort);
 
     for (const range of ranges.entries()) {

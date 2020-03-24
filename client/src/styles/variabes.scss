@@ -14,14 +14,17 @@ $tertiaryColor: #2c7a74;
 
 $backgroundColor: #f4f5f5;
 $colorWhite: #FFFFFF;
-$colorAlternateWhite: #FBFBFB;
+$colorAlternateWhite: #F9F9F9;
 $colorOffWhite: #EEEEEE;
 $colorOffWhite: #e9eaea;
+$colorGray: gray;
 $colorBlack: #000000;
 $colorOffBlack: #212529;
 
 $colorPrimary: $primaryColor;
 $colorSecondary: $secondaryColor;
+$colorRestricted: #103C4C;
+$colorRestrictedAlternate: #1b4D5D;
 $colorSuccess: green;
 $colorDanger: #ce3b33;
 $colorDangerAlternate: #ca4b25;
@@ -54,3 +57,9 @@ $shadowLarge: 0 0 100px 20px #00000085;
 
 //$red: $colorDanger;
 //$alert-bg-level: 0;
+
+$spacer: 1rem;
+$spacers: (
+	6: ($spacer * 4),
+	7: ($spacer * 5)
+);

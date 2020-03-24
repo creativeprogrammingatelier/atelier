@@ -5,15 +5,19 @@ import {Sidebar} from "./Sidebar";
 import {Content} from "./Content";
 import {ParentalProperties} from "../../helpers/ParentHelper";
 import {Responsive} from "../general/Responsive";
+import {useHistory, useLocation} from "react-router-dom";
+import {SearchProperties} from "../search/SearchOverview";
 
 interface FrameProperties extends ParentalProperties {
 	title: string,
 	sidebar: boolean,
-	search?: string,
+	search?: boolean | SearchProperties,
 }
 export function Frame({children, title, sidebar, search}: FrameProperties) {
 	const sidebarPositionOpened = "0vw";
 	const sidebarPositionClosed = "-150vw";
+	const history = useHistory();
+	const location = useLocation();
 	const [sidebarPosition, setSidebarPosition] = useState(sidebarPositionClosed);
 
 	function sidebarOpen() {
@@ -23,7 +27,7 @@ export function Frame({children, title, sidebar, search}: FrameProperties) {
 		setSidebarPosition(() => sidebarPositionClosed);
 	}
 	function searchClick() {
-		window.location.href = search ? search : "#";
+		history.push({pathname: "/search", state: search === true ? {} : search});
 	}
 
 	return (

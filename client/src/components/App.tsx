@@ -95,11 +95,9 @@ class App extends React.Component<AppProps, AppState> {
 				<PrivateRoute exact path='/student' component={StudentView} roles={['student']}/>
 				<PrivateRoute exact path='/roleview' component={(props: any) => <RoleView {...props} role={this.state.role}/>} roles={['teacher', 'student']}/>
 				<PrivateRoute path='/logout' component={Logout}/>
-				<AuthenticatedRoute path='/submission/:submissionId/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
 				<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
 				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
-				<AuthenticatedRoute path='/user/:userId/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
 				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>

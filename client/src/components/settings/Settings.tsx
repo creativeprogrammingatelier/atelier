@@ -23,7 +23,7 @@ export function Settings() {
     }, []);
 
     return (
-        <Frame title="Settings" sidebar search="/search">
+        <Frame title="Settings" sidebar search>
             <Jumbotron>
                 <h1>Settings</h1>
                 <Button>Have a button!</Button>

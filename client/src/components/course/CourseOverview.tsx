@@ -22,7 +22,7 @@ interface CourseOverviewProps {
 	}
 }
 
-export function CourseOverview({match}: CourseOverviewProps) {
+export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProps) {
 	const [reload, updateReload] = useState(0);
 	const [permissions, setPermissions] = useState(0);
 
@@ -30,64 +30,69 @@ export function CourseOverview({match}: CourseOverviewProps) {
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
 	useEffect(() => {
-		coursePermission(match.params.courseId, true)
+		coursePermission(courseId, true)
 			.then((permission: Permission) => {
 				setPermissions(permission.permissions);
 			});
 	}, []);
 
-    return (
-        <Frame title="Course" sidebar search={"/course/../search"}>
-            <Jumbotron>
-                <Loading<Course>
-                    loader={(courseId) => getCourse(courseId, false)}
-                    params={[match.params.courseId]}
-                    component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p>
-                    </Fragment>}
-                />
-            </Jumbotron>
-            <Loading<Submission[]>
-                loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
-                params={[match.params.courseId, reload]}
-                component={submissions =>
-                    <DataBlockList
-                        header="Submissions"
-                        list={submissions.map(submission => {
-                            console.log(submission);
-                            return {
-                                transport: `/submission/${submission.ID}`,
-                                title: submission.name,
-                                text: submission.name,
-                                time: new Date(submission.date),
-                                tags: []
-                                //tags: submission.tags
-                            };
-                        })}
-                    />
-                }
-            />
-            <div className="m-3">
-                <Uploader
-                    courseId={match.params.courseId}
-                    onUploadComplete={() => updateReload(rel => rel + 1)}
-                />
-            </div>
-            <Loading<Mention[]>
-                loader={courseID => getCourseMentions(courseID)}
-                params={[match.params.courseId]}
-                component={mentions =>
-                    <DataBlockList
-                        header="Mentions"
-                        list={mentions.map(mention => ({
-                            transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
-                            title: mention.commentID,
-                            text: "You've been mentioned!",
-                            time: new Date(),
-                            tags: []
-                        }))}
-                    />
-                }
-            />
-        </Frame>
-    );
+	return (
+		<Frame title="Course" sidebar search={{course: courseId}}>
+			<Jumbotron>
+				<Loading<Course>
+					loader={getCourse}
+					params={[courseId]}
+					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
+				/>
+			</Jumbotron>
+			<Loading<Submission[]>
+				loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
+				params={[courseId, reload]}
+				component={submissions =>
+					<DataBlockList
+						header="Submissions"
+						list={submissions.map(submission => {
+							console.log(submission);
+							return {
+								transport: `/submission/${submission.ID}`,
+								title: submission.name,
+								text: "Submitted by " + submission.user.name,
+								time: new Date(submission.date),
+								tags: []
+								//tags: submission.tags
+							};
+						})}
+					/>
+				}
+			/>
+			<div className="m-3">
+				<Uploader
+					courseId={courseId}
+					onUploadComplete={() => updateReload(rel => rel + 1)}
+				/>
+			</div>
+			<Loading<Mention[]>
+				loader={courseID => getCourseMentions(courseID)}
+				params={[courseId]}
+				component={mentions =>
+					<DataBlockList
+						header="Mentions"
+						list={mentions.map(mention => ({
+							transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
+							title: mention.commentID,
+							text: "You've been mentioned!",
+							time: new Date(),
+							tags: []
+						}))}
+					/>
+				}
+			/>
+			<CourseInvites courseID={courseId}/>
+			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
+				<DataList header="User Permission Settings">
+					<CourseSettings courseID={courseId}/>
+				</DataList>
+			}
+		</Frame>
+	);
 }
