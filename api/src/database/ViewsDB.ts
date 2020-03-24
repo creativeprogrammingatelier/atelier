@@ -203,18 +203,29 @@ export function commentThreadView(commentThreadTable=`"CommentThread"`){
 export function MentionsView(mentionsTable=`"Mentions"`){
      return `
           SELECT m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
-                 cv.submissionID, cv.courseID, cu.userID, cu.userName, 
-                 cu.email, cu.globalRole, cu.courseRole, cu.permission
-          FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersView" as cu
+                 cv.submissionID, cv.courseID, cv.created, cv.edited, 
+                 cv.body, cu.userID, cu.userName, cu.email, cu.globalRole, 
+                 cu.courseRole, cu.permission, cmu.userID as cmuUserID, 
+                 cmu.userName as cmuUserName, cmu.email as cmuEmail, 
+                 cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
+                 cmu.permission as cmuPermission
+          FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersView" as cu,
+               "CourseUsersView" as cmu
           WHERE m.commentID = cv.commentID
             AND m.userID = cu.userID
             AND cv.courseID = cu.courseID
+            AND cv.userID = cmu.userID
           UNION -- if addressing a group, user is null. account for that.
           SELECT m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
-                 cv.submissionID, cv.courseID, NULL, NULL,
-                 NULL, NULL, NULL, NULL
-          FROM ${mentionsTable} as m , "CommentsView" as cv
+                 cv.submissionID, cv.courseID, cv.created, cv.edited,
+                 cv.body, NULL, NULL, NULL, NULL, 
+                 NULL, NULL, cmu.userID as cmuUserID, 
+                 cmu.userName as cmuUserName, cmu.email as cmuEmail, 
+                 cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
+                 cmu.permission as cmuPermission
+          FROM ${mentionsTable} as m , "CommentsView" as cv, "CourseUsersView" as cmu
           WHERE m.commentID = cv.commentID
             AND m.userID IS NULL
+            AND cv.userID = cmu.userID
      `
 }
