@@ -71,7 +71,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'Planets', DEFAULT, DEFAULT);
 		
      INSERT INTO "Files" VALUES
-	     (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
+	     (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), 'MyFirstSubmission/MyFirstSubmission', 'processing'),
 	     (${uuid1}, ${uuid1}, 'Planets/Perlin.pde', 'processing'),
 	     (${uuid2}, ${uuid1}, 'Planets/Planets.pde', 'processing'),
 	     (${uuid3}, ${uuid1}, 'Planets/data/mercury', 'image/jpg'),
