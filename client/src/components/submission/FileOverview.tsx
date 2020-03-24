@@ -9,18 +9,14 @@ import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import {getCourse, getFile, getFileContents, getSubmission} from "../../../helpers/APIHelper";
+import {getFile, getFileContents, getSubmission} from "../../../helpers/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {Course} from "../../../../models/api/Course";
 import {Submission} from "../../../../models/api/Submission";
+import {Snippet} from "../../../../models/api/Snippet";
 
-export interface FileProperties {
-	id: string,
-	name: string,
-	body: string,
-	path: string,
-	url: string
+export interface SnippetHighlight extends Snippet {
+	onClick: Function,
 }
 interface FileOverviewProperties {
 	match: {

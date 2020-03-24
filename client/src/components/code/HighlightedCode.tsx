@@ -1,20 +1,17 @@
-import React, {useEffect, useReducer, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Code, CodeProperties, defaultHandler} from "./Code";
 import {getRanges, Range} from "../../helpers/HighlightingHelper";
-import {FileSnippet} from "../submission/CodeTab";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import {Position, noPosition} from "../../../../models/api/Snippet";
+import {noPosition} from "../../../../models/api/Snippet";
+import {SnippetHighlight} from "../submission/FileOverview";
+import {SelectionHelper} from "../../helpers/SelectionHelper";
 
 export interface HighlightedCodeProperties extends CodeProperties {
-	snippets: FileSnippet[]
+	snippets: SnippetHighlight[]
 }
 export function HighlightedCode({code, options, snippets, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
 	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 	const [click, setClick] = useState(noPosition);
-	const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
-
-	console.log("Rendering a highlighted code view");
-	console.log(snippets);
 
 	/**
 	 * Highlights comments passed to the code viewer.
@@ -28,10 +25,10 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 			// Transform each snippet into a range of characters
 			const ranges: Range[] = snippets.map(snippet => {
 				return {
-					startLine: snippet.startLine,
-					startChar: snippet.startCharacter,
-					endLine: snippet.endLine,
-					endChar: snippet.endCharacter,
+					startLine: snippet.start.line,
+					startChar: snippet.start.character,
+					endLine: snippet.end.line,
+					endChar: snippet.end.character,
 					overlap: 1
 				};
 			});
@@ -64,36 +61,25 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 		console.log(click);
 		console.log(snippets);
 		if (snippets) {
-			let first: FileSnippet | undefined;
+			let topPriority: SnippetHighlight | undefined = undefined;
 
-			// Find the first snippet matching the click location
+			// Find the topPriority snippet matching the click location
 			for (const snippet of snippets) {
 				console.log("Checking snippet");
 				console.log(snippet);
-				const {startLine, startCharacter, endLine, endCharacter} = snippet;
-				if (
-					(startLine < click.line || (startLine === click.line && startCharacter <= click.character)) &&
-					(endLine > click.line || (endLine === click.line && endCharacter >= click.character))
-				) {
-					if (
-						first === undefined ||
-						startLine < first.startLine ||
-						(startLine === first.startLine && startCharacter < first.startCharacter)
-					) { // TODO: WebStorm doesnt like this line, and neither do I
-						first = snippet;
-					}
+				if (SelectionHelper.priority(snippet, topPriority)) {
+					topPriority = snippet;
 				}
 			}
 
 			// Call on click for comment
-			if (first !== undefined) {
-				first.onClick();
+			if (topPriority !== undefined) {
+				topPriority.onClick();
 			}
 		}
 	};
 
 	useEffect(setCommentHighlights, [codeMirror, snippets]);
-	useEffect(() => {console.log("Changed snippets"); console.log(snippets)}, [snippets]);
 	useEffect(clickComment, [click]);
 
 	return <Code
@@ -106,15 +92,8 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 			}}
 		handleSelect={handleSelect}
 		handleClick={(editor, event) => {
-			console.log("Handling a click");
-			console.log(options);
-			console.log(snippets);
-			console.log(handleClick);
 			if (handleClick(editor, event) !== false) {
 				setClick({line: editor.getCursor().line, character: editor.getCursor().ch});
-				// setTimeout(() => {
-				// 	clickComment(editor.getCursor().line, editor.getCursor().ch);
-				// }, 10);
 			}
 		}}
 		handleChange={handleChange}

@@ -1,5 +1,5 @@
 import {Block} from "../general/Block";
-import {Controlled as CodeMirror, DomEvent} from "react-codemirror2";
+import {Controlled as CodeMirror} from "react-codemirror2";
 import React from "react";
 import * as codemirror from "codemirror";
 
@@ -30,6 +30,8 @@ export function Code({code, options = {}, handleInitialize = defaultHandler, han
 			(codeLine as Element).id = `${lineNumber++}`;
 		}
 	}
+
+	console.log("Rendering a code viewer");
 	
 	return <Block>
 		<CodeMirror

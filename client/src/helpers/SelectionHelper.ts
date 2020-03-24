@@ -9,8 +9,12 @@ export class SelectionHelper {
 	 * @param b: Selection 2
 	 * @returns boolean: Whether selection a has priority over selection b
 	 */
-	static priority(a: Selection, b: Selection) {
-		if (SelectionHelper.contains(a, b)) {
+	static priority(a?: Selection, b?: Selection) {
+		if (a === undefined) {
+			return false;
+		} else if (b === undefined) {
+			return true;
+		} else if (SelectionHelper.contains(a, b)) {
 			// If b is fully contained by a, clicking on b is more important
 			return false;
 		} else if (SelectionHelper.contains(b, a)) {

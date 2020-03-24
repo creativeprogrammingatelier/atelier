@@ -8,6 +8,7 @@ import {CommentSelector} from "../comment/CommentSelector";
 import {HighlightedCode, HighlightedCodeProperties} from "../code/HighlightedCode";
 import {useHistory} from "react-router-dom";
 import {Selection} from "../../../../models/api/Snippet";
+import {SnippetHighlight} from "./FileOverview";
 
 export interface FileComment {
 	startLine: number,
@@ -16,16 +17,6 @@ export interface FileComment {
 	endCharacter: number,
 	onClick: Function,
 	commentID: number
-}
-
-export interface FileSnippet {
-	startLine: number,
-	startCharacter: number,
-	endLine: number,
-	endCharacter: number,
-	onClick: Function,
-	snippetID: string,
-	commentThreadID: string
 }
 
 interface CodeProperties {
@@ -37,7 +28,7 @@ interface CodeProperties {
 
 export function CodeTab({file, body, submissionID}: CodeProperties) {
 	const [commentThreads, setCommentThreads] = useState([] as CommentThread[]);
-	const [snippets, setSnippets] = useState([] as FileSnippet[]);
+	const [snippets, setSnippets] = useState([] as SnippetHighlight[]);
 	const history = useHistory();
 
 	const getCommentThreads = () => {
@@ -55,20 +46,15 @@ export function CodeTab({file, body, submissionID}: CodeProperties) {
 		}
 	};
 	const getSnippets = () => {
-		const snippets: FileSnippet[] = [];
+		const snippets: SnippetHighlight[] = [];
 		for (const commentThread of commentThreads) {
 			if (commentThread.snippet !== undefined) {
 				snippets.push({
-					startLine: commentThread.snippet.start.line,
-					startCharacter: commentThread.snippet.start.character,
-					endLine: commentThread.snippet.end.line,
-					endCharacter: commentThread.snippet.end.character,
 					onClick: () => {
 						console.log("clicked comment");
 						history.push(`/submission/${submissionID}/${file.ID}/comments#${commentThread.ID}`);
 					},
-					snippetID: commentThread.snippet.ID,
-					commentThreadID: commentThread.ID
+					...commentThread.snippet
 				});
 			}
 		}

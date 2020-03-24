@@ -11,9 +11,9 @@ export interface Selection {
 export interface Snippet extends Selection {
 	ID: string,
 	file: File,
-	body :string,
-	contextBefore : string,
-	contextAfter : string,
+	body: string,
+	contextBefore: string,
+	contextAfter: string,
 	references: {
 		courseID: string,
 		submissionID: string,

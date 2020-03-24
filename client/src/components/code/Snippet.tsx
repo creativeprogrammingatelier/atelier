@@ -5,7 +5,7 @@ import "../../styles/codemirror.scss";
 import {Snippet} from "../../../../models/api/Snippet";
 import {MINIMIZED_LINES} from "../../../../helpers/SnippetHelper";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import {codeViewerOptions} from "./CodeViewer";
+import {defaultOptions} from "./Code";
 
 interface SnippetProperties {
 	snippet: Snippet,
@@ -28,7 +28,7 @@ export function Snippet({snippet, expanded}: SnippetProperties) {
 			<CodeMirror
 				value={expanded ? preLines + mainLines + postLines : mainLines}
 				options={{
-					...codeViewerOptions,
+					...defaultOptions,
 					firstLineNumber: expanded ? snippet.start.line + 2 - linesTop : snippet.start.line + 1,
 					readOnly: "nocursor"
 				}}
