@@ -23,6 +23,7 @@ import {Bootstrap} from "./Bootstrap";
 import {CourseUserOverview} from "./user/CourseUserOverview";
 import {Settings} from "./settings/Settings";
 import {globalRole} from "../../../models/enums/globalRoleEnum";
+import { Activity } from './Activity';
 
 
 /**
@@ -105,6 +106,7 @@ class App extends React.Component<AppProps, AppState> {
 				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
 				<AuthenticatedRoute path='/search' component={SearchOverview}/>
 				<AuthenticatedRoute path='/settings' component={Settings}/>
+                <AuthenticatedRoute path='/activity' component={Activity}/>
 				<AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
 				<AuthenticatedRoute path='/' component={Homepage}/>
 			</Switch>
