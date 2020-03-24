@@ -27,6 +27,9 @@ inviteRouter.get('/course/:courseID/all', capture(async(request : Request, respo
     const currentUserID : string = await getCurrentUserID(request);
     const courseID : string = request.params.courseID;
 
+    // Link require manageUserRegistration
+    await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
+
     const invites : CourseInvite[] = await CourseInviteDB.filterInvite({
         creatorID : currentUserID,
         courseID
@@ -108,7 +111,8 @@ inviteRouter.get("/:inviteID", capture(async(request: Request, response: Respons
 }));
 
 /** ---------- DELETE REQUESTS ---------- */
-/** Delete a link of a user */
+/** Delete a link of a user
+ */
 inviteRouter.delete("/course/:courseID/role/:role", capture(async(request : Request, response : Response) => {
     const courseID : string = request.params.courseID;
     const role : string = request.params.role;

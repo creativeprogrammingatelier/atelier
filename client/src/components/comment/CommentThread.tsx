@@ -1,4 +1,4 @@
-import React, {useState, Fragment, useEffect} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 
 import {Comment as CommentComponent} from "./Comment";
 import {ButtonBar} from "../general/ButtonBar";
@@ -6,12 +6,17 @@ import {Button} from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiCode, FiEye, FiEyeOff, FiTrash} from "react-icons/all";
 import {CommentThread} from "../../../../models/api/CommentThread";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
-import {createComment, setCommentThreadVisibility} from "../../../helpers/APIHelper";
+import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {File} from "../../../../models/api/File";
 import {Snippet} from "../code/Snippet";
 import {Link} from "react-router-dom";
 import {CommentCreator} from "./CommentCreator";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
+import {Permission} from "../../../../models/api/Permission";
+import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {User} from "../../../../models/api/User";
+import {commentThreadOwner} from "../../helpers/CommentThreadHelper";
+import {threadState} from "../../../../models/enums/threadStateEnum";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -23,8 +28,8 @@ interface CommentThreadProperties {
 
 export function CommentThread({thread}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
-	const [restricted, setRestricted] = useState(Boolean(thread.visibility));
-	const [manageRestrictedComments, setManageRestrictedComments] = useState(true); // TODO: Actual permission check
+	const [restricted, setRestricted] = useState(thread.visibility === threadState.private);
+	const [manageRestrictedComments, setManageRestrictedComments] = useState(false);
 	const [comments, updateComments] = useState(thread.comments);
 
 	const handleCommentSend = async(comment: string) => {
@@ -54,11 +59,28 @@ export function CommentThread({thread}: CommentThreadProperties) {
 		console.log("Clicked to discard");
 	};
 	const handleVisibility = () => {
-		setCommentThreadVisibility(thread.ID, restricted).then(() => setRestricted(!restricted));
+		setCommentThreadVisibility(thread.ID, restricted)
+			.then((commentThread : CommentThread) => {
+				setRestricted(commentThread.visibility === threadState.private);
+			});
 		// TODO: Some form of success feedback, probably
 	};
 
 	useEffect(() => ScrollHelper.scrollToHash(), []);
+	useEffect(() => {
+		coursePermission(thread.references.courseID, true)
+			.then((permission : Permission) => {
+				if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions)) {
+					setManageRestrictedComments(true);
+				}
+			});
+		getCurrentUser(true)
+			.then((user : User) => {
+				if (user.ID === commentThreadOwner(thread)) {
+					setManageRestrictedComments(true);
+				}
+			});
+	}, []);
 
 	return (
 		<div id={thread.ID} className={"commentThread block" + (restricted ? " restricted" : "")}>
