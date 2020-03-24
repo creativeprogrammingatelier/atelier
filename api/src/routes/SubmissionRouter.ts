@@ -58,17 +58,18 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
             userID
         }, client);
         
+        const oldPath = path.join(UPLOADS_PATH, fileLocation);
+
         const dbFiles = await Promise.all(
             files.map(file => 
                 FileDB.addFile({
-                    pathname: file.path.replace(fileLocation, submission.ID),
+                    pathname: file.path.replace(oldPath, "").replace(/\\/g, "/"),
                     type: file.mimetype,
                     submissionID: submission.ID,
                     client
                 }))
         );
         
-        const oldPath = path.join(UPLOADS_PATH, fileLocation);
         await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
         await archiveProject(submission.ID, request.body["project"]);
         await deleteNonCodeFiles(dbFiles);
