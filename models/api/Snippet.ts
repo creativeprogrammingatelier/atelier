@@ -1,14 +1,12 @@
 import {File} from "./File";
 
+export interface Position {
+	line: number,
+	character: number
+}
 export interface Selection {
-	start: {
-		line: number,
-		character: number
-	},
-	end: {
-		line: number,
-		character: number
-	}
+	start: Position,
+	end: Position
 }
 export interface Snippet extends Selection {
 	ID: string,
@@ -23,4 +21,5 @@ export interface Snippet extends Selection {
 	}
 }
 
-export const noSelection: Selection = {start: {line: -1, character: -1}, end: {line: -1, character: -1}};
+export const noPosition: Position = {line: -1, character: -1};
+export const noSelection: Selection = {start: noPosition, end: noPosition};

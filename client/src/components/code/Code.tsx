@@ -19,7 +19,7 @@ export interface CodeProperties {
 	handleClick?: (editor: codemirror.Editor, event: Event) => void | boolean,
 	handleChange?: (editor: codemirror.Editor, data: codemirror.EditorChange, value: string) => void | boolean
 }
-export function Code({code, options = {}, handleInitialize = () => {}, handleSelect = () => {}, handleClick = () => {}, handleChange = () => {}}: CodeProperties) {
+export function Code({code, options = {}, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: CodeProperties) {
 	/**
 	 * Add Id's to line in the code to allow #lineNumber in the url
 	 */
@@ -51,7 +51,7 @@ export function Code({code, options = {}, handleInitialize = () => {}, handleSel
 		/>
 	</Block>
 }
-const defaultOptions = {
+export const defaultOptions = {
 	mode: "text/x-java",
 	theme: "atelyay",
 	lineNumbers: true,
@@ -59,3 +59,4 @@ const defaultOptions = {
 	indentUnit: 4,
 	indentWithTabs: true
 };
+export const defaultHandler = () => {};
