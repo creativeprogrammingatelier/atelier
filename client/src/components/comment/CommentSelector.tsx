@@ -56,6 +56,7 @@ export function CommentSelector<T>({codeViewer, codeProperties, sendHandler}: Co
 			<Floater bottom={44} left={0} width="-webkit-fill-available" height="3rem" className="m-2">
 				<CommentCreator
 					placeholder={selectionText.length === 0 ? "Make a selection" : "Write your comment"}
+					large
 					round
 					allowRestricted
 					sendHandler={(comment, restricted) => {

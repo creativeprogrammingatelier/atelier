@@ -366,18 +366,6 @@ textarea:focus, textarea:active {
 	}
 }
 
-.comment {
-	box-shadow: $shadowSmallDown;
-}
-.commentThread {
-	h3 {
-		box-shadow: $shadowSmallDown;
-	}
-}
-.commentThread:not(:last-child) {
-	margin-bottom: 1rem;
-}
-
 .mention {
 	padding: 0.1rem 0.5rem;
 	color: $colorWhite;
@@ -521,10 +509,22 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowMedium;
 }
 
+.comment, .snippet {
+	box-shadow: $shadowSmallDown;
+}
+.commentThread {
+	h3 {
+		box-shadow: $shadowSmallDown;
+	}
+}
+.commentThread:not(:last-child) {
+	margin-bottom: 1rem;
+}
 
 .commentCreator {
 	background-color: $colorWhite;
-
+}
+.commentCreatorLarge {
 	.btn {
 		width: 3rem;
 		height: 3rem;

@@ -7,20 +7,19 @@ import {Editor} from "codemirror";
 interface CommentCreatorProperties {
 	placeholder: string,
 	transparent?: boolean,
+	large?: boolean,
 	round?: boolean,
 	allowRestricted?: boolean,
 	code?: CodeMirror.Editor,
 	sendHandler: (comment: string, restricted: boolean) => Promise<boolean>
 }
-export function CommentCreator({placeholder, transparent, round, allowRestricted, sendHandler}: CommentCreatorProperties) {
+export function CommentCreator({placeholder, transparent, large, round, allowRestricted, sendHandler}: CommentCreatorProperties) {
 	const [comment, setComment] = useState("");
 	const [restricted, setRestricted] = useState(false);
 	const [sending, setSending] = useState(false);
 	const [shift, setShift] = useState(false);
 
-
 	const handleKeyDown = (event: React.KeyboardEvent) => {
-		console.log("Pressed a key: "+event.key);
 		if (event.key === "Shift") {
 			setShift(true);
 		}
@@ -55,7 +54,7 @@ export function CommentCreator({placeholder, transparent, round, allowRestricted
 		}
 	};
 
-	return <Form className={"commentCreator" + (round ? " commentCreatorRound" : "") + (restricted ? " restricted" : "") + (transparent ? " bg-transparent" : "")}>
+	return <Form className={"commentCreator" + (large ? " commentCreatorLarge" : "") + (round ? " commentCreatorRound" : "") + (restricted ? " restricted" : "") + (transparent ? " bg-transparent" : "")}>
 		<Form.Group>
 			<InputGroup className={"bg-transparent" + (round ? " pl-1" : "")}>
 				<Form.Control type="text" placeholder={placeholder} className={"bg-transparent" + (round ? " pl-2" : "")} value={comment} onChange={handleCommentChange} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}/>
