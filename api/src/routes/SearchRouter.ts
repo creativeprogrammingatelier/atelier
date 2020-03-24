@@ -52,24 +52,28 @@ searchRouter.get('/', capture(async (request, response) => {
                     .map(CourseUserToUser);
         const comments = await CommentDB.searchComments(query, common);
         const snippets = await SnippetDB.SearchSnippets(query, common);
-        response.send({
+        const result = {
             users, 
             courses: [], 
             submissions: [], 
             files: [],
             comments,
             snippets
-        } as SearchResult);
+        } as SearchResult;
+        console.log("searched. query:", query, "Found", result)
+        response.send(result);
     } else {
         const courses = await CourseDB.searchCourse(query, common);
-        response.send({
+        const result = {
             users: [], 
             courses, 
             submissions: [], 
             files: [],
             comments: [],
             snippets: []
-        })
+        };
+        console.log("searched. query:", query, "Found", result)
+        response.send(result);
     }
 }));
 

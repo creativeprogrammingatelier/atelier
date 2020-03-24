@@ -126,19 +126,19 @@ export class CourseDB {
 		type argType = typeof args;
 		return client.query<DBAPICourse, argType>(`
 			SELECT c.* 
-			FROM "CoursesView" as c, CourseUsers as cu
+			FROM "CoursesView" as c, "CourseUsersView" as cu
 			WHERE
 			--current user
 				cu.userID = $5
 			AND c.courseID = cu.courseID
 			--ids
-			AND ($1::uuid IS NULL OR courseID=$1)
-			AND ($2::uuid IS NULL OR creator=$2)
+			AND ($1::uuid IS NULL OR c.courseID=$1)
+			AND ($2::uuid IS NULL OR c.creator=$2)
 			--course
-			AND ($3::text IS NULL OR courseName ILIKE $3)
-			AND ($4::text IS NULL OR state=$4)
+			AND ($3::text IS NULL OR c.courseName ILIKE $3)
+			AND ($4::text IS NULL OR c.state=$4)
 			
-			ORDER BY state, courseName, courseID
+			ORDER BY c.state, c.courseName, c.courseID
 			LIMIT $6
 			OFFSET $7`, args)
 			.then(extract).then(map(courseToAPIPartial))
