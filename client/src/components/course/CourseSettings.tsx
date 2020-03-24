@@ -10,6 +10,8 @@ import {containsPermission, PermissionEnum} from "../../../../models/enums/permi
 import {PermissionSettings} from "../settings/PermissionSettings";
 import {UpdateCourse} from "../settings/Course/UpdateCourse";
 import {DataList} from "../data/DataList";
+import {MentionSuggestions} from "../comment/MentionSuggestions";
+import {UserSearch} from "../general/UserSearch";
 
 interface CourseOverviewProps {
     match: {
@@ -70,6 +72,11 @@ export function CourseSettings({match}: CourseOverviewProps) {
                     }
                 />
             }
+
+            <UserSearch
+                courseID={match.params.courseId}
+                onSelected={(x : string) => console.log(x)}
+            />
         </Frame>
     );
 }

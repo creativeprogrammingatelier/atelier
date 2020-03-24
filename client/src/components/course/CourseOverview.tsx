@@ -8,12 +8,7 @@ import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../models/api/Course";
 import {Mention} from "../../../../models/api/Mention";
-import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
-import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
-import {CourseSettings} from "../settings/CourseSettings";
-import {DataList} from "../data/DataList";
-
 interface CourseOverviewProps {
 	match: {
 		params: {

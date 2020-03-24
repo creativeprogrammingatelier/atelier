@@ -164,6 +164,15 @@ export function getCourseMentions(courseID: string, doCache?: boolean) {
 export function search(query: string, limit = 20, offset = 0, doCache?: boolean) {
 	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`, undefined, doCache);
 }
+export function searchUsers(query : string, courseID? : string, limit = 20, offset = 0, doCache? : boolean) {
+	const courseSearch = courseID === undefined ? "" : `&courseID=${courseID}`;
+	return Fetch.fetchJson<User[]>(
+		`/api/search/users?q=${query}${courseSearch}&limit=${limit}&offset=${offset}`,
+		undefined,
+		doCache
+	)
+}
+//@deprecated
 export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0, doCache?: boolean) {
 	return Fetch.fetchJson<User[]>(
         `/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`, 
