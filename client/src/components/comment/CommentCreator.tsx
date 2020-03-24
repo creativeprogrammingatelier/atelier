@@ -1,12 +1,15 @@
 import React, {useState} from "react";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {FiEye, FiEyeOff, FiSend} from "react-icons/all";
+import {Controlled as CodeMirror} from "react-codemirror2";
+import {Editor} from "codemirror";
 
 interface CommentCreatorProperties {
 	placeholder: string,
 	transparent?: boolean,
 	round?: boolean,
 	allowRestricted?: boolean,
+	code?: CodeMirror.Editor,
 	sendHandler: (comment: string, restricted: boolean) => Promise<boolean>
 }
 export function CommentCreator({placeholder, transparent, round, allowRestricted, sendHandler}: CommentCreatorProperties) {
@@ -14,6 +17,7 @@ export function CommentCreator({placeholder, transparent, round, allowRestricted
 	const [restricted, setRestricted] = useState(false);
 	const [sending, setSending] = useState(false);
 	const [shift, setShift] = useState(false);
+
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		console.log("Pressed a key: "+event.key);

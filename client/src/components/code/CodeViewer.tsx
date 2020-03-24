@@ -353,7 +353,6 @@ class CodeViewer extends React.Component<CodeViewerProperties, CodeViewerState> 
 					/>
 				</Block>
 				{/*<ButtonFloating><FiTag size={22}/></ButtonFloating>*/}
-				<CommentSelector/>
 				{
 					this.state.selecting ?
 						<div>

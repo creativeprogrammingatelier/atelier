@@ -320,8 +320,11 @@ textarea:focus, textarea:active {
 	border-radius: 0;
 	transition: none;
 }
-.btn:hover, .btn:focus, .btn:active {
+.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):focus, .btn:not(:disabled):not(.disabled):active {
 	box-shadow: $shadowMedium;
+}
+.btn:disabled {
+	background-color: $colorGray;
 }
 .btn:not(:disabled):not(.disabled):active:focus {
 	box-shadow: initial;
@@ -330,13 +333,13 @@ textarea:focus, textarea:active {
 	color: $colorWhite;
 	background-color: $primaryColor;
 }
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
+.btn-primary:not(:disabled):not(.disabled):hover, .btn-primary:not(:disabled):not(.disabled):focus, .btn-primary:not(:disabled):not(.disabled):active {
 	color: $colorOffWhite;
-	background-color: $primaryColor;
-}
-.btn-primary:hover {
 	background-color: $secondaryColor;
 }
+//.btn-primary:hover {
+//	background-color: $secondaryColor;
+//}
 //.btn-primary:disabled {
 //	background-color: gray;
 //}
