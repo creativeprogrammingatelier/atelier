@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from "react";
-import { searchUsersInCourse } from "../../../helpers/APIHelper";
+import { searchUsersInCourse, permission } from "../../../helpers/APIHelper";
+import { courseRole } from "../../../../models/enums/courseRoleEnum";
+import { PermissionEnum, containsPermission } from "../../../../models/enums/permissionEnum";
 
 interface MentionSuggestionsProperties {
 	/** Already inserted text to match with the start of suggestions */
@@ -11,11 +13,29 @@ interface MentionSuggestionsProperties {
 }
 
 export function MentionSuggestions({suggestionBase, courseID, onSelected}: MentionSuggestionsProperties) {
+    const [allowedGroups, updateAllowedGroups] = useState([] as courseRole[]);
 	const [suggestions, updateSuggestions] = useState({ s: [] as string[], base: suggestionBase });
 
     function filterSuggestions(suggestions: string[], base: string) {
         return suggestions.filter(s => s.toLowerCase().includes(base.toLowerCase()));
     }
+
+    useEffect(() => {
+        permission().then(permission => {
+            const groups = [];
+            if (containsPermission(PermissionEnum.mentionAllTeachers, permission.permissions)) {
+                groups.push(courseRole.teacher);
+            }
+            if (containsPermission(PermissionEnum.mentionAllAssistants, permission.permissions)) {
+                groups.push(courseRole.TA);
+            }
+            if (containsPermission(PermissionEnum.mentionAllStudents, permission.permissions)) {
+                groups.push(courseRole.student);
+            }
+            console.log("Allowed groups to mention: ", groups);
+            updateAllowedGroups(groups);
+        });
+    }, []);
 
 	useEffect(() => {
 		if (suggestionBase === null || suggestionBase.trim() === "") {
@@ -33,12 +53,15 @@ export function MentionSuggestions({suggestionBase, courseID, onSelected}: Menti
                 searchUsersInCourse(suggestionBase, courseID, 10).then(users => {
                     const names = users.map(u => u.name);
                     updateSuggestions(({ s, base }) => {
+                        // Create the group suggestions
+                        const groups = filterSuggestions(allowedGroups, base);
+
                         // If the base is exactly the same, we're fine
                         if (oldBase === base) {
-                            return { s: names, base };
+                            return { s: names.concat(groups), base };
                         // If the base has grown, filter on what's still relevant
                         } else if (base.includes(oldBase)) {
-                            return { s: filterSuggestions(names, base), base };
+                            return { s: filterSuggestions(names, base).concat(groups), base };
                         // If the base is smaller or has changed, we don't want to use these results
                         } else {
                             return { s, base };
