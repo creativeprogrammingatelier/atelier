@@ -26,6 +26,11 @@ function getFolderForFile(reqFileLocation: string, projectName: string, fileName
     );
 }
 
+/** Get the path on disk for a File from the database */
+export function getFilePathOnDisk(file: File) {
+    return path.normalize(path.join(UPLOADS_PATH, file.references.submissionID, file.name));
+}
+
 /** 
  * Storage engine for `multer` that stores files of a request together in a folder. 
  * Storage structure: UPLOADS_PATH/[random string]/ProjectName/[all files]
@@ -99,7 +104,7 @@ export const deleteFile = (filePath: fs.PathLike): Promise<void> =>
 /** Delete all non-code files from a list of files */
 export async function deleteNonCodeFiles(files: File[]) {
     const nonCodeFiles = files.filter(f => !CODEFILE_EXTENSIONS.includes(path.extname(f.name)));
-    await Promise.all(nonCodeFiles.map(file => deleteFile(file.name)));
+    await Promise.all(nonCodeFiles.map(file => deleteFile(getFilePathOnDisk(file))));
 }
 
 /** Read a file as a string with UTF-8 encoding */

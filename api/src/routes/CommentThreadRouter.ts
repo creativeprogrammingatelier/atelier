@@ -23,7 +23,7 @@ import {
 import {filterCommentThread} from "../helpers/APIFilterHelper";
 import {getMentions} from '../helpers/MentionsHelper';
 import {MentionsDB} from '../database/MentionsDB';
-import { readFileAsString } from '../helpers/FilesystemHelper';
+import { readFileAsString, getFilePathOnDisk } from '../helpers/FilesystemHelper';
 import { getContextLines } from '../../../helpers/SnippetHelper';
 
 export const commentThreadRouter = express.Router();
@@ -202,7 +202,7 @@ commentThreadRouter.post('/file/:fileID', capture(async (request, response) => {
             snippetID = await SnippetDB.createNullSnippet({client});
         } else {
             const file = await FileDB.getFileByID(fileID, {client});
-            const fileContent = await readFileAsString(file.name);
+            const fileContent = await readFileAsString(getFilePathOnDisk(file));
             const { contextBefore, body, contextAfter } = 
                 getContextLines(fileContent, ct.snippet.lineStart, ct.snippet.lineEnd);
             snippetID = await SnippetDB.addSnippet({
