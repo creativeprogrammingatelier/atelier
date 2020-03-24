@@ -12,6 +12,7 @@ import {DataList} from "../data/DataList";
 import {Course} from "../../../../models/api/Course";
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";
+import {TimeHelper} from "../../../helpers/TimeHelper";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -37,7 +38,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 						component={course => <p>
 							Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
 							<br/>
-							<small className="text-light">{submission.date}</small>
+							<small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
 						</p>}
 					/>
 					<Button className="mb-2 mr-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
