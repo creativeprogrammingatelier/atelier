@@ -3,7 +3,7 @@ export enum PermissionEnum {
     'manageUserPermissionsView',
     'manageUserPermissionsManager',
     'manageUserRole',
-    '4-reserved',
+    'managePlugins',
     '5-reserved',
     'viewAllUserProfiles',
     'manageUserRegistration',

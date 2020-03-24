@@ -14,7 +14,7 @@ export const pluginRouter = express.Router()
 /** All enpoints require the manageUserRegistration permission */
 pluginRouter.use(captureNext(async (request, response, next) => {
     const userID = await getCurrentUserID(request);
-    await requirePermission(userID, PermissionEnum.manageUserRegistration);
+    await requirePermission(userID, PermissionEnum.managePlugins);
     next();
 }));
 
@@ -32,7 +32,7 @@ pluginRouter.get('/', capture(async (request, response) => {
 
 /** Create a new plugin */
 pluginRouter.post('/', capture(async (request, response) => {
-    const userName = request.body.user?.userName;
+    const userName = request.body.user?.name;
     const email = request.body.user?.email;
 
     const plugin: Plugin = await transaction(async client => {
@@ -40,6 +40,7 @@ pluginRouter.post('/', capture(async (request, response) => {
             userName,
             email, 
             globalRole: globalRole.plugin,
+            password: UserDB.invalidPassword(),
             client
         });
 
@@ -68,10 +69,10 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
 
     const plugin: Plugin = await transaction(async client => {
         let user = undefined;
-        if (request.body.name || request.body.email) {
+        if (request.body.user) {
             user = await UserDB.updateUser({
                 userID,
-                userName: request.body.user?.userName,
+                userName: request.body.user?.name,
                 email: request.body.user?.email,
                 client
             });
