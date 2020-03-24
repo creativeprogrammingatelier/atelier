@@ -12,9 +12,28 @@ export class MentionsDB {
 		return MentionsDB.filterMentions(params);
 	}
 
-	static async getMentionsByUser(userID : string, params : DBTools = {}) {
-		return this.filterMentions({...params, userID})
-	}
+	static async getMentionsByUser(userID : string, courseID? : string, params : DBTools = {}) {
+        const { client = pool, limit = undefined, offset = undefined } = params;
+        const userid = UUIDHelper.toUUID(userID),
+            courseid = UUIDHelper.toUUID(courseID);
+        return client.query(`
+            SELECT m.*
+            FROM "MentionsView" as m
+            WHERE ($2::uuid IS NULL OR m.courseID = $2)
+            AND (m.userID = $1
+                OR (m.userID IS NULL 
+                    AND EXISTS (
+                        SELECT * 
+                        FROM "CourseRegistration" as cr 
+                        WHERE cr.userID = $1 
+                        AND cr.courseID = m.courseID 
+                        AND cr.courseRole = m.userGroup
+                    )
+                )
+            ) ORDER BY m.created LIMIT $3 OFFSET $4
+        `, [userid, courseid, limit, offset])
+        .then(extract).then(map(mentionToAPI))
+    }
 
 	static async getMentionsByComment(commentID : string, params : DBTools = {}){
 		return this.filterMentions({...params, commentID})
@@ -25,7 +44,8 @@ export class MentionsDB {
 
 	static async filterMentions(mention : Mention){
 		const {
-			mentionID = undefined,
+            mentionID = undefined,
+            mentionGroup = undefined,
 			userID = undefined,
 			commentID = undefined,
 			limit = undefined,
@@ -51,12 +71,13 @@ export class MentionsDB {
 			AND ($3::uuid IS NULL OR commentID = $3)
 			AND ($4::uuid IS NULL OR commentThreadID = $4)
 			AND ($5::uuid IS NULL OR submissionID = $5)
-			AND ($6::uuid IS NULL OR courseID = $6)
-			ORDER BY mentionID
-			LIMIT $7
-			OFFSET $8
-		`, [mentionid, userid, commentid, commentthreadid, submissionid, courseid, limit, offset])
-		.then(extract).then(map(convertMention))	
+            AND ($6::uuid IS NULL OR courseID = $6)
+            AND ($7 IS NULL OR mentionGroup = $7)
+			ORDER BY created
+			LIMIT $8
+			OFFSET $9
+		`, [mentionid, userid, commentid, commentthreadid, submissionid, courseid, mentionGroup, limit, offset])
+		.then(extract).then(map(mentionToAPI))
 	}
 	static async addMention(mention : Mention){
 		checkAvailable(['userID', "commentID"], mention)
