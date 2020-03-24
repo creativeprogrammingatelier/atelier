@@ -22,7 +22,7 @@ export function Activity() {
                                 mention.comment.references.fileID !== undefined
                                 ? `/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
                                 : `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`, 
-							title: `Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle}`,
+							title: `Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle} in ${mention.courseName}`,
 							text: mention.comment.text,
 							time: new Date(mention.comment.created),
 							tags: []

@@ -208,14 +208,15 @@ export function MentionsView(mentionsTable=`"Mentions"`){
                  cu.courseRole, cu.permission, cmu.userID as cmuUserID, 
                  cmu.userName as cmuUserName, cmu.email as cmuEmail, 
                  cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
-                 cmu.permission as cmuPermission, subm.title as submTitle
+                 cmu.permission as cmuPermission, subm.title as submTitle, c.courseName
           FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersView" as cu,
-               "CourseUsersView" as cmu, "Submissions" as subm
+               "CourseUsersView" as cmu, "Submissions" as subm, "Courses" as c
           WHERE m.commentID = cv.commentID
             AND m.userID = cu.userID
             AND cv.courseID = cu.courseID
             AND cv.userID = cmu.userID
             AND cv.submissionID = subm.submissionID
+            AND cv.courseID = c.courseID
           UNION -- if addressing a group, user is null. account for that.
           SELECT m.mentionID, m.userGroup, cv.commentID, cv.fileID, cv.commentThreadID, 
                  cv.snippetID, cv.submissionID, cv.courseID, cv.created, cv.edited,
@@ -223,11 +224,12 @@ export function MentionsView(mentionsTable=`"Mentions"`){
                  NULL, NULL, cmu.userID as cmuUserID, 
                  cmu.userName as cmuUserName, cmu.email as cmuEmail, 
                  cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
-                 cmu.permission as cmuPermission, subm.title as submTitle
-          FROM ${mentionsTable} as m , "CommentsView" as cv, "CourseUsersView" as cmu, "Submissions" as subm
+                 cmu.permission as cmuPermission, subm.title as submTitle, c.courseName
+          FROM ${mentionsTable} as m , "CommentsView" as cv, "CourseUsersView" as cmu, "Submissions" as subm, "Courses" as c
           WHERE m.commentID = cv.commentID
             AND m.userID IS NULL
             AND cv.userID = cmu.userID
             AND cv.submissionID = subm.submissionID
+            AND cv.courseID = c.courseID
      `
 }

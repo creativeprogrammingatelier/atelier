@@ -63,7 +63,8 @@ export interface DBMention {
     cmucourserole : string,
     cmupermission : string,
 
-    submtitle : string
+    submtitle : string,
+    coursename : string
 }
 
 export function convertMention(db : DBMention) : Mention{
@@ -130,6 +131,7 @@ export function mentionToAPI(db : DBMention) : APIMention{
             }
         },
         submissionTitle: db.submtitle,
+        courseName: db.coursename,
 		references: {
 			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),

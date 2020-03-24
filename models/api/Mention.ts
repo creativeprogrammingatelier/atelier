@@ -7,6 +7,7 @@ export interface Mention {
     user: User | undefined,
     comment: Comment,
     submissionTitle: string,
+    courseName: string,
 	references:{
 		commentThreadID : string,
 		submissionID : string,
