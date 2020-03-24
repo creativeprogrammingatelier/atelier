@@ -4,9 +4,10 @@ import crypto from 'crypto';
 
 import { plugin } from './Plugin';
 import { createWebhookRequest, getSubscribedPlugins } from '../../api/src/helpers/WebhookHelper';
+import { WebhookEvent } from '../../models/enums/webhookEventEnum';
 
 describe("WebhookHelper.createWebhookRequest", () => {
-    const event = "testevent";
+    const event = WebhookEvent.SubmissionFile;
     const body = {
         test: "value",
         other: {

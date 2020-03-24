@@ -106,7 +106,7 @@ export class UserDB {
             userid = UUIDHelper.toUUID(userID),
 			username = searchify(userName)
 		return client.query(`
-		SELECT *
+		SELECT u.*
 		FROM "UsersView" as u, "CourseRegistration" as cr
         WHERE
             (u.userID = cr.userID)

@@ -97,6 +97,52 @@ export class CourseDB {
 			return res
 		})
 	}
+	/** @TODO instead of being registered, check the permissions of a user
+	 */
+	static async searchCourse(searchString : string, extras : Course & {userID?: string}){
+		const {
+			courseID = undefined,
+			courseName = searchString,
+			creatorID = undefined,
+			state = undefined,
+			//current user
+			userID = undefined,
+			//dbtools
+			limit = undefined,
+			offset = undefined,
+			client = pool,
+		} = extras;
+		const courseid = UUIDHelper.toUUID(courseID),
+			creatorid = UUIDHelper.toUUID(creatorID),
+			userid = UUIDHelper.toUUID(userID)
+		const 
+			searchCourse = searchify(courseName)
+
+		const args = [	courseid, creatorid, //ids
+						searchCourse, state, //course
+						userid, //current user
+						limit, offset
+					]
+		type argType = typeof args;
+		return client.query<DBAPICourse, argType>(`
+			SELECT c.* 
+			FROM "CoursesView" as c, CourseUsers as cu
+			WHERE
+			--current user
+				cu.userID = $5
+			AND c.courseID = cu.courseID
+			--ids
+			AND ($1::uuid IS NULL OR courseID=$1)
+			AND ($2::uuid IS NULL OR creator=$2)
+			--course
+			AND ($3::text IS NULL OR courseName ILIKE $3)
+			AND ($4::text IS NULL OR state=$4)
+			
+			ORDER BY state, courseName, courseID
+			LIMIT $6
+			OFFSET $7`, args)
+			.then(extract).then(map(courseToAPIPartial))
+	}
 
 	/**
 	 * One

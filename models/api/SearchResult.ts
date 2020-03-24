@@ -4,6 +4,7 @@ import {Submission} from "./Submission";
 import {Comment} from "./Comment";
 import {File} from "./File";
 import {Snippet} from "./Snippet";
+import { CourseUser } from "./CourseUser";
 
 export interface SearchResultComment {
 	comment: Comment,
@@ -19,7 +20,7 @@ export interface SearchResultSnippet {
 	submission: Submission
 }
 export interface SearchResult {
-	users: User[],
+	users: CourseUser[],
 	courses: Course[],
 	submissions: Submission[],
 	comments: SearchResultComment[],

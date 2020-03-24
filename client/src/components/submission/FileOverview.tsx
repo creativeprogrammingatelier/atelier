@@ -10,7 +10,7 @@ import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {getCourse, getFile, getFileContents, getSubmission} from "../../../helpers/APIHelper";
-import {Jumbotron} from "react-bootstrap";
+import {Jumbotron, Button} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {Course} from "../../../../models/api/Course";
 import {Submission} from "../../../../models/api/Submission";
@@ -63,8 +63,9 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 						<Loading<Submission>
 							loader={getSubmission}
 							params={[submissionId]}
-							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link></p>}
+							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>}
 						/>
+                        <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>
 					</Jumbotron>
 					<Loading<[File, string]>
 						loader={(fileId: string) => Promise.all([getFile(fileId), getFileContents(fileId)])}

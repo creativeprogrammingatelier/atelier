@@ -5,6 +5,7 @@ import fs from 'fs';
 import archiver, { ArchiverError } from 'archiver';
 import { randomBytes } from 'crypto';
 
+import { File } from '../../../models/api/File';
 import { UPLOADS_PATH } from '../lib/constants';
 import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE } from '../../../helpers/Constants';
 
@@ -32,6 +33,7 @@ function getFolderForFile(reqFileLocation: string, projectName: string, fileName
 export const projectStorageEngine = multer.diskStorage({
     destination: (req: FileUploadRequest, file, callback) => {
         if (req.fileLocation === undefined) {
+            // Longer than a base64 UUID, so there cannot be a collision
             req.fileLocation = randomBytes(16).toString('hex');
         }
         const folder = getFolderForFile(req.fileLocation, req.body["project"], file.originalname);
@@ -51,6 +53,12 @@ export const uploadMiddleware = multer({
     }
 });
 
+/** Asynchronously rename a file or folder, returning the new path */
+export const renamePath = (oldPath: string, newPath: string) =>
+    new Promise((resolve: (newPath: string) => void, reject: (err: NodeJS.ErrnoException) => void) => 
+        fs.rename(oldPath, newPath, err => err ? reject(err) : resolve(newPath))
+    );
+
 /**
  * Asynchronously archives the entire project into a single .zip file, returns the path to this file
  * @param reqFileLocation foldername for all files in a request
@@ -66,6 +74,7 @@ export const archiveProject = (reqFileLocation: string, projectName: string) =>
         output.on('close', () => resolve(zipFileName));
 
         archive.on('warning', err => {
+            // ENOENT means that the file or folder could not be found
             if (err.code === 'ENOENT') {
                 // TODO: proper logging
                 console.log(err);
@@ -88,11 +97,9 @@ export const deleteFile = (filePath: fs.PathLike): Promise<void> =>
     );
 
 /** Delete all non-code files from a list of files */
-export async function deleteNonCodeFiles(files: Express.Multer.File[]) {
-    const nonCodeFiles = files.filter(f => !CODEFILE_EXTENSIONS.includes(path.extname(f.filename)));
-    for (const file of nonCodeFiles) {
-        await deleteFile(file.path);
-    }
+export async function deleteNonCodeFiles(files: File[]) {
+    const nonCodeFiles = files.filter(f => !CODEFILE_EXTENSIONS.includes(path.extname(f.name)));
+    await Promise.all(nonCodeFiles.map(file => deleteFile(file.name)));
 }
 
 /** Read a file as a string with UTF-8 encoding */

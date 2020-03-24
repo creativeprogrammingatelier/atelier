@@ -17,6 +17,8 @@ import { User } from "../../../models/database/User";
 import { SnippetDB } from '../database/SnippetDB';
 import { SearchResult } from '../../../models/api/SearchResult';
 import { getCommonQueryParams, InvalidParamsError } from '../helpers/ParamsHelper';
+import { CourseRegistrationDB } from '../database/CourseRegistrationDB';
+import { CourseDB } from '../database/CourseDB';
 
 export const searchRouter = express.Router();
 
@@ -25,7 +27,7 @@ searchRouter.use(AuthMiddleware.requireAuth);
 
 /** Get the parameters for a search query, throws an error if invalid */
 function getSearchParams(request: Request) {
-    const query = request.query.q;
+    const query : string | undefined = request.query.q;
     if (!query?.trim()) throw new InvalidParamsError("q", "it should not be empty");
 
     const common = getCommonQueryParams(request);
@@ -44,17 +46,29 @@ function filterUser(user: User & { courseID?: string }) {
 /** Generic search */
 searchRouter.get('/', capture(async (request, response) => {
     const { query, common } = getSearchParams(request);
-    const users = await filterUser({ userName: query, ...common });
-    const comments = await CommentDB.filterComment({ body: query, ...common });
-    const snippets = await SnippetDB.filterSnippet({ body: query, ...common });
-    response.send({
-        users, 
-        courses: [], 
-        submissions: [], 
-        files: [],
-        comments: comments.map(comment => ({comment, submission: undefined})),
-        snippets: snippets.map(snippet => ({snippet, file: undefined, submission: undefined}))
-    } as unknown as SearchResult);
+    if (common.courseID) {
+        const users = await CourseRegistrationDB.filterCourseRegistration({ userName: query, ...common });
+        const comments = await CommentDB.searchComments(query, common);
+        const snippets = await SnippetDB.SearchSnippets(query, common);
+        response.send({
+            users, 
+            courses: [], 
+            submissions: [], 
+            files: [],
+            comments,
+            snippets
+        } as SearchResult);
+    } else {
+        const courses = await CourseDB.searchCourse(query, common);
+        response.send({
+            users: [], 
+            courses, 
+            submissions: [], 
+            files: [],
+            comments: [],
+            snippets: []
+        })
+    }
 }));
 
 /** Search for users */
