@@ -5,7 +5,8 @@ export interface Mention {
 	mentionID: string,
 	mentionGroup: string | undefined,
     user: User | undefined,
-	comment: Comment,
+    comment: Comment,
+    submissionTitle: string,
 	references:{
 		commentThreadID : string,
 		submissionID : string,

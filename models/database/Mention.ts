@@ -27,13 +27,13 @@ export interface Mention extends DBTools {
 	courseID? : string,
 }
 /**
- * m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
- * cv.submissionID, cv.courseID, cv.created, cv.edited, 
+ * m.mentionID, m.userGroup, cv.commentID, cv.fileID, cv.commentThreadID, 
+ * cv.snippetID, cv.submissionID, cv.courseID, cv.created, cv.edited, 
  * cv.body cu.userID, cu.userName, cu.email, cu.globalRole, 
  * cu.courseRole, cu.permission, cmu.userID as cmuUserID, 
  * cmu.userName as cmuUserName, cmu.email as cmuEmail, 
  * cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
- * cmu.permission as cmuPermission
+ * cmu.permission as cmuPermission, subm.title as submTitle
  */
 export interface DBMention {
 	mentionid : string,
@@ -61,7 +61,9 @@ export interface DBMention {
     cmuemail : string,
     cmuglobalrole : string,
     cmucourserole : string,
-    cmupermission : string
+    cmupermission : string,
+
+    submtitle : string
 }
 
 export function convertMention(db : DBMention) : Mention{
@@ -127,7 +129,8 @@ export function mentionToAPI(db : DBMention) : APIMention{
                 snippetID: UUIDHelper.fromUUID(db.snippetid)
             }
         },
-		references:{
+        submissionTitle: db.submtitle,
+		references: {
 			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),
 			courseID: UUIDHelper.fromUUID(db.courseid),

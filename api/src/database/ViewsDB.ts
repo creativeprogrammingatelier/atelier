@@ -182,7 +182,7 @@ export function snippetsView(snippetsTable=`"Snippets"`, filesView=`"FilesView"`
 }
 
 export function commentsView(commentsTable=`"Comments"`, usersView=`"UsersView"`){
-     return `SELECT c.*, u.userName, u.globalrole, u.email, u.permission, ctr.submissionID, ctr.courseID
+     return `SELECT c.*, u.userName, u.globalrole, u.email, u.permission, ctr.submissionID, ctr.courseID, ctr.fileID, ctr.snippetID
      FROM ${commentsTable} as c, ${usersView} as u, "CommentThreadRefs" as ctr
      WHERE c.userID = u.userID
        AND ctr.commentThreadID = c.commentThreadID`
@@ -202,30 +202,32 @@ export function commentThreadView(commentThreadTable=`"CommentThread"`){
 
 export function MentionsView(mentionsTable=`"Mentions"`){
      return `
-          SELECT m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
-                 cv.submissionID, cv.courseID, cv.created, cv.edited, 
+          SELECT m.mentionID, m.userGroup, cv.commentID, cv.fileID, cv.commentThreadID, 
+                 cv.snippetID, cv.submissionID, cv.courseID, cv.created, cv.edited, 
                  cv.body, cu.userID, cu.userName, cu.email, cu.globalRole, 
                  cu.courseRole, cu.permission, cmu.userID as cmuUserID, 
                  cmu.userName as cmuUserName, cmu.email as cmuEmail, 
                  cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
-                 cmu.permission as cmuPermission
+                 cmu.permission as cmuPermission, subm.title as submTitle
           FROM ${mentionsTable} as m, "CommentsView" as cv, "CourseUsersView" as cu,
-               "CourseUsersView" as cmu
+               "CourseUsersView" as cmu, "Submissions" as subm
           WHERE m.commentID = cv.commentID
             AND m.userID = cu.userID
             AND cv.courseID = cu.courseID
             AND cv.userID = cmu.userID
+            AND cv.submissionID = subm.submissionID
           UNION -- if addressing a group, user is null. account for that.
-          SELECT m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
-                 cv.submissionID, cv.courseID, cv.created, cv.edited,
+          SELECT m.mentionID, m.userGroup, cv.commentID, cv.fileID, cv.commentThreadID, 
+                 cv.snippetID, cv.submissionID, cv.courseID, cv.created, cv.edited,
                  cv.body, NULL, NULL, NULL, NULL, 
                  NULL, NULL, cmu.userID as cmuUserID, 
                  cmu.userName as cmuUserName, cmu.email as cmuEmail, 
                  cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
-                 cmu.permission as cmuPermission
-          FROM ${mentionsTable} as m , "CommentsView" as cv, "CourseUsersView" as cmu
+                 cmu.permission as cmuPermission, subm.title as submTitle
+          FROM ${mentionsTable} as m , "CommentsView" as cv, "CourseUsersView" as cmu, "Submissions" as subm
           WHERE m.commentID = cv.commentID
             AND m.userID IS NULL
             AND cv.userID = cmu.userID
+            AND cv.submissionID = subm.submissionID
      `
 }
