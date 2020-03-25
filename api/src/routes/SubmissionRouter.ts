@@ -7,11 +7,10 @@ import {SubmissionDB} from '../database/SubmissionDB';
 import {Submission} from '../../../models/api/Submission';
 import {capture} from '../helpers/ErrorHelper';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
-import {archiveProject, deleteNonCodeFiles, FileUploadRequest, uploadMiddleware, renamePath, readFile} from '../helpers/FilesystemHelper';
+import {archiveProject, FileUploadRequest, uploadMiddleware, renamePath, readFile} from '../helpers/FilesystemHelper';
 import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
 import {getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
-import {CODEFILE_EXTENSIONS} from '../../../helpers/Constants';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
 import {filterSubmission} from '../helpers/APIFilterHelper';
@@ -20,6 +19,7 @@ import {requirePermission, requireRegistered} from '../helpers/PermissionHelper'
 import {transaction} from '../database/HelperDB';
 import {WebhookEvent} from '../../../models/enums/webhookEventEnum';
 import {UPLOADS_PATH} from '../lib/constants';
+import { getProperType } from '../helpers/FileHelper';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -64,7 +64,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
             files.map(file => 
                 FileDB.addFile({
                     pathname: file.path.replace(oldPath, "").replace(/\\/g, "/"),
-                    type: file.mimetype,
+                    type: getProperType(file.mimetype, file.path),
                     submissionID: submission.ID,
                     client
                 }))
@@ -72,7 +72,6 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         
         await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
         await archiveProject(submission.ID, request.body["project"]);
-        await deleteNonCodeFiles(dbFiles);
 
         return { submission, dbFiles };
     });
@@ -80,9 +79,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     response.send(submission);
 
     await Promise.all(
-        dbFiles
-            .filter(f => CODEFILE_EXTENSIONS.includes(path.extname(f.name)))
-            .map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
+        dbFiles.map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
     );
 }));
 
