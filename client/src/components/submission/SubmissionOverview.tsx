@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 
@@ -13,6 +13,8 @@ import {Course} from "../../../../models/api/Course";
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";
 import {TimeHelper} from "../../../helpers/TimeHelper";
+import {CommentCreator} from "../comment/CommentCreator";
+import {FiPlus} from "react-icons/all";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -23,6 +25,7 @@ interface SubmissionOverviewProps {
 }
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
+	const [createdComments, setCreatedComments] = useState([] as CommentThread[]);
 	const submissionPath = "/submission/" + submissionId;
 
 	return <Loading<Submission>
@@ -48,10 +51,16 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<File[]>
 						loader={getFiles}
 						params={[submissionId]}
-						component={files =>  <DirectoryViewer filePaths={files.map(file => ({name: file.name, transport: submissionPath + "/" + file.ID + "/code"}))}/>}
+						component={files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, transport: submissionPath + "/" + file.ID + "/code"}))}/>}
 					/>
 				</DataList>
-				<DataList header="Comments">
+				<DataList
+					header="Comments"
+					optional={{
+						icon: FiPlus,
+						component: <CommentCreator placeholder="Write a comment" sendHandler={(comment: string, restricted: boolean) => new Promise<boolean>(() => true)}/>
+					}}
+				>
 					<Loading<CommentThread[]>
 						loader={getProjectComments}
 						params={[submissionId]}
