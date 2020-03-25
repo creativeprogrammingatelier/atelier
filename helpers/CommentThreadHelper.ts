@@ -1,5 +1,5 @@
-import {CommentThread} from "../../../models/api/CommentThread";
-import {Comment} from "../../../models/api/Comment";
+import {CommentThread} from "../models/api/CommentThread";
+import {Comment} from "../models/api/Comment";
 
 export function commentThreadOwner(commentThread : CommentThread) {
     const sorted : Comment[] = commentThread.comments.sort((a : Comment, b : Comment) => {
