@@ -15,7 +15,7 @@ import {ScrollHelper} from "../../helpers/ScrollHelper";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {User} from "../../../../models/api/User";
-import {commentThreadOwner} from "../../helpers/CommentThreadHelper";
+import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
 import {threadState} from "../../../../models/enums/threadStateEnum";
 
 interface CommentThreadProperties {

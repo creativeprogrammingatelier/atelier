@@ -24,7 +24,7 @@ import {filterCommentThread} from "../helpers/APIFilterHelper";
 import {createMentions} from '../helpers/MentionsHelper';
 import { readFileAsString, getFilePathOnDisk } from '../helpers/FilesystemHelper';
 import { getContextLines } from '../../../helpers/SnippetHelper';
-import {commentThreadOwner} from "../../../client/src/helpers/CommentThreadHelper";
+import {commentThreadOwner} from "../../../helpers/CommentThreadHelper";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 
 export const commentThreadRouter = express.Router();
