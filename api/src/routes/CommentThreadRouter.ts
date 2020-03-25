@@ -21,10 +21,11 @@ import {
 	requireRegisteredSubmissionID
 } from "../helpers/PermissionHelper";
 import {filterCommentThread} from "../helpers/APIFilterHelper";
-import {getMentions} from "../helpers/MentionsHelper";
-import {MentionsDB} from "../database/MentionsDB";
-import {readFileAsString, getFilePathOnDisk} from "../helpers/FilesystemHelper";
-import {getContextLines} from "../../../helpers/SnippetHelper";
+import {createMentions} from '../helpers/MentionsHelper';
+import { readFileAsString, getFilePathOnDisk } from '../helpers/FilesystemHelper';
+import { getContextLines } from '../../../helpers/SnippetHelper';
+import {commentThreadOwner} from "../../../client/src/helpers/CommentThreadHelper";
+import {PermissionEnum} from "../../../models/enums/permissionEnum";
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
@@ -106,11 +107,24 @@ commentThreadRouter.get("/submission/:submissionID/recent", capture(async(reques
 	response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
 }));
 
-commentThreadRouter.put("/:commentThreadID", capture(async(request, response) => {
-	const commentThreadID: string = request.params.commentThreadID;
-	const visibilityState: threadState | undefined = request.body.visibility as threadState;
+/** ---------- PUT ---------- */
+/**
+ * Update comment thread state (visibility)
+ * - requirements:
+ *  - user is the owner of the comment thread (first comment)
+ *  - user has permission to manage restricted comment threads
+ */
+commentThreadRouter.put('/:commentThreadID', capture(async (request, response) => {
+    const commentThreadID : string = request.params.commentThreadID;
+    const visibilityState : threadState | undefined = request.body.visibility as threadState;
 
-	// TODO what requirements if you are not the creator?
+    const oldCommentThread : CommentThread = await ThreadDB.getThreadByID(commentThreadID);
+    const courseID : string = oldCommentThread.references.courseID;
+    const currentUserID : string = await getCurrentUserID(request);
+    // Either use is owner of a comment thread or has permission to manage restricted comments
+    if (commentThreadOwner(oldCommentThread) !== currentUserID) {
+        await requirePermission(currentUserID, PermissionEnum.manageRestrictedComments, courseID);
+    }
 
 	const commentThread: CommentThread = await ThreadDB.updateThread({
 		commentThreadID,
@@ -131,31 +145,28 @@ commentThreadRouter.put("/:commentThreadID", capture(async(request, response) =>
  * @param client, database client for transaction
  */
 async function createCommentThread(request: Request, client: pgDB, snippetID?: string, fileID?: string, submissionID?: string) {
-	const commentThread: CommentThread = await ThreadDB.addThread({
-		submissionID,
-		fileID,
-		snippetID,
-		visibilityState: request.body.visibility ? request.body.visibility : threadState.public,
-		client
-	});
+    const commentThread : CommentThread = await ThreadDB.addThread({
+        submissionID,
+        fileID,
+        snippetID,
+        visibilityState : request.body.visiblityState ? request.body.visibilityState : threadState.public,
+        client
+    });
 
-	// Comment creation
-	const commentBody: string = request.body.comment;
-	const userID: string = await getCurrentUserID(request);
+    // Comment creation
+    const commentBody : string = request.body.comment;
+    const userID : string = await getCurrentUserID(request);
 
-	const comment = await CommentDB.addComment({
-		commentThreadID: commentThread.ID,
-		userID,
-		body: commentBody,
-		client
-	});
+    const comment = await CommentDB.addComment({
+        commentThreadID : commentThread.ID,
+        userID,
+        body : commentBody,
+        client
+    });
 
-	const mentionedUsers = await getMentions(commentBody, comment.references.courseID, client);
-	for (const user of mentionedUsers) {
-		await MentionsDB.addMention({userID: user.ID, commentID: comment.ID, client});
-	}
+    await createMentions(commentBody, comment.ID, comment.references.courseID, userID, client);
 
-	return {...commentThread, comments: commentThread.comments.concat(comment)};
+    return { ...commentThread, comments: commentThread.comments.concat(comment) };
 }
 
 /**

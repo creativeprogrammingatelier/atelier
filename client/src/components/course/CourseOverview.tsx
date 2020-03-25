@@ -8,12 +8,7 @@ import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../models/api/Course";
 import {Mention} from "../../../../models/api/Mention";
-import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
-import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
-import {CourseSettings} from "../settings/CourseSettings";
-import {DataList} from "../data/DataList";
-
 interface CourseOverviewProps {
 	match: {
 		params: {
@@ -78,21 +73,18 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					<DataBlockList
 						header="Mentions"
 						list={mentions.map(mention => ({
-							transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
-							title: mention.commentID,
-							text: "You've been mentioned!",
-							time: new Date(),
+                            transport: 
+                                mention.comment.references.fileID !== undefined
+                                ? `/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
+                                : `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`, 
+							title: `Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle}`,
+							text: mention.comment.text,
+							time: new Date(mention.comment.created),
 							tags: []
 						}))}
 					/>
 				}
 			/>
-			<CourseInvites courseID={courseId}/>
-			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
-				<DataList header="User Permission Settings">
-					<CourseSettings courseID={courseId}/>
-				</DataList>
-			}
 		</Frame>
 	);
 }

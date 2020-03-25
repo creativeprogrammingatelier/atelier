@@ -27,26 +27,43 @@ export interface Mention extends DBTools {
 	courseID? : string,
 }
 /**
- * m.mentionID, m.userGroup, cv.commentID, cv.commentThreadID, 
- * cv.submissionID, cv.courseID, cu.userID, cu.userName, 
- * cu.email, cu.globalRole, cu.courseRole, cu.permission
+ * m.mentionID, m.userGroup, cv.commentID, cv.fileID, cv.commentThreadID, 
+ * cv.snippetID, cv.submissionID, cv.courseID, cv.created, cv.edited, 
+ * cv.body cu.userID, cu.userName, cu.email, cu.globalRole, 
+ * cu.courseRole, cu.permission, cmu.userID as cmuUserID, 
+ * cmu.userName as cmuUserName, cmu.email as cmuEmail, 
+ * cmu.globalRole as cmuGlobalRole, cmu.courseRole as cmuCourseRole, 
+ * cmu.permission as cmuPermission, subm.title as submTitle
  */
 export interface DBMention {
 	mentionid : string,
 	usergroup : string | undefined,
 	
-	commentid: string,
+	commentid : string,
 	commentthreadid : string,
 	submissionid : string,
-	courseid : string,
-
+    courseid : string,
+    fileid : string,
+    snippetid : string,
+    created : Date,
+    edited : Date,
+    body : string,
+    
 	userid : string | undefined,
-	userName : string | undefined,
+	username : string | undefined,
 	email : string | undefined,
-	globalRole : string | undefined,
-	courseRole : string | undefined,
+	globalrole : string | undefined,
+	courserole : string | undefined,
 	permission : string | undefined,
+    
+    cmuuserid : string,
+    cmuusername : string,
+    cmuemail : string,
+    cmuglobalrole : string,
+    cmupermission : string,
 
+    submtitle : string,
+    coursename : string
 }
 
 export function convertMention(db : DBMention) : Mention{
@@ -70,17 +87,17 @@ export function mentionToAPI(db : DBMention) : APIMention{
 	if ((db.usergroup == undefined) === (db.userid == undefined)){
 		throw new InvalidDatabaseResponseError('a mention should have either a user, or a group as target.')
 	}
-	const isUser = db.userid === undefined || db.userid === null
+	const isUser = db.userid !== undefined && db.userid !== null
 	if (!isUser) checkEnum(courseRole, db.usergroup!)
 	let user : User | undefined = undefined;
 	if (isUser){
 		user = {
 			ID: UUIDHelper.fromUUID(db.userid!),
-			name: noNull(db.userName),
+			name: noNull(db.username),
 			email: noNull(db.email),
 			permission: {
-				globalRole: getEnum(globalRole, noNull(db.globalRole)),
-				courseRole: getEnum(globalRole, noNull(db.courseRole)),
+				globalRole: getEnum(globalRole, noNull(db.globalrole)),
+				courseRole: getEnum(courseRole, noNull(db.courserole)),
 				permissions: toDec(noNull(db.permission)),
 			}
 		}
@@ -88,9 +105,32 @@ export function mentionToAPI(db : DBMention) : APIMention{
 	return {
 		mentionID: UUIDHelper.fromUUID(db.mentionid),
 		mentionGroup: db.usergroup,
-		user,
-		commentID: UUIDHelper.fromUUID(db.commentid),
-		references:{
+        user,
+        comment: {
+            ID: UUIDHelper.fromUUID(db.commentid),
+            user: {
+                ID: UUIDHelper.fromUUID(db.cmuuserid),
+                name: db.cmuusername,
+                email: db.cmuemail,
+                permission: {
+                    globalRole: getEnum(globalRole, db.cmuglobalrole),
+                    permissions: toDec(db.cmupermission)
+                }
+            },
+            text: db.body,
+            created: db.created.toISOString(),
+            edited: db.edited.toISOString(),
+            references: {
+                courseID: UUIDHelper.fromUUID(db.courseid),
+                submissionID: UUIDHelper.fromUUID(db.submissionid),
+                commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
+                fileID: UUIDHelper.fromUUID(db.fileid),
+                snippetID: UUIDHelper.fromUUID(db.snippetid)
+            }
+        },
+        submissionTitle: db.submtitle,
+        courseName: db.coursename,
+		references: {
 			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),
 			courseID: UUIDHelper.fromUUID(db.courseid),
