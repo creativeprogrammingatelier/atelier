@@ -34,8 +34,8 @@ interface DirectoryViewerProperties {
 /** Shows a list of files in a nested directory structure.
  */
 export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
-	console.log("Rendering a directory view");
-	console.log(filePaths);
+	// console.log("Rendering a directory view");
+	// console.log(filePaths);
 
 	if (filePaths.length === 0) {
 		return null;

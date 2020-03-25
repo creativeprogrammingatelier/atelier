@@ -10,8 +10,8 @@ interface DirectoryNodeProperties {
 export function DirectoryNode({node}: DirectoryNodeProperties) {
 	const [opened, setOpened] = useState(true);
 
-	console.log("Rendering node");
-	console.log(node);
+	// console.log("Rendering node");
+	// console.log(node);
 
 	return <div className={"directoryNode" + (node instanceof TopLevelNode ? " directoryTopLevel" : "")}>
 		{node.children.length > 0 ?

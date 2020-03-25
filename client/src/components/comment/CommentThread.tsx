@@ -32,6 +32,9 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	const [manageRestrictedComments, setManageRestrictedComments] = useState(false);
 	const [comments, updateComments] = useState(thread.comments);
 
+	console.log("Rendering a comment thread");
+	console.log(thread);
+
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
 		if (commentTrimmed !== "") {

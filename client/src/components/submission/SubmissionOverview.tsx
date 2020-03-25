@@ -32,6 +32,9 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	const submissionPath = "/submission/" + submissionId;
 
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
+		console.log("Creating project level comment");
+		console.log(comment);
+		console.log(restricted);
 		try {
 			const commentThread = await createSubmissionCommentThread(submissionId, {
 				submissionID: submissionId,
