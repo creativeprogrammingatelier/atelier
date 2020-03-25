@@ -138,14 +138,11 @@ export function setCommentThreadVisibility(commentThreadID : string, visible : b
 export function createFileCommentThread(fileID: string, thread: CreateCommentThread, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread), doCache);
 }
-export function createSubmissionCommentThread(
-        submissionID: string, 
-        thread: {commentBody: string, visiblityState?: string}, 
-        doCache?: boolean) {
+export function createSubmissionCommentThread(submissionID: string, thread: CreateCommentThread, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread), doCache);
 }
-export function createComment(commentThreadID: string, comment: {commentBody: string}, doCache?: boolean) {
-	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson(comment), doCache);
+export function createComment(commentThreadID: string, comment: string, doCache?: boolean) {
+	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson({comment}), doCache);
 }
 
 // Mentions

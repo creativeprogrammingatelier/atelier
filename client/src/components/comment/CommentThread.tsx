@@ -36,9 +36,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 		const commentTrimmed = comment.trim();
 		if (commentTrimmed !== "") {
 			try {
-				const comment = await createComment(thread.ID, {
-					commentBody: commentTrimmed
-				});
+				const comment = await createComment(thread.ID, commentTrimmed);
 				updateComments(comments => [
 					...comments,
 					comment

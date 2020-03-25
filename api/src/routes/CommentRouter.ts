@@ -46,7 +46,7 @@ commentRouter.get("/course/:courseID/user/:userID", capture(async (request, resp
 commentRouter.put('/:commentThreadID', capture(async (request, response) => {
         const commentThreadID = request.params.commentThreadID;
         const currentUserID : string = await getCurrentUserID(request);
-        const commentBody = request.body.commentBody;
+        const commentBody = request.body.comment;
 
         // User should be registered
         await requireRegisteredCommentThreadID(currentUserID, commentThreadID);

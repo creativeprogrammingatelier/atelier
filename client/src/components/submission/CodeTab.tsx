@@ -19,15 +19,13 @@ export interface FileComment {
 	onClick: Function,
 	commentID: number
 }
-
-interface CodeProperties {
+interface CodeTabProperties {
 	submissionID: string,
 	file: File,
 	body: string,
 	comments?: FileComment[],
 }
-
-export function CodeTab({file, body, submissionID}: CodeProperties) {
+export function CodeTab({file, body, submissionID}: CodeTabProperties) {
 	const [commentThreads, setCommentThreads] = useState([] as CommentThread[]);
 	const [snippets, setSnippets] = useState([] as SnippetHighlight[]);
 	const history = useHistory();
@@ -61,24 +59,18 @@ export function CodeTab({file, body, submissionID}: CodeProperties) {
 		}
 		setSnippets(snippets);
 	};
-	/**
-	 * Create a comment
-	 */
-	const addComment = async(comment: string, selection: Selection, restricted: boolean) => {
-		console.log("Adding comment\n----------------");
-
-		console.log("Selection: ");
-		console.log(selection);
-		console.log("Comment body: " + comment);
-		console.log("SubmissionID: " + submissionID);
-
+	const handleCommentSend = async(comment: string, selection: Selection, restricted: boolean) => {
 		try {
-			const thread = await createFileCommentThread(file.ID, {
+			const commentThread = await createFileCommentThread(file.ID, {
 				submissionID,
 				comment,
 				snippet: selection,
 				visibility: restricted ? threadState.private : threadState.public
 			});
+			setCommentThreads(commentThreads => [
+				...commentThreads,
+				commentThread
+			]);
 			return true;
 		} catch (error) {
 			if (error instanceof JsonFetchError) {
@@ -96,12 +88,7 @@ export function CodeTab({file, body, submissionID}: CodeProperties) {
 
 	return <div className="contentTab">
 		<div className="m-3 mb-6">
-			{/*<CodeViewer*/}
-			{/*	submissionID={submissionID}*/}
-			{/*	file={file}*/}
-			{/*	fileContents={body}*/}
-			{/*/>*/}
-			<CommentSelector<HighlightedCodeProperties> codeViewer={HighlightedCode} codeProperties={{code: body, snippets}} sendHandler={addComment}/>
+			<CommentSelector<HighlightedCodeProperties> codeViewer={HighlightedCode} codeProperties={{code: body, snippets}} sendHandler={handleCommentSend}/>
 		</div>
 	</div>;
 }

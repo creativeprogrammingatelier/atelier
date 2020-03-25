@@ -10,11 +10,13 @@ import {CommentThread as CommentThreadComponent} from "../comment/CommentThread"
 import {Submission} from "../../../../models/api/Submission";
 import {DataList} from "../data/DataList";
 import {Course} from "../../../../models/api/Course";
-import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments} from "../../../helpers/APIHelper";
+import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 import {CommentCreator} from "../comment/CommentCreator";
-import {FiPlus} from "react-icons/all";
+import {FiPlus, FiX} from "react-icons/all";
+import {threadState} from "../../../../models/enums/threadStateEnum";
+import {JsonFetchError} from "../../../helpers/FetchHelper";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -25,8 +27,35 @@ interface SubmissionOverviewProps {
 }
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
+	const [creatingComment, setCreatingComment] = useState(false);
 	const [createdComments, setCreatedComments] = useState([] as CommentThread[]);
 	const submissionPath = "/submission/" + submissionId;
+
+	const handleCommentSend = async(comment: string, restricted: boolean) => {
+		try {
+			const commentThread = await createSubmissionCommentThread(submissionId, {
+				submissionID: submissionId,
+				comment,
+				visibility: restricted ? threadState.private : threadState.public
+			});
+			console.log("Created a new project level comment");
+			console.log(commentThread);
+			setCreatingComment(false);
+			setCreatedComments(createdComments => [
+				...createdComments,
+				commentThread
+			]);
+			return true;
+		} catch (error) {
+			if (error instanceof JsonFetchError) {
+				// TODO: handle error for the user
+				console.log(error);
+			} else {
+				throw error;
+			}
+		}
+		return false;
+	};
 
 	return <Loading<Submission>
 		loader={getSubmission}
@@ -57,10 +86,17 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				<DataList
 					header="Comments"
 					optional={{
-						icon: FiPlus,
-						component: <CommentCreator placeholder="Write a comment" sendHandler={(comment: string, restricted: boolean) => new Promise<boolean>(() => true)}/>
+						icon: creatingComment ? FiX : FiPlus,
+						click: () => setCreatingComment(!creatingComment),
+						component: creatingComment && <CommentCreator placeholder="Write a comment" allowRestricted sendHandler={handleCommentSend}/>
 					}}
 				>
+					{/* This map over new comment threads would not be needed once auto update works */}
+					{createdComments.map(thread => {
+						console.log("Rendering created comment");
+						console.log(thread);
+						return <CommentThreadComponent thread={thread}/>
+					})}
 					<Loading<CommentThread[]>
 						loader={getProjectComments}
 						params={[submissionId]}

@@ -60,9 +60,7 @@ export function CommentSelector<T>({codeViewer, codeProperties, sendHandler}: Co
 					round
 					allowRestricted
 					sendHandler={(comment, restricted) => {
-						console.log("Creating new comment: " + comment + ", restricted: " + restricted);
-						console.log("Selected code:");
-						console.log(selectionText);
+						setSelecting(false);
 						return sendHandler(comment, selection, restricted);
 					}}
 				/>

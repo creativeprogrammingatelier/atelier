@@ -1,4 +1,4 @@
-import React, {useState, Fragment} from "react";
+import React, {useState, Fragment, useEffect} from "react";
 import {Children, Parent, ParentalProperties} from "../../helpers/ParentHelper";
 import {Heading} from "../general/Heading";
 import {Button} from "react-bootstrap";
@@ -8,6 +8,7 @@ import {IconType} from "react-icons";
 
 interface DataListOptional {
 	icon: IconType,
+	click: () => void,
 	component: Children
 }
 interface DataItemListProperties extends ParentalProperties {
@@ -19,11 +20,17 @@ interface DataItemListProperties extends ParentalProperties {
 }
 export function DataList({header, optional,  collapse, more, size=5, children}: DataItemListProperties) {
 	const [data, setData] = useState(children);
-	const [optionalCollapsed, setOptionalCollapsed] = useState(true);
-	const [contentCollapsed, setContentCollapsed] = useState(false);
-	const [offset, setOffset] = useState(0);
+	const [collapsed, setCollapsed] = useState(false);
+	const [offset, setOffset] = useState(size);
 	const [complete, setComplete] = useState(Parent.countChildren(children) < size);
 	const [loadingMore, setLoadingMore] = useState(false);
+
+	useEffect(() => {
+		setData(children);
+		setComplete(Parent.countChildren(children) < size);
+		setOffset(size);
+		// TODO: Updating children resets the load more things, fix that
+	}, [children]);
 
 	async function loadMore() {
 		if (more && !loadingMore) {
@@ -39,19 +46,19 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 	}
 
 	return <div className="list">
-		{Parent.countChildren(data) > 0 &&
+		{(optional || Parent.countChildren(data) > 0) &&
 			<Heading
 				title={header}
-				leftButton={optional ? {icon: optional.icon, click: () => setOptionalCollapsed(!optionalCollapsed)} : undefined}
-				rightButton={collapse ? {icon: contentCollapsed ? FiChevronDown : FiChevronUp, click: () => setContentCollapsed(!contentCollapsed)} : undefined}
+				leftButton={(collapse && optional) ? {icon: optional.icon, click: optional.click} : undefined}
+				rightButton={collapse ? {icon: collapsed ? FiChevronDown : FiChevronUp, click: () => setCollapsed(!collapsed)} : (optional ? {icon: optional.icon, click: optional.click} : undefined)}
 			/>
 		}
-		{!optionalCollapsed && optional &&
+		{optional && optional.component &&
 			<div className="m-3">
 				{optional.component}
 			</div>
 		}
-		{!contentCollapsed &&
+		{!collapsed &&
 			<div className="m-3">
 				<Fragment>
 					{data}
