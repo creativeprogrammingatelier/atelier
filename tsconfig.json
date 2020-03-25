@@ -11,7 +11,7 @@
         "allowSyntheticDefaultImports": true
 
     },
-    "exclude": ["./client"],
+    "exclude": ["./client","./uploads"],
     "typedocOptions": {
         "mode": "modules",
         "out": "docs"
