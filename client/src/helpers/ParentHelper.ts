@@ -13,7 +13,7 @@ export type Children =
 	| string[]
 	| JSX.Element
 	| JSX.Element[]
-	| Array<undefined | null | boolean | boolean[] | number | number[] | string | string[] | JSX.Element | JSX.Element[]>
+	| Array<undefined | null | boolean | boolean[] | number | number[] | string | string[] | JSX.Element | JSX.Element[] | Children>
 
 export class Parent {
 	static countChildren(children: Children) {

@@ -2,7 +2,6 @@ import React, {useEffect, useRef, useState} from "react";
 import {Button, Form, FormControl, InputGroup} from "react-bootstrap";
 import {FiEye, FiEyeOff, FiSend} from "react-icons/all";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import {Editor} from "codemirror";
 import {MentionSuggestions} from "./MentionSuggestions";
 import {User} from "../../../../models/api/User";
 
@@ -10,7 +9,7 @@ interface MentionProperties {
 	courseID: string
 }
 interface CommentCreatorProperties {
-	placeholder: string,
+	placeholder?: string,
 	transparent?: boolean,
 	large?: boolean,
 	round?: boolean,
@@ -19,7 +18,7 @@ interface CommentCreatorProperties {
 	mentions?: MentionProperties
 	sendHandler: (comment: string, restricted: boolean) => Promise<boolean>
 }
-export function CommentCreator({placeholder, transparent, large, round, allowRestricted, mentions, sendHandler}: CommentCreatorProperties) {
+export function CommentCreator({placeholder = "Write a comment", transparent, large, round, allowRestricted, mentions, sendHandler}: CommentCreatorProperties) {
 	const [comment, setComment] = useState("");
 	const [restricted, setRestricted] = useState(false);
 	const [sending, setSending] = useState(false);

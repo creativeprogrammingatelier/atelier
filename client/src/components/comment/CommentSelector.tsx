@@ -15,7 +15,7 @@ interface CommentSelectorProperties<T> {
 	codeViewer: (properties: T) => JSX.Element,
 	codeProperties: T,
 	mentions?: MentionProperties,
-	sendHandler: (comment: string, selection: Selection, restricted: boolean) => Promise<boolean>
+	sendHandler: (comment: string, restricted: boolean, selection: Selection) => Promise<boolean>
 }
 export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHandler}: CommentSelectorProperties<T>) {
 	const [selecting, setSelecting] = useState(false);
@@ -66,7 +66,7 @@ export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHa
 					mentions={mentions}
 					sendHandler={(comment, restricted) => {
 						setSelecting(false);
-						return sendHandler(comment, selection, restricted);
+						return sendHandler(comment, restricted, selection);
 					}}
 				/>
 			</Floater>
