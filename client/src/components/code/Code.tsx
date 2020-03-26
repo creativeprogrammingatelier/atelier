@@ -35,7 +35,10 @@ export function Code({code, options = {}, handleInitialize = defaultHandler, han
 	}
 
 	console.log("Rendering a code viewer");
-	
+
+	// Define syntax highlighting for MIME types
+	codemirror.defineMIME("text/x-processing", "clike");
+
 	return <Block>
 		<CodeMirror
 			value={code}

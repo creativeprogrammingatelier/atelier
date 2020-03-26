@@ -92,7 +92,7 @@ export function CodeTab({file}: FileProperties) {
                     component={body =>
                         <CommentSelector<HighlightedCodeProperties> 
                             codeViewer={HighlightedCode} 
-                            codeProperties={{code: body, snippets}} 
+                            codeProperties={{code: body, snippets, options: { mode: file.type }}} 
                             sendHandler={addComment} />
                     } />
             </div>
