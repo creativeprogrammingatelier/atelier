@@ -8,7 +8,7 @@ import { Permission } from "../../../../models/api/Permission";
 import { globalRole } from "../../../../models/enums/globalRoleEnum";
 
 export function useCourses() {
-    const { collectionItems, add, replace, replaceAll } = useCache<Course>("courses");
+    const { collection, collectionItems, add, replace, replaceAll } = useCache<Course>("courses");
     const refresh = () => {
         console.log("Refreshing courses");
         getCourses().then(courses => replaceAll(courses));
@@ -30,6 +30,7 @@ export function useCourses() {
     if (collectionItems.length === 0) refresh(); // TODO: better check
     return {
         courses: collectionItems,
+        coursesState: collection.state,
         createCourse: create,
         refreshCourses: refresh
     };

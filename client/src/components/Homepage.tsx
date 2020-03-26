@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {PanelButton} from "./general/PanelButton";
 import {Frame} from "./frame/Frame";
 import {AddCourse} from "./course/AddCourse";
@@ -7,9 +7,11 @@ import {Button, Jumbotron} from "react-bootstrap";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {useCourses} from "../helpers/api/APIHooks";
 import {Permissions} from "./general/Permissions";
+import { CacheState } from "../helpers/api/Cache";
+import { LoadingIcon } from "./general/loading/LoadingIcon";
 
 export function Homepage() {
-    const {courses} = useCourses();
+    const {courses, coursesState} = useCourses();
 
 	return (
 		<Frame title="Home" sidebar search>
@@ -19,6 +21,7 @@ export function Homepage() {
 				<Button>Have a button!</Button>
 			</Jumbotron>
 			<div className="m-3">
+                {coursesState === CacheState.Uninitialized || coursesState === CacheState.Loading ? <LoadingIcon /> : <Fragment />}
                 {courses.map((course: Course) => <PanelButton
                     display={course.name}
                     location={`/course/${course.ID}`}
