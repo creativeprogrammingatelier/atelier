@@ -38,9 +38,10 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
         assertionConsumerService: [
             { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/login` }
         ],
-        singleLogoutService: [
-            { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/logout` },
-        ],
+        // TODO: Figure out how Single logout works
+        // singleLogoutService: [
+        //     { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/logout` },
+        // ],
         wantAssertionsSigned: true
     });
 
@@ -120,20 +121,20 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
         (await setTokenCookie(response, user.ID)).redirect("/");
     }));
 
-    /** Initiate Single Logout with a logout request to the IDP */
-    samlRouter.get('/logout', capture(async (request, response) => {
-        const userID = await getCurrentUserID(request);
-        const extID = await UserDB.getSamlIDForUserID(userID);
-        const samlID = extID.substring(extIDPrefix.length);
-        const { context } = sp.createLogoutRequest(idp, 'redirect', { logoutNameID: samlID });
-        clearTokenCookie(response).redirect(context);
-    }));
+    // /** Initiate Single Logout with a logout request to the IDP */
+    // samlRouter.get('/logout', capture(async (request, response) => {
+    //     const userID = await getCurrentUserID(request);
+    //     const extID = await UserDB.getSamlIDForUserID(userID);
+    //     const samlID = extID.substring(extIDPrefix.length);
+    //     const { context } = sp.createLogoutRequest(idp, 'redirect', { logoutNameID: samlID });
+    //     clearTokenCookie(response).redirect(context);
+    // }));
 
-    /** Parse the logout response */
-    samlRouter.post('/logout', capture(async (request, response) => {
-        await sp.parseLogoutResponse(idp, 'post', request);
-        clearTokenCookie(response).redirect('/');
-    }));
+    // /** Parse the logout response */
+    // samlRouter.post('/logout', capture(async (request, response) => {
+    //     await sp.parseLogoutResponse(idp, 'post', request);
+    //     clearTokenCookie(response).redirect('/');
+    // }));
 
     /** Handle some SAML specific errors */
     samlRouter.use((err: Error & { code?: string }, request: Request, response: Response, next: NextFunction) => {
