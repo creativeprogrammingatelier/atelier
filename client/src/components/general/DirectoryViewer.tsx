@@ -41,8 +41,9 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 		return null;
 	}
 
-	const projectFolder = filePaths[0].name.split("/")[0];
-	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + 1), path.transport));
+	const slashPrefixed = filePaths[0].name[0] === "/";
+	const projectFolder = filePaths[0].name.split("/")[slashPrefixed ? 1 : 0];
+	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.transport));
 
 	// console.log(projectFolder);
 	// console.log(projectPaths);
