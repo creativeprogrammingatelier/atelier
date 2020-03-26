@@ -5,7 +5,15 @@ import 'codemirror/mode/clike/clike.js';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/addon/search/jump-to-line.js';
 import CodeMirror from 'codemirror';
-import {FileComment} from "./submission/CodeTab";
+
+export interface FileComment {
+	startLine: number,
+	startCharacter: number,
+	endLine: number,
+	endCharacter: number,
+	onClick: Function,
+	commentID: number
+}
 
 type CodeViewerProps = {
 	cursorLineNumber: number;

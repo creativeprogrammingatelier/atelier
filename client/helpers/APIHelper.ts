@@ -102,7 +102,10 @@ export function getFile(fileId: string, doCache?: boolean) {
 	return Fetch.fetchJson<APIFile>(`/api/file/${fileId}`, undefined, doCache);
 }
 export function getFileContents(fileId: string, doCache?: boolean) {
-	return Fetch.fetchString(`/api/file/${fileId}/body`, undefined, doCache);
+	return Fetch.fetchString(getFileUrl(fileId), undefined, doCache);
+}
+export function getFileUrl(fileID: string) {
+    return `/api/file/${fileID}/body`;
 }
 
 // Comments
