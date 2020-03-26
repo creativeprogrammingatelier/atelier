@@ -292,6 +292,7 @@ INSERT INTO "CourseRolePermissions" VALUES
 
 INSERT INTO "GlobalRolePermissions" VALUES
 	('admin', '${'1'.repeat(permissionBits)}'),
+	('staff', 0::bit(${permissionBits})),
 	('user', 1::bit(${permissionBits})),
 	('unregistered', 0::bit(${permissionBits})),
 	('plugin', 0::bit(${permissionBits}));
