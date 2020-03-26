@@ -366,6 +366,9 @@ textarea:focus, textarea:active {
 	}
 }
 
+.mentions {
+	box-shadow: $shadowSmallDown inset;
+}
 .mention {
 	padding: 0.1rem 0.5rem;
 	color: $colorWhite;
@@ -501,8 +504,8 @@ textarea:focus, textarea:active {
 	z-index: 1040;
 
 	.btn {
-		width: 100%;
-		height: 100%;
+		min-width: inherit;
+		min-height: inherit;
 	}
 }
 .floater > * {
@@ -510,7 +513,7 @@ textarea:focus, textarea:active {
 }
 
 .comment, .snippet {
-	box-shadow: $shadowSmallDown;
+	box-shadow: $shadowInsetSmallDown;
 }
 .commentThread {
 	h3 {
@@ -541,7 +544,16 @@ textarea:focus, textarea:active {
 		border-bottom-left-radius: 1.5rem;
 	}
 	.btn:last-of-type {
-		border-top-right-radius: 1.5rem;
+		// A round comment creator might have another child, the mention suggestions.
+		// If this is the case, we want the lower right corner not to be rounded.
+		// Bootstrap will do that automatically if the input append is not the last child.
+		// This will however also overwrite the top right corner, which we don't want.
+		border-top-right-radius: 1.5rem !important;
 		border-bottom-right-radius: 1.5rem;
+	}
+
+	.mentions {
+		padding-left: 1rem;
+		padding-right: 1rem;
 	}
 }

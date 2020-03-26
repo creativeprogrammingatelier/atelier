@@ -10,6 +10,7 @@ import {useHistory} from "react-router-dom";
 import {Selection} from "../../../../models/api/Snippet";
 import {SnippetHighlight} from "./FileOverview";
 import {threadState} from "../../../../models/enums/threadStateEnum";
+import {CommentCreator} from "../comment/CommentCreator";
 
 export interface FileComment {
 	startLine: number,
@@ -88,7 +89,7 @@ export function CodeTab({file, body, submissionID}: CodeTabProperties) {
 
 	return <div className="contentTab">
 		<div className="m-3 mb-6">
-			<CommentSelector<HighlightedCodeProperties> codeViewer={HighlightedCode} codeProperties={{code: body, snippets}} sendHandler={handleCommentSend}/>
+			<CommentSelector<HighlightedCodeProperties> codeViewer={HighlightedCode} codeProperties={{code: body, snippets}} mentions={{courseID: file.references.courseID}} sendHandler={handleCommentSend}/>
 		</div>
 	</div>;
 }

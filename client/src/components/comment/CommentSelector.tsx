@@ -8,12 +8,16 @@ import {Controlled as CodeMirror} from "react-codemirror2";
 import {CodeProperties, CodeSelection} from "../code/Code";
 import {Selection, noSelection} from "../../../../models/api/Snippet";
 
+interface MentionProperties {
+	courseID: string
+}
 interface CommentSelectorProperties<T> {
 	codeViewer: (properties: T) => JSX.Element,
 	codeProperties: T,
+	mentions?: MentionProperties,
 	sendHandler: (comment: string, selection: Selection, restricted: boolean) => Promise<boolean>
 }
-export function CommentSelector<T>({codeViewer, codeProperties, sendHandler}: CommentSelectorProperties<T>) {
+export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHandler}: CommentSelectorProperties<T>) {
 	const [selecting, setSelecting] = useState(false);
 	const [selection, setSelection] = useState(noSelection);
 	const [selectionText, setSelectionText] = useState("");
@@ -59,6 +63,7 @@ export function CommentSelector<T>({codeViewer, codeProperties, sendHandler}: Co
 					large
 					round
 					allowRestricted
+					mentions={mentions}
 					sendHandler={(comment, restricted) => {
 						setSelecting(false);
 						return sendHandler(comment, selection, restricted);

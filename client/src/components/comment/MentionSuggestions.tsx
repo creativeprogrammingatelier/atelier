@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, Fragment} from "react";
 import { permission } from "../../../helpers/APIHelper";
 import { courseRole } from "../../../../models/enums/courseRoleEnum";
 import { PermissionEnum, containsPermission } from "../../../../models/enums/permissionEnum";
@@ -6,17 +6,18 @@ import {User} from "../../../../models/api/User";
 import { searchUsers }from "../../../helpers/APIHelper";
 
 interface MentionSuggestionsProperties {
+	/** Prefix for display */
+	prefix? : string
 	/** Already inserted text to match with the start of suggestions */
     suggestionBase: string,
+	round?: boolean,
     /** The ID of the course the comment is written for */
     courseID?: string,
 	/** Callback that's called when a suggestion is selected */
 	onSelected: (user : User) => void
-    /** Prefix for display */
-    prefix? : string
 }
 
-export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected}: MentionSuggestionsProperties) {
+export function MentionSuggestions({prefix, suggestionBase, round, courseID, onSelected}: MentionSuggestionsProperties) {
     const [allowedGroups, updateAllowedGroups] = useState([] as courseRole[]);
 	const [suggestions, updateSuggestions] = useState({ s: [] as User[], base: suggestionBase });
 
@@ -87,9 +88,10 @@ export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected
 		);
     }
 
-    return (
-        <ul className="m-0 px-1 pb-1">
+    return suggestions.s.length > 0 ?
+        <ul className={"mentions m-0 w-100" + (round ? " px-2 pt-2 mb-2" : " px-1 pt-1 mb-1 ")}>
             {suggestions.s.map(s => <Suggestion user={s}/>)}
         </ul>
-    );
+	    :
+	    <Fragment/>;
 }

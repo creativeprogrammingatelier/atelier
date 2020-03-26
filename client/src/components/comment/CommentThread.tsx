@@ -32,9 +32,6 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	const [manageRestrictedComments, setManageRestrictedComments] = useState(false);
 	const [comments, updateComments] = useState(thread.comments);
 
-	console.log("Rendering a comment thread");
-	console.log(thread);
-
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
 		if (commentTrimmed !== "") {
@@ -89,7 +86,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 			{opened ?
 				<Fragment>
 					{comments.map(comment => <CommentComponent comment={comment}/>)}
-					<CommentCreator transparent placeholder="Reply..." sendHandler={handleCommentSend}/>
+					<CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
 				</Fragment>
 				:
 				comments[0] !== undefined && <CommentComponent comment={comments[0]}/>

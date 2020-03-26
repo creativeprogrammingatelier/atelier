@@ -91,7 +91,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					optional={{
 						icon: creatingComment ? FiX : FiPlus,
 						click: () => setCreatingComment(!creatingComment),
-						component: creatingComment && <CommentCreator placeholder="Write a comment" allowRestricted sendHandler={handleCommentSend}/>
+						component: creatingComment && <CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
 					}}
 				>
 					{/* This map over new comment threads would not be needed once auto update works */}
