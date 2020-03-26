@@ -8,10 +8,11 @@ import {getCourses, permission} from "../../helpers/APIHelper";
 import {Button, Jumbotron} from "react-bootstrap";
 import {Permission} from "../../../models/api/Permission";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import { useCourses } from "../helpers/api/APIHooks";
 
 export function Homepage() {
 	const [permissions, setPermissions] = useState(0);
-    const [reload, updateReload] = useState(0);
+    const {courses} = useCourses();
 
  	useEffect(() => {
  		permission()
@@ -19,10 +20,6 @@ export function Homepage() {
 				setPermissions(permission.permissions);
 			});
 	}, []);
-
-	function updateCourse(course: Course) {
-		updateReload(x => x + 1);
-	}
 
 	return (
 		<Frame title="Home" sidebar search>
@@ -32,24 +29,16 @@ export function Homepage() {
 				<Button>Have a button!</Button>
 			</Jumbotron>
 			<div className="m-3">
-				<Loading<Course[]>
-                    loader={reload => getCourses(false)}
-                    params={[reload]}
-					component={courses =>
-						<div>
-							{courses.map((course: Course) => <PanelButton
-								display={course.name}
-								location={`/course/${course.ID}`}
-								icon=''
-							/>)}
-						</div>
-					}
-				/>
+                {courses.map((course: Course) => <PanelButton
+                    display={course.name}
+                    location={`/course/${course.ID}`}
+                    icon=''
+                />)}
 			</div>
 			{
 				((permissions & (1 << PermissionEnum.addCourses)) > 0) &&
 					<div className="m-3">
-						<AddCourse handleResponse={updateCourse}/>
+						<AddCourse />
 					</div>
 			}
 		</Frame>

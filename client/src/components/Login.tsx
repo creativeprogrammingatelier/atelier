@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import AuthHelper from "../../helpers/AuthHelper";
-import {withRouter, Redirect, Link} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import "../styles/login.scss";
 import {User} from "../../../models/api/User";
-import {Form, Button, Jumbotron} from "react-bootstrap";
+import {Button, Jumbotron} from "react-bootstrap";
 import {Loading} from "./general/loading/Loading";
 import {getLoginProviders} from "../../helpers/APIHelper";
 import {LoginProvider} from "../../../models/api/LoginProvider";
@@ -14,11 +14,12 @@ interface LoginRedirectProperties {
 		from: string
 	}
 }
+
 interface LoginProperties {
-	onLogin: (email: string) => void,
 	location?: LoginRedirectProperties
 }
-export function Login({onLogin, location}: LoginProperties) {
+
+export function Login({location}: LoginProperties) {
 	if (AuthHelper.loggedIn() && location && location.state && location.state.from) {
 		return <Redirect to={location.state.from}/>;
 	}
