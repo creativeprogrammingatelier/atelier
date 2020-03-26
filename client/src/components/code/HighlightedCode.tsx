@@ -3,7 +3,7 @@ import {Code, CodeProperties, defaultHandler} from "./Code";
 import {getRanges, Range} from "../../helpers/HighlightingHelper";
 import {Controlled as CodeMirror} from "react-codemirror2";
 import {Position, noPosition} from "../../../../models/api/Snippet";
-import {SnippetHighlight} from "../submission/FileOverview";
+import {SnippetHighlight} from "../submission/fileviewers/CodeTab";
 import {SelectionHelper} from "../../helpers/SelectionHelper";
 import {ClickHelper} from "../../helpers/ClickHelper";
 

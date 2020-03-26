@@ -2,6 +2,7 @@
     "baseUrl": "http://localhost:5000",
     "hostname": "127.0.0.1",
     "port": 5000,
+    "openUnknownFiles": true,
     "loginProviders": [
         {
             "type": "saml",
