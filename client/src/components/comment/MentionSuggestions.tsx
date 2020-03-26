@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from "react";
-import {searchUsers} from "../../../helpers/APIHelper";
+import { permission } from "../../../helpers/APIHelper";
+import { courseRole } from "../../../../models/enums/courseRoleEnum";
+import { PermissionEnum, containsPermission } from "../../../../models/enums/permissionEnum";
 import {User} from "../../../../models/api/User";
+import { searchUsers }from "../../../helpers/APIHelper";
 
 interface MentionSuggestionsProperties {
 	/** Already inserted text to match with the start of suggestions */
@@ -14,6 +17,7 @@ interface MentionSuggestionsProperties {
 }
 
 export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected}: MentionSuggestionsProperties) {
+    const [allowedGroups, updateAllowedGroups] = useState([] as courseRole[]);
 	const [suggestions, updateSuggestions] = useState({ s: [] as User[], base: suggestionBase });
 
 	const displayPrefix : string = prefix === undefined ? "" : prefix;
@@ -21,6 +25,23 @@ export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected
     function filterSuggestions(suggestions: User[], base: string) {
         return suggestions.filter(s => s.name.toLowerCase().includes(base.toLowerCase()));
     }
+
+    useEffect(() => {
+        permission().then(permission => {
+            const groups = [];
+            if (containsPermission(PermissionEnum.mentionAllTeachers, permission.permissions)) {
+                groups.push(courseRole.teacher);
+            }
+            if (containsPermission(PermissionEnum.mentionAllAssistants, permission.permissions)) {
+                groups.push(courseRole.TA);
+            }
+            if (containsPermission(PermissionEnum.mentionAllStudents, permission.permissions)) {
+                groups.push(courseRole.student);
+            }
+            console.log("Allowed groups to mention: ", groups);
+            updateAllowedGroups(groups);
+        });
+    }, []);
 
 	useEffect(() => {
 		if (suggestionBase === null || suggestionBase.trim() === "") {
@@ -38,12 +59,16 @@ export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected
                 searchUsers(suggestionBase, courseID, 10).then(users => {
                     //const names = users.map(u => u.name);
                     updateSuggestions(({ s, base }) => {
+                        // Create the group suggestions
+                        // TODO: This is a terrible, terrible hack and it's all Jarik's fault
+                        const groups = filterSuggestions(allowedGroups.map(g => ({ name: g } as User)), base);
+
                         // If the base is exactly the same, we're fine
                         if (oldBase === base) {
-                            return { s: users, base };
+                            return { s: users.concat(groups), base };
                         // If the base has grown, filter on what's still relevant
                         } else if (base.includes(oldBase)) {
-                            return { s: filterSuggestions(users, base), base };
+                            return { s: filterSuggestions(users, base).concat(groups), base };
                         // If the base is smaller or has changed, we don't want to use these results
                         } else {
                             return { s, base };

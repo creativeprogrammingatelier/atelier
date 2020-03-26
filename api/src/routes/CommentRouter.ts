@@ -9,9 +9,8 @@ import {capture} from "../helpers/ErrorHelper";
 import {Comment} from "../../../models/api/Comment";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {requireRegisteredCommentThreadID} from "../helpers/PermissionHelper";
-import { getMentions } from '../helpers/MentionsHelper';
-import { MentionsDB } from '../database/MentionsDB';
-import { getClient, transaction } from '../database/HelperDB';
+import { createMentions } from '../helpers/MentionsHelper';
+import { transaction } from '../database/HelperDB';
 
 export const commentRouter = express.Router();
 commentRouter.use(AuthMiddleware.requireAuth);
@@ -60,10 +59,7 @@ commentRouter.put('/:commentThreadID', capture(async (request, response) => {
                 client
             });
             
-            const mentionedUsers = await getMentions(commentBody, comment.references.courseID, client);
-            await Promise.all(mentionedUsers.map(user => 
-                MentionsDB.addMention({ userID: user.ID, commentID: comment.ID, client })
-            ));
+            await createMentions(commentBody, comment.ID, comment.references.courseID, currentUserID, client);
             
             return comment;
         });

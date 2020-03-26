@@ -46,7 +46,8 @@ function log<T>(a : string, b ?:T) : void {
 	}
 
 
-const uuid = UUIDHelper.fromUUID("00000000-0000-0000-0000-000000000000")
+const uuid0 = UUIDHelper.fromUUID("00000000-0000-0000-0000-000000000000")
+const uuid1 = UUIDHelper.fromUUID("00000000-0000-0000-0000-000000000001")
 
 function logger<T>(pre: string) {
 	return (s: T) => {log<T>(pre, s); return s}
@@ -65,9 +66,10 @@ async function DBusersTest() {
 	const t1 = new Date()
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
-	await promise(UH.getUserByID(uuid), 'getUserById')
+	await promise(UH.getUserByID(uuid0), 'getUserById')
 	await promise(UH.searchUser('CAS'), "searchUser")
-	await promise(UH.getUserByPossibleMentionInCourse('Caas rest of comment', uuid), 'UserMention')
+	await promise(UH.getUserByPossibleMentionInCourse('Caas rest of comment', uuid0), 'UserMention')
+	await promise(UH.filterUserInCourse({courseID:uuid1}), "searchuserInCourse")
 	const u1 = await promise(UH.getUserBySamlID('samling_admin'), 'samlgetter')
 	const samlid = await promise(UH.getSamlIDForUserID(u1.ID), 'saml by user')
 	equal(samlid, 'samling_admin', 'samlid should still be equal for the same user')
@@ -82,12 +84,13 @@ async function DBusersTest() {
 
 async function DBcoursesTest() {
 	log("\n\nCOURSESTEST\n\n")
-	const course : Course= {courseName:"cname",creatorID:uuid,state:courseState.open}
-	const course2 = {courseName:"newname",creatorID:uuid,state:courseState.hidden}
+	const course : Course= {courseName:"cname",creatorID:uuid0,state:courseState.open}
+	const course2 = {courseName:"newname",creatorID:uuid0,state:courseState.hidden}
 	const res = await promise(CH.getAllCourses(), 'getAllCourses')
-	const r1 = await promise(CRH.addPermissionsCourse(res, {userID:uuid}), "addPermissions")
+	const r1 = await promise(CRH.addPermissionsCourse(res, {userID:uuid0}), "addPermissions")
 	const {ID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
 	await promise(CH.getCourseByID(ID), 'getCourseByID')
+	await promise(CH.searchCourse('pEaRls', {currentUserID:uuid0}), "searchCourse")
 	await promise(CH.updateCourse({courseID:ID}), "updateCourse1")
 	await promise(CH.updateCourse({...course2, courseID:ID}), "updateCourse2")
 	await promise(CH.deleteCourseByID(ID), 'delete')
@@ -136,18 +139,18 @@ async function DBrolesTest(){
 async function courseRegistrationDBTest(){
 
 	log("\n\nCOURSEREGISTRATIONTEST\n\n")
-	const newEntry = {userID:uuid, courseID:uuid, courseRole:courseRole.teacher,permission:5}
+	const newEntry = {userID:uuid0, courseID:uuid1, courseRole:courseRole.teacher,permission:5}
 	equal(newEntry.permission, 5)
 	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
-	await promise(CRH.getEntriesByCourse(uuid), 'getEntriesByCourse')
+	await promise(CRH.getEntriesByCourse(uuid0), 'getEntriesByCourse')
 	await promise(CRH.filterCourseUser({}), 'filterCourseReg')
-	await promise(CRH.filterCourseUser({userID:uuid}), 'filterCourseReg2')
+	await promise(CRH.filterCourseUser({userID:uuid0}), 'filterCourseReg2')
 	await promise(CRH.filterCourseUser({courseRole:courseRole.plugin}), 'filterCourseReg3')
 	await promise(CRH.filterCourseUser({permission:0}), 'filterCourseReg4')
 	await promise(CRH.filterCourseUser({permission:3}), 'filterCourseReg5')
 	const res = await promise(CRH.addEntry(newEntry), 'addEntry')
 	const upd = {userID:res.userID, courseID:res.courseID, courseRole:courseRole.TA}
-	await promise(CRH.getEntriesByUser(uuid), 'getEntriesByUser')
+	await promise(CRH.getEntriesByUser(uuid0), 'getEntriesByUser')
 	await promise(CRH.updateRole(upd), 'updateRole')
 	await promise(CRH.addPermission({...newEntry, permission:2048}), "addPermission")
 	await promise(CRH.removePermission({...newEntry, permission:2048}), "removePermsision")
@@ -157,12 +160,13 @@ async function courseRegistrationDBTest(){
 async function DBsubmissionTest(){
 	log("\n\nSUBMISSIONTEST\n\n")
 	await promise(SH.getAllSubmissions(), 'getAllSubmissions')
-	await promise(SH.getSubmissionById(uuid), 'getSubmissionById')
-	await promise(SH.getUserSubmissions(uuid), 'getUserSubmissions')
-	await promise(SH.getSubmissionsByCourse(uuid), 'getSubmissionsByCourse')
+	await promise(SH.getSubmissionById(uuid0), 'getSubmissionById')
+	await promise(SH.getUserSubmissions(uuid0), 'getUserSubmissions')
+	await promise(SH.getSubmissionsByCourse(uuid0), 'getSubmissionsByCourse')
 	await promise(SH.getRecents({addFiles:true}), 'addFiles')
-	const sub = {submissionID: undefined, courseID: uuid, title: "myProject", userID:uuid, date:undefined, state: submissionStatus.new}
-	const sub2 = {submissionID: undefined, title: "mySecondProject", userID:uuid, date:undefined, state: submissionStatus.closed}
+	await promise(SH.searchSubmissions('plan', {currentUserID:uuid0, courseID:uuid0}), "searchSubmissions")
+	const sub = {submissionID: undefined, courseID: uuid0, title: "myProject", userID:uuid0, date:undefined, state: submissionStatus.new}
+	const sub2 = {submissionID: undefined, title: "mySecondProject", userID:uuid0, date:undefined, state: submissionStatus.closed}
 	const res = await promise(SH.addSubmission(sub), 'addSubmission')
 	if (res.ID===undefined) throw new Error("no submissionid")
 	await promise(SH.updateSubmission({...sub2, submissionID:res.ID}), 'updateSubmission')
@@ -171,12 +175,13 @@ async function DBsubmissionTest(){
 
 async function DBfileTest(){
 	log("\n\nFILETEST\n\n")
-	await promise(FH.getNullFileID(uuid), 'nullfile')
+	await promise(FH.getNullFileID(uuid0), 'nullfile')
 	const list = await promise(FH.getAllFiles(), 'getAllFiles')
-	await promise(FH.getFilesBySubmission(uuid), 'getFilesBySubmission')
+	await promise(FH.getFilesBySubmission(uuid0), 'getFilesBySubmission')
 	await promise(FH.getFilesBySubmissionIDS(list.map(x=>x.references.submissionID)), 'filesMap')
-	await promise(FH.getFileByID(uuid), 'getFileByID')
-	const file = {fileID:undefined, submissionID:uuid, pathname:'some/path/to/the/file', type:'pde'}
+	await promise(FH.getFileByID(uuid0), 'getFileByID')
+	await promise(FH.searchFiles('perlin', {currentUserID:uuid0, courseID:uuid0}), "searchFiles")
+	const file = {fileID:undefined, submissionID:uuid0, pathname:'some/path/to/the/file', type:'pde'}
 	const res1 = await promise(FH.addFile(file), 'addFile')
 	if (res1.ID===undefined) throw new Error("bs1")
 	const file2 = {fileID:res1.ID, pathname:'new/path/to/file', type:'dir'}
@@ -188,8 +193,9 @@ async function DBfileTest(){
 async function DBsnippetTest(){
 	log("\n\nSNIPPETTEST\n\n")
 	await promise(SPH.getAllSnippets(), 'getAllSnippets')
-	await promise(SPH.getSnippetsByFile(uuid), 'getSnippetsByFile')
-	const snip = await promise(SPH.getSnippetByID(uuid), 'getSnippetByID')
+	await promise(SPH.getSnippetsByFile(uuid0), 'getSnippetsByFile')
+	await promise(SPH.searchSnippets('//', {currentUserID:uuid0, courseID:uuid0}), "searchSnippets")
+	const snip = await promise(SPH.getSnippetByID(uuid0), 'getSnippetByID')
 	const snip2 : Snippet = {snippetID: snip.ID, body:snip.body+"AB"}
 	const res2 = await promise(SPH.updateSnippet(snip2), "updateSnippet")
 
@@ -203,9 +209,9 @@ async function DBsnippetTest(){
 async function TDBhreadTest() {
 	log("\n\nTHREADTEST\n\n")
 	const snippetID = await promise(SPH.createNullSnippet(), "addSnippet")
-	const fileID = await promise(FH.createNullFile(uuid), "createNULL")
+	const fileID = await promise(FH.createNullFile(uuid0), "createNULL")
 	notEqual(fileID, undefined, "fileID not null"+fileID )
-	const T0={submissionID:uuid, fileID, snippetID, visibilityState:threadState.public}
+	const T0={submissionID:uuid0, fileID, snippetID, visibilityState:threadState.public}
 	const items = await promise(TH.getAllThreads(), "getAllThreads")
 	const i0 = await promise(TH.getAllThreads({limit:1}), "getThreadsLimit")
 	const i1 = await promise(TH.getAllThreads({limit:1,offset:1}), "getThreadsLimitOffset")
@@ -213,14 +219,14 @@ async function TDBhreadTest() {
 	deepEqual(i0[0], items[0], "ordering differs")
 	deepEqual(i1[0], items[1], "offset did not give second result")
 	deepEqual(i1[0], items[1], "ordering differs 2nd item")
-	await promise(TH.getThreadByID(uuid), "getThredByID")
+	await promise(TH.getThreadByID(uuid0), "getThredByID")
 	const com1 = await promise(TH.filterThread({addComments:true}), "addComments")
 	const com2 = await promise(TH.addComments(TH.filterThread({})), "addComments2")
 	deepEqual(com2, com1, "adding comments manually is not the same...")
-	await promise(TH.addCommentSingle(TH.getThreadByID(uuid)), "addCommentSingle")
+	await promise(TH.addCommentSingle(TH.getThreadByID(uuid0)), "addCommentSingle")
 
-	await promise(TH.getThreadsBySubmission(uuid), "getThreadsBySubmission")
-	await promise(TH.getThreadsByFile(uuid), "getThreadsByFile")
+	await promise(TH.getThreadsBySubmission(uuid0), "getThreadsBySubmission")
+	await promise(TH.getThreadsByFile(uuid0), "getThreadsByFile")
 	const T1 = await promise(TH.addThread(T0), "addThread")
 	equal("snippet" in T1, false, "undefined snippet is still returned")
 	equal("file" in T1, false, "file is still returned")
@@ -233,9 +239,10 @@ async function TDBhreadTest() {
 async function DBcommentTest(){
 	log("\n\nCOMMENTTEST\n\n")
 	await promise(C.getAllComments(), "getAllComments")
-	await promise(C.getCommentByID(uuid), "getCommentByID")
-	await promise(C.getCommentsByThread(uuid), "getCommentsBySubmission")
-	const C1 = await promise(C.addComment({commentThreadID:uuid, userID:uuid, body:"this is a comment i just made!"}), 'addComment')
+	await promise(C.getCommentByID(uuid0), "getCommentByID")
+	await promise(C.getCommentsByThread(uuid0), "getCommentsBySubmission")
+	await promise(C.searchComments('this', {currentUserID:uuid0, courseID:uuid0}), "searchComments")
+	const C1 = await promise(C.addComment({commentThreadID:uuid0, userID:uuid0, body:"this is a comment i just made!"}), 'addComment')
 	await promise(C.updateComment({commentID:C1.ID, body: "this is an edited comment"}), "updateComment")
 	await promise(C.deleteComment(C1.ID), "deleteComment")
 	await promise(C.filterComment({body:'comment'}), "textSearch")
@@ -243,10 +250,10 @@ async function DBcommentTest(){
 
 async function DBmentionTest(){
 	await promise(M.getAllMentions(), "getAllMentions")
-	await promise(M.getMentionByID(uuid), "getMentionByID")
-	await promise(M.getMentionsByComment(uuid), "getMentionsByComment")
-	await promise(M.getMentionsByUser(uuid), "getMentionsByUser")
-	const m1 : Mention = {userID:uuid,commentID:uuid} 
+	await promise(M.getMentionByID(uuid0), "getMentionByID")
+	await promise(M.getMentionsByComment(uuid0), "getMentionsByComment")
+	await promise(M.getMentionsByUser(uuid0), "getMentionsByUser")
+	const m1 : Mention = {userID:uuid0,commentID:uuid0} 
 	m1.mentionID = (await promise(M.addMention(m1), "addMention")).mentionID
 	await promise(M.updateMention(m1), "updateMention")
 	await promise(M.updateMention({mentionID:m1.mentionID}), "updateMention2")
@@ -254,7 +261,7 @@ async function DBmentionTest(){
 }
 
 async function courseIDBnviteTest(){
-	const invite = {creatorID: uuid, courseID: uuid, type:'', joinRole: courseRole.TA}
+	const invite = {creatorID: uuid0, courseID: uuid0, type:'', joinRole: courseRole.TA}
 	await promise(CI.filterInvite({}), "filterInvite")
 	const resinv = await promise(CI.addInvite(invite), "addInvite")
 	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))

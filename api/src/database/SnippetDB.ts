@@ -1,4 +1,4 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf, _insert } from "./HelperDB";
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf } from "./HelperDB";
 import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet, isNotNullSnippet} from '../../../models/database/Snippet';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { snippetsView } from "./ViewsDB";
@@ -108,7 +108,8 @@ export class SnippetDB {
 			searchBody = searchify(body),
 			searchBefore = searchify(contextBefore),
 			searchAfter = searchify(contextAfter)
-		const s = `SELECT * 
+		return client.query(`
+		SELECT * 
 		FROM "SnippetsView" as s, "FilesView" as f, "SubmissionsView" as su, viewableSubmissions($13, $5) as opts
 		WHERE
 			s.fileid = f.fileid
@@ -130,12 +131,9 @@ export class SnippetDB {
 		ORDER BY s.snippetID
 		LIMIT $14
 		OFFSET $15
-		`
-		const ls = [snippetid, fileid, commentthreadid, submissionid, courseid, 
+		`, [snippetid, fileid, commentthreadid, submissionid, courseid, 
 			lineStart, lineEnd, charStart, charEnd, searchBody, searchBefore, searchAfter,
-			currentuserid, limit, offset ]
-		_insert(s, ls)
-		return client.query(s, ls)
+			currentuserid, limit, offset ])
 		.then(extract).then(map(entry => ({
 			//no checks for null snippets/files, since we are literally searching inside a snippet body
 			snippet: snippetToAPI(entry),

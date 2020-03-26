@@ -1,4 +1,4 @@
-import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify, _insert, toBin } from "./HelperDB";
+import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify, toBin } from "./HelperDB";
 import {Course, courseToAPIPartial, DBAPICourse} from '../../../models/database/Course';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { FileDB } from "./FileDB";
@@ -131,7 +131,7 @@ export class CourseDB {
 						limit, offset
 					]
 		type argType = typeof args;
-		const s = `
+		return client.query(`
 			SELECT c.* 
 			FROM "CoursesView" as c, "CourseUsersViewAll" as cu
 			WHERE
@@ -146,7 +146,7 @@ export class CourseDB {
 					SELECT permission
 					FROM "UsersView"
 					WHERE userID=$8
-				) & b'${toBin(2**PermissionEnum.viewAllCourses)}' = '${toBin(2**PermissionEnum.viewAllCourses)}'
+				) & b'${toBin(2**PermissionEnum.viewAllCourses)}' = b'${toBin(2**PermissionEnum.viewAllCourses)}'
 			)
 			--ids
 			AND ($1::uuid IS NULL OR c.courseID=$1)
@@ -161,9 +161,8 @@ export class CourseDB {
 
 			ORDER BY c.state, c.courseName, c.courseID
 			LIMIT $9
-			OFFSET $10`
-			_insert(s,args)
-			return client.query<DBAPICourse, argType>(s,args)
+			OFFSET $10
+			`, args)
 			.then(extract).then(map(courseToAPIPartial))
 	}
 

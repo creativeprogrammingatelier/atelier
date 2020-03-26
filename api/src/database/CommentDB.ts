@@ -1,4 +1,4 @@
-import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools, funmap2, _insert } from "./HelperDB";
+import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools, funmap2 } from "./HelperDB";
 import {Comment, commentToAPI, DBAPIComment} from '../../../models/database/Comment';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { commentsView } from "./ViewsDB";
@@ -138,25 +138,6 @@ export class CommentDB {
 		const args = [	commentid, commentthreadid, submissionid, courseid, userid, 
 						created, edited, bodysearch, limit, offset, currentuserid]
 		type argType = typeof args;
-		_insert(`
-			SELECT c.*, s.*
-			FROM "CommentsView" as c, "SubmissionsView" as s, viewableSubmissions($11, $4) as opts
-			WHERE 
-				 c.submissionID = s.submissionID
-			AND ($1::uuid IS NULL OR c.commentID=$1)
-			AND ($2::uuid IS NULL OR c.commentThreadID=$2)
-			AND ($3::uuid IS NULL OR c.submissionID=$3)
-			AND ($4::uuid IS NULL OR c.courseID=$4)
-			AND ($5::uuid IS NULL OR c.userID=$5) 
-			AND ($6::timestamp IS NULL OR c.created >= $6)
-			AND ($7::timestamp IS NULL OR c.edited >= $7)
-			AND ($8::text IS NULL OR c.body ILIKE $8)
-			
-			AND c.submissionID = opts.submissionID
-			ORDER BY c.created DESC, c.commentID --unique in case 2 comments same time
-			LIMIT $9
-			OFFSET $10
-			`, args)
 		return client.query<DBAPIComment&DBAPISubmission, argType>(`	
 			SELECT c.*, s.*
 			FROM "CommentsView" as c, "SubmissionsView" as s, viewableSubmissions($11, $4) as opts

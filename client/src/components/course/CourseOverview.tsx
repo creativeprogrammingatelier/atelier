@@ -73,10 +73,13 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					<DataBlockList
 						header="Mentions"
 						list={mentions.map(mention => ({
-							transport: `/submission/...#${mention.commentID}`, // TODO: Real url to comment
-							title: mention.commentID,
-							text: "You've been mentioned!",
-							time: new Date(),
+                            transport: 
+                                mention.comment.references.fileID !== undefined
+                                ? `/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
+                                : `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`, 
+							title: `Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle}`,
+							text: mention.comment.text,
+							time: new Date(mention.comment.created),
 							tags: []
 						}))}
 					/>

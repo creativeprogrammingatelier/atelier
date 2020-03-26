@@ -1,4 +1,4 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify, _insert } from "./HelperDB";
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify } from "./HelperDB";
 import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles, isNotNullFile} from '../../../models/database/File';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { filesView } from "./ViewsDB";
@@ -104,7 +104,7 @@ export class FileDB {
 			courseid = UUIDHelper.toUUID(courseID),
 			currentuserid = UUIDHelper.toUUID(currentUserID),
 			searchFile = searchify(pathname)
-		const s =`
+		return client.query(`
 			SELECT f.*, s.*
 			FROM "FilesView" as f, "SubmissionsView" as s, viewableSubmissions($8, $3) as opts
 			WHERE
@@ -118,10 +118,8 @@ export class FileDB {
 			ORDER BY f.pathname, f.type, f.fileID
 			LIMIT $6
 			OFFSET $7
-			`,
-		ls = [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid]
-		_insert(s,ls)
-		return client.query(s,ls).then(extract).then(map(entry => ({
+			`, [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid])
+		.then(extract).then(map(entry => ({
 			file:fileToAPI(entry),
 			submission: submissionToAPI(entry)
 		}))).then(doIf(!includeNulls, entries => 
