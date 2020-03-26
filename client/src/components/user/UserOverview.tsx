@@ -58,17 +58,17 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
 					<TabBar
 						tabs={[{
 							id: "courses",
-							icon: <FiCompass size={28} color="#FFFFFF"/>,
+							icon: FiCompass,
 							text: "Courses",
 							location: userPath + "/courses"
 						}, {
 							id: "submissions",
-							icon: <FiPackage size={28} color="#FFFFFF"/>,
+							icon: FiPackage,
 							text: "Submissions",
 							location: userPath + "/submissions"
 						}, {
 							id: "comments",
-							icon: <FiMessageSquare size={28} color="#FFFFFF"/>,
+							icon: FiMessageSquare,
 							text: "Comments",
 							location: userPath + "/comments"
 						}]}

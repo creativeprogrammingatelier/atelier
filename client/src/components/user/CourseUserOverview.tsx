@@ -68,12 +68,12 @@ export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: U
 					<TabBar
 						tabs={[{
 							id: "submissions",
-							icon: <FiPackage size={28} color="#FFFFFF"/>,
+							icon: FiPackage,
 							text: "Submissions",
 							location: courseUserPath + "/submissions"
 						}, {
 							id: "comments",
-							icon: <FiMessageSquare size={28} color="#FFFFFF"/>,
+							icon: FiMessageSquare,
 							text: "Comments",
 							location: courseUserPath + "/comments"
 						}]}

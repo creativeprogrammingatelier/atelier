@@ -19,7 +19,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 	const getCommentThreads = () => {
 		try {
 			getFileComments(file.ID).then(commentThreads => {
-				setCommentThreads(commentThreads)
+				setCommentThreads(commentThreads);
 			});
 		} catch (error) {
 			if (error instanceof JsonFetchError) {
@@ -68,21 +68,21 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 	useEffect(getSnippets, [commentThreads]);
 
 	return (
-        <div className="mb-6">
-            <Loading<string>
-                loader={getFileContents}
-                params={[file.ID]}
-                component={body =>
-                    <CommentSelector<HighlightedCodeProperties>
-                        codeViewer={HighlightedCode}
-                        codeProperties={{code: body, snippets, options: { mode: file.type }}}
-                        mentions={{courseID: file.references.courseID}}
-                        sendHandler={handleCommentSend}
-                    />
-                }
-            />
-        </div>
-    );
+		<div className="mb-6">
+			<Loading<string>
+				loader={getFileContents}
+				params={[file.ID]}
+				component={body =>
+					<CommentSelector<HighlightedCodeProperties>
+						codeViewer={HighlightedCode}
+						codeProperties={{code: body, snippets, options: {mode: file.type}}}
+						mentions={{courseID: file.references.courseID}}
+						sendHandler={handleCommentSend}
+					/>
+				}
+			/>
+		</div>
+	);
 }
 function acceptsFile(file: File) {
 	return true;

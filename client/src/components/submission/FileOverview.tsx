@@ -78,17 +78,17 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 					<TabBar
 						tabs={[{
 							id: "code",
-							icon: <FiCode size={28} color="#FFFFFF"/>,
-							text: "Code",
+							icon: activeFileViewer.icon,
+							text: activeFileViewer.name,
 							location: filePath + "/code"
 						}, {
 							id: "comments",
-							icon: <FiMessageSquare size={28} color="#FFFFFF"/>,
+							icon: FiMessageSquare,
 							text: "Comments",
 							location: filePath + "/comments"
 						}, {
 							id: "share",
-							icon: <FiShare2 size={28} color="#FFFFFF"/>,
+							icon: FiShare2,
 							text: "Share",
 							location: filePath + "/share"
 						}]}
