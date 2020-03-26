@@ -7,7 +7,6 @@ import {CommentThread as APICommentThread} from "../../../../models/api/CommentT
 import {getFileComments} from "../../../helpers/APIHelper";
 
 interface CommentTabProperties {
-    body: string,
     file: File,
 	submissionID: string
 }

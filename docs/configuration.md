@@ -24,6 +24,16 @@ The hostname the server should listen on. In production environments the default
 
 This specifies the port the application should listen on. If it is not provided, the default value will be 5000.
 
+## Open unknown files
+
+Atelier uses both the MIME type and the file extension to determine the type of file. If Atelier cannot determine the type of a file, it will by default not be displayed. If you want Atelier to display unrecognized files as text files, you can set the `openUnknownFiles` property:
+
+```json
+"openUnknownFiles": true
+```
+
+This setting is especially useful if Atelier is used with programming languages that are not currently recognized. Note that changing this setting only affects the files of new submissions, as the readability of a file is determined at the upload stage.
+
 ## Login providers
 
 ```json

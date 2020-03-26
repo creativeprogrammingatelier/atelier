@@ -7,7 +7,7 @@ import { randomBytes } from 'crypto';
 
 import { File } from '../../../models/api/File';
 import { UPLOADS_PATH } from '../lib/constants';
-import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE } from '../../../helpers/Constants';
+import { MAX_FILE_SIZE } from '../../../helpers/Constants';
 
 /** A version of `express.Request` that keeps the location where files are stored. */
 export type FileUploadRequest = Request & { fileLocation?: string };
@@ -100,12 +100,6 @@ export const deleteFile = (filePath: fs.PathLike): Promise<void> =>
     new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) => 
         fs.unlink(filePath, err => err ? reject(err) : resolve())
     );
-
-/** Delete all non-code files from a list of files */
-export async function deleteNonCodeFiles(files: File[]) {
-    const nonCodeFiles = files.filter(f => !CODEFILE_EXTENSIONS.includes(path.extname(f.name)));
-    await Promise.all(nonCodeFiles.map(file => deleteFile(getFilePathOnDisk(file))));
-}
 
 /** Read a file as a string with UTF-8 encoding */
 export const readFileAsString = (filePath: fs.PathLike) =>

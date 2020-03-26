@@ -41,6 +41,8 @@ export interface Configuration {
     hostname: string,
     /** The port to start the server on */
     port: number,
+    /** Should files of which Atelier doesn't recognize the type be displayed as text */
+    openUnknownFiles: boolean,
     /** 
      * List of authentication providers.
      * If multiple are given, the user is given the choice between them.
@@ -96,6 +98,7 @@ export const config: Configuration = {
     baseUrl: prop("baseUrl", json.baseUrl),
     hostname: prop("hostname", json.hostname, env === "production" ? "0.0.0.0" : "127.0.0.1"),
     port: prop("port", json.port, 5000),
+    openUnknownFiles: prop("openUnknownFiles", json.openUnknownFiles, false),
     loginProviders: 
         json.loginProviders 
         // tslint:disable-next-line: no-any - It's fine, this is turning JSON into typed structure
