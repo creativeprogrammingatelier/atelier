@@ -5,6 +5,7 @@ import { getEnum } from "../enums/enumHelper";
 import { courseRole } from "../enums/courseRoleEnum";
 import { globalRole } from "../enums/globalRoleEnum";
 import {CourseUser as APICourseUser } from '../api/CourseUser'
+import { User } from "../api/User";
 export {APICourseUser}
 export interface CourseUserOutput{
 	userID: string,
@@ -17,7 +18,9 @@ export interface CourseUserOutput{
 	courseRole: courseRole,
 	permission: number,
 }
-export type CourseUser = Partial<CourseUserOutput> & DBTools
+export interface CourseUser extends Partial<CourseUserOutput>, DBTools {
+	registeredOnly? : boolean
+}
 
 export interface DBCourseUser {
 	userid: string,
@@ -57,5 +60,13 @@ export function CourseUserToAPI(db : DBCourseUser) : APICourseUser{
 			courseRole: getEnum(courseRole, db.courserole),
 			permissions: toDec(db.permission)
 		}
+	}
+}
+export function CourseUserToUser(cu : APICourseUser) : User{
+	return {
+		ID:cu.userID,
+		name:cu.userName,
+		email:cu.email,
+		permission:cu.permission
 	}
 }

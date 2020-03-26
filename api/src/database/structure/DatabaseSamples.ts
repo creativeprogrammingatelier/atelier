@@ -57,6 +57,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 	
      INSERT INTO "CourseRegistration" VALUES
           ((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3${permissionType}),
+          (${uuid0}, ${uuid0}, 'student', ${permissionType}),
           (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', ${permissionType}),
           (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', ${permissionType}),
           (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', ${permissionType}),
@@ -71,7 +72,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'Planets', DEFAULT, DEFAULT);
 		
      INSERT INTO "Files" VALUES
-	     (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
+	     (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), 'MyFirstSubmission/MyFirstSubmission', 'processing'),
 	     (${uuid1}, ${uuid1}, 'Planets/Perlin.pde', 'processing'),
 	     (${uuid2}, ${uuid1}, 'Planets/Planets.pde', 'processing'),
 	     (${uuid3}, ${uuid1}, 'Planets/data/mercury', 'image/jpg'),
@@ -177,7 +178,9 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 	
      INSERT INTO "Comments" VALUES
           (${uuid0}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
-          (${uuid5}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a multi\\nline comment, mentioning \\nall @teachers in one go!'),
+          (${uuid5}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a multi
+line comment, mentioning 
+all @teachers in one go!'),
           (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a comment about nothing at all..'),
 		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
 		(${uuid2}, ${uuid2}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Bad names'),

@@ -161,14 +161,19 @@ export function getCourseMentions(courseID: string, doCache?: boolean) {
 }
 
 // Search
-export function search(query: string, limit = 20, offset = 0, doCache?: boolean) {
-	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`, undefined, doCache);
+export function search(
+		{query, limit = 20, offset = 0, courseID} 
+		: {query : string, limit? : number, offset? : number, courseID? : string}
+		, doCache?: boolean) {
+	let path = `/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`
+	path +=courseID ? `&courseID=${courseID}` : "";
+	return Fetch.fetchJson<SearchResult>(path, undefined, doCache);
 }
 // If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
 export function searchUsers(query : string, courseID? : string, limit = 20, offset = 0, doCache? : boolean) {
 	const courseSearch = courseID === undefined ? "" : `&courseID=${courseID}`;
 	return Fetch.fetchJson<User[]>(
-		`/api/search/users?q=${query}${courseSearch}&limit=${limit}&offset=${offset}`,
+		`/api/search/users?q=${encodeURIComponent(query)}${courseSearch}&limit=${limit}&offset=${offset}`,
 		undefined,
 		doCache
 	)
@@ -176,7 +181,7 @@ export function searchUsers(query : string, courseID? : string, limit = 20, offs
 //@deprecated searchUsers is more general.
 export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0, doCache?: boolean) {
 	return Fetch.fetchJson<User[]>(
-        `/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`, 
+        `/api/search/users?q=${encodeURIComponent(query)}&courseID=${courseID}&limit=${limit}&offset=${offset}`, 
         undefined, 
         doCache
     );
