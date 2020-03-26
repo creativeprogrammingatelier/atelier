@@ -20,6 +20,7 @@ interface RoleSettingsProps {
 export function RoleSettings({global, course} : RoleSettingsProps) {
     if (global === undefined && course === undefined) return <div />;
 
+    const courseID = course === undefined ? undefined : course.courseID;
     const roles = global !== undefined ? global.roles.map(role => role.toString()) : course!.roles.map(role => role.toString());
     const [user, setUser] = useState(null as unknown as User);
     const [userRole, setUserRole] = useState("");
@@ -54,7 +55,7 @@ export function RoleSettings({global, course} : RoleSettingsProps) {
     return (
         <div className="updateRole">
             <Form>
-                <UserSearch onSelected={(user : User) => updateUser(user)} />
+                <UserSearch courseID={courseID} onSelected={(user : User) => updateUser(user)} />
                 {
                     user !== null &&
                         <div>
