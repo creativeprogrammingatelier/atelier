@@ -17,7 +17,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 
 	async function handleSearch() {
 		try {
-			const results = await search(query); // TODO: Add course selection
+			const results = await search({query,courseID:course}); // TODO: Add course selection
 			setQuery("");
 			if (handleResponse !== undefined) {
 				handleResponse(results);

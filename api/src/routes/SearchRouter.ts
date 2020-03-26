@@ -34,7 +34,7 @@ searchRouter.use(AuthMiddleware.requireAuth);
 
 /** Get the parameters for a search query, throws an error if invalid */
 async function getSearchParams(request: Request) {
-    const query : string | undefined = request.query.q;
+    const query : string | undefined = decodeURIComponent(request.query.q);
     if (!query?.trim()) throw new InvalidParamsError("q", "it should not be empty");
 
     const common = getCommonQueryParams(request);

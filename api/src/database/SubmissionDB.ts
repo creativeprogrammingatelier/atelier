@@ -1,4 +1,4 @@
-import {extract, map, one, pool, pgDB, checkAvailable, DBTools  } from "./HelperDB";
+import {extract, map, one, pool, pgDB, checkAvailable, DBTools, _insert, searchify  } from "./HelperDB";
 import {Submission, DBSubmission, convertSubmission, submissionToAPI, APISubmission} from '../../../models/database/Submission';
 import {submissionStatus} from '../../../models/enums/submissionStatusEnum'
 import { UUIDHelper } from "../helpers/UUIDHelper";
@@ -115,7 +115,7 @@ export class SubmissionDB {
 			courseID = undefined,
 			userID = undefined,
 			//submission
-			title = undefined,
+			title = searchString,
 			date = undefined,
 			state = undefined,
 			//user
@@ -133,7 +133,30 @@ export class SubmissionDB {
 		const submissionid = UUIDHelper.toUUID(submissionID),
 			courseid = UUIDHelper.toUUID(courseID),
 			userid = UUIDHelper.toUUID(userID),
-			currentuserid = UUIDHelper.toUUID(currentUserID)
+			currentuserid = UUIDHelper.toUUID(currentUserID),
+			searchTitle = searchify(title)
+		_insert(`SELECT s.* 
+		FROM "SubmissionsView" as s, viewableSubmissions($12, $2) as opts
+		WHERE 
+			($1::uuid IS NULL OR s.submissionID=$1)
+		AND ($2::uuid IS NULL OR s.courseID=$2)
+		AND ($3::uuid IS NULL OR s.userID=$3)
+		--submission
+		AND ($4::text IS NULL OR s.title=$4)
+		AND ($5::timestamp IS NULL OR s.date <= $5)
+		AND ($6::text IS NULL OR s.state=$6)
+		--user
+		AND ($7::text IS NULL OR s.userName=$7)
+		AND ($8::text IS NULL OR s.email=$8)
+		AND ($9::text IS NULL OR s.globalrole=$9)
+		AND s.submissionID = opts.submissionID
+		ORDER BY date DESC
+		LIMIT $10
+		OFFSET $11
+		`, [submissionid, courseid, userid, 
+			searchTitle, date, state, 
+			name, email, role,
+			limit, offset, currentuserid])
 		const query = pool.query(`
 			SELECT s.* 
 			FROM "SubmissionsView" as s, viewableSubmissions($12, $2) as opts
