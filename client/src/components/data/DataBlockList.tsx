@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {DataBlock} from './DataBlock';
-import {DataTagProperties} from "./DataTag";
 import { DataList } from './DataList';
+import {TagProperties} from "../general/Tag";
 
 interface DataListEntryProperties {
 	transport?: string,
 	title: string,
 	text: string,
 	time: Date,
-	tags?: DataTagProperties[]
+	tags?: TagProperties[]
 }
 interface DataListProperties {
 	header: string,

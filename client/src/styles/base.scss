@@ -258,11 +258,24 @@ textarea:focus, textarea:active {
 .badge {
 	vertical-align: inherit;
 	font-size: 85%;
-	font-weight: 500;
+	font-weight: 400;
+
+	svg {
+		vertical-align: bottom;
+	}
+}
+.badge:not(.badge-pill) {
 	border-radius: 2px;
 }
 .badge:not(:last-child) {
+	margin-bottom: 0.25rem;
 	margin-right: 0.25rem;
+}
+.badge-large {
+	font-size: 1rem;
+}
+.badge-primary {
+	background-color: $colorPrimary;
 }
 
 .qrCode {
@@ -548,8 +561,15 @@ textarea:focus, textarea:active {
 		// If this is the case, we want the lower right corner not to be rounded.
 		// Bootstrap will do that automatically if the input append is not the last child.
 		// This will however also overwrite the top right corner, which we don't want.
-		border-top-right-radius: 1.5rem !important;
+		border-top-right-radius: 1.5rem;
 		border-bottom-right-radius: 1.5rem;
+	}
+
+	.input-group-append:not(:last-child) > .btn:last-of-type {
+		border-top-right-radius: 1.5rem;
+	}
+	.input-group-append:not(:last-child) > .btn {
+		border-bottom-left-radius: 0;
 	}
 
 	.mentions {

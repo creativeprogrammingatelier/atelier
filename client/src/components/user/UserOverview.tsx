@@ -49,7 +49,7 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
 			loader={getUser}
 			params={[userId]}
 			component={user =>
-				<Frame title={user.name} sidebar search>
+				<Frame title={user.name} sidebar search={{user}}>
 					<Jumbotron>
 						<h1>{user.name}</h1>
 						<p>Welcome back here! :D</p>

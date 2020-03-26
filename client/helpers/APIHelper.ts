@@ -154,8 +154,8 @@ export function getCourseMentions(courseID: string, doCache?: boolean) {
 }
 
 // Search
-export function search(query: string, limit = 20, offset = 0, doCache?: boolean) {
-	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&limit=${limit}&offset=${offset}`, undefined, doCache);
+export function search(query: string, course: string, user: string, submission: string, limit = 20, offset = 0, doCache?: boolean) {
+	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&course=${course}&user=${user}&submission=${submission}&limit=${limit}&offset=${offset}`, undefined, doCache);
 }
 // If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
 export function searchUsers(query : string, courseID? : string, limit = 20, offset = 0, doCache? : boolean) {
