@@ -99,7 +99,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 					</Fragment>
 				}
 				{thread.file && thread.snippet &&
-					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/code#${thread.snippet.start.line + 1}`}>
+					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/view#${thread.snippet.start.line + 1}`}>
 						<Button>
 							<FiCode size={14} color="#FFFFFF"/>
 						</Button>

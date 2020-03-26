@@ -42,7 +42,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 	}, [tab]);
 
 	function renderTabContents(file: File) {
-		if (activeTab === "code") {
+		if (activeTab === "view") {
 			if (!activatedFileViewer) {
 				const fileViewer = getFileViewer(file);
 				if (fileViewer) {
@@ -72,15 +72,15 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 							params={[submissionId]}
 							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>}
 						/>
-						{activeTab === "code" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
+						{activeTab === "view" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
 					</Jumbotron>
 					{renderTabContents(file)}
 					<TabBar
 						tabs={[{
-							id: "code",
+							id: "view",
 							icon: activeFileViewer.icon,
 							text: activeFileViewer.name,
-							location: filePath + "/code"
+							location: filePath + "/view"
 						}, {
 							id: "comments",
 							icon: FiMessageSquare,
