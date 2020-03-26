@@ -8,7 +8,7 @@
  * - userID: limit the returned items to be created by this user
  */
 
-import express, { Request, response } from 'express';
+import express, { Request } from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { UserDB } from '../database/UserDB';
 import { CommentDB } from '../database/CommentDB';
@@ -42,7 +42,7 @@ async function getSearchParams(request: Request) {
     const userID = request.query.userID as string | undefined;
     const submissionID = request.query.submissionID as string | undefined;
 
-    const currentUserID = await getCurrentUserID(request)
+    const currentUserID = await getCurrentUserID(request);
     return { query, common: { ...common, courseID, userID, submissionID, currentUserID } };
 }
 
@@ -56,7 +56,7 @@ function filterUser(user: User & { courseID?: string }) {
 searchRouter.get('/', capture(async (request, response) => {
     const { query, common } = await getSearchParams(request);
     if (common.courseID) { // we are searching within a course
-        requireRegistered(common.currentUserID, common.courseID)
+        await requireRegistered(common.currentUserID, common.courseID);
         const users = (await CourseRegistrationDB.filterCourseUser({ userName: query, ...common }))
                     .map(CourseUserToUser);
         const comments = await CommentDB.searchComments(query, common);
@@ -71,7 +71,7 @@ searchRouter.get('/', capture(async (request, response) => {
             comments,
             snippets
         } as SearchResult;
-        console.log("course searched. query:", query, "Found", result)
+        console.log("course searched. query:", query, "Found", result);
         response.send(result);
     } else {
         const courses = await CourseDB.searchCourse(query, common);
@@ -83,7 +83,7 @@ searchRouter.get('/', capture(async (request, response) => {
             comments: [],
             snippets: []
         };
-        console.log("global searched. query:", query, "Found", result)
+        console.log("global searched. query:", query, "Found", result);
         response.send(result);
     }
 }));
@@ -92,9 +92,9 @@ searchRouter.get('/', capture(async (request, response) => {
 searchRouter.get('/users', capture(async (request, response) => {
     const { query, common } = await getSearchParams(request);
     if (common.courseID) {
-        requireRegistered(common.currentUserID, common.courseID)
+        await requireRegistered(common.currentUserID, common.courseID)
     }
-    requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles], common.courseID)
+    await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles], common.courseID);
     const users = await filterUser({ userName: query, ...common });
     response.send(users);
 }));
@@ -105,7 +105,7 @@ searchRouter.get('/comments', capture(async (request, response) => {
     if (!common.courseID){
         throw new InvalidParamsError("courseID", "should be given, but wasn't")
     }
-    requireRegistered(common.currentUserID, common.courseID)
+    await requireRegistered(common.currentUserID, common.courseID);
     const comments = await CommentDB.searchComments(query, common);
     response.send(comments);
 }));
@@ -116,7 +116,7 @@ searchRouter.get('/snippets', capture(async (request, response) => {
     if (!common.courseID){
         throw new InvalidParamsError("courseID", "should be given, but wasn't")
     }
-    requireRegistered(common.currentUserID, common.courseID)
+    await requireRegistered(common.currentUserID, common.courseID);
     const snippets = await SnippetDB.searchSnippets(query, common);
     response.send(snippets);
 }));
@@ -126,7 +126,7 @@ searchRouter.get('/submissions', capture(async (request, response) => {
     if (!common.courseID){
         throw new InvalidParamsError("courseID", "should be given, but wasn't")
     }
-    requireRegistered(common.currentUserID, common.courseID)
+    await requireRegistered(common.currentUserID, common.courseID);
     const submissions = await SubmissionDB.searchSubmissions(query, common);
     response.send(submissions);
 }));
@@ -136,7 +136,7 @@ searchRouter.get('/files', capture(async (request, response)=>{
     if (!common.courseID){
         throw new InvalidParamsError("courseID", "should be given, but wasn't")
     }
-    requireRegistered(common.currentUserID, common.courseID)
+    await requireRegistered(common.currentUserID, common.courseID);
     const files = await FileDB.searchFiles(query, common);
     response.send(files)
 }));

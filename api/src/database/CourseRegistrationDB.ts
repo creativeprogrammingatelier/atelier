@@ -55,6 +55,7 @@ import { CourseUsersView } from "./ViewsDB";
 	 * and no extra permissions besides the ones the user receives through his global user account.
 	 * @param courses a subset of courses to return for
 	 * @param users a subset of users to return for
+	 * @param registeredOnly
 	 * @param params 
 	 */
 	static async getSubset(courses : string[] | undefined, users : string[] | undefined, registeredOnly = true, params : DBTools = {}) {

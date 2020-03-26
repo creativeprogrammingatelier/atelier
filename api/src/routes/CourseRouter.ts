@@ -47,20 +47,14 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
  */
 courseRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
 	const userID = request.params.userID;
-
 	const currentUserID : string = await getCurrentUserID(request);
-
-	console.log("userID: " + userID);
-	console.log("requesting user: " + currentUserID);
 
 	if (currentUserID !== userID) await requirePermission(currentUserID, PermissionEnum.viewAllCourses);
 
 	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID))
 		.map((course: CourseUser) => course.courseID);
-	console.log("enrolled: " + enrolledCourses);
 
 	const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
-	console.log("filtered: " + courses);
 	response.status(200).send(courses);
 }));
 
