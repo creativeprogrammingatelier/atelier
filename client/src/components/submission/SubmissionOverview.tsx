@@ -32,17 +32,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	const submissionPath = "/submission/" + submissionId;
 
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-		console.log("Creating project level comment");
-		console.log(comment);
-		console.log(restricted);
 		try {
 			const commentThread = await createSubmissionCommentThread(submissionId, {
 				submissionID: submissionId,
 				comment,
 				visibility: restricted ? threadState.private : threadState.public
 			});
-			console.log("Created a new project level comment");
-			console.log(commentThread);
 			setCreatingComment(false);
 			setCreatedComments(createdComments => [
 				...createdComments,
@@ -70,11 +65,13 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<Course>
 						loader={getCourse}
 						params={[submission.references.courseID]}
-						component={course => <p>
-							Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
-							<br/>
-							<small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
-						</p>}
+						component={course =>
+							<p>
+								Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
+								<br/>
+								<small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
+							</p>
+						}
 					/>
 					<Button className="mb-2 mr-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
                     <Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
@@ -83,7 +80,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<File[]>
 						loader={getFiles}
 						params={[submissionId]}
-						component={files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: "some/type", transport: submissionPath + "/" + file.ID + "/code"}))}/>}
+						component={files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: file.type, transport: submissionPath + "/" + file.ID + "/code"}))}/>}
 					/>
 				</DataList>
 				<DataList
@@ -95,11 +92,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					}}
 				>
 					{/* This map over new comment threads would not be needed once auto update works */}
-					{createdComments.map(thread => {
-						console.log("Rendering created comment");
-						console.log(thread);
-						return <CommentThreadComponent thread={thread}/>
-					})}
+					{createdComments.map(thread => <CommentThreadComponent thread={thread}/>)}
 					<Loading<CommentThread[]>
 						loader={getProjectComments}
 						params={[submissionId]}
@@ -113,18 +106,6 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 						component={(threads : CommentThread[]) => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
 					/>
 				</DataList>
-
-				{/* Reference for tags if needed
-				 <DataItemList header="Files" list={[
-				 {
-				 transport: submissionPath+"/1/code",
-				 text: "FileName1"
-				 }, {
-				 transport: submissionPath+"/2/code",
-				 text: "FileName2",
-				 tags: [{name: "New comment", color: "red", dark:true}]
-				 }
-				 ]}/>*/}
 			</Frame>
 		}
 		wrapper={children => <Frame title="Submission" sidebar search>{children}</Frame>}

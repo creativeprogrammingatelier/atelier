@@ -77,8 +77,8 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 		if (!uploadPrevented()) {
 			updateUploading(true);
 			createSubmission(courseId, folderName, uploadableFiles)
-				.then(handleUploadComplete)
-				.catch(handleUploadError);
+			.then(handleUploadComplete)
+			.catch(handleUploadError);
 		}
 	}
 
@@ -142,8 +142,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 				{folderUploadSupported ?
 					<Form.Group>
 						<p>These files will be uploaded:</p>
-						{/* TODO: Get actual type */}
-						<DirectoryViewer filePaths={uploadableFiles.map(file => ({name: file.webkitRelativePath, type: "some/type"}))}/>
+						<DirectoryViewer filePaths={uploadableFiles.map(file => ({name: file.webkitRelativePath}))}/>
 					</Form.Group>
 					:
 					<Form.Group>
@@ -161,8 +160,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 						These files won't be uploaded, because they are too large
 						{validation.projectTooLarge && " or the project as a whole would be too large"}:
 					</FeedbackError>
-					{/* TODO: Get actual type */}
-					<DirectoryViewer filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath, type: "some/type"}))}/>
+					<DirectoryViewer filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath}))}/>
 				</div>
 				}
 			</div>

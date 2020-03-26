@@ -84,15 +84,18 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 		</div>
 	);
 }
+function acceptsType(type: string) {
+	return type.startsWith("text/");
+}
 function acceptsFile(file: File) {
-	return true;
-	// return file.type.startsWith("text/");
+	return acceptsType(file.type);
 }
 
 const fileViewer: FileViewer = {
 	name: "Code",
 	icon: FiCode,
 	viewer: CodeViewer,
+	acceptsType,
 	acceptsFile
 };
 export {fileViewer as FileViewerCode};

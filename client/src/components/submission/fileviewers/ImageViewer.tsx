@@ -24,17 +24,21 @@ export function ImageViewer({file, sendComment}: FileViewerProperties) {
 
 	return <Fragment>
 		<CommentCreator sendHandler={handleCommentSend}/>
-		<img src={getFileUrl(file.ID)} alt={file.name}/>
+		<img src={getFileUrl(file.ID)} alt={file.name} className="w-100 my-3"/>
 	</Fragment>;
 }
+function acceptsType(type: string) {
+	return type.startsWith("image/");
+}
 function acceptsFile(file: File) {
-	return file.type.startsWith("image/");
+	return acceptsType(file.type);
 }
 
 const fileViewer: FileViewer = {
 	name: "Image",
 	icon: FiImage,
 	viewer: ImageViewer,
+	acceptsType,
 	acceptsFile
 };
 export {fileViewer as FileViewerImage};

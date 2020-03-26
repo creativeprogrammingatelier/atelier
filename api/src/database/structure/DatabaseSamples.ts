@@ -72,12 +72,12 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 		
      INSERT INTO "Files" VALUES
 	     (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), 'uploads/00000000-0000-0000-0000-000000000000/MyFirstSubmission/MyFirstSubmission', 'processing'),
-	     (${uuid1}, ${uuid1}, 'Planets/Perlin.pde', 'processing'),
-	     (${uuid2}, ${uuid1}, 'Planets/Planets.pde', 'processing'),
-	     (${uuid3}, ${uuid1}, 'Planets/data/mercury', 'image/jpg'),
-	     (${uuid4}, ${uuid1}, 'Planets/data/planet', 'image/jpg'),
-	     (${uuid5}, ${uuid1}, 'Planets/data/starfield', 'image/jpg'),
-	     (${uuid6}, ${uuid1}, 'Planets/data/sun', 'image/jpg');
+	     (${uuid1}, ${uuid1}, 'Planets/Perlin.pde', 'text/x-java'),
+	     (${uuid2}, ${uuid1}, 'Planets/Planets.pde', 'text/x-java'),
+	     (${uuid3}, ${uuid1}, 'Planets/data/mercury.jpg', 'image/jpg'),
+	     (${uuid4}, ${uuid1}, 'Planets/data/planet.jpg', 'image/jpg'),
+	     (${uuid5}, ${uuid1}, 'Planets/data/starfield.jpg', 'image/jpg'),
+	     (${uuid6}, ${uuid1}, 'Planets/data/sun.jpg', 'image/jpg');
 	     
      INSERT INTO "Snippets" VALUES
           (    ${uuid0}, 

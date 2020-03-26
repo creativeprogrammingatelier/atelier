@@ -50,7 +50,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 				}
 				setActivatedFileViewer(true);
 			}
-			return <ViewTab file={file} viewer={activeFileViewer.viewer}/>
+			return <ViewTab file={file} viewer={activeFileViewer.viewer}/>;
 		} else if (activeTab === "comments") {
 			return <CommentTab file={file} submissionID={submissionId}/>;
 		} else if (activeTab === "share") {
@@ -110,6 +110,7 @@ export interface FileViewer {
 	name: string,
 	icon: IconType,
 	viewer: (properties: FileViewerProperties) => Children,
+	acceptsType: (type: string) => boolean,
 	acceptsFile: (file: File) => boolean
 }
 const fileViewers = [FileViewerCode, FileViewerImage];
@@ -117,11 +118,14 @@ const fileViewers = [FileViewerCode, FileViewerImage];
 function getFileViewer(file: File) {
 	return fileViewers.reduce((res, fileViewer) => {
 		if (!res) {
-			return fileViewer.acceptsFile(file) ? fileViewer  : false;
+			return fileViewer.acceptsFile(file) ? fileViewer : false;
 		} else {
 			return res;
 		}
 	}, false as false | (FileViewer));
+}
+export function canDisplayType(type: string) {
+	return fileViewers.some(({acceptsType}) => acceptsType(type));
 }
 export function canDisplayFile(file: File) {
 	return fileViewers.some(({acceptsFile}) => acceptsFile(file));

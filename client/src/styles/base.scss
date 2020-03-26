@@ -1,5 +1,5 @@
 @import "./variabes.scss";
-@import '~bootstrap/scss/bootstrap.scss';
+@import "~bootstrap/scss/bootstrap.scss";
 
 * {
 	overflow-wrap: break-word;
@@ -132,13 +132,16 @@ textarea:focus, textarea:active {
 	a {
 		color: #FFFFFF !important;
 	}
+
 	a:hover {
 		text-decoration: none;
 	}
+
 	h4 {
 		margin: 0;
 		font-weight: 300;
 	}
+
 	svg {
 		margin: 0 1rem;
 		vertical-align: bottom;
@@ -181,6 +184,7 @@ textarea:focus, textarea:active {
 				font-weight: 300;
 			}
 		}
+
 		.panelBottom {
 			width: 100%;
 			padding: 0.5rem 1rem;
@@ -212,9 +216,11 @@ textarea:focus, textarea:active {
 	a {
 		color: unset;
 	}
+
 	a:hover {
 		text-decoration: none;
 	}
+
 	.toast {
 		max-width: unset;
 		box-shadow: none;
@@ -279,7 +285,7 @@ textarea:focus, textarea:active {
 }
 
 .qrCode {
-	max-height:50vh;
+	max-height: 50vh;
 }
 
 .form-group {
@@ -317,7 +323,7 @@ textarea:focus, textarea:active {
 }
 .custom-control-input:focus ~ .custom-control-label::before {
 	box-shadow: none;
- }
+}
 .custom-control-input:checked ~ .custom-control-label::before {
 	background-color: $colorPrimary;
 }
@@ -374,6 +380,7 @@ textarea:focus, textarea:active {
 		width: 100%;
 		display: block;
 	}
+
 	a:not(:last-child) {
 		margin-bottom: 1rem;
 	}
@@ -411,13 +418,16 @@ textarea:focus, textarea:active {
 	* {
 		font-weight: 300;
 	}
+
 	p:last-child {
 		margin: 0;
 	}
+
 	a {
 		color: $primaryColor;
 
 	}
+
 	a:hover {
 		text-decoration: none;
 
@@ -425,10 +435,12 @@ textarea:focus, textarea:active {
 			background-color: $colorOffWhite;
 		}
 	}
+
 	.btn {
 		color: $primaryColor;
 		background-color: $colorWhite;
 	}
+
 	.btn:hover {
 		background-color: $colorOffWhite;
 	}
@@ -477,9 +489,11 @@ textarea:focus, textarea:active {
 	.dataItem, .dataToggle {
 		margin: 0;
 	}
+
 	.directoryNode .toast-body {
 		padding: 0.25rem 0.5rem;
 	}
+
 	.directoryNode:last-of-type > .dataItem .toast-body, .directoryNode:last-of-type > .dataToggle .toast-body {
 		padding-bottom: 0.5rem;
 	}
@@ -489,6 +503,9 @@ textarea:focus, textarea:active {
 }
 .directoryTopLevel:last-child .toast-body {
 	padding-bottom: 0.5rem;
+}
+.directoryNodeDisabled {
+	color: $colorDisabled;
 }
 
 .round {
@@ -501,9 +518,11 @@ textarea:focus, textarea:active {
 	.btn:not(:disabled):not(.disabled) {
 		background-color: $colorRestricted;
 	}
+
 	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
 		background-color: $colorRestrictedAlternate;
 	}
+
 	.buttonBar {
 		background-color: $colorRestricted;
 	}
@@ -545,6 +564,7 @@ textarea:focus, textarea:active {
 		width: 3rem;
 		height: 3rem;
 	}
+
 	.form-control {
 		height: 3rem;
 	}
@@ -556,6 +576,7 @@ textarea:focus, textarea:active {
 		border-top-left-radius: 1.5rem;
 		border-bottom-left-radius: 1.5rem;
 	}
+
 	.btn:last-of-type {
 		// A round comment creator might have another child, the mention suggestions.
 		// If this is the case, we want the lower right corner not to be rounded.
@@ -568,6 +589,7 @@ textarea:focus, textarea:active {
 	.input-group-append:not(:last-child) > .btn:last-of-type {
 		border-top-right-radius: 1.5rem;
 	}
+
 	.input-group-append:not(:last-child) > .btn {
 		border-bottom-left-radius: 0;
 	}
