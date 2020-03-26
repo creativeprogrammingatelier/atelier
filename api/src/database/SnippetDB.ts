@@ -1,4 +1,4 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf } from "./HelperDB";
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf, _insert } from "./HelperDB";
 import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet, isNotNullSnippet} from '../../../models/database/Snippet';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { snippetsView } from "./ViewsDB";
@@ -76,14 +76,14 @@ export class SnippetDB {
 		.then(extract).then(map(snippetToAPI)).then(doIf(!includeNulls, filterNullSnippet))
 		
 	}
-	static async SearchSnippets(searchString : string, snippet : Snippet & {userID? : string}) : Promise<SearchResultSnippet[]>{
+	static async searchSnippets(searchString : string, extras : Snippet) : Promise<SearchResultSnippet[]>{
+		checkAvailable(['currentUserID','courseID'], extras)
 		const {
 			snippetID = undefined,
 			commentThreadID = undefined,
 			submissionID = undefined,
 			courseID = undefined,
 			fileID = undefined,
-			userID = undefined,
 
 			lineStart = undefined,
 			lineEnd = undefined,
@@ -95,46 +95,47 @@ export class SnippetDB {
 
 			limit = undefined,
 			offset = undefined,
+			currentUserID = undefined,
 			client = pool,
 			includeNulls = false //exclude them normally
-		} = snippet
+		} = extras
 		const snippetid = UUIDHelper.toUUID(snippetID),
 			fileid = UUIDHelper.toUUID(fileID),
 			commentthreadid = UUIDHelper.toUUID(commentThreadID),
 			submissionid = UUIDHelper.toUUID(submissionID),
-			userid = UUIDHelper.fromUUID(userID),
 			courseid = UUIDHelper.toUUID(courseID),
+			currentuserid = UUIDHelper.toUUID(currentUserID),
 			searchBody = searchify(body),
 			searchBefore = searchify(contextBefore),
 			searchAfter = searchify(contextAfter)
+		const s = `SELECT * 
+		FROM "SnippetsView" as s, "FilesView" as f, "SubmissionsView" as su, viewableSubmissions($13, $5) as opts
+		WHERE
+			s.fileid = f.fileid
+		AND s.submissionID = su.submissionID
+		AND ($1::uuid IS NULL OR s.snippetID=$1)
+		AND ($2::uuid IS NULL OR s.fileID=$2)
+		AND ($3::uuid IS NULL OR s.commentThreadID=$3)
+		AND ($4::uuid IS NULL OR s.submissionID=$4)
+		AND ($5::uuid IS NULL OR s.courseID=$5)
+		AND ($6::integer IS NULL OR s.lineStart=$6)
+		AND ($7::integer IS NULL OR s.lineEnd=$7)
+		AND ($8::integer IS NULL OR s.charStart=$8)
+		AND ($9::integer IS NULL OR s.charEnd=$9)
+		AND ($10::text IS NULL OR s.body ILIKE $10)
+		AND ($11::text IS NULL OR s.contextBefore ILIKE $11)
+		AND ($12::text IS NULL OR s.contextAfter ILIKE $12)
 
-		return client.query(
-			`SELECT * 
-			FROM "SnippetsView" as s, "FilesView" as f, "SubmissionView" as su,
-			WHERE
-				s.fileid = f.fileid
-			AND s.submissionID = su.submissionID
-			AND ($1::uuid IS NULL OR s.snippetID=$1)
-			AND ($2::uuid IS NULL OR s.fileID=$2)
-			AND ($3::uuid IS NULL OR s.commentThreadID=$3)
-			AND ($4::uuid IS NULL OR s.submissionID=$4)
-			AND ($5::uuid IS NULL OR s.courseID=$5)
-			AND ($6::integer IS NULL OR s.lineStart=$6)
-			AND ($7::integer IS NULL OR s.lineEnd=$7)
-			AND ($8::integer IS NULL OR s.charStart=$8)
-			AND ($9::integer IS NULL OR s.charEnd=$9)
-			AND ($10::text IS NULL OR s.body ILIKE $10)
-			AND ($11::text IS NULL OR s.contextBefore ILIKE $11)
-			AND ($12::text IS NULL OR s.contextAfter ILIKE $12)
-
-			AND s.submissionID = ANY(viewableSubmissions($13, $5))
-			ORDER BY s.snippetID
-			LIMIT $14
-			OFFSET $15
-			`,[snippetid, fileid, commentthreadid, submissionid, courseid, 
-				lineStart, lineEnd, charStart, charEnd, searchBody, searchBefore, searchAfter,
-				userid,
-				limit, offset ])
+		AND s.submissionID = opts.submissionID
+		ORDER BY s.snippetID
+		LIMIT $14
+		OFFSET $15
+		`
+		const ls = [snippetid, fileid, commentthreadid, submissionid, courseid, 
+			lineStart, lineEnd, charStart, charEnd, searchBody, searchBefore, searchAfter,
+			currentuserid, limit, offset ]
+		_insert(s, ls)
+		return client.query(s, ls)
 		.then(extract).then(map(entry => ({
 			//no checks for null snippets/files, since we are literally searching inside a snippet body
 			snippet: snippetToAPI(entry),

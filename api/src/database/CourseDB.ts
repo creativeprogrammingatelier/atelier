@@ -1,9 +1,11 @@
-import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify } from "./HelperDB";
+import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify, _insert, toBin } from "./HelperDB";
 import {Course, courseToAPIPartial, DBAPICourse} from '../../../models/database/Course';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { FileDB } from "./FileDB";
 import { User } from "../../../models/database/User";
 import { CoursesView } from "./ViewsDB";
+import { PermissionEnum } from "../../../models/enums/permissionEnum";
+import { courseRole } from "../../../models/enums/courseRoleEnum";
 
 /**
  * @Author Rens Leendertz
@@ -99,14 +101,18 @@ export class CourseDB {
 	}
 	/** @TODO instead of being registered, check the permissions of a user
 	 */
-	static async searchCourse(searchString : string, extras : Course & {userID?: string}){
+	static async searchCourse(searchString : string, extras : Course & User){
 		const {
 			courseID = undefined,
 			courseName = searchString,
 			creatorID = undefined,
 			state = undefined,
+			//creator
+			userName = undefined,
+			email = undefined,
+			globalRole = undefined,
 			//current user
-			userID = undefined,
+			currentUserID = undefined,
 			//dbtools
 			limit = undefined,
 			offset = undefined,
@@ -114,33 +120,50 @@ export class CourseDB {
 		} = extras;
 		const courseid = UUIDHelper.toUUID(courseID),
 			creatorid = UUIDHelper.toUUID(creatorID),
-			userid = UUIDHelper.toUUID(userID)
+			currentuserid = UUIDHelper.toUUID(currentUserID)
 		const 
 			searchCourse = searchify(courseName)
 
 		const args = [	courseid, creatorid, //ids
 						searchCourse, state, //course
-						userid, //current user
+						userName, email, globalRole, // creator
+						currentuserid, //current user
 						limit, offset
 					]
 		type argType = typeof args;
-		return client.query<DBAPICourse, argType>(`
+		const s = `
 			SELECT c.* 
-			FROM "CoursesView" as c, "CourseUsersView" as cu
+			FROM "CoursesView" as c, "CourseUsersViewAll" as cu
 			WHERE
 			--current user
-				cu.userID = $5
+				cu.userID = $8
 			AND c.courseID = cu.courseID
+			AND 
+			( -- either registered
+				cu.courseRole != '${courseRole.unregistered}'	
+			OR
+				( -- or view all courses
+					SELECT permission
+					FROM "UsersView"
+					WHERE userID=$8
+				) & b'${toBin(2**PermissionEnum.viewAllCourses)}' = '${toBin(2**PermissionEnum.viewAllCourses)}'
+			)
 			--ids
 			AND ($1::uuid IS NULL OR c.courseID=$1)
 			AND ($2::uuid IS NULL OR c.creator=$2)
 			--course
 			AND ($3::text IS NULL OR c.courseName ILIKE $3)
 			AND ($4::text IS NULL OR c.state=$4)
-			
+			--creator
+			AND ($5::text IS NULL OR c.userName = $5)
+			AND ($6::text IS NULL OR c.email = $6)
+			AND ($7::text IS NULL OR c.globalRole=$7)
+
 			ORDER BY c.state, c.courseName, c.courseID
-			LIMIT $6
-			OFFSET $7`, args)
+			LIMIT $9
+			OFFSET $10`
+			_insert(s,args)
+			return client.query<DBAPICourse, argType>(s,args)
 			.then(extract).then(map(courseToAPIPartial))
 	}
 

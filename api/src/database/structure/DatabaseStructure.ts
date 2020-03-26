@@ -294,7 +294,7 @@ CREATE OR REPLACE FUNCTION _viewableSubmissions (userID uuid, courseID uuid)
 		AND c.courseID = $2;
 	
 	-- if a user can see all, return all
-	IF ((${toBin(2**PermissionEnum.viewAllSubmissions)} & course_user.permission) > 0::bit(${permissionBits})) THEN
+	IF ((b'${toBin(2**PermissionEnum.viewAllSubmissions)}' & course_user.permission) > 0::bit(${permissionBits})) THEN
 		RETURN QUERY (
 			SELECT s.submissionID 
 			FROM "SubmissionsView" as s

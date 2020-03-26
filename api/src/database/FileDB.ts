@@ -1,7 +1,9 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify } from "./HelperDB";
-import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles} from '../../../models/database/File';
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify, _insert } from "./HelperDB";
+import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles, isNotNullFile} from '../../../models/database/File';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { filesView } from "./ViewsDB";
+import { SearchResultFile } from "../../../models/api/SearchResult";
+import { submissionToAPI } from "../../../models/database/Submission";
 
 /**
  * fileID, submissionID, pathname, type
@@ -81,7 +83,8 @@ export class FileDB {
 	}
 
 
-	static async searchFiles(searchString : string, file : File){
+	static async searchFiles(searchString : string, extras : File) : Promise<SearchResultFile[]>{
+		checkAvailable(['currentUserID','courseID'], extras)
 		const {
 			fileID = undefined,
 			submissionID = undefined,
@@ -92,41 +95,38 @@ export class FileDB {
 			limit = undefined,
 			offset = undefined,
 			client = pool,
+			currentUserID = undefined,
 
 			includeNulls = false, //exclude normally
-		} = file;
+		} = extras;
 		const fileid = UUIDHelper.toUUID(fileID),
 			submissionid = UUIDHelper.toUUID(submissionID),
 			courseid = UUIDHelper.toUUID(courseID),
-
+			currentuserid = UUIDHelper.toUUID(currentUserID),
 			searchFile = searchify(pathname)
-/*
-SELECT f.* 
-FROM "FilesView" as f, "SubmissionsView" as s
-WHERE
-	s.submissionID = f.submissionID
-AND f.pathname ILIKE (s.title||'%.pde%')
-ORDER BY f.pathname, f.type, f.fileID;
-*/
-		return client.query(`
-			SELECT * 
-			FROM "FilesView" as f, "CourseUsersViewAll" as c, "SubmissionsView" as s
+		const s =`
+			SELECT f.*, s.*
+			FROM "FilesView" as f, "SubmissionsView" as s, viewableSubmissions($8, $3) as opts
 			WHERE
-				c.courseID = f.courseID
-			AND s.submissionID = f.submissionID
-			AND cu.userID = $6
-			AND (c.permission & $7) > 0
+				s.submissionID = f.submissionID
 			AND ($1::uuid IS NULL OR f.fileID=$1)
 			AND ($2::uuid IS NULL OR f.submissionID=$2)
 			AND ($3::uuid IS NULL OR f.courseID=$3)
 			AND ($5::text IS NULL OR f.type=$5)
-
 			AND ($4::text IS NULL OR f.pathname ILIKE (s.title||$4))
+			AND f.submissionID = opts.submissionID
 			ORDER BY f.pathname, f.type, f.fileID
 			LIMIT $6
 			OFFSET $7
-			`, [fileid, submissionid, courseid, searchFile, type, limit, offset])
-		.then(extract).then(map(fileToAPI)).then(filterNullFiles).then(doIf(!includeNulls, filterNullFiles))
+			`,
+		ls = [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid]
+		_insert(s,ls)
+		return client.query(s,ls).then(extract).then(map(entry => ({
+			file:fileToAPI(entry),
+			submission: submissionToAPI(entry)
+		}))).then(doIf(!includeNulls, entries => 
+			entries.filter(entry=>isNotNullFile(entry.file))
+		))
 	}
 
 	static async getNullFileID(submissionID : string, params : DBTools = {}){

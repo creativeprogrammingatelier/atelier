@@ -1,4 +1,4 @@
-import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools, permissionBits, noNull } from "./HelperDB";
+import {pool, extract, map, one, toBin, pgDB, checkAvailable, DBTools, permissionBits, noNull, _insert, searchify } from "./HelperDB";
 import {CourseRoleDB} from './CourseRoleDB'
 import { UUIDHelper, ID64 } from "../helpers/UUIDHelper";
 import { CoursePartial } from "../../../models/api/Course";
@@ -83,23 +83,26 @@ import { CourseUsersView } from "./ViewsDB";
 			permission = undefined,
 
 			registeredOnly = true,
-
 			client = pool
 		}=registration
 		const userid = UUIDHelper.toUUID(userID),
-			courseid = UUIDHelper.toUUID(courseID)
-		return client.query(`
+			courseid = UUIDHelper.toUUID(courseID),
+			searchName = searchify(userName)
+		const s = `
 			SELECT *
 			FROM "${registeredOnly?'CourseUsersView':'CourseUsersViewAll'}"
 			WHERE
 				($1::uuid IS NULL OR userID = $1)
 			AND ($2::uuid IS NULL OR courseID = $2)
-			AND ($3::text IS NULL OR userName =$3)
+			AND ($3::text IS NULL OR userName ILIKE $3)
 			AND ($4::text IS NULL OR email =$4)
 			AND ($5::text IS NULL OR globalRole =$5)
 			AND ($6::text IS NULL OR courseRole =$6)
 			AND ($7::bit(${permissionBits}) IS NULL OR (permission & $7) = $7)
-		`, [userid, courseid, userName, email, globalRole, courseRole, toBin(permission)])
+		`,
+		ls =  [userid, courseid, searchName, email, globalRole, courseRole, toBin(permission)]
+		_insert(s, ls)
+		return client.query(s, ls)
 		.then(extract).then(map(CourseUserToAPI))
 	}
 
