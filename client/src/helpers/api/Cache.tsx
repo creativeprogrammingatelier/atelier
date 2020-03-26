@@ -70,7 +70,7 @@ export function useCache<T>(key: string, date = Date.now()) {
         updateCollection(items => items.filter(({item}) => !selector(item)).concat({ item: newItem, state, date }));
     }
 
-    const remove = (selector: (item: T) => boolean, date = Date.now()) => {
+    const remove = (selector: (item: T) => boolean) => {
         updateCollection(items => items.filter(({item}) => !selector(item)));
     }
 
