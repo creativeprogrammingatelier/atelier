@@ -52,7 +52,7 @@ export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: U
 			loader={getUser}
 			params={[userId]}
 			component={user =>
-				<Frame title={user.name} sidebar search>
+				<Frame title={user.name} sidebar search={{course: courseId, user: user.name}}>
 					<Loading<Course>
 						loader={getCourse}
 						params={[courseId]}

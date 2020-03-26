@@ -9,8 +9,8 @@ import {User} from "../../../../models/api/User";
 
 export interface SearchProperties {
 	course?: string,
-	user?: User,
-	submission?: Submission
+	user?: string,
+	submission?: string
 }
 interface SearchOverviewProperties {
 	location: {
