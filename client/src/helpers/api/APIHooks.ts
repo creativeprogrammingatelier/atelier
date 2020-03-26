@@ -1,4 +1,4 @@
-import { useCache } from "./Cache";
+import { useCache, CacheState } from "./Cache";
 import { Course } from "../../../../models/api/Course";
 import { getCourses, createCourse, permission } from "../../../helpers/APIHelper";
 import { courseState } from "../../../../models/enums/courseStateEnum";
@@ -16,17 +16,16 @@ export function useCourses() {
     const create = ({ name, state }: { name: string, state: courseState }) => {
         console.log("Creating new course:", name);
         const tempID = randomBytes(32).toString('hex');
-        createCourse({ name, state })
-            .then(course => {
-                console.log("Course created:", course.name, "ID:", course.ID);
-                replace(c => c.ID === tempID, course);
-            });
+        createCourse({ name, state }).then(course => {
+            console.log("Course created:", course.name, "ID:", course.ID);
+            replace(c => c.ID === tempID, course, CacheState.Loaded);
+        });
         add({
             ID: tempID,
             name, state,
             creator: {} as User,
             currentUserPermission: {} as Permission
-        });
+        }, CacheState.Loading);
     }
     if (collectionItems.length === 0) refresh(); // TODO: better check
     return {

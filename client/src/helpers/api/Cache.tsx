@@ -1,12 +1,7 @@
-import React, { useContext, createContext, useState } from 'react';
-import { Course } from "../../../../models/api/Course";
-import { getCourses, createCourse } from "../../../helpers/APIHelper";
-import { courseState } from "../../../../models/enums/courseStateEnum";
-import { randomBytes } from "crypto";
-import { User } from "../../../../models/api/User";
-import { Permission } from "../../../../models/api/Permission";
+import React, { useContext, createContext, useState, useEffect } from 'react';
 
 export enum CacheState {
+    Uninitialized,
     Loading,
     Loaded,
     Uploading
@@ -38,15 +33,21 @@ interface Context {
 
 const cacheContext = createContext<Context>({ cache: {}, updateCache: f => { f({}) }});
 
-export function CacheProvider({ children }: { children: React.ReactNode }) {
-    const [ cache, updateCache ] = useState({});
+export function CacheProvider({children}: {children: React.ReactNode}) {
+    const storedCache = JSON.parse(localStorage.getItem("cache") || "{}");
+    const [cache, updateCache] = useState(storedCache);
+
+    useEffect(() => {
+        localStorage.setItem("cache", JSON.stringify(cache));
+    }, [cache]);
+
     return <cacheContext.Provider value={{ cache, updateCache }} children={children} />;
 }
 
 export function useCache<T>(key: string, date = Date.now()) {
     const { cache, updateCache } = useContext(cacheContext);
     if (!cache[key]) {
-        cache[key] = { state: CacheState.Loaded, items: [], date }
+        cache[key] = { state: CacheState.Uninitialized, items: [], date }
     }
     const collection: CacheCollection<T> = cache[key];
     const collectionItems = collection.items.map(({item}) => item);
