@@ -3,26 +3,28 @@ import {DirectoryNode} from "./DirectoryNode";
 
 class File {
     name: string;
+    type: string;
 	transport?: string;
 
-	constructor(name: string, transport?: string) {
+	constructor(name: string, type: string, transport?: string) {
 		this.name = name;
+		this.type = type;
 		this.transport = transport;
 	}
 }
 export class Node extends File {
 	children: Node[];
 
-	constructor(name: string, children: Node[], transport?: string) {
-		super(name, transport);
+	constructor(name: string, type: string, children: Node[], transport?: string) {
+		super(name, type, transport);
 		this.children = children;
 	}
 }
 export class TopLevelNode extends Node {
 	paths: File[];
 
-	constructor(name: string, children: Node[], paths: File[], transport?: string) {
-		super(name, children, transport);
+	constructor(name: string, type: string, children: Node[], paths: File[], transport?: string) {
+		super(name, type, children, transport);
 		this.paths = paths;
 	}
 }
@@ -43,7 +45,7 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 
 	const slashPrefixed = filePaths[0].name[0] === "/";
 	const projectFolder = filePaths[0].name.split("/")[slashPrefixed ? 1 : 0];
-	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.transport));
+	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.type, path.transport));
 
 	// console.log(projectFolder);
 	// console.log(projectPaths);
@@ -54,11 +56,14 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 		const file = path.name.substr(folder.length + 1);
 
 		if (file.length === 0) {
-			topLevelNodes[folder] = new TopLevelNode(folder, [], [], path.transport);
+			// This is a file in this folder
+			topLevelNodes[folder] = new TopLevelNode(folder, path.type, [], [], path.transport);
 		} else if (topLevelNodes.hasOwnProperty(folder)) {
-			topLevelNodes[folder].paths.push(new File(file, path.transport));
+			// This is a file in a sub-folder that has been added
+			topLevelNodes[folder].paths.push(new File(file, path.type, path.transport));
 		} else {
-			topLevelNodes[folder] = new TopLevelNode(folder, [], [new File(path.name.substr(folder.length + 1), path.transport)], path.transport);
+			// This is a file in a new sub-folder
+			topLevelNodes[folder] = new TopLevelNode(folder, path.type, [], [new File(path.name.substr(folder.length + 1), path.type, path.transport)], path.transport);
 		}
 	}
 	for (const folder in topLevelNodes) {
@@ -72,7 +77,7 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 				for (const folder of path.name.split("/")) {
 					let next = current.children.find(child => child.name === folder);
 					if (next === undefined) {
-						next = new Node(folder, []);
+						next = new Node(folder, current.type, []);
 						current.children.push(next);
 					}
 					current = next;

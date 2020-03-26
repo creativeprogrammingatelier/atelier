@@ -13,7 +13,7 @@ export function DirectoryNode({node}: DirectoryNodeProperties) {
 	// console.log("Rendering node");
 	// console.log(node);
 
-	return <div className={"directoryNode" + (node instanceof TopLevelNode ? " directoryTopLevel" : "")}>
+	return <div className={"directoryNode" + (node instanceof TopLevelNode ? " directoryTopLevel" : "") + " " + node.type}>
 		{node.children.length > 0 ?
 			<Fragment>
 				<DataTrigger text={node.name} trigger={{icon: opened ? FiChevronUp : FiChevronDown, click: () => setOpened(!opened)}}/>

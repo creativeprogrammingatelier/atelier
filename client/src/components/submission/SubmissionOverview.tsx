@@ -83,7 +83,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Loading<File[]>
 						loader={getFiles}
 						params={[submissionId]}
-						component={files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, transport: submissionPath + "/" + file.ID + "/code"}))}/>}
+						component={files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: "some/type", transport: submissionPath + "/" + file.ID + "/code"}))}/>}
 					/>
 				</DataList>
 				<DataList
