@@ -52,18 +52,18 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
 			// Quick offline filter for relevant results
 			updateSuggestions(({users}) => ({users: filterSuggestions(users, suggestionBase), base: suggestionBase}));
 
-			// Online lookup, only if there's a good chance we'll get results
-			// Therefore the string for which we'll request suggestions has to be shorter than 25 characters
-			// and we either had an empty base before, or if we had a similar base, there were some suggestions
-			if ((suggestions.base === "" || !(suggestions.users.length === 0 && suggestionBase.includes(suggestions.base)))
-				&& suggestionBase.length < 25) {
-				const oldBase = suggestionBase;
-				searchUsers(suggestionBase, courseID, 10).then(users => {
-					//const names = users.map(u => u.name);
-					updateSuggestions(({users, base}) => {
-						// Create the group suggestions
-						// TODO: This is a terrible, terrible hack and it's all Jarik's fault
-						const groups = filterSuggestions(allowedGroups.map(g => ({name: g} as User)), base);
+            // Online lookup, only if there's a good chance we'll get results
+            // Therefore the string for which we'll request suggestions has to be shorter than 25 characters
+            // and we either had an empty base before, or if we had a similar base, there were some suggestions
+            if ((suggestions.base === "" || !(suggestions.s.length === 0 && suggestionBase.includes(suggestions.base)))
+                && suggestionBase.length < 25) {
+                const oldBase = suggestionBase;
+                searchUsers(suggestionBase, courseID, 10).then(users => {
+                    //const names = users.map(u => u.name);
+                    updateSuggestions(({ s, base }) => {
+                        // Create the group suggestions
+                        // TODO: This is a terrible, terrible hack and it's all Jarik's fault :)
+                        const groups = filterSuggestions(allowedGroups.map(g => ({ name: g } as User)), base);
 
 						// If the base is exactly the same, we're fine
 						if (oldBase === base) {

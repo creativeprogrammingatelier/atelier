@@ -19,6 +19,7 @@ import {courseState} from "../../models/enums/courseStateEnum";
 import {Plugin} from '../../models/api/Plugin';
 import {globalRole} from "../../models/enums/globalRoleEnum";
 import {inviteRole} from "../../models/enums/inviteRoleEnum";
+import {courseRole} from "../../models/enums/courseRoleEnum";
 
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
@@ -157,14 +158,19 @@ export function getCourseMentions(courseID: string, doCache?: boolean) {
 }
 
 // Search
-export function search(query: string, course: string, user: string, submission: string, limit = 20, offset = 0, doCache?: boolean) {
-	return Fetch.fetchJson<SearchResult>(`/api/search?q=${query}&course=${course}&user=${user}&submission=${submission}&limit=${limit}&offset=${offset}`, undefined, doCache);
+export function search(
+		{query, limit = 20, offset = 0, courseID}
+		: {query : string, limit? : number, offset? : number, courseID? : string}
+		, doCache?: boolean) {
+	let path = `/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`
+	path +=courseID ? `&courseID=${courseID}` : "";
+	return Fetch.fetchJson<SearchResult>(path, undefined, doCache);
 }
 // If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
 export function searchUsers(query : string, courseID? : string, limit = 20, offset = 0, doCache? : boolean) {
 	const courseSearch = courseID === undefined ? "" : `&courseID=${courseID}`;
 	return Fetch.fetchJson<User[]>(
-		`/api/search/users?q=${query}${courseSearch}&limit=${limit}&offset=${offset}`,
+		`/api/search/users?q=${encodeURIComponent(query)}${courseSearch}&limit=${limit}&offset=${offset}`,
 		undefined,
 		doCache
 	)
@@ -172,7 +178,7 @@ export function searchUsers(query : string, courseID? : string, limit = 20, offs
 //@deprecated searchUsers is more general.
 export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0, doCache?: boolean) {
 	return Fetch.fetchJson<User[]>(
-        `/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`, 
+        `/api/search/users?q=${encodeURIComponent(query)}&courseID=${courseID}&limit=${limit}&offset=${offset}`,
         undefined, 
         doCache
     );
@@ -220,7 +226,7 @@ export function updateGlobalRole(userID : string, role : globalRole, doCache? : 
 	return Fetch.fetchJson<User>(`/api/role/user/${userID}/${role}`, putJson({}), doCache);
 }
 
-export function updateCourseRole(userID : string, courseID : string, role : courseState, doCache? : boolean) {
+export function updateCourseRole(userID : string, courseID : string, role : courseRole, doCache? : boolean) {
 	return Fetch.fetchJson<CourseUser>(`/api/role/course/${courseID}/user/${userID}/${role}`, putJson({}), doCache);
 }
 

@@ -33,9 +33,8 @@ courseRouter.use(AuthMiddleware.requireAuth);
 courseRouter.get("/", capture(async(request: Request, response: Response) => {
 	const userID : string = await getCurrentUserID(request);
 	const courses : CoursePartial[] = await CourseDB.getAllCourses();
-	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID)).filter(item =>{
-		return item.permission.courseRole !== courseRole.unregistered
-	}).map((course : CourseUser) => course.courseID);
+	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID))
+		.map((course : CourseUser) => course.courseID);
 	console.log(enrolled);
 	response.status(200).send(await filterCourse(courses, enrolled, userID));
 }));
@@ -48,21 +47,14 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
  */
 courseRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
 	const userID = request.params.userID;
-
 	const currentUserID : string = await getCurrentUserID(request);
-
-	console.log("userID: " + userID);
-	console.log("requesting user: " + currentUserID);
 
 	if (currentUserID !== userID) await requirePermission(currentUserID, PermissionEnum.viewAllCourses);
 
 	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID))
-		.filter((courseUser : CourseUser) => courseUser.permission.courseRole !== courseRole.unregistered)
 		.map((course: CourseUser) => course.courseID);
-	console.log("enrolled: " + enrolledCourses);
 
 	const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
-	console.log("filtered: " + courses);
 	response.status(200).send(courses);
 }));
 

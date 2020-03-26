@@ -16,8 +16,9 @@ export class MentionsDB {
 	static async getMentionsByUser(userID : string, courseID? : string, params : DBTools = {}) {
         const { client = pool, limit = undefined, offset = undefined } = params;
         const userid = UUIDHelper.toUUID(userID),
-            courseid = UUIDHelper.toUUID(courseID);
-        return client.query(`
+			courseid = UUIDHelper.toUUID(courseID);
+			
+		return client.query(`
             SELECT m.*
             FROM "MentionsView" as m
             WHERE ($2::uuid IS NULL OR m.courseID = $2)
@@ -32,7 +33,7 @@ export class MentionsDB {
                     )
                 )
             ) ORDER BY m.created DESC LIMIT $3 OFFSET $4
-        `, [userid, courseid, limit, offset])
+		`, [userid, courseid, limit, offset])
         .then(extract).then(map(mentionToAPI))
     }
 
@@ -100,7 +101,7 @@ export class MentionsDB {
 			RETURNING *
 		)
 		${MentionsView('insert')}
-		`,[commentid, userid, mentionGroup])
+		`, [commentid, userid, mentionGroup])
 		.then(extract).then(map(mentionToAPI)).then(one)
 	}
 

@@ -4,17 +4,22 @@ import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {UserSettings} from "./UserSettings";
 import {PermissionSettings} from "./PermissionSettings";
-import {getCurrentUser} from "../../../helpers/APIHelper";
+import {getCurrentUser, permission} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {DataList} from "../data/DataList";
-import { PluginSettings } from './PluginSettings';
-import { Loading } from '../general/loading/Loading';
-import { permission } from '../../../helpers/APIHelper';
-import { Permission } from '../../../../models/api/Permission';
+import {PluginSettings} from './PluginSettings';
+import {Loading} from '../general/loading/Loading';
+import {Permission} from '../../../../models/api/Permission';
+import {RoleSettings} from "./RoleSettings";
+import {globalRole} from "../../../../models/enums/globalRoleEnum";
 
 export function Settings() {
     const [permissions, setPermissions] = useState(0);
+
+    // Roles user can set globally with permission (not unregistered)
+    const globalRoles = [globalRole.plugin, globalRole.user, globalRole.staff, globalRole.admin];
+
     useEffect(() => {
         getCurrentUser(true)
             .then((user : User) => {
@@ -44,6 +49,14 @@ export function Settings() {
                             managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
                         />
                     }
+                />
+            }
+
+            {
+                containsPermission(PermissionEnum.manageUserRole, permissions) &&
+                <DataList
+                    header={"User Role Settings"}
+                    children={ <RoleSettings global = {{ roles : globalRoles }}/> }
                 />
             }
 
