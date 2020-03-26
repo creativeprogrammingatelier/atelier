@@ -3,21 +3,41 @@ import {FiCode, FiMessageSquare, FiShare2} from "react-icons/all";
 
 import {Frame} from "../frame/Frame";
 import {TabBar} from "../general/TabBar";
-import {CodeTab} from "./CodeTab";
+import {CodeTab, codeTabCanHandle} from "./fileviewers/CodeTab";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import {getFile, getFileContents, getSubmission} from "../../../helpers/APIHelper";
+import {getFile, getSubmission} from "../../../helpers/APIHelper";
 import {Button, Jumbotron} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {Submission} from "../../../../models/api/Submission";
-import {Snippet} from "../../../../models/api/Snippet";
+import {ImageTab, imageTabCanHandle} from "./fileviewers/ImageTab";
 
-export interface SnippetHighlight extends Snippet {
-	onClick: Function,
+export interface FileProperties {
+	file: File
 }
+
+const fileHandlers = [
+    { tab: CodeTab, canHandle: codeTabCanHandle },
+    { tab: ImageTab, canHandle: imageTabCanHandle }
+];
+
+function getFileTab(file: File) {
+    return fileHandlers.reduce((res, { tab, canHandle }) => {
+        if (!res) {
+            return canHandle(file) ? tab : false;
+        } else {
+            return res;
+        }
+    }, false as false | ((props: FileProperties) => JSX.Element));
+}
+
+export function canDisplayFile(file: File) {
+    return fileHandlers.some(({ canHandle }) => canHandle(file));
+}
+
 interface FileOverviewProperties {
 	match: {
 		params: {
@@ -37,11 +57,24 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 	const submissionPath = "/submission/" + submissionId;
 	const filePath = submissionPath + "/" + fileId;
 
-	function renderTabContents([file, body]: [File, string]) {
+	function renderTabContents(file: File) {
 		if (activeTab === "code") {
-			return <CodeTab body={body} file={file} submissionID={submissionId}/>;
+            // This is a React component, which is named with PascalCase
+            // tslint:disable-next-line: variable-name
+            const FileTab = getFileTab(file);
+            if (FileTab) {
+                return <FileTab file={file} />;
+            } else {
+                return (
+                    <div className="contentTab">
+                        <div className="m-3 mb-6">
+                            <p>Displaying files of type <b>{file.type}</b> is not supported.</p>
+                        </div>
+                    </div>
+                );
+            }
 		} else if (activeTab === "comments") {
-			return <CommentTab body={body} file={file} submissionID={submissionId}/>;
+			return <CommentTab file={file} submissionID={submissionId}/>;
 		} else if (activeTab === "share") {
 			return <ShareTab file={file} url={window.location.origin + filePath}/>;
 		}
@@ -63,8 +96,8 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 						/>
 						{activeTab === "code" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
 					</Jumbotron>
-					<Loading<[File, string]>
-						loader={(fileId: string) => Promise.all([getFile(fileId), getFileContents(fileId)])}
+					<Loading<File>
+						loader={getFile}
 						params={[fileId]}
 						component={renderTabContents}
 					/>
