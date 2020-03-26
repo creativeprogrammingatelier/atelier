@@ -5,6 +5,7 @@ import { courseState } from "../../../../models/enums/courseStateEnum";
 import { randomBytes } from "crypto";
 import { User } from "../../../../models/api/User";
 import { Permission } from "../../../../models/api/Permission";
+import { globalRole } from "../../../../models/enums/globalRoleEnum";
 
 export function useCourses() {
     const { collectionItems, add, replace, replaceAll } = useCache<Course>("courses");
@@ -33,4 +34,16 @@ export function useCourses() {
         createCourse: create,
         refreshCourses: refresh
     };
+}
+
+export function usePermission() {
+    const { collectionItems, replaceAll } = useCache<Permission>("currentUserPermission");
+    const refresh = () => {
+        permission().then(permission => replaceAll([permission]));
+    }
+    if (collectionItems.length === 0) refresh();
+    return {
+        permission: collectionItems[0] || { permissions: 0, globalRole: globalRole.unregistered },
+        refreshPermission: refresh
+    }
 }
