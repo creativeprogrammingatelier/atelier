@@ -19,6 +19,7 @@ import {courseState} from "../../models/enums/courseStateEnum";
 import {Plugin} from '../../models/api/Plugin';
 import {globalRole} from "../../models/enums/globalRoleEnum";
 import {inviteRole} from "../../models/enums/inviteRoleEnum";
+import {courseRole} from "../../models/enums/courseRoleEnum";
 
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
@@ -223,7 +224,7 @@ export function updateGlobalRole(userID : string, role : globalRole, doCache? : 
 	return Fetch.fetchJson<User>(`/api/role/user/${userID}/${role}`, putJson({}), doCache);
 }
 
-export function updateCourseRole(userID : string, courseID : string, role : courseState, doCache? : boolean) {
+export function updateCourseRole(userID : string, courseID : string, role : courseRole, doCache? : boolean) {
 	return Fetch.fetchJson<CourseUser>(`/api/role/course/${courseID}/user/${userID}/${role}`, putJson({}), doCache);
 }
 

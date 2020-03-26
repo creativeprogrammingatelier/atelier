@@ -60,7 +60,7 @@ export function MentionSuggestions({prefix, suggestionBase, courseID, onSelected
                     //const names = users.map(u => u.name);
                     updateSuggestions(({ s, base }) => {
                         // Create the group suggestions
-                        // TODO: This is a terrible, terrible hack and it's all Jarik's fault
+                        // TODO: This is a terrible, terrible hack and it's all Jarik's fault :)
                         const groups = filterSuggestions(allowedGroups.map(g => ({ name: g } as User)), base);
 
                         // If the base is exactly the same, we're fine
