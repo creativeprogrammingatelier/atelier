@@ -14,6 +14,20 @@ interface CacheContext {
  */
 const cacheContext = createContext<CacheContext>({ cache: {}, updateCache: f => {} });
 
+/** Detect if the page was reloaded, tested to work with IE5 */
+function pageRefreshed() {
+    if (typeof(performance.getEntriesByType) === "function") {
+        const entry = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+        if (entry !== undefined && entry.type !== undefined) {
+            return entry.type === "reload"; 
+        }
+    }
+    // type === 1 means the page was refreshed, using TYPE_RELOAD breaks IE7
+    // It's deprecated, but we only try it if the newer version is not available
+    // tslint:disable-next-line: deprecation
+    return performance.navigation.type === 1;
+}
+
 /** 
  * The cache provider gives its children access to a common cache.
  * Only one of these should be instantiated per application, preferably
@@ -21,7 +35,13 @@ const cacheContext = createContext<CacheContext>({ cache: {}, updateCache: f => 
  * the cache.
  */
 export function CacheProvider({ children }: { children: React.ReactNode }) {
-    const storedCache: Cache = JSON.parse(localStorage.getItem("cache") || "{}");
+    let storedCache: Cache;
+    if (pageRefreshed()) {
+        storedCache = {};
+    } else {
+        storedCache = JSON.parse(localStorage.getItem("cache") || "{}");
+    }
+
     const [cache, updateCache] = useState(storedCache);
 
     useEffect(() => {
