@@ -63,7 +63,7 @@ export const setCommentThreadPublic = () => chai.request(app)
     .send({"visibility": "public"})
     .set({"Authorization": USER_AUTHORIZATION_KEY, "Content-Type": "application/json"});
 
-/** Course requests */
+/** course requests */
 export const getCourse = () => chai.request(app)
     .get(`/api/course/${COURSE_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});

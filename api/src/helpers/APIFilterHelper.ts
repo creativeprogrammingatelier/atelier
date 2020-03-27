@@ -33,8 +33,8 @@ export async function filterCommentThread(commentThreads : CommentThread[], user
 
 /**
  * Filter course API response.
- * - Course is returned if Permission.viewAllCourses is set in permissions
- * - Course is returned if user is enrolled in the course
+ * - course is returned if Permission.viewAllCourses is set in permissions
+ * - course is returned if user is enrolled in the course
  * @param courses, courses to filter
  * @param enrolled, user enrolled courses
  * @param userID, ID of the requesting user

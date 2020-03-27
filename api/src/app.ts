@@ -34,6 +34,7 @@ import { AuthMiddleware } from './middleware/AuthMiddleware';
 import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
 import { InvalidParamsError } from './helpers/ParamsHelper';
 import {inviteRouter} from "./routes/InviteRouter";
+import {inviteLinkRouter} from "./routes/InviteLinkRouter";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -74,6 +75,7 @@ app.use('/api/role', roleRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);
+app.use('/invite', inviteLinkRouter);
 
 // Give a 404 in case the API route does not exist
 app.all('/api/*', (_, response) => response.status(404).send({ error: "route.notfound", message: "This is not a valid API endpoint." }));

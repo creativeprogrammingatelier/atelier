@@ -75,7 +75,7 @@ export async function setTokenCookie(response: Response, userID: string) {
     const exp = (await verifyToken(token)).exp;
     return response
         .cookie("atelierTokenExp", exp, options)
-        .cookie("atelierToken", issueToken(userID), { ...options, httpOnly: true, path: "/api" });
+        .cookie("atelierToken", issueToken(userID), { ...options, httpOnly: true, path: "/" });
 }
 
 export function clearTokenCookie(response: Response) {

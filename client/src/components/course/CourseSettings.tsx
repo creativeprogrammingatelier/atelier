@@ -8,7 +8,7 @@ import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {PermissionSettings} from "../settings/PermissionSettings";
-import {UpdateCourse} from "../settings/Course/UpdateCourse";
+import {UpdateCourse} from "../settings/course/UpdateCourse";
 import {DataList} from "../data/DataList";
 import {CourseRegistration} from "./CourseRegistration";
 import {RoleSettings} from "../settings/RoleSettings";
