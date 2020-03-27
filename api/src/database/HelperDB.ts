@@ -143,6 +143,16 @@ export function searchify(input : string | undefined){
 	if (input === undefined) return undefined
 	return '%'+input.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/\_/g, '\\_')+'%'
 }
+
+// tslint:disable-next-line: no-any
+export function _insert(query : string, params : any[]){
+	for (let i =params.length;i>0;i--){
+		query = query.replace(new RegExp('\\$'+i, 'g'), params[i-1]===undefined?'NULL':"'"+params[i-1]+"'")
+	}
+	console.log(query)
+	return query
+}
+
 /**
  * extract the data from a postgres query result
  * @param result the output of a .query() call
@@ -227,5 +237,6 @@ export function funmap3<A,a,B,b,C,c>(
 export interface DBTools {
 	limit?: number,
 	offset?: number,
+	currentUserID?: string,
 	client?: pgDB
 }

@@ -8,9 +8,11 @@ import {CourseInvites} from "../invite/CourseInvite";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {PermissionSettings} from "../settings/PermissionSettings";
-import {UpdateCourse} from "../settings/Course/UpdateCourse";
+import {UpdateCourse} from "../settings/course/UpdateCourse";
 import {DataList} from "../data/DataList";
 import {CourseRegistration} from "./CourseRegistration";
+import {RoleSettings} from "../settings/RoleSettings";
+import {courseRole} from "../../../../models/enums/courseRoleEnum";
 
 interface CourseOverviewProps {
     match: {
@@ -35,6 +37,9 @@ export function CourseSettings({match}: CourseOverviewProps) {
             })
     }, []);
 
+    // Roles to which you can set a user (excludes unregistered)
+    const courseRoles = [courseRole.student, courseRole.teacher, courseRole.TA, courseRole.moduleCoordinator, courseRole.plugin];
+
     return (
         <Frame title="Course" sidebar search={{course: match.params.courseId}}>
             <Jumbotron>
@@ -49,6 +54,19 @@ export function CourseSettings({match}: CourseOverviewProps) {
             {
                 containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
                 <CourseInvites courseID={match.params.courseId}/>
+            }
+
+            {
+                containsPermission(PermissionEnum.manageUserRole, permissions) &&
+                <DataList
+                    header={"User Role Settings"}
+                    children={
+                        <RoleSettings course = {{
+                            roles : courseRoles,
+                            courseID : match.params.courseId
+                        }}/>
+                    }
+                />
             }
 
             {

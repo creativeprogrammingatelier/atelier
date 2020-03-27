@@ -1,22 +1,20 @@
-
-
 // Custom variables
-$primaryColor: #7da888;
-$primaryColor: #d18636;
-$primaryColor: #56c3d6;
-$primaryColor: #3fdac1;
+$primaryColor: #7DA888;
+$primaryColor: #D18636;
+$primaryColor: #56C3D6;
+$primaryColor: #3FDAC1;
 $secondaryColor: #709178;
-$secondaryColor: #b36e39;
-$secondaryColor: #4ca1b0;
+$secondaryColor: #B36E39;
+$secondaryColor: #4CA1B0;
 $secondaryColor: #509899;
-$secondaryColor: #3ea39c;
-$tertiaryColor: #2c7a74;
+$secondaryColor: #3EA39C;
+$tertiaryColor: #2C7A74;
 
-$backgroundColor: #f4f5f5;
+$backgroundColor: #F4F5F5;
 $colorWhite: #FFFFFF;
 $colorAlternateWhite: #F9F9F9;
 $colorOffWhite: #EEEEEE;
-$colorOffWhite: #e9eaea;
+$colorOffWhite: #E9EAEA;
 $colorGray: gray;
 $colorBlack: #000000;
 $colorOffBlack: #212529;
@@ -24,10 +22,11 @@ $colorOffBlack: #212529;
 $colorPrimary: $primaryColor;
 $colorSecondary: $secondaryColor;
 $colorRestricted: #103C4C;
-$colorRestrictedAlternate: #1b4D5D;
+$colorRestrictedAlternate: #1B4D5D;
+$colorDisabled: #AFB7B6;
 $colorSuccess: green;
-$colorDanger: #ce3b33;
-$colorDangerAlternate: #ca4b25;
+$colorDanger: #CE3B33;
+$colorDangerAlternate: #CA4B25;
 $colorWarning: yellow;
 $colorInfo: blue;
 $colorLight: $colorOffWhite;
@@ -40,13 +39,14 @@ $gradientSecondary: linear-gradient(147deg, $tertiaryColor 0%, $secondaryColor 1
 
 $gradientDanger: linear-gradient(147deg, $colorDangerAlternate 0%, $colorDanger 100%);
 
-$fontTitle: 'Fredoka One', cursive;
+$fontTitle: "Fredoka One", cursive;
 
 $headerHeight: 70px;
 
-$shadowSmall: 0 0 10px 0 #b1b1b121;
-$shadowSmallUp: 0 -5px 10px 0 #b1b1b121;
-$shadowSmallDown: 0 5px 10px 0 #b1b1b121;
+$shadowSmall: 0 0 10px 0 #B1B1B121;
+$shadowSmallUp: 0 -5px 10px 0 #B1B1B121;
+$shadowSmallDown: 0 5px 10px 0 #B1B1B121;
+$shadowInsetSmallDown: inset 0px 5px 10px -5px #B1B1B121;
 $shadowMedium: 0 0 10px 0 #47474740;
 $shadowLarge: 0 0 100px 20px #00000085;
 
@@ -60,6 +60,6 @@ $shadowLarge: 0 0 100px 20px #00000085;
 
 $spacer: 1rem;
 $spacers: (
-	6: ($spacer * 4),
-	7: ($spacer * 5)
+		6: ($spacer * 4),
+		7: ($spacer * 5)
 );

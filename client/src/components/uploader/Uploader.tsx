@@ -77,8 +77,8 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 		if (!uploadPrevented()) {
 			updateUploading(true);
 			createSubmission(courseId, folderName, uploadableFiles)
-				.then(handleUploadComplete)
-				.catch(handleUploadError);
+			.then(handleUploadComplete)
+			.catch(handleUploadError);
 		}
 	}
 

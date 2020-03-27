@@ -24,12 +24,12 @@ export function CourseInvites({ courseID } : {courseID : string}) {
 }
 
 export function RoleInvite({courseID, link, role} : {courseID : string, link : string | undefined, role : inviteRole}) {
-    const [inviteLink, setInviteLink] = useState(link === undefined ? link : window.location.origin + link);
+    const [inviteLink, setInviteLink] = useState(link === undefined ? link : window.location.origin + '/invite/' + link);
 
     const createLink = (role : inviteRole) => {
         getInvite(courseID, role)
             .then((courseInvite : CourseInvite) => {
-                setInviteLink(window.location.origin + `/api/invite/${courseInvite.inviteID}`);
+                setInviteLink(window.location.origin + `/invite/${courseInvite.inviteID}`);
             });
     };
 

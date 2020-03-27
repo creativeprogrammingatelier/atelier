@@ -2,11 +2,13 @@ import React, {useEffect, useState} from "react";
 import {Code, CodeProperties, defaultHandler} from "./Code";
 import {getRanges, Range} from "../../helpers/HighlightingHelper";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import {Position, noPosition} from "../../../../models/api/Snippet";
-import {SnippetHighlight} from "../submission/fileviewers/CodeTab";
+import {noPosition, Snippet} from "../../../../models/api/Snippet";
 import {SelectionHelper} from "../../helpers/SelectionHelper";
 import {ClickHelper} from "../../helpers/ClickHelper";
 
+export interface SnippetHighlight extends Snippet {
+	onClick: Function,
+}
 export interface HighlightedCodeProperties extends CodeProperties {
 	snippets: SnippetHighlight[]
 }

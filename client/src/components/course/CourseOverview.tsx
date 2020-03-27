@@ -52,9 +52,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 								transport: `/submission/${submission.ID}`,
 								title: submission.name,
 								text: "Submitted by " + submission.user.name,
-								time: new Date(submission.date),
-								tags: []
-								//tags: submission.tags
+								time: new Date(submission.date)
 							};
 						})}
 					/>

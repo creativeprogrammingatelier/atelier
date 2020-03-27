@@ -1,7 +1,9 @@
-import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools } from "./HelperDB";
+import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools, funmap2 } from "./HelperDB";
 import {Comment, commentToAPI, DBAPIComment} from '../../../models/database/Comment';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { commentsView } from "./ViewsDB";
+import { submissionToAPI, DBAPISubmission } from "../../../models/database/Submission";
+import { SearchResultComment } from "../../../models/api/SearchResult";
 
 /**
  * commentID, commentThreadID, userID, created, edited, body
@@ -101,6 +103,64 @@ export class CommentDB {
 			OFFSET $10
 			`, args)
 		.then(extract).then(map(commentToAPI))
+	}
+	/**
+	 * 
+	 * @param searchString string to search for
+	 * @param extras 
+	 * if a body is provided, this will overwrite the searchstring.
+	 */
+	static async searchComments(searchString : string, extras : Comment) : Promise<SearchResultComment[]> {
+		checkAvailable(['currentUserID','courseID'], extras)
+		console.log(extras)
+		const {
+			commentID = undefined,
+			commentThreadID = undefined, 
+			submissionID = undefined,
+			courseID = undefined,
+			userID = undefined, 
+			created = undefined, 
+			edited = undefined,
+			body = searchString,
+			limit = undefined,
+			offset = undefined,
+			currentUserID = undefined,
+			client = pool
+		} = extras
+		const commentid = UUIDHelper.toUUID(commentID), 
+			commentthreadid = UUIDHelper.toUUID(commentThreadID),
+			submissionid = UUIDHelper.toUUID(submissionID),
+			courseid = UUIDHelper.toUUID(courseID),
+			userid = UUIDHelper.toUUID(userID),
+			currentuserid = UUIDHelper.toUUID(currentUserID),
+			bodysearch = searchify(body);
+
+		const args = [	commentid, commentthreadid, submissionid, courseid, userid, 
+						created, edited, bodysearch, limit, offset, currentuserid]
+		type argType = typeof args;
+		return client.query<DBAPIComment&DBAPISubmission, argType>(`	
+			SELECT c.*, s.*
+			FROM "CommentsView" as c, "SubmissionsView" as s, viewableSubmissions($11, $4) as opts
+			WHERE 
+				c.submissionID = s.submissionID
+			AND ($1::uuid IS NULL OR c.commentID=$1)
+			AND ($2::uuid IS NULL OR c.commentThreadID=$2)
+			AND ($3::uuid IS NULL OR c.submissionID=$3)
+			AND ($4::uuid IS NULL OR c.courseID=$4)
+			AND ($5::uuid IS NULL OR c.userID=$5) 
+			AND ($6::timestamp IS NULL OR c.created >= $6)
+			AND ($7::timestamp IS NULL OR c.edited >= $7)
+			AND ($8::text IS NULL OR c.body ILIKE $8)
+			
+			AND c.submissionID = opts.submissionID
+			ORDER BY c.created DESC, c.commentID --unique in case 2 comments same time
+			LIMIT $9
+			OFFSET $10
+			`, args)
+		.then(extract).then(map(entry => ({
+			submission: submissionToAPI(entry),
+			comment: commentToAPI(entry)
+		})))
 	}
 
 	/**

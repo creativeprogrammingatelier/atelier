@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {courseState} from "../../../../../models/enums/courseStateEnum";
 import {Button, Form, InputGroup} from "react-bootstrap";
-import {updateCourse} from "../../../../helpers/APIHelper";
+import {getCourse, updateCourse} from "../../../../helpers/APIHelper";
 
 interface UpdateCourseProps {
     courseID : string,
@@ -12,6 +12,14 @@ interface UpdateCourseProps {
 export function UpdateCourse({courseID, handleResponse} : UpdateCourseProps) {
     const [name, setName] = useState("");
     const [state, setState] = useState(courseState.open);
+
+    useEffect(() => {
+        getCourse(courseID)
+            .then((course : CoursePartial) => {
+                setName(course.name);
+                setState(course.state as courseState);
+            });
+    }, []);
 
     async function handleUpdate() {
         try {
@@ -44,6 +52,7 @@ export function UpdateCourse({courseID, handleResponse} : UpdateCourseProps) {
                     Course State:
                     <select
                         onChange={(e) => setState(e.target.value as courseState)}
+                        value={state}
                     >
                         <option value="open">open</option>
                         <option value="hidden">hidden</option>

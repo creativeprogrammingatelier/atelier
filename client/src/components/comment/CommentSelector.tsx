@@ -8,12 +8,16 @@ import {Controlled as CodeMirror} from "react-codemirror2";
 import {CodeProperties, CodeSelection} from "../code/Code";
 import {Selection, noSelection} from "../../../../models/api/Snippet";
 
+interface MentionProperties {
+	courseID: string
+}
 interface CommentSelectorProperties<T> {
 	codeViewer: (properties: T) => JSX.Element,
 	codeProperties: T,
-	sendHandler: (comment: string, selection: Selection, restricted: boolean) => Promise<boolean>
+	mentions?: MentionProperties,
+	sendHandler: (comment: string, restricted: boolean, selection: Selection) => Promise<boolean>
 }
-export function CommentSelector<T>({codeViewer, codeProperties, sendHandler}: CommentSelectorProperties<T>) {
+export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHandler}: CommentSelectorProperties<T>) {
 	const [selecting, setSelecting] = useState(false);
 	const [selection, setSelection] = useState(noSelection);
 	const [selectionText, setSelectionText] = useState("");
@@ -56,13 +60,13 @@ export function CommentSelector<T>({codeViewer, codeProperties, sendHandler}: Co
 			<Floater bottom={44} left={0} width="-webkit-fill-available" height="3rem" className="m-2">
 				<CommentCreator
 					placeholder={selectionText.length === 0 ? "Make a selection" : "Write your comment"}
+					large
 					round
 					allowRestricted
+					mentions={mentions}
 					sendHandler={(comment, restricted) => {
-						console.log("Creating new comment: " + comment + ", restricted: " + restricted);
-						console.log("Selected code:");
-						console.log(selectionText);
-						return sendHandler(comment, selection, restricted);
+						setSelecting(false);
+						return sendHandler(comment, restricted, selection);
 					}}
 				/>
 			</Floater>

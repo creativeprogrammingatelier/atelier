@@ -1,7 +1,10 @@
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf } from "./HelperDB";
-import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet} from '../../../models/database/Snippet';
+import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet, isNotNullSnippet} from '../../../models/database/Snippet';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { snippetsView } from "./ViewsDB";
+import { fileToAPI } from "../../../models/database/File";
+import { submissionToAPI } from "../../../models/database/Submission";
+import { SearchResultSnippet } from "../../../models/api/SearchResult";
 
 /**
  * 
@@ -73,6 +76,71 @@ export class SnippetDB {
 		.then(extract).then(map(snippetToAPI)).then(doIf(!includeNulls, filterNullSnippet))
 		
 	}
+	static async searchSnippets(searchString : string, extras : Snippet) : Promise<SearchResultSnippet[]>{
+		checkAvailable(['currentUserID','courseID'], extras)
+		const {
+			snippetID = undefined,
+			commentThreadID = undefined,
+			submissionID = undefined,
+			courseID = undefined,
+			fileID = undefined,
+
+			lineStart = undefined,
+			lineEnd = undefined,
+			charStart = undefined,
+			charEnd = undefined,
+			body = searchString,
+			contextBefore = undefined,
+			contextAfter = undefined,
+
+			limit = undefined,
+			offset = undefined,
+			currentUserID = undefined,
+			client = pool,
+			includeNulls = false //exclude them normally
+		} = extras
+		const snippetid = UUIDHelper.toUUID(snippetID),
+			fileid = UUIDHelper.toUUID(fileID),
+			commentthreadid = UUIDHelper.toUUID(commentThreadID),
+			submissionid = UUIDHelper.toUUID(submissionID),
+			courseid = UUIDHelper.toUUID(courseID),
+			currentuserid = UUIDHelper.toUUID(currentUserID),
+			searchBody = searchify(body),
+			searchBefore = searchify(contextBefore),
+			searchAfter = searchify(contextAfter)
+		return client.query(`
+		SELECT * 
+		FROM "SnippetsView" as s, "FilesView" as f, "SubmissionsView" as su, viewableSubmissions($13, $5) as opts
+		WHERE
+			s.fileid = f.fileid
+		AND s.submissionID = su.submissionID
+		AND ($1::uuid IS NULL OR s.snippetID=$1)
+		AND ($2::uuid IS NULL OR s.fileID=$2)
+		AND ($3::uuid IS NULL OR s.commentThreadID=$3)
+		AND ($4::uuid IS NULL OR s.submissionID=$4)
+		AND ($5::uuid IS NULL OR s.courseID=$5)
+		AND ($6::integer IS NULL OR s.lineStart=$6)
+		AND ($7::integer IS NULL OR s.lineEnd=$7)
+		AND ($8::integer IS NULL OR s.charStart=$8)
+		AND ($9::integer IS NULL OR s.charEnd=$9)
+		AND ($10::text IS NULL OR s.body ILIKE $10)
+		AND ($11::text IS NULL OR s.contextBefore ILIKE $11)
+		AND ($12::text IS NULL OR s.contextAfter ILIKE $12)
+
+		AND s.submissionID = opts.submissionID
+		ORDER BY s.snippetID
+		LIMIT $14
+		OFFSET $15
+		`, [snippetid, fileid, commentthreadid, submissionid, courseid, 
+			lineStart, lineEnd, charStart, charEnd, searchBody, searchBefore, searchAfter,
+			currentuserid, limit, offset ])
+		.then(extract).then(map(entry => ({
+			//no checks for null snippets/files, since we are literally searching inside a snippet body
+			snippet: snippetToAPI(entry),
+			file: fileToAPI(entry),
+			submission: submissionToAPI(entry)
+		})))
+	}
 
 	static async createNullSnippet(params : DBTools = {}){
 		const nullSnippet = {...params, body:'', contextAfter:'',contextBefore:'', lineStart:-1, lineEnd:-1, charEnd:-1, charStart:-1}
@@ -80,7 +148,6 @@ export class SnippetDB {
 	}
 
 	static async addSnippet(snippet : Snippet) : Promise<string>{
-		// console.log("this function only adds a single snippet. you might want to use a function that also makes the thread immediately.")
 		checkAvailable(['lineStart','lineEnd','charStart','charEnd', 'body', 'contextBefore','contextAfter'], snippet)
 		const {
 			lineStart,

@@ -49,7 +49,7 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
 			loader={getUser}
 			params={[userId]}
 			component={user =>
-				<Frame title={user.name} sidebar search>
+				<Frame title={user.name} sidebar search={{user: user.name}}>
 					<Jumbotron>
 						<h1>{user.name}</h1>
 						<p>Welcome back here! :D</p>
@@ -58,17 +58,17 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
 					<TabBar
 						tabs={[{
 							id: "courses",
-							icon: <FiCompass size={28} color="#FFFFFF"/>,
+							icon: FiCompass,
 							text: "Courses",
 							location: userPath + "/courses"
 						}, {
 							id: "submissions",
-							icon: <FiPackage size={28} color="#FFFFFF"/>,
+							icon: FiPackage,
 							text: "Submissions",
 							location: userPath + "/submissions"
 						}, {
 							id: "comments",
-							icon: <FiMessageSquare size={28} color="#FFFFFF"/>,
+							icon: FiMessageSquare,
 							text: "Comments",
 							location: userPath + "/comments"
 						}]}

@@ -24,8 +24,7 @@ export function Activity() {
                                 : `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`, 
 							title: `Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle} in ${mention.courseName}`,
 							text: mention.comment.text,
-							time: new Date(mention.comment.created),
-							tags: []
+							time: new Date(mention.comment.created)
 						}))}
 					/>
 				}
