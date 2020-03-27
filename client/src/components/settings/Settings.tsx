@@ -52,13 +52,13 @@ export function Settings() {
                 />
             }
 
-            {
-                containsPermission(PermissionEnum.manageUserRole, permissions) &&
-                <DataList
-                    header={"User Role Settings"}
-                    children={ <RoleSettings global = {{ roles : globalRoles }}/> }
-                />
-            }
+            {/*{*/}
+            {/*    containsPermission(PermissionEnum.manageUserRole, permissions) &&*/}
+            {/*    <DataList*/}
+            {/*        header={"User Role Settings"}*/}
+            {/*        children={ <RoleSettings global = {{ roles : globalRoles }}/> }*/}
+            {/*    />*/}
+            {/*}*/}
 
             <Loading<Permission>
                 loader={permission}

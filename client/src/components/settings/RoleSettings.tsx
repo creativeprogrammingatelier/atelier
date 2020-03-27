@@ -1,81 +1,56 @@
-import React, {useState} from 'react';
-import {Button, Form, InputGroup} from "react-bootstrap";
+import React, {Fragment, useState} from "react";
+import {Button, Form} from "react-bootstrap";
 import {globalRole} from "../../../../models/enums/globalRoleEnum";
 import {courseRole} from "../../../../models/enums/courseRoleEnum";
 import {User} from "../../../../models/api/User";
 import {UserSearch} from "./user/UserSearch";
 import {updateCourseRole, updateGlobalRole} from "../../../helpers/APIHelper";
 import {CourseUser} from "../../../../models/api/CourseUser";
+import {UserInfo} from "./user/UserInfo";
+import {UserRoles} from "./user/UserRoles";
 
-interface RoleSettingsProps {
-    global? : {
-        roles : globalRole[]
-    },
-    course? : {
-        roles : courseRole[],
-        courseID : string
-    }
+interface RoleSettingsProps<T> {
+	roles: T,
+	courseID?: string
 }
 
-export function RoleSettings({global, course} : RoleSettingsProps) {
-    if (global === undefined && course === undefined) return <div />;
+export function RoleSettings<T>({roles, courseID}: RoleSettingsProps<T>) {
+	const [user, setUser] = useState(undefined as User | undefined);
+	const [role, setRole] = useState(undefined as T | undefined);
 
-    const courseID = course === undefined ? undefined : course.courseID;
-    const roles = global !== undefined ? global.roles.map(role => role.toString()) : course!.roles.map(role => role.toString());
-    const [user, setUser] = useState(undefined as User | undefined);
-    const [userRole, setUserRole] = useState("");
-    const [role, setRole] = useState(roles[0]);
-
-
-    function updateUser(user: User | undefined) {
-        setUser(user);
-        if (user) {
-            setUserRole(global === undefined ?
-                user.permission.courseRole! :
-                user.permission.globalRole
-            );
-        }
-    }
-
-    function updateRole() {
-        if (user === undefined) return;
-        if (global !== undefined) {
-            updateGlobalRole(user.ID, role as unknown as globalRole)
-                .then((user : User) => {
+	const handleUpdate = () => {
+	    if (user && role) {
+            if (courseID) {
+                updateCourseRole(user.ID, courseID, role as unknown as courseRole)
+                .then((user: CourseUser) => {
+                    console.log("Updated role in course");
                     console.log(user);
-                    setUserRole(user.permission.globalRole);
+                    setUser(undefined);
+                    setRole(undefined);
+                    // TODO: Visual feedback
                 });
-        } else if (course !== undefined) {
-            updateCourseRole(user.ID, course.courseID, role as unknown as courseRole)
-                .then((user : CourseUser) => {
+            } else {
+                updateGlobalRole(user.ID, role as unknown as globalRole)
+                .then((user: User) => {
+                    console.log("Updated global role");
                     console.log(user);
-                    setUserRole(user.permission.courseRole!);
+                    setUser(undefined);
+                    setRole(undefined);
+                    // TODO: Visual feedback
                 });
+            }
         }
-    }
+    };
 
-    return (
-        <div className="updateRole">
-            <Form>
-                <UserSearch courseID={courseID} onSelected={updateUser} />
-                {
-                    user &&
-                        <div>
-                            Name: { user.name }
-                            <br />
-                            Role : { userRole }
-                        </div>
-                }
-                <select onChange={e => setRole(e.target.value)}>
-                    {
-                        roles.map((role : string) => <option value={role}>{role}</option>)
-                    }
-                </select>
-
-                <InputGroup.Append>
-                    <Button onClick={() => updateRole()}>Update User Role</Button>
-                </InputGroup.Append>
-            </Form>
-        </div>
-    )
+	return <Form>
+		<UserSearch courseID={courseID} onSelected={setUser}/>
+		{
+			user &&
+			<Fragment>
+				<UserInfo user={user}/>
+				<UserRoles<T> roles={roles} onSelected={setRole}/>
+				<Button onClick={handleUpdate}>Update Role</Button>
+			</Fragment>
+		}
+	</Form>
 }

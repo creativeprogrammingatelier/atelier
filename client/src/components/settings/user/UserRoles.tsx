@@ -1,6 +1,7 @@
 import React from "react";
 import {Form} from "react-bootstrap";
 import {Label} from "../../general/Label";
+import {RoleHelper} from "../../../helpers/RoleHelper";
 
 interface UserRolesProperties<T> {
 	roles: T,
@@ -16,7 +17,7 @@ export function UserRoles<T>({roles, onSelected}: UserRolesProperties<T>) {
 		<Label>Select a role</Label>
 		<Form.Control as="select" onChange={event => handleSelected((event.target as HTMLInputElement).value as unknown as T)}>
 			<option disabled selected>Role within the course</option>
-			{Object.keys(roles).map((role: string) => <option value={role}>{role}</option>)}
+			{Object.keys(roles).map((role: string) => <option value={role}>{RoleHelper.displayName(role)}</option>)}
 		</Form.Control>
 	</Form.Label>;
 }

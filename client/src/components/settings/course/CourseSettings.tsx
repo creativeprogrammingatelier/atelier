@@ -9,7 +9,7 @@ import {containsPermission, PermissionEnum} from "../../../../../models/enums/pe
 import {PermissionSettings} from "../PermissionSettings";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
 import {DataList} from "../../data/DataList";
-import {CourseRegistration} from "../../course/CourseRegistration";
+import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
 import {RoleSettings} from "../RoleSettings";
 import {courseRole} from "../../../../../models/enums/courseRoleEnum";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
@@ -22,7 +22,7 @@ interface CourseOverviewProps {
 	}
 }
 
-export function CourseSettings({match}: CourseOverviewProps) {
+export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProps) {
 	const [reload, updateReload] = useState(0);
 	const [permissions, setPermissions] = useState(0);
 
@@ -31,7 +31,7 @@ export function CourseSettings({match}: CourseOverviewProps) {
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
 	useEffect(() => {
-		coursePermission(match.params.courseId, true)
+		coursePermission(courseId, true)
 		.then((permission: Permission) => {
 			setPermissions(permission.permissions);
 		});
@@ -41,49 +41,44 @@ export function CourseSettings({match}: CourseOverviewProps) {
 	const courseRoles = [courseRole.student, courseRole.teacher, courseRole.TA, courseRole.moduleCoordinator, courseRole.plugin];
 
 	return (
-		<Frame title="Course" sidebar search={{course: match.params.courseId}}>
+		<Frame title="Course" sidebar search={{course: courseId}}>
 			<Jumbotron>
 				<Loading<Course>
 					loader={(courseId, reloadCourse) => getCourse(courseId, false)}
-					params={[match.params.courseId, reloadCourse]}
+					params={[courseId, reloadCourse]}
 					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
 				/>
 			</Jumbotron>
 			{
 				containsPermission(PermissionEnum.manageCourses, permissions) &&
 				<DataList header="Course settings">
-					<CourseSettingsGeneral courseID={match.params.courseId} handleResponse={courseUpdate}/>
+					<CourseSettingsGeneral courseID={courseId} handleResponse={courseUpdate}/>
 				</DataList>
 			}
 			{
 				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
 				<DataList header="Course invites">
-					<CourseSettingsInvites courseID={match.params.courseId}/>
+					<CourseSettingsInvites courseID={courseId}/>
 				</DataList>
 			}
 			{
 				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
 				<DataList header="Enroll a user">
-					<CourseRegistration courseID={match.params.courseId}/>
+					<CourseSettingsEnrollment courseID={courseId}/>
 				</DataList>
 			}
-			{containsPermission(PermissionEnum.manageUserRole, permissions) &&
-			<DataList
-				header={"User Roles"}
-				children={
-					<RoleSettings course={{
-						roles: courseRoles,
-						courseID: match.params.courseId
-					}}/>
-				}
-			/>
+			{
+				containsPermission(PermissionEnum.manageUserRole, permissions) &&
+				<DataList header="User Roles">
+					<RoleSettings<typeof courseRole> roles={courseRole} courseID={courseId}/>
+				</DataList>
 			}
 			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
 			<DataList
 				header="User Permissions"
 				children={
 					<PermissionSettings
-						courseID={match.params.courseId}
+						courseID={courseId}
 						viewPermissions={containsPermission(PermissionEnum.manageUserPermissionsView, permissions)}
 						managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
 					/>
