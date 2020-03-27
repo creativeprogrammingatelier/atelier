@@ -7,6 +7,7 @@ import {PermissionEnum} from "../../../models/enums/permissionEnum";
 import {useCourses} from "../helpers/api/API";
 import {Permissions} from "./general/Permissions";
 import { LoadingIcon } from "./general/loading/LoadingIcon";
+import { CacheState } from "../helpers/api/Cache";
 
 export function Homepage() {
     const {courses} = useCourses();
@@ -19,7 +20,7 @@ export function Homepage() {
 				<Button>Have a button!</Button>
 			</Jumbotron>
 			<div className="m-3">
-                {courses.state === "Uninitialized" || courses.state === "Loading" ? <LoadingIcon /> : <Fragment />}
+                {courses.state === CacheState.Uninitialized || courses.state === CacheState.Loading ? <LoadingIcon /> : <Fragment />}
                 {courses.items.map(course => <PanelButton
                     display={course.item.name}
                     location={`/course/${course.item.ID}`}

@@ -9,14 +9,14 @@ interface CourseButtonProperties {
 	location: string,
 	state?: CacheState
 }
-export function PanelButton({display, location, state = "Loaded"}: CourseButtonProperties) {
+export function PanelButton({display, location, state = CacheState.Loaded}: CourseButtonProperties) {
 	return <div className="panel">
 		<Link to={location}>
 			<div className="panelText">
 				<h3>{display}</h3>
 			</div>
 			<div className="panelBottom text-right">
-                {state === "Loaded"
+                {state === CacheState.Loaded
 				 ? <FiChevronsRight size={32} strokeWidth={1.5}/>
                  : <LoadingIcon /> }
 			</div>

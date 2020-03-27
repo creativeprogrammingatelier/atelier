@@ -70,9 +70,9 @@ export function useMessages(): MessagesInterface {
 }
 
 function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messages: MessagesInterface) {
-    cache.setCollectionState("Loading");
+    cache.setCollectionState(CacheState.Loading);
     promise
-        .then(result => cache.replaceAll(result, "Loaded"))
+        .then(result => cache.replaceAll(result, CacheState.Loaded))
         .catch((err: Error) => {
             messages.addMessage({ type: "Error", message: err.message })
         });
@@ -81,11 +81,11 @@ function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messages: M
 function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheInterface<T>, messages: MessagesInterface) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
-    cache.add({ ...item, ID: tempID }, "Loading");
+    cache.add({ ...item, ID: tempID }, CacheState.Loading);
     promise
         .then(result => {
             console.log("Creation of", tempID, "succeeded:", result);
-            cache.replace(old => old.ID === tempID, result, "Loaded");
+            cache.replace(old => old.ID === tempID, result, CacheState.Loaded);
         })
         .catch((err: Error) => {
             messages.addMessage({ type: "Error", message: err.message }),
@@ -106,7 +106,7 @@ export function useCourses() {
             messages
         );
         
-    if (cache.collection.state === "Uninitialized") refreshCourses(); // TODO: better check
+    if (cache.collection.state === CacheState.Uninitialized) refreshCourses(); // TODO: better check
 
     return {
         courses: cache.collection,
@@ -121,7 +121,7 @@ export function usePermission() {
 
     const refreshPermission = () => refresh(API.permission().then(p => [p]), cache, messages);
 
-    if (cache.collection.state === "Uninitialized") refreshPermission();
+    if (cache.collection.state === CacheState.Uninitialized) refreshPermission();
 
     return {
         permission: cache.collection.items[0] || { item: { permissions: 0, globalRole: globalRole.unregistered }, state: cache.collection.state },

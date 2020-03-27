@@ -1,6 +1,10 @@
 export type Update<T> = (update: (cache: T) => T) => void
 
-export type CacheState = "Loading" | "Loaded";
+export enum CacheState {
+    Uninitialized,
+    Loading,
+    Loaded
+}
 
 export interface CacheItem<T> {
     readonly state: CacheState,
@@ -10,7 +14,7 @@ export interface CacheItem<T> {
 export interface CacheCollection<T> {
     readonly lastRefresh: number,
     readonly lastUpdate: number,
-    readonly state: "Uninitialized" | CacheState,
+    readonly state: CacheState,
     readonly items: Array<CacheItem<T>>
 }
 
@@ -38,7 +42,7 @@ export interface CacheInterface<T> {
 const getCollection = <T>(cache: Cache, key: string): CacheCollection<T> =>
     cache[key] !== undefined
     ? cache[key]
-    : { state: "Uninitialized", items: [], lastRefresh: 0, lastUpdate: 0 };
+    : { state: CacheState.Uninitialized, items: [], lastRefresh: 0, lastUpdate: 0 };
 
 export function getCacheInterface<T>(key: string, cache: Cache, updateCache: Update<Cache>): CacheInterface<T> {
     const updateCollection: Update<CacheCollection<T>> = (update) => 
