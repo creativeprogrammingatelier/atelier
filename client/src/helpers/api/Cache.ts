@@ -1,16 +1,19 @@
 export type Update<T> = (update: (cache: T) => T) => void
 
+/** State of an item or collection in the cache */
 export enum CacheState {
     Uninitialized,
     Loading,
     Loaded
 }
 
+/** An item in the cache, stored in a collection */
 export interface CacheItem<T> {
     readonly state: CacheState,
     readonly item: T
 }
 
+/** A collection of items of a single type in the cache */
 export interface CacheCollection<T> {
     readonly lastRefresh: number,
     readonly lastUpdate: number,
@@ -18,12 +21,14 @@ export interface CacheCollection<T> {
     readonly items: Array<CacheItem<T>>
 }
 
+/** The cache is an indexed set of CacheCollections */
 export interface Cache {
     // The cache should be able to store anything
     // tslint:disable-next-line: no-any 
     readonly [key: string]: CacheCollection<any>
 }
 
+/** An interface for working with a single CacheCollection */
 export interface CacheInterface<T> {
     /** Get the raw cache collection */
     collection: CacheCollection<T>,
@@ -39,11 +44,18 @@ export interface CacheInterface<T> {
     replaceAll: (items: T[], state: CacheState, date?: number) => void
 }
 
+/** Get the collection if it exists, or get a default collection */
 const getCollection = <T>(cache: Cache, key: string): CacheCollection<T> =>
     cache[key] !== undefined
     ? cache[key]
     : { state: CacheState.Uninitialized, items: [], lastRefresh: 0, lastUpdate: 0 };
 
+/**
+ * Get the cache interface with functions to read and write the cache for a single CacheCollection 
+ * @param key The key for the collection you want to work with
+ * @param cache The global cache object
+ * @param updateCache A function that can be called to update the cache
+ */
 export function getCacheInterface<T>(key: string, cache: Cache, updateCache: Update<Cache>): CacheInterface<T> {
     const updateCollection: Update<CacheCollection<T>> = (update) => 
         updateCache(cache => ({ 
