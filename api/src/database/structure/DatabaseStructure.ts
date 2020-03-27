@@ -338,8 +338,9 @@ CREATE OR REPLACE FUNCTION _viewableSubmissions (userID uuid, courseID uuid)
 -- the standard roles
 
 INSERT INTO "CourseRolePermissions" VALUES
-   ('student', 1::bit(${permissionBits})),
-   ('TA', 3::bit(${permissionBits})),
+	('moduleCoordinator', 7::bit(${permissionBits})),
+    ('student', 1::bit(${permissionBits})),
+    ('TA', 3::bit(${permissionBits})),
 	('teacher', 7::bit(${permissionBits})),
 	('unregistered', 0::bit(${permissionBits})),
 	('plugin', 0::bit(${permissionBits}));
