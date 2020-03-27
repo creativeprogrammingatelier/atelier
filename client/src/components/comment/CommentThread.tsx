@@ -68,13 +68,13 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	useEffect(() => ScrollHelper.scrollToHash(), []);
 	useEffect(() => {
-		coursePermission(thread.references.courseID, true)
+		coursePermission(thread.references.courseID)
 			.then((permission : Permission) => {
 				if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions)) {
 					setManageRestrictedComments(true);
 				}
 			});
-		getCurrentUser(true)
+		getCurrentUser()
 			.then((user : User) => {
 				if (user.ID === commentThreadOwner(thread)) {
 					setManageRestrictedComments(true);

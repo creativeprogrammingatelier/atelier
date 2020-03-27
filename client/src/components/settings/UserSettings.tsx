@@ -20,7 +20,7 @@ export function UserSettings() {
 
     return (
         <Loading
-            loader={ reload => getCurrentUser(false) }
+            loader={ reload => getCurrentUser() }
             params={[reload]}
             component={(user : User) => {
                 setReload(false);

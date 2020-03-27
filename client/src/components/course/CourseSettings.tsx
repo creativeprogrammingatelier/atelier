@@ -29,7 +29,7 @@ export function CourseSettings({match}: CourseOverviewProps) {
     const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
     useEffect(() => {
-        coursePermission(match.params.courseId, true)
+        coursePermission(match.params.courseId)
             .then((permission: Permission) => {
                 setPermissions(permission.permissions);
             })
@@ -39,7 +39,7 @@ export function CourseSettings({match}: CourseOverviewProps) {
         <Frame title="Course" sidebar search={{course: match.params.courseId}}>
             <Jumbotron>
                 <Loading<Course>
-                    loader={(courseId, reloadCourse) => getCourse(courseId, false)}
+                    loader={(courseId, reloadCourse) => getCourse(courseId)}
                     params={[match.params.courseId, reloadCourse]}
                     component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p>
                     </Fragment>}

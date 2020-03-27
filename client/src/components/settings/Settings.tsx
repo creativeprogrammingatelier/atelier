@@ -16,7 +16,7 @@ import { Permission } from '../../../../models/api/Permission';
 export function Settings() {
     const [permissions, setPermissions] = useState(0);
     useEffect(() => {
-        getCurrentUser(true)
+        getCurrentUser()
             .then((user : User) => {
                 setPermissions(user.permission.permissions);
             });
