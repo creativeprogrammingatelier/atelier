@@ -144,7 +144,7 @@ export function createFileCommentThread(fileID: string, thread: CreateCommentThr
 }
 export function createSubmissionCommentThread(
         submissionID: string, 
-        thread: {commentBody: string, visiblityState?: string}, 
+        thread: {comment: string, visibilityState?: string},
         doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread), doCache);
 }

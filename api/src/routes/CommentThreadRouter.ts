@@ -149,7 +149,7 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
         submissionID,
         fileID,
         snippetID,
-        visibilityState : request.body.visiblityState ? request.body.visibilityState : threadState.public,
+        visibilityState : request.body.visibilityState ? request.body.visibilityState : threadState.public,
         client
     });
 
