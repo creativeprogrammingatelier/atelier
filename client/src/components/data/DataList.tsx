@@ -45,7 +45,7 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 		}
 	}
 
-	return <div className="list">
+	return <div>
 		{(optional || Parent.countChildren(data) > 0) &&
 			<Heading
 				title={header}
@@ -58,7 +58,7 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 				{optional.component}
 			</div>
 		}
-		{!collapsed &&
+		{!collapsed && Parent.countChildren(data) > 0 &&
 			<div className="m-3">
 				<Fragment>
 					{data}
