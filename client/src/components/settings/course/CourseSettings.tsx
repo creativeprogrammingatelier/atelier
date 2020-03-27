@@ -57,15 +57,15 @@ export function CourseSettings({match}: CourseOverviewProps) {
 			}
 			{
 				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
-				<CourseSettingsInvites courseID={match.params.courseId}/>
+				<DataList header="Course invites">
+					<CourseSettingsInvites courseID={match.params.courseId}/>
+				</DataList>
 			}
-			{containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
-			<DataList
-				header={"Enroll a user"}
-				children={
+			{
+				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
+				<DataList header="Enroll a user">
 					<CourseRegistration courseID={match.params.courseId}/>
-				}
-			/>
+				</DataList>
 			}
 			{containsPermission(PermissionEnum.manageUserRole, permissions) &&
 			<DataList

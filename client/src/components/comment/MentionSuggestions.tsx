@@ -81,13 +81,9 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
 		}
 	}, [suggestionBase]);
 
-	function Suggestion({user}: {user: User}) {
-		return <Tag large round theme="primary">{displayPrefix}{user.name}</Tag>;
-	}
-
 	return suggestions.users.length > 0 ?
 		<ul className={"mentions m-0 w-100" + (round ? " px-2 pt-2 mb-2" : " px-1 pt-1 mb-1 ")}>
-			{suggestions.users.map(user => <Tag large round theme="primary">{displayPrefix}{user.name}</Tag>)}
+			{suggestions.users.map(user => <Tag large round theme="primary" click={() => onSelected(user)}>{displayPrefix}{user.name}</Tag>)}
 		</ul>
 		:
 		<Fragment/>;
