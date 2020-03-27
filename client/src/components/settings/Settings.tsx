@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
-import {UserSettings} from "./UserSettings";
+import {UserSettingsGeneral} from "./user/UserSettingsGeneral";
 import {getCurrentUser, permission} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
@@ -32,8 +32,9 @@ export function Settings() {
                 <h1>Settings</h1>
                 <Button>Have a button!</Button>
             </Jumbotron>
-
-            <DataList header="User Details" children = {<UserSettings />} />
+            <DataList header="User Details">
+                <UserSettingsGeneral/>
+            </DataList>
 
             {/*{*/}
             {/*    (*/}
