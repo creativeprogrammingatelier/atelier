@@ -19,9 +19,13 @@ export function Homepage() {
 				<Button>Have a button!</Button>
 			</Jumbotron>
 			<div className="m-3">
-                <CachedList collection={courses} refresh={refreshCourses}>
-                    {course => <PanelButton display={course.item.name} location={`/course/${course.item.ID}`} state={course.state} />}
-                </CachedList>
+                <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
+                    course => 
+                        <PanelButton 
+                            display={course.item.name} 
+                            location={`/course/${course.item.ID}`}
+                            state={course.state} />
+                }</CachedList>
 			</div>
 			<Permissions required={PermissionEnum.addCourses}>
                 <div className="m-3">

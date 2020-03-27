@@ -5,16 +5,22 @@ import { LoadingIcon } from './LoadingIcon';
 interface CachedListProperties<T> {
     collection: CacheCollection<T>, 
     refresh?: () => void,
+    timeout?: number,
     children: (item: CacheItem<T>) => React.ReactNode
 }
 
-export function CachedList<T>({ collection, children, refresh }: CachedListProperties<T>) {
+function jitter(time: number, factor: number) {
+    return time + (Math.random() * factor * 150) - (factor * 50);
+}
+
+export function CachedList<T>({ collection, children, refresh, timeout = 120 }: CachedListProperties<T>) {
     useEffect(() => {
         if (refresh) {
-            const handle = setInterval(() => refresh(), 10 * 1000);
-            return () => clearInterval(handle);
+            const expiration = Math.max(0, collection.lastRefresh + timeout * 1000 - Date.now());
+            const handle = setTimeout(() => refresh(), jitter(expiration, timeout));
+            return () => clearTimeout(handle);
         }
-    }, []);
+    }, [collection.lastRefresh]);
 
     return (
         <Fragment>
