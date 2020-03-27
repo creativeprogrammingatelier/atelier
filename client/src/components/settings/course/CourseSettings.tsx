@@ -6,13 +6,13 @@ import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {Permission} from "../../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
-import {PermissionSettings} from "../PermissionSettings";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
 import {DataList} from "../../data/DataList";
 import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
-import {RoleSettings} from "../RoleSettings";
+import {UserSettingsRoles} from "../user/UserSettingsRoles";
 import {courseRole} from "../../../../../models/enums/courseRoleEnum";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
+import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
 
 interface CourseOverviewProps {
 	match: {
@@ -70,20 +70,18 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 			{
 				containsPermission(PermissionEnum.manageUserRole, permissions) &&
 				<DataList header="User Roles">
-					<RoleSettings<typeof courseRole> roles={courseRole} courseID={courseId}/>
+					<UserSettingsRoles<typeof courseRole> roles={courseRole} courseID={courseId}/>
 				</DataList>
 			}
-			{containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
-			<DataList
-				header="User Permissions"
-				children={
-					<PermissionSettings
+			{
+				containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
+				<DataList header="User Permissions">
+					<UserSettingsPermissions
 						courseID={courseId}
 						viewPermissions={containsPermission(PermissionEnum.manageUserPermissionsView, permissions)}
 						managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
 					/>
-				}
-			/>
+				</DataList>
 			}
 		</Frame>
 	);

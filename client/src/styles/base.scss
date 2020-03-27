@@ -207,8 +207,10 @@ textarea:focus, textarea:active {
 	margin: 0 1rem 1rem 0;
 }
 
-.block {
+.area {
 	background-color: $colorWhite;
+}
+.block {
 	border-left: 0.5rem solid $primaryColor;
 }
 

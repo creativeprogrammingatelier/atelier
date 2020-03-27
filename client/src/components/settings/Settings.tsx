@@ -3,7 +3,6 @@ import {useEffect, useState} from 'react';
 import {Button, Jumbotron} from "react-bootstrap";
 import {Frame} from "../frame/Frame";
 import {UserSettings} from "./UserSettings";
-import {PermissionSettings} from "./PermissionSettings";
 import {getCurrentUser, permission} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
@@ -11,7 +10,7 @@ import {DataList} from "../data/DataList";
 import {PluginSettings} from './PluginSettings';
 import {Loading} from '../general/loading/Loading';
 import {Permission} from '../../../../models/api/Permission';
-import {RoleSettings} from "./RoleSettings";
+import {UserSettingsRoles} from "./user/UserSettingsRoles";
 import {globalRole} from "../../../../models/enums/globalRoleEnum";
 
 export function Settings() {
@@ -36,21 +35,21 @@ export function Settings() {
 
             <DataList header="User Details" children = {<UserSettings />} />
 
-            {
-                (
-                    containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) ||
-                    containsPermission(PermissionEnum.manageUserPermissionsView, permissions)
-                ) &&
-                <DataList
-                    header="User Permission Settings"
-                    children={
-                        <PermissionSettings
-                            viewPermissions={containsPermission(PermissionEnum.manageUserPermissionsView, permissions)}
-                            managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
-                        />
-                    }
-                />
-            }
+            {/*{*/}
+            {/*    (*/}
+            {/*        containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) ||*/}
+            {/*        containsPermission(PermissionEnum.manageUserPermissionsView, permissions)*/}
+            {/*    ) &&*/}
+            {/*    <DataList*/}
+            {/*        header="User Permission Settings"*/}
+            {/*        children={*/}
+            {/*            <PermissionSettings*/}
+            {/*                viewPermissions={containsPermission(PermissionEnum.manageUserPermissionsView, permissions)}*/}
+            {/*                managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}*/}
+            {/*            />*/}
+            {/*        }*/}
+            {/*    />*/}
+            {/*}*/}
 
             {/*{*/}
             {/*    containsPermission(PermissionEnum.manageUserRole, permissions) &&*/}

@@ -1,20 +1,20 @@
 import React, {Fragment, useState} from "react";
 import {Button, Form} from "react-bootstrap";
-import {globalRole} from "../../../../models/enums/globalRoleEnum";
-import {courseRole} from "../../../../models/enums/courseRoleEnum";
-import {User} from "../../../../models/api/User";
-import {UserSearch} from "./user/UserSearch";
-import {updateCourseRole, updateGlobalRole} from "../../../helpers/APIHelper";
-import {CourseUser} from "../../../../models/api/CourseUser";
-import {UserInfo} from "./user/UserInfo";
-import {UserRoles} from "./user/UserRoles";
+import {globalRole} from "../../../../../models/enums/globalRoleEnum";
+import {courseRole} from "../../../../../models/enums/courseRoleEnum";
+import {User} from "../../../../../models/api/User";
+import {UserSearch} from "./UserSearch";
+import {updateCourseRole, updateGlobalRole} from "../../../../helpers/APIHelper";
+import {CourseUser} from "../../../../../models/api/CourseUser";
+import {UserInfo} from "./UserInfo";
+import {UserRoles} from "./UserRoles";
 
-interface RoleSettingsProps<T> {
+interface UserSettingsRolesProperties<T> {
 	roles: T,
 	courseID?: string
 }
 
-export function RoleSettings<T>({roles, courseID}: RoleSettingsProps<T>) {
+export function UserSettingsRoles<T>({roles, courseID}: UserSettingsRolesProperties<T>) {
 	const [user, setUser] = useState(undefined as User | undefined);
 	const [role, setRole] = useState(undefined as T | undefined);
 

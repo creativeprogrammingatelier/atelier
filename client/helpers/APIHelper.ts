@@ -201,13 +201,13 @@ export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
 }
 
-export function setPermissionCourse(courseID: string, userID: string, permissions: {permissions: Permissions}, doCache?: boolean) {
-	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson(permissions), doCache);
+export function setPermissionCourse(courseID: string, userID: string, permissions: Permissions, doCache?: boolean) {
+	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson({permissions}), doCache);
 }
-export function setPermissionGlobal(userID: string, permissions: {permissions: Permissions}, doCache?: boolean) {
+export function setPermissionGlobal(userID: string, permissions: Permissions, doCache?: boolean) {
 	return Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, {
 		method: "PUT",
-		body: JSON.stringify(permissions),
+		body: JSON.stringify({permissions}),
 		headers: {"Content-Type": "application/json"}
 	}, doCache);
 }

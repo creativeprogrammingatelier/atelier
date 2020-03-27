@@ -148,7 +148,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 					<Form.Group>
 						<p>These files will be uploaded, please select your main project file:</p>
 						<RadioInput
-							options={uploadableFiles.map(f => f.name)}
+							options={uploadableFiles.map(f => ({value: f.name, name: f.name}))}
 							selected={folderName + ".pde"}
 							onChange={value => updateFolderName(value.replace(".pde", ""))}
 						/>
