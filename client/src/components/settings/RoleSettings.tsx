@@ -3,7 +3,7 @@ import {Button, Form, InputGroup} from "react-bootstrap";
 import {globalRole} from "../../../../models/enums/globalRoleEnum";
 import {courseRole} from "../../../../models/enums/courseRoleEnum";
 import {User} from "../../../../models/api/User";
-import {UserSearch} from "../general/UserSearch";
+import {UserSearch} from "./user/UserSearch";
 import {updateCourseRole, updateGlobalRole} from "../../../helpers/APIHelper";
 import {CourseUser} from "../../../../models/api/CourseUser";
 
@@ -22,17 +22,19 @@ export function RoleSettings({global, course} : RoleSettingsProps) {
 
     const courseID = course === undefined ? undefined : course.courseID;
     const roles = global !== undefined ? global.roles.map(role => role.toString()) : course!.roles.map(role => role.toString());
-    const [user, setUser] = useState(null as unknown as User);
+    const [user, setUser] = useState(undefined as User | undefined);
     const [userRole, setUserRole] = useState("");
     const [role, setRole] = useState(roles[0]);
 
 
-    function updateUser(user : User) {
+    function updateUser(user: User | undefined) {
         setUser(user);
-        setUserRole(global === undefined ?
-            user.permission.courseRole! :
-            user.permission.globalRole
-        );
+        if (user) {
+            setUserRole(global === undefined ?
+                user.permission.courseRole! :
+                user.permission.globalRole
+            );
+        }
     }
 
     function updateRole() {
@@ -55,9 +57,9 @@ export function RoleSettings({global, course} : RoleSettingsProps) {
     return (
         <div className="updateRole">
             <Form>
-                <UserSearch courseID={courseID} onSelected={(user : User) => updateUser(user)} />
+                <UserSearch courseID={courseID} onSelected={updateUser} />
                 {
-                    user !== null &&
+                    user &&
                         <div>
                             Name: { user.name }
                             <br />

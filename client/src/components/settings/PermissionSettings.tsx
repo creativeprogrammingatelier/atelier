@@ -10,7 +10,7 @@ import {Loading} from "../general/loading/Loading";
 import {getAllUsers, getUsersByCourse, setPermissionCourse, setPermissionGlobal} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {CourseUser} from "../../../../models/api/CourseUser";
-import {UserSearch} from "../general/UserSearch";
+import {UserSearch} from "./user/UserSearch";
 
 interface CourseSettingsProps {
     courseID?: string,
@@ -174,10 +174,10 @@ export class PermissionSettings extends React.Component<CourseSettingsProps> {
         return (
             <div>
                 <h4>User: {getEnum(this.state, "settingsUserName")}</h4>
-                <UserSearch
-                    courseID={getEnum(this.state, "courseID")}
-                    onSelected={this.handleUserChange}
-                />
+                {/*<UserSearch*/}
+                {/*    courseID={getEnum(this.state, "courseID")}*/}
+                {/*    onSelected={this.handleUserChange}*/}
+                {/*/>*/}
                 {this.props.viewPermissions && this.renderPermissions(viewPermissions, 'View Permissions')}
                 {this.props.managePermissions && this.renderPermissions(managePermissions, 'Manage permissions')}
 
