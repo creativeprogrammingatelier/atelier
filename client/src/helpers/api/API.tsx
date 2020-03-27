@@ -7,15 +7,10 @@ import { randomBytes } from 'crypto';
 import { User } from '../../../../models/api/User';
 import { Permission } from '../../../../models/api/Permission';
 import { globalRole } from '../../../../models/enums/globalRoleEnum';
-
-interface Message {
-    readonly type: "Information" | "Warning" | "Error",
-    readonly message: string
-}
+import { Messaging, useMessaging } from '../../components/feedback/Messaging';
 
 interface API {
     readonly cache: Cache,
-    readonly messages: Array<Message & { ID: string }>
 }
 
 interface APIContext {
@@ -23,11 +18,11 @@ interface APIContext {
     readonly updateAPI: Update<API>
 }
 
-const apiContext = createContext<APIContext>({ api: { cache: {}, messages: [] }, updateAPI: f => {} })
+const apiContext = createContext<APIContext>({ api: { cache: {} }, updateAPI: f => {} })
 
 export function APIProvider({ children }: { children: React.ReactNode }) {
     const cache = JSON.parse(localStorage.getItem("cache") || "{}");
-    const [api, updateAPI] = useState<API>({ cache, messages: [] });
+    const [api, updateAPI] = useState<API>({ cache });
 
     useEffect(() => {
         localStorage.setItem("cache", JSON.stringify(api.cache));
@@ -42,43 +37,16 @@ export function useCache<T>(key: string) {
     return getCacheInterface<T>(key, api.cache, updateCache);
 }
 
-interface MessagesInterface {
-    messages: Message[],
-    addMessage: (message: Message) => string,
-    removeMessage: (ID: string) => void
-}
-
-export function useMessages(): MessagesInterface {
-    const { api, updateAPI } = useContext(apiContext);
-    const removeMessage = (ID: string) => {
-        updateAPI(api => ({
-            ...api,
-            messages: api.messages.filter(mes => mes.ID !== ID)
-        }));
-    }
-    const addMessage = (message: Message) => {
-        const id = randomBytes(32).toString('hex');
-        console.log(message.type, "-", message.message);
-        updateAPI(api => ({
-            ...api,
-            messages: api.messages.concat({ ...message, ID: id })
-        }));
-        setTimeout(() => removeMessage(id), 3000);
-        return id;
-    }
-    return { messages: api.messages, addMessage, removeMessage }
-}
-
-function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messages: MessagesInterface) {
+function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messaging: Messaging) {
     cache.setCollectionState(CacheState.Loading);
     promise
         .then(result => cache.replaceAll(result, CacheState.Loaded))
         .catch((err: Error) => {
-            messages.addMessage({ type: "Error", message: err.message })
+            messaging.addMessage({ type: "danger", message: err.message })
         });
 }
 
-function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheInterface<T>, messages: MessagesInterface) {
+function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheInterface<T>, messaging: Messaging) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
     cache.add({ ...item, ID: tempID }, CacheState.Loading);
@@ -88,14 +56,14 @@ function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: C
             cache.replace(old => old.ID === tempID, result, CacheState.Loaded);
         })
         .catch((err: Error) => {
-            messages.addMessage({ type: "Error", message: err.message }),
+            messaging.addMessage({ type: "danger", message: err.message }),
             cache.remove(item => item.ID === tempID);
         });
 }
 
 export function useCourses() {
     const cache = useCache<Course>("courses");
-    const messages = useMessages();
+    const messages = useMessaging();
 
     const refreshCourses = () => refresh(API.getCourses(), cache, messages);
     const createCourse = ({ name, state }: { name: string, state: courseState }) => 
@@ -117,7 +85,7 @@ export function useCourses() {
 
 export function usePermission() {
     const cache = useCache<Permission>("currentUserPermission");
-    const messages = useMessages();
+    const messages = useMessaging();
 
     const refreshPermission = () => refresh(API.permission().then(p => [p]), cache, messages);
 

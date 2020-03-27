@@ -21,30 +21,33 @@ import {Settings} from "./settings/Settings";
 import { Activity } from './Activity';
 import {CourseSettings} from "./course/CourseSettings";
 import { APIProvider } from '../helpers/api/API';
+import { MessagingProvider } from './feedback/MessagingProvider';
 
 export function App() {
     return (
-        <APIProvider>
-            <Switch>
-                <Route path='/register' render={(props) => <Register {...props} />}/>
-                <Route path='/login' render={() => <Login />}/>
-                <PrivateRoute path='/logout' component={Logout}/>
-                <AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
-                <AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
-                <AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
-                <AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
-                <AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
-                <AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>
-                <AuthenticatedRoute path='/course/:courseId/user/:userId' component={CourseUserOverview}/>
-                <AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
-                <AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings} />
-                <AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
-                <AuthenticatedRoute path='/search' component={SearchOverview}/>
-                <AuthenticatedRoute path='/settings' component={Settings}/>
-                <AuthenticatedRoute path='/activity' component={Activity}/>
-                <AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
-                <AuthenticatedRoute path='/' component={Homepage}/>
-            </Switch>
-        </APIProvider>
+        <MessagingProvider>
+            <APIProvider>
+                <Switch>
+                    <Route path='/register' render={(props) => <Register {...props} />}/>
+                    <Route path='/login' render={() => <Login />}/>
+                    <PrivateRoute path='/logout' component={Logout}/>
+                    <AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
+                    <AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
+                    <AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
+                    <AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
+                    <AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
+                    <AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>
+                    <AuthenticatedRoute path='/course/:courseId/user/:userId' component={CourseUserOverview}/>
+                    <AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
+                    <AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings} />
+                    <AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
+                    <AuthenticatedRoute path='/search' component={SearchOverview}/>
+                    <AuthenticatedRoute path='/settings' component={Settings}/>
+                    <AuthenticatedRoute path='/activity' component={Activity}/>
+                    <AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
+                    <AuthenticatedRoute path='/' component={Homepage}/>
+                </Switch>
+            </APIProvider>
+        </MessagingProvider>
     );
 }
