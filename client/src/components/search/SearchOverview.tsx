@@ -4,9 +4,13 @@ import {Jumbotron} from "react-bootstrap";
 import {SearchQuery} from "./SearchQuery";
 import {SearchResult} from "../../../../models/api/SearchResult";
 import {SearchResults} from "./SearchResults";
+import {Submission} from "../../../../models/api/Submission";
+import {User} from "../../../../models/api/User";
 
 export interface SearchProperties {
-	course?: string
+	course?: string,
+	user?: string,
+	submission?: string
 }
 interface SearchOverviewProperties {
 	location: {

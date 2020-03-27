@@ -1,10 +1,11 @@
 import React from 'react';
 import {TabButton} from './TabButton';
 import {Nav} from 'react-bootstrap';
+import {IconType} from "react-icons";
 
 interface TabProperties {
 	id?: string,
-	icon: JSX.Element,
+	icon: IconType,
 	text: string,
 	location: string
 }

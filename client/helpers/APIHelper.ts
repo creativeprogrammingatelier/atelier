@@ -10,22 +10,22 @@ import {File as APIFile} from "../../models/api/File";
 import {LoginProvider} from "../../models/api/LoginProvider";
 import {Permission} from "../../models/api/Permission";
 import {Permissions} from "../../models/api/Permission";
-import {SearchResult} from '../../models/api/SearchResult';
-import {Mention} from '../../models/api/Mention';
+import {SearchResult} from "../../models/api/SearchResult";
+import {Mention} from "../../models/api/Mention";
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {threadState} from "../../models/enums/threadStateEnum";
 import {CourseUser} from "../../models/api/CourseUser";
 import {courseState} from "../../models/enums/courseStateEnum";
-import {Plugin} from '../../models/api/Plugin';
+import {Plugin} from "../../models/api/Plugin";
 import {globalRole} from "../../models/enums/globalRoleEnum";
 import {inviteRole} from "../../models/enums/inviteRoleEnum";
 import {courseRole} from "../../models/enums/courseRoleEnum";
 
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
-    method,
-    body: JSON.stringify(body),
-    headers: {"Content-Type": "application/json"}
+	method,
+	body: JSON.stringify(body),
+	headers: {"Content-Type": "application/json"}
 });
 const postJson = <T>(body: T) => jsonBody("POST", body);
 const putJson = <T>(body: T) => jsonBody("PUT", body);
@@ -43,10 +43,10 @@ export function getUserCourses(userId: string, doCache?: boolean) {
 export function createCourse(course: {name: string, state: string}, doCache?: boolean) {
 	return Fetch.fetchJson<Course>("/api/course", postJson(course), doCache);
 }
-export function updateCourse(courseID : string, update : {name? : string, state? : courseState}, doCache? : boolean) {
+export function updateCourse(courseID: string, update: {name?: string, state?: courseState}, doCache?: boolean) {
 	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update), doCache);
 }
-export function courseEnrollUser(courseID : string, userID : string, doCache? : boolean) {
+export function courseEnrollUser(courseID: string, userID: string, doCache?: boolean) {
 	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, putJson({}), doCache);
 }
 
@@ -57,13 +57,13 @@ export function getCurrentUser(doCache?: boolean) {
 export function getUser(userId: string, doCache?: boolean) {
 	return Fetch.fetchJson<User>(`/api/user/${userId}`, undefined, doCache);
 }
-export function getAllUsers(doCache? : boolean) {
+export function getAllUsers(doCache?: boolean) {
 	return Fetch.fetchJson<User[]>(`/api/user/all`, undefined, doCache);
 }
-export function setUser(body : {name? : string, email? : string}, doCache? : boolean) {
+export function setUser(body: {name?: string, email?: string}, doCache?: boolean) {
 	return Fetch.fetchJson<User>(`/api/user/`, putJson(body), doCache);
 }
-export function getUsersByCourse(courseID : string, doCache? : boolean) {
+export function getUsersByCourse(courseID: string, doCache?: boolean) {
 	return Fetch.fetchJson<CourseUser[]>(`/api/user/course/${courseID}`, undefined, doCache);
 }
 
@@ -106,7 +106,7 @@ export function getFileContents(fileId: string, doCache?: boolean) {
 	return Fetch.fetchString(getFileUrl(fileId), undefined, doCache);
 }
 export function getFileUrl(fileID: string) {
-    return `/api/file/${fileID}/body`;
+	return `/api/file/${fileID}/body`;
 }
 
 // Comments
@@ -126,65 +126,66 @@ export function getProjectComments(submissionID: string, doCache?: boolean) {
 }
 export function getRecentComments(submissionID: string, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread[]>(
-        `/api/commentThread/submission/${submissionID}/recent`, 
-        undefined, 
-        doCache
-    );
+		`/api/commentThread/submission/${submissionID}/recent`,
+		undefined,
+		doCache
+	);
 }
-export function setCommentThreadVisibility(commentThreadID : string, visible : boolean, doCache? : boolean) {
+export function setCommentThreadVisibility(commentThreadID: string, visible: boolean, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread>(
-        `/api/commentThread/${commentThreadID}`, 
-        putJson({ visibility : visible ? "public" : "private" }),
-        doCache
-    );
+		`/api/commentThread/${commentThreadID}`,
+		putJson({visibility: visible ? "public" : "private"}),
+		doCache
+	);
 }
 
 export function createFileCommentThread(fileID: string, thread: CreateCommentThread, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread), doCache);
 }
-export function createSubmissionCommentThread(
-        submissionID: string, 
-        thread: {commentBody: string, visiblityState?: string}, 
-        doCache?: boolean) {
+export function createSubmissionCommentThread(submissionID: string, thread: CreateCommentThread, doCache?: boolean) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread), doCache);
 }
-export function createComment(commentThreadID: string, comment: {commentBody: string}, doCache?: boolean) {
-	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson(comment), doCache);
+export function createComment(commentThreadID: string, comment: string, doCache?: boolean) {
+	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson({comment}), doCache);
 }
 
 // Mentions
 export function getMentions(doCache?: boolean) {
-    return Fetch.fetchJson<Mention[]>('/api/mentions', undefined, doCache);
+	return Fetch.fetchJson<Mention[]>("/api/mentions", undefined, doCache);
 }
 export function getCourseMentions(courseID: string, doCache?: boolean) {
-    return Fetch.fetchJson<Mention[]>(`/api/mentions/course/${courseID}`, undefined, doCache);
+	return Fetch.fetchJson<Mention[]>(`/api/mentions/course/${courseID}`, undefined, doCache);
 }
 
 // Search
-export function search(
-		{query, limit = 20, offset = 0, courseID} 
-		: {query : string, limit? : number, offset? : number, courseID? : string}
-		, doCache?: boolean) {
-	let path = `/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`
-	path +=courseID ? `&courseID=${courseID}` : "";
+interface SearchParameters {
+	query: string,
+	limit?: number,
+	offset?: number,
+	courseID?: string,
+	userID?: string,
+	submissionID?: string
+}
+export function search({query, limit = 20, offset = 0, courseID, userID, submissionID}: SearchParameters, doCache?: boolean) {
+	const path = `/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}${courseID ? `&courseID=${courseID}` : ""}${userID ? `&userID=${userID}` : ""}${submissionID ? `&submissionID=${submissionID}` : ""}`;
 	return Fetch.fetchJson<SearchResult>(path, undefined, doCache);
 }
 // If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
-export function searchUsers(query : string, courseID? : string, limit = 20, offset = 0, doCache? : boolean) {
+export function searchUsers(query: string, courseID?: string, limit = 20, offset = 0, doCache?: boolean) {
 	const courseSearch = courseID === undefined ? "" : `&courseID=${courseID}`;
 	return Fetch.fetchJson<User[]>(
 		`/api/search/users?q=${encodeURIComponent(query)}${courseSearch}&limit=${limit}&offset=${offset}`,
 		undefined,
 		doCache
-	)
+	);
 }
 //@deprecated searchUsers is more general.
 export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0, doCache?: boolean) {
 	return Fetch.fetchJson<User[]>(
-        `/api/search/users?q=${encodeURIComponent(query)}&courseID=${courseID}&limit=${limit}&offset=${offset}`, 
-        undefined, 
-        doCache
-    );
+		`/api/search/users?q=${encodeURIComponent(query)}&courseID=${courseID}&limit=${limit}&offset=${offset}`,
+		undefined,
+		doCache
+	);
 }
 
 // Auth
@@ -200,52 +201,52 @@ export function permission(doCache?: boolean) {
 	return Fetch.fetchJson<Permission>(`/api/permission`, undefined, doCache);
 }
 
-export function setPermissionCourse(courseID : string, userID : string, permissions : { permissions : Permissions}, doCache?: boolean) {
+export function setPermissionCourse(courseID: string, userID: string, permissions: {permissions: Permissions}, doCache?: boolean) {
 	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson(permissions), doCache);
 }
-export function setPermissionGlobal(userID : string, permissions : { permissions : Permissions}, doCache? : boolean) {
+export function setPermissionGlobal(userID: string, permissions: {permissions: Permissions}, doCache?: boolean) {
 	return Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, {
-		method : "PUT",
-		body : JSON.stringify(permissions),
-		headers : {"Content-Type" : "application/json"}
+		method: "PUT",
+		body: JSON.stringify(permissions),
+		headers: {"Content-Type": "application/json"}
 	}, doCache);
 }
 
 // Invites
-export function getInvites(courseID : string, doCache? : boolean) {
+export function getInvites(courseID: string, doCache?: boolean) {
 	return Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`, undefined, doCache);
 }
 
-export function getInvite(courseID : string, role : inviteRole, doCache? : boolean) {
+export function getInvite(courseID: string, role: inviteRole, doCache?: boolean) {
 	return Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`, undefined, doCache);
 }
 
-export function deleteInvite(courseID : string, role : inviteRole, doCache?: boolean) {
-	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, { method: "DELETE" }, doCache);
+export function deleteInvite(courseID: string, role: inviteRole, doCache?: boolean) {
+	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {method: "DELETE"}, doCache);
 }
 
 // Role
-export function updateGlobalRole(userID : string, role : globalRole, doCache? : boolean) {
+export function updateGlobalRole(userID: string, role: globalRole, doCache?: boolean) {
 	return Fetch.fetchJson<User>(`/api/role/user/${userID}/${role}`, putJson({}), doCache);
 }
 
-export function updateCourseRole(userID : string, courseID : string, role : courseRole, doCache? : boolean) {
+export function updateCourseRole(userID: string, courseID: string, role: courseRole, doCache?: boolean) {
 	return Fetch.fetchJson<CourseUser>(`/api/role/course/${courseID}/user/${userID}/${role}`, putJson({}), doCache);
 }
 
 // Plugins
 export function getPlugins(doCache?: boolean) {
-    return Fetch.fetchJson<Plugin[]>('/api/plugin', undefined, doCache);
+	return Fetch.fetchJson<Plugin[]>("/api/plugin", undefined, doCache);
 }
 
 export function createPlugin(plugin: Partial<Plugin>, doCache?: boolean) {
-    return Fetch.fetchJson<Plugin>('/api/plugin', postJson(plugin), doCache);
+	return Fetch.fetchJson<Plugin>("/api/plugin", postJson(plugin), doCache);
 }
 
-export function updatePlugin(plugin: Partial<Plugin> & { pluginID: string }, doCache?: boolean) {
-    return Fetch.fetchJson<Plugin>(`/api/plugin/${plugin.pluginID}`, putJson(plugin), doCache);
+export function updatePlugin(plugin: Partial<Plugin> & {pluginID: string}, doCache?: boolean) {
+	return Fetch.fetchJson<Plugin>(`/api/plugin/${plugin.pluginID}`, putJson(plugin), doCache);
 }
 
 export function deletePlugin(pluginID: string, doCache?: boolean) {
-    return Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, { method: "DELETE" }, doCache);
+	return Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, {method: "DELETE"}, doCache);
 }

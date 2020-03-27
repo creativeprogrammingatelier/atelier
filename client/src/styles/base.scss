@@ -1,5 +1,5 @@
 @import "./variabes.scss";
-@import '~bootstrap/scss/bootstrap.scss';
+@import "~bootstrap/scss/bootstrap.scss";
 
 * {
 	overflow-wrap: break-word;
@@ -132,13 +132,16 @@ textarea:focus, textarea:active {
 	a {
 		color: #FFFFFF !important;
 	}
+
 	a:hover {
 		text-decoration: none;
 	}
+
 	h4 {
 		margin: 0;
 		font-weight: 300;
 	}
+
 	svg {
 		margin: 0 1rem;
 		vertical-align: bottom;
@@ -181,6 +184,7 @@ textarea:focus, textarea:active {
 				font-weight: 300;
 			}
 		}
+
 		.panelBottom {
 			width: 100%;
 			padding: 0.5rem 1rem;
@@ -212,9 +216,11 @@ textarea:focus, textarea:active {
 	a {
 		color: unset;
 	}
+
 	a:hover {
 		text-decoration: none;
 	}
+
 	.toast {
 		max-width: unset;
 		box-shadow: none;
@@ -258,15 +264,28 @@ textarea:focus, textarea:active {
 .badge {
 	vertical-align: inherit;
 	font-size: 85%;
-	font-weight: 500;
+	font-weight: 400;
+
+	svg {
+		vertical-align: bottom;
+	}
+}
+.badge:not(.badge-pill) {
 	border-radius: 2px;
 }
 .badge:not(:last-child) {
+	margin-bottom: 0.25rem;
 	margin-right: 0.25rem;
+}
+.badge-large {
+	font-size: 1rem;
+}
+.badge-primary {
+	background-color: $colorPrimary;
 }
 
 .qrCode {
-	max-height:50vh;
+	max-height: 50vh;
 }
 
 .form-group {
@@ -304,7 +323,7 @@ textarea:focus, textarea:active {
 }
 .custom-control-input:focus ~ .custom-control-label::before {
 	box-shadow: none;
- }
+}
 .custom-control-input:checked ~ .custom-control-label::before {
 	background-color: $colorPrimary;
 }
@@ -361,23 +380,15 @@ textarea:focus, textarea:active {
 		width: 100%;
 		display: block;
 	}
+
 	a:not(:last-child) {
 		margin-bottom: 1rem;
 	}
 }
 
-.comment {
-	box-shadow: $shadowSmallDown;
+.mentions {
+	box-shadow: $shadowSmallDown inset;
 }
-.commentThread {
-	h3 {
-		box-shadow: $shadowSmallDown;
-	}
-}
-.commentThread:not(:last-child) {
-	margin-bottom: 1rem;
-}
-
 .mention {
 	padding: 0.1rem 0.5rem;
 	color: $colorWhite;
@@ -407,13 +418,16 @@ textarea:focus, textarea:active {
 	* {
 		font-weight: 300;
 	}
+
 	p:last-child {
 		margin: 0;
 	}
+
 	a {
 		color: $primaryColor;
 
 	}
+
 	a:hover {
 		text-decoration: none;
 
@@ -421,10 +435,12 @@ textarea:focus, textarea:active {
 			background-color: $colorOffWhite;
 		}
 	}
+
 	.btn {
 		color: $primaryColor;
 		background-color: $colorWhite;
 	}
+
 	.btn:hover {
 		background-color: $colorOffWhite;
 	}
@@ -473,9 +489,11 @@ textarea:focus, textarea:active {
 	.dataItem, .dataToggle {
 		margin: 0;
 	}
+
 	.directoryNode .toast-body {
 		padding: 0.25rem 0.5rem;
 	}
+
 	.directoryNode:last-of-type > .dataItem .toast-body, .directoryNode:last-of-type > .dataToggle .toast-body {
 		padding-bottom: 0.5rem;
 	}
@@ -485,6 +503,9 @@ textarea:focus, textarea:active {
 }
 .directoryTopLevel:last-child .toast-body {
 	padding-bottom: 0.5rem;
+}
+.directoryNodeDisabled {
+	color: $colorDisabled;
 }
 
 .round {
@@ -497,9 +518,11 @@ textarea:focus, textarea:active {
 	.btn:not(:disabled):not(.disabled) {
 		background-color: $colorRestricted;
 	}
+
 	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
 		background-color: $colorRestrictedAlternate;
 	}
+
 	.buttonBar {
 		background-color: $colorRestricted;
 	}
@@ -513,22 +536,35 @@ textarea:focus, textarea:active {
 	z-index: 1040;
 
 	.btn {
-		width: 100%;
-		height: 100%;
+		min-width: inherit;
+		min-height: inherit;
 	}
 }
 .floater > * {
 	box-shadow: $shadowMedium;
 }
 
+.comment, .snippet {
+	box-shadow: $shadowInsetSmallDown;
+}
+.commentThread {
+	h3 {
+		box-shadow: $shadowSmallDown;
+	}
+}
+.commentThread:not(:last-child) {
+	margin-bottom: 1rem;
+}
 
 .commentCreator {
 	background-color: $colorWhite;
-
+}
+.commentCreatorLarge {
 	.btn {
 		width: 3rem;
 		height: 3rem;
 	}
+
 	.form-control {
 		height: 3rem;
 	}
@@ -540,8 +576,26 @@ textarea:focus, textarea:active {
 		border-top-left-radius: 1.5rem;
 		border-bottom-left-radius: 1.5rem;
 	}
+
 	.btn:last-of-type {
+		// A round comment creator might have another child, the mention suggestions.
+		// If this is the case, we want the lower right corner not to be rounded.
+		// Bootstrap will do that automatically if the input append is not the last child.
+		// This will however also overwrite the top right corner, which we don't want.
 		border-top-right-radius: 1.5rem;
 		border-bottom-right-radius: 1.5rem;
+	}
+
+	.input-group-append:not(:last-child) > .btn:last-of-type {
+		border-top-right-radius: 1.5rem;
+	}
+
+	.input-group-append:not(:last-child) > .btn {
+		border-bottom-left-radius: 0;
+	}
+
+	.mentions {
+		padding-left: 1rem;
+		padding-right: 1rem;
 	}
 }

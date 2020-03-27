@@ -1,28 +1,30 @@
-import React, { Fragment } from "react";
+import React, {Fragment} from "react";
 import {DirectoryNode} from "./DirectoryNode";
 
 class File {
-    name: string;
+	name: string;
+	type?: string;
 	transport?: string;
 
-	constructor(name: string, transport?: string) {
+	constructor(name: string, type?: string, transport?: string) {
 		this.name = name;
+		this.type = type;
 		this.transport = transport;
 	}
 }
 export class Node extends File {
 	children: Node[];
 
-	constructor(name: string, children: Node[], transport?: string) {
-		super(name, transport);
+	constructor(name: string, children: Node[], type?: string, transport?: string) {
+		super(name, type, transport);
 		this.children = children;
 	}
 }
 export class TopLevelNode extends Node {
 	paths: File[];
 
-	constructor(name: string, children: Node[], paths: File[], transport?: string) {
-		super(name, children, transport);
+	constructor(name: string, children: Node[], paths: File[], type?: string, transport?: string) {
+		super(name, children, type, transport);
 		this.paths = paths;
 	}
 }
@@ -34,15 +36,16 @@ interface DirectoryViewerProperties {
 /** Shows a list of files in a nested directory structure.
  */
 export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
-	console.log("Rendering a directory view");
-	console.log(filePaths);
+	// console.log("Rendering a directory view");
+	// console.log(filePaths);
 
 	if (filePaths.length === 0) {
 		return null;
 	}
 
-	const projectFolder = filePaths[0].name.split("/")[0];
-	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + 1), path.transport));
+	const slashPrefixed = filePaths[0].name[0] === "/";
+	const projectFolder = filePaths[0].name.split("/")[slashPrefixed ? 1 : 0];
+	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.type, path.transport));
 
 	// console.log(projectFolder);
 	// console.log(projectPaths);
@@ -53,11 +56,14 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 		const file = path.name.substr(folder.length + 1);
 
 		if (file.length === 0) {
-			topLevelNodes[folder] = new TopLevelNode(folder, [], [], path.transport);
+			// This is a file in this folder
+			topLevelNodes[folder] = new TopLevelNode(folder, [], [], path.type, path.transport);
 		} else if (topLevelNodes.hasOwnProperty(folder)) {
-			topLevelNodes[folder].paths.push(new File(file, path.transport));
+			// This is a file in a sub-folder that has been added
+			topLevelNodes[folder].paths.push(new File(file, path.type, path.transport));
 		} else {
-			topLevelNodes[folder] = new TopLevelNode(folder, [], [new File(path.name.substr(folder.length + 1), path.transport)], path.transport);
+			// This is a file in a new sub-folder
+			topLevelNodes[folder] = new TopLevelNode(folder, [], [new File(path.name.substr(folder.length + 1), path.type, path.transport)], path.type, path.transport);
 		}
 	}
 	for (const folder in topLevelNodes) {
@@ -71,7 +77,7 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 				for (const folder of path.name.split("/")) {
 					let next = current.children.find(child => child.name === folder);
 					if (next === undefined) {
-						next = new Node(folder, []);
+						next = new Node(folder, [], current.type);
 						current.children.push(next);
 					}
 					current = next;
