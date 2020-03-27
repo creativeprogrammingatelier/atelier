@@ -16,7 +16,7 @@ export function UserRoles<T>({roles, onSelected}: UserRolesProperties<T>) {
 	return <Form.Label className="w-100">
 		<Label>Select a role</Label>
 		<Form.Control as="select" onChange={event => handleSelected((event.target as HTMLInputElement).value as unknown as T)}>
-			<option disabled selected>Role within the course</option>
+			<option disabled selected>Role of the user</option>
 			{Object.keys(roles).map((role: string) => <option value={role}>{RoleHelper.displayName(role)}</option>)}
 		</Form.Control>
 	</Form.Label>;
