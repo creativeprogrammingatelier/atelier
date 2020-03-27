@@ -9,6 +9,8 @@ import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../models/api/Course";
 import {Mention} from "../../../../models/api/Mention";
 import {Permission} from "../../../../models/api/Permission";
+import {FiPlus, FiX} from "react-icons/all";
+
 interface CourseOverviewProps {
 	match: {
 		params: {
@@ -18,6 +20,7 @@ interface CourseOverviewProps {
 }
 
 export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProps) {
+	const [uploading, setUploading] = useState(false);
 	const [reload, updateReload] = useState(0);
 	const [permissions, setPermissions] = useState(0);
 
@@ -26,9 +29,9 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 
 	useEffect(() => {
 		coursePermission(courseId, true)
-			.then((permission: Permission) => {
-				setPermissions(permission.permissions);
-			});
+		.then((permission: Permission) => {
+			setPermissions(permission.permissions);
+		});
 	}, []);
 
 	return (
@@ -46,6 +49,15 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 				component={submissions =>
 					<DataBlockList
 						header="Submissions"
+						optional={{
+							icon: uploading ? FiX : FiPlus,
+							click: () => setUploading(!uploading),
+							component: uploading &&
+								<Uploader
+									courseId={courseId}
+									onUploadComplete={() => updateReload(rel => rel + 1)}
+								/>
+						}}
 						list={submissions.map(submission => {
 							console.log(submission);
 							return {
@@ -58,12 +70,6 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					/>
 				}
 			/>
-			<div className="m-3">
-				<Uploader
-					courseId={courseId}
-					onUploadComplete={() => updateReload(rel => rel + 1)}
-				/>
-			</div>
 			<Loading<Mention[]>
 				loader={courseID => getCourseMentions(courseID)}
 				params={[courseId]}
@@ -71,10 +77,10 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					<DataBlockList
 						header="Mentions"
 						list={mentions.map(mention => ({
-                            transport: 
-                                mention.comment.references.fileID !== undefined
-                                ? `/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
-                                : `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`, 
+							transport:
+								mention.comment.references.fileID !== undefined
+									? `/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
+									: `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`,
 							title: `Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle}`,
 							text: mention.comment.text,
 							time: new Date(mention.comment.created),

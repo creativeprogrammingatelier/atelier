@@ -6,19 +6,19 @@ import {LoadingIcon} from "../general/loading/LoadingIcon";
 import {FiChevronDown, FiChevronUp} from "react-icons/all";
 import {IconType} from "react-icons";
 
-interface DataListOptional {
+export interface DataListOptional {
 	icon: IconType,
 	click: () => void,
 	component: Children
 }
-interface DataItemListProperties extends ParentalProperties {
+export interface DataListProperties extends ParentalProperties {
 	header: string,
 	optional?: DataListOptional,
 	collapse?: boolean,
 	more?: (limit: number, offset: number) => Children
 	size?: number
 }
-export function DataList({header, optional,  collapse, more, size=5, children}: DataItemListProperties) {
+export function DataList({header, optional,  collapse, more, size=5, children}: DataListProperties) {
 	const [data, setData] = useState(children);
 	const [collapsed, setCollapsed] = useState(false);
 	const [offset, setOffset] = useState(size);
