@@ -2,19 +2,29 @@ import React, { useContext, createContext, useState, Fragment } from "react";
 import { randomBytes } from "crypto";
 import { Alert } from "react-bootstrap";
 
+/** A message to show the user at the top of the screen */
 export interface Message {
     readonly type: "info" | "success" | "warning" | "danger",
     readonly message: string
 }
 
+/** The messaging context, used to handle reading and creating messages */
 export interface Messaging {
     readonly messages: Message[],
     readonly addMessage: (message: Message, timeout?: number) => string,
     readonly removeMessage: (ID: string) => void
 }
 
+/** 
+ * A React Context for messaging. A context is used to provide messaging to all 
+ * components, without the need to pass down messaging functions as properties. 
+ */
 const messagingContext = createContext<Messaging>({ messages: [], addMessage: mes => "", removeMessage: id => {} });
 
+/** 
+ * Displays messages at the top of the screen and allows child elements access 
+ * to the messaging context using the useMessaging hoook.
+ */
 export function MessagingProvider({children}: { children: React.ReactNode }) {
     const [messages, updateMessages] = useState([] as Array<Message & { ID: string }>);
 
@@ -50,6 +60,7 @@ export function MessagingProvider({children}: { children: React.ReactNode }) {
     );
 }
 
+/** Get the Messaging context, to read or create messages */
 export function useMessaging() {
     return useContext(messagingContext);
 }
