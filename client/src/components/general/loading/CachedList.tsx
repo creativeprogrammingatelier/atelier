@@ -9,15 +9,15 @@ interface CachedListProperties<T> {
     children: (item: CacheItem<T>) => React.ReactNode
 }
 
-function jitter(time: number, factor: number) {
-    return time + (Math.random() * factor * 150) - (factor * 50);
+function jitter(time: number) {
+    return time + (Math.random() * time * 0.2) - (time * 0.1);
 }
 
 export function CachedList<T>({ collection, children, refresh, timeout = 120 }: CachedListProperties<T>) {
     useEffect(() => {
         if (refresh) {
             const expiration = Math.max(0, collection.lastRefresh + timeout * 1000 - Date.now());
-            const handle = setTimeout(() => refresh(), jitter(expiration, timeout));
+            const handle = setTimeout(() => refresh(), jitter(expiration));
             return () => clearTimeout(handle);
         }
     }, [collection.lastRefresh]);
