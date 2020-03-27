@@ -5,7 +5,7 @@ import { createCourse } from '../../../helpers/APIHelper';
 import {Button, FormControl, InputGroup, Form} from "react-bootstrap";
 import {FiClipboard} from "react-icons/all";
 import {courseState} from "../../../../models/enums/courseStateEnum";
-import { useCourses } from "../../helpers/api/API";
+import { useCourses } from "../../helpers/api/APIHooks";
 
 interface AddCourseProps {
     handleResponse? : (course : Course) => void

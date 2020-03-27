@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { PermissionEnum, containsPermission } from '../../../../models/enums/permissionEnum';
-import { usePermission } from '../../helpers/api/API';
 import { CacheState } from '../../helpers/api/Cache';
+import { usePermission } from '../../helpers/api/APIHooks';
 
 interface PermissionProperties {
     required: PermissionEnum | PermissionEnum[],

@@ -20,13 +20,13 @@ import {CourseUserOverview} from "./user/CourseUserOverview";
 import {Settings} from "./settings/Settings";
 import { Activity } from './Activity';
 import {CourseSettings} from "./course/CourseSettings";
-import { APIProvider } from '../helpers/api/API';
 import { MessagingProvider } from './feedback/MessagingProvider';
+import { CacheProvider } from './general/loading/CacheProvider';
 
 export function App() {
     return (
         <MessagingProvider>
-            <APIProvider>
+            <CacheProvider>
                 <Switch>
                     <Route path='/register' render={(props) => <Register {...props} />}/>
                     <Route path='/login' render={() => <Login />}/>
@@ -47,7 +47,7 @@ export function App() {
                     <AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
                     <AuthenticatedRoute path='/' component={Homepage}/>
                 </Switch>
-            </APIProvider>
+            </CacheProvider>
         </MessagingProvider>
     );
 }

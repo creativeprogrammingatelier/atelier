@@ -4,10 +4,10 @@ import {Frame} from "./frame/Frame";
 import {AddCourse} from "./course/AddCourse";
 import {Button, Jumbotron} from "react-bootstrap";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
-import {useCourses} from "../helpers/api/API";
 import {Permissions} from "./general/Permissions";
 import { LoadingIcon } from "./general/loading/LoadingIcon";
 import { CacheState } from "../helpers/api/Cache";
+import { useCourses } from "../helpers/api/APIHooks";
 
 export function Homepage() {
     const {courses} = useCourses();
