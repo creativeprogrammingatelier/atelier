@@ -3,7 +3,7 @@ import {DataBlock} from './DataBlock';
 import { DataList } from './DataList';
 import {TagProperties} from "../general/Tag";
 
-interface DataListEntryProperties {
+export interface DataListEntryProperties {
 	transport?: string,
 	title: string,
 	text: string,
