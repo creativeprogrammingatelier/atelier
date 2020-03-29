@@ -18,15 +18,13 @@ export function Homepage() {
 				<p>Welcome to Atelyay!</p>
 				<Button>Have a button!</Button>
 			</Jumbotron>
-			<div className="m-3">
-                <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
-                    course => 
-                        <PanelButton 
-                            display={course.item.name} 
-                            location={`/course/${course.item.ID}`}
-                            state={course.state} />
-                }</CachedList>
-			</div>
+            <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
+                course => 
+                    <PanelButton 
+                        display={course.item.name} 
+                        location={`/course/${course.item.ID}`}
+                        state={course.state} />
+            }</CachedList>
 			<Permissions required={PermissionEnum.addCourses}>
                 <div className="m-3">
                     <AddCourse />
