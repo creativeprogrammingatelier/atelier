@@ -8,6 +8,7 @@ import { Permission } from '../../../../models/api/Permission';
 import { globalRole } from '../../../../models/enums/globalRoleEnum';
 import { Messaging, useMessaging } from '../../components/feedback/MessagingProvider';
 import { useCache } from '../../components/general/loading/CacheProvider';
+import { Submission } from '../../../../models/api/Submission';
 
 function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messaging: Messaging) {
     cache.setCollectionState(CacheState.Loading);
@@ -53,6 +54,24 @@ export function useCourses() {
     };
 }
 
+export function useCourse(courseID: string) {
+    const cache = useCache<Course>("courses");
+    const messaging = useMessaging();
+    
+    let course = cache.collection.items.find(({ item }) => item.ID === courseID);
+
+    if (course === undefined) {
+        API.getCourse(courseID)
+            .then(result => cache.add(result, CacheState.Loaded))
+            .catch((err: Error) => {
+                messaging.addMessage({ type: "danger", message: err.message })
+            });
+        course = { item: { ID: courseID, name: "Loading", state: courseState.hidden, creator: {} as User, currentUserPermission: {} as Permission }, state: CacheState.Loading }
+    }
+
+    return { course };
+}
+
 export function usePermission() {
     const cache = useCache<Permission>("currentUserPermission");
     const messages = useMessaging();
@@ -64,5 +83,24 @@ export function usePermission() {
     return {
         permission: cache.collection.items[0] || { item: { permissions: 0, globalRole: globalRole.unregistered }, state: cache.collection.state },
         refreshPermission
+    }
+}
+
+export function useSubmissions(courseID: string) {
+    const cache = useCache<Submission>(`submission/course/${courseID}`);
+    const messages = useMessaging();
+
+    const refreshSubmissions = () => refresh(API.getCourseSubmissions(courseID), cache, messages);
+    const createSubmission = (projectName: string, files: File[]) => 
+        create(
+            API.createSubmission(courseID, projectName, files),
+            { ID: "", name: projectName, date: new Date(Date.now()).toISOString(), user: {} as User, state: "new", files: [], references: { courseID } },
+            cache,
+            messages);
+
+    return {
+        submissions: cache.collection,
+        createSubmission,
+        refreshSubmissions
     }
 }
