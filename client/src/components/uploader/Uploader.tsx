@@ -14,7 +14,7 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {RadioInput} from "../input/RadioInput";
 import {FiUpload} from "react-icons/all";
 import {LoadingIcon} from "../general/loading/LoadingIcon";
-import { useSubmissions } from "../../helpers/api/APIHooks";
+import { useCourseSubmissions } from "../../helpers/api/APIHooks";
 
 interface UploaderProperties {
 	/** The courseId to upload the submission to */
@@ -27,7 +27,7 @@ interface UploaderProperties {
  *  to upload and choose the main file to use for the project name.
  */
 export function Uploader({courseId}: UploaderProperties) {
-    const {createSubmission} = useSubmissions(courseId);
+    const {createSubmission} = useCourseSubmissions(courseId);
 
 	const [folderName, updateFolderName] = useState("");
 	const [selectedFiles, updateSelectedFiles] = useState([] as File[]);

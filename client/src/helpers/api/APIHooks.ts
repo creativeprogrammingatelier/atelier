@@ -1,4 +1,4 @@
-import { CacheState, CacheInterface } from './Cache';
+import { CacheState, CacheInterface, CacheCollection } from './Cache';
 import { Course } from '../../../../models/api/Course';
 import * as API from '../../../helpers/APIHelper';
 import { courseState } from '../../../../models/enums/courseStateEnum';
@@ -10,10 +10,10 @@ import { Messaging, useMessaging } from '../../components/feedback/MessagingProv
 import { useCache } from '../../components/general/loading/CacheProvider';
 import { Submission } from '../../../../models/api/Submission';
 
-function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messaging: Messaging) {
+function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messaging: Messaging, selector?: (item: T) => boolean) {
     cache.setCollectionState(CacheState.Loading);
     promise
-        .then(result => cache.replaceAll(result, CacheState.Loaded))
+        .then(result => cache.replaceAll(result, CacheState.Loaded, selector))
         .catch((err: Error) => {
             messaging.addMessage({ type: "danger", message: err.message })
         });
@@ -32,6 +32,13 @@ function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: C
             messaging.addMessage({ type: "danger", message: err.message }),
             cache.remove(item => item.ID === tempID);
         });
+}
+
+function filter<T>(collection: CacheCollection<T>, selector: (item: T) => boolean) {
+    return {
+        ...collection,
+        items: collection.items.filter(item => selector(item.item))
+    };
 }
 
 export function useCourses() {
@@ -86,21 +93,40 @@ export function usePermission() {
     }
 }
 
-export function useSubmissions(courseID: string) {
-    const cache = useCache<Submission>(`submission/course/${courseID}`);
+export function useCourseSubmissions(courseID: string) {
+    const cache = useCache<Submission>(`submissions`);
     const messages = useMessaging();
 
-    const refreshSubmissions = () => refresh(API.getCourseSubmissions(courseID), cache, messages);
+    const refreshSubmissions = () => refresh(API.getCourseSubmissions(courseID), cache, messages, submission => submission.references.courseID === courseID);
     const createSubmission = (projectName: string, files: File[]) => 
         create(
             API.createSubmission(courseID, projectName, files),
             { ID: "", name: projectName, date: new Date(Date.now()).toISOString(), user: {} as User, state: "new", files: [], references: { courseID } },
             cache,
-            messages);
+            messages
+        );
 
     return {
-        submissions: cache.collection,
+        submissions: filter(cache.collection, submission => submission.references.courseID === courseID),
         createSubmission,
         refreshSubmissions
     }
+}
+
+export function useSubmission(submissionID: string) {
+    const cache = useCache<Submission>(`submissions`);
+    const messaging = useMessaging();
+
+    let submission = cache.collection.items.find(({ item }) => item.ID === submissionID);
+
+    if (submission === undefined) {
+        API.getSubmission(submissionID)
+            .then(result => cache.add(result, CacheState.Loaded))
+            .catch((err: Error) => {
+                messaging.addMessage({ type: "danger", message: err.message })
+            });
+        submission = { item: { ID: submissionID, name: "Loading", date: new Date(Date.now()).toISOString(), user: {} as User, state: "new", files: [], references: { courseID: "" } }, state: CacheState.Loading }
+    }
+
+    return { submission };
 }

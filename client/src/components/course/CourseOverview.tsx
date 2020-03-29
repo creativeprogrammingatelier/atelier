@@ -6,7 +6,7 @@ import {getCourseMentions} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
 import {Jumbotron} from "react-bootstrap";
 import {Mention} from "../../../../models/api/Mention";
-import { useSubmissions, useCourse } from "../../helpers/api/APIHooks";
+import { useCourseSubmissions, useCourse } from "../../helpers/api/APIHooks";
 import { CachedItem } from "../general/loading/CachedItem";
 import { CachedDataBlockList } from "../general/loading/CachedDataBlockList";
 
@@ -20,7 +20,7 @@ interface CourseOverviewProps {
 
 export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProps) {
     const {course} = useCourse(courseId);
-    const {submissions, refreshSubmissions} = useSubmissions(courseId);
+    const {submissions, refreshSubmissions} = useCourseSubmissions(courseId);
 
 	return (
 		<Frame title="Course" sidebar search={{course: courseId}}>
