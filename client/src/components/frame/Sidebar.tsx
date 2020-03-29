@@ -2,17 +2,18 @@ import React, { Fragment } from "react";
 import {FiActivity, FiHome, FiLogOut, FiSettings, FiUser, FiX} from "react-icons/fi";
 import {Logo} from "./Logo";
 import {SidebarEntry} from "./SidebarEntry";
-import {Loading} from "../general/loading/Loading";
-import {User} from "../../../../models/api/User";
-import {getCurrentUser} from "../../../helpers/APIHelper";
 import {Heading} from "../general/Heading";
 import {Responsive} from "../general/Responsive";
+import { useCurrentUser } from "../../helpers/api/APIHooks";
+import { CachedItem } from "../general/loading/CachedItem";
 
 interface SidebarProperties {
 	position: string,
 	close: React.MouseEventHandler
 }
 export function Sidebar({position, close}: SidebarProperties) {
+    const {user} = useCurrentUser();
+
 	const content = () =>
 		<div className="sidebarContent p-0">
 			<Logo/>
@@ -20,10 +21,9 @@ export function Sidebar({position, close}: SidebarProperties) {
 			<SidebarEntry location="/" icon={FiHome} close={close}>Home</SidebarEntry>
 			<SidebarEntry location="/activity" icon={FiActivity} close={close}>Activity</SidebarEntry>
 			<SidebarEntry location="/settings" icon={FiSettings} close={close}>Settings</SidebarEntry>
-			<Loading<User>
-				loader={getCurrentUser}
-				component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>}
-			/>
+            <CachedItem item={user}>{
+                user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>
+            }</CachedItem>
 			<SidebarEntry location="/logout" icon={FiLogOut} close={close}>Logout</SidebarEntry>
 		</div>;
 

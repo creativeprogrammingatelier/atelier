@@ -155,3 +155,17 @@ export function useCourseMentions(courseID: string) {
         refreshMentions
     }
 }
+
+export function useCurrentUser() {
+    const cache = useCache<User>("currentUser");
+    const messaging = useMessaging();
+
+    const refreshUser = () => refresh(API.getCurrentUser().then(u => [u]), cache, messaging);
+
+    if (cache.collection.state === CacheState.Uninitialized) refreshUser();
+
+    return {
+        user: cache.collection.items[0] || { item: { ID: "", name: "Loading", email: "", permission: {} as Permission }, state: cache.collection.state },
+        refreshUser
+    }
+}
