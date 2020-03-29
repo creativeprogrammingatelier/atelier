@@ -171,37 +171,38 @@ textarea:focus, textarea:active {
 	position: relative;
 	display: inline-block;
 	background-color: $primaryColor;
-
+    color: $colorWhite;
+    
 	a {
 		color: $colorWhite;
+    }
 
-		.panelText {
-			min-height: 7rem;
-			padding: 0.5rem;
+    .panelText {
+        min-height: 7rem;
+        padding: 0.5rem;
 
-			h1, h2, h3, h4, h5, h6 {
-				margin: 0 0.5rem;
-				font-weight: 300;
-			}
-		}
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0 0.5rem;
+            font-weight: 300;
+        }
+    }
 
-		.panelBottom {
-			width: 100%;
-			padding: 0.5rem 1rem;
-			background-color: $secondaryColor;
-		}
-	}
+    .panelBottom {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        background-color: $secondaryColor;
+    }
 }
 .panel:hover {
 	a {
 		text-decoration: none;
 		//color: $colorOffWhite;
+    }
 
-		.panelBottom {
-			background: $gradientSecondary;
-			box-shadow: $shadowSmallUp;
-		}
-	}
+    .panelBottom {
+        background: $gradientSecondary;
+        box-shadow: $shadowSmallUp;
+    }
 }
 .panel:not(:last-child) {
 	margin: 0 1rem 1rem 0;
