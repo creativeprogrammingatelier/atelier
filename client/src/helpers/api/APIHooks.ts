@@ -9,6 +9,7 @@ import { globalRole } from '../../../../models/enums/globalRoleEnum';
 import { Messaging, useMessaging } from '../../components/feedback/MessagingProvider';
 import { useCache } from '../../components/general/loading/CacheProvider';
 import { Submission } from '../../../../models/api/Submission';
+import { Mention } from '../../../../models/api/Mention';
 
 function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messaging: Messaging, selector?: (item: T) => boolean) {
     cache.setCollectionState(CacheState.Loading);
@@ -129,4 +130,28 @@ export function useSubmission(submissionID: string) {
     }
 
     return { submission };
+}
+
+export function useMentions() {
+    const cache = useCache<Mention>("mentions");
+    const messaging = useMessaging();
+
+    const refreshMentions = () => refresh(API.getMentions(), cache, messaging);
+
+    return {
+        mentions: cache.collection,
+        refreshMentions
+    }
+}
+
+export function useCourseMentions(courseID: string) {
+    const cache = useCache<Mention>("mentions");
+    const messaging = useMessaging();
+
+    const refreshMentions = () => refresh(API.getCourseMentions(courseID), cache, messaging, mention => mention.references.courseID === courseID);
+
+    return {
+        mentions: filter(cache.collection, mention => mention.references.courseID === courseID),
+        refreshMentions
+    }
 }
