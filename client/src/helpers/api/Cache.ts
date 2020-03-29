@@ -82,7 +82,7 @@ export function getCacheInterface<T>(key: string, cache: Cache, updateCache: Upd
         updateCollection(collection => ({ 
             ...collection,
             lastUpdate: date,
-            items: collection.items.filter(({item}) => !selector(item)).concat({ item: newItem, state })
+            items: [{ item: newItem, state }, ...collection.items.filter(({item}) => !selector(item))]
         }));
     }
 
