@@ -42,7 +42,7 @@ export enum PermissionEnum {
 }
 
 export const viewPermissionBits = 71305281;
-export const managePermissionBits = 64827568271;
+export const managePermissionBits = 64827568287;
 
 export const viewPermissions = [
     {
@@ -62,7 +62,6 @@ export const viewPermissions = [
         name: 'viewRestrictedComments'
     }
 ];
-
 export const managePermissions = [
     {
         display: 'Manage user permissions view',
@@ -75,6 +74,10 @@ export const managePermissions = [
     {
         display: 'Manage user role',
         name: 'manageUserRole'
+    },
+    {
+        display : 'Manage plugins',
+        name : 'managePlugins'
     },
     {
         display: 'Manage user registration',
@@ -120,6 +123,30 @@ export const managePermissions = [
         name: 'mentionNoLimit'
     }
 ];
+
+export const permissionsSectionView: {[key: string]: string} = {
+    viewAllUserProfiles: "View all user profiles",
+    viewAllCourses: "View all courses",
+    viewAllSubmissions: "View all submissions",
+    viewRestrictedComments: "View restricted comments"
+};
+export const permissionsSectionManage: {[key: string]: string} = {
+    manageUserPermissionsView: "Manage user permissions view",
+    manageUserPermissionsManager: "Manage user permissions manager",
+    manageUserRole: "Manage user role",
+    managePlugins : "Manage plugins",
+    manageUserRegistration: "Manage user registration",
+    addCourses: "Add courses",
+    manageCourses: "Manage courses",
+    addAssignments: "Add assignments (Unused)",
+    manageAssignments: "Manage Assignments (Unused)",
+    addRestrictedComments: "Add restricted comments",
+    manageRestrictedComments: "Manage restricted comments",
+    mentionAllStudents: "Mention all students",
+    mentionAllAssistants: "Mention all assistants",
+    mentionAllTeachers: "Mention all teachers",
+    mentionNoLimit: "No mention limit",
+};
 
 /**
  * Checks whether the user has a certain permission. Has to use BigInt as javascript does not support

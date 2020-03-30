@@ -5,6 +5,7 @@ import { createCourse } from '../../../helpers/APIHelper';
 import {Button, FormControl, InputGroup, Form} from "react-bootstrap";
 import {FiClipboard} from "react-icons/all";
 import {courseState} from "../../../../models/enums/courseStateEnum";
+import { useCourses } from "../../helpers/api/APIHooks";
 
 interface AddCourseProps {
     handleResponse? : (course : Course) => void
@@ -12,17 +13,18 @@ interface AddCourseProps {
 
 export function AddCourse({handleResponse} : AddCourseProps) {
     const [courseName, setCourseName] = useState("");
+    const {createCourse} = useCourses();
 
     // Create course
     async function handleSubmission(courseName : string) {
         try {
-            const course : Course = await createCourse({
+            await createCourse({
                 name : courseName,
                 state : courseState.open
             });
             setCourseName("");
             if (handleResponse !== undefined) {
-                handleResponse(course);
+                // handleResponse(course);
             }
         } catch (err) {
             // TODO: handle error for the user

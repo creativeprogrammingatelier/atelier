@@ -1,6 +1,6 @@
 import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
-import { isPostgresError, PostgresError } from '../../helpers/DatabaseErrorHelper'
+import { isPostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
 import { PermissionEnum } from "../../../../models/enums/permissionEnum";
 
@@ -13,19 +13,19 @@ if (require.main === module){
 	(async () =>{
 		const client = await getClient();
 		try {
-		await client.query("BEGIN")
-		await makeDB(client)
+		await client.query("BEGIN");
+		await makeDB(client);
 		//if inserting too, then do insert as well
 		if (insertToo){
 			await databaseSamples(client)
 		}
 		await client.query("COMMIT")
 		}catch (e) {
-			await client.query("ROLLBACK")
+			await client.query("ROLLBACK");
 			throw e
 		} finally {
 			
-			await client.release()
+			await client.release();
 			end()
 		}
 
@@ -36,7 +36,7 @@ if (require.main === module){
 }
 
 async function makeDB(client : pgDB = pool){
-	 const query = makeDBString()
+	 const query = makeDBString();
 	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
 	//  console.log(singles)
 	//  for (const item of singles){
@@ -338,19 +338,18 @@ CREATE OR REPLACE FUNCTION _viewableSubmissions (userID uuid, courseID uuid)
 -- the standard roles
 
 INSERT INTO "CourseRolePermissions" VALUES
-   ('student', 1::bit(${permissionBits})),
-   ('TA', 3::bit(${permissionBits})),
-	('teacher', 7::bit(${permissionBits})),
+	('moduleCoordinator', 64898867406::bit(${permissionBits})),
+    ('student', 25769803776::bit(${permissionBits})),
+    ('TA', 64898465858::bit(${permissionBits})),
+	('teacher', 64898859078::bit(${permissionBits})),
 	('unregistered', 0::bit(${permissionBits})),
 	('plugin', 0::bit(${permissionBits}));
 
 INSERT INTO "GlobalRolePermissions" VALUES
-	('admin', '${'1'.repeat(permissionBits)}'),
-	('staff', 0::bit(${permissionBits})),
-	('user', 1::bit(${permissionBits})),
+	('admin', 64898873567::bit(${permissionBits})),
+	('staff', 14528::bit(${permissionBits})),
+	('user', 0::bit(${permissionBits})),
 	('unregistered', 0::bit(${permissionBits})),
 	('plugin', 0::bit(${permissionBits}));
-
-
 `;
 }

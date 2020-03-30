@@ -11,7 +11,7 @@ interface FloaterProperties extends ParentalProperties {
 	className?: string
 }
 export function Floater({top, right, bottom, left, width, height, className, children}: FloaterProperties) {
-	return <div className={"floater " + className} style={{top, right, bottom, left, width, height}}>
+	return <div className={"floater " + className} style={{top, right, bottom, left, minWidth: width, minHeight: height}}>
 		{children}
 	</div>
 }

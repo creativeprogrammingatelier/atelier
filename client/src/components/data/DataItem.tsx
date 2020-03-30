@@ -1,33 +1,33 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {Toast, ToastBody} from "react-bootstrap";
-import {DataTag, DataTagProperties} from "./DataTag";
-import {ParentalProperties} from "../../helpers/ParentHelper";
+import {Tag, TagProperties} from "../general/Tag";
+import {HTMLProperties} from "../../helpers/HTMLHelper";
 
-interface DataItemProperties extends ParentalProperties {
+interface DataItemProperties extends HTMLProperties {
 	transport?: string,
 	text: string,
-	tags?: DataTagProperties[]
+	tags?: TagProperties[]
 }
-export function DataItem({transport, text, tags, children}: DataItemProperties) {
-	return <div className="dataItem">
+export function DataItem(item: DataItemProperties) {
+	return <div className={"dataItem " + item.className}>
 		{
-			transport ?
-			<Link to={transport ? transport : ""}>
-				{toast({text, tags, children})}
-			</Link>
-			:
-			toast({text, tags, children})
+			item.transport ?
+				<Link to={item.transport ? item.transport : ""}>
+					{toast(item)}
+				</Link>
+				:
+				toast(item)
 		}
-	</div>
+	</div>;
 }
 
 function toast({text, tags, children}: DataItemProperties) {
 	return <Toast>
 		<ToastBody>
 			<p className="m-0 mr-1 d-inline">{text}</p>
-			{tags !== undefined && tags.map((tag) => <DataTag {...tag}/>)}
+			{tags !== undefined && tags.map((tag) => <Tag {...tag}/>)}
 		</ToastBody>
 		{children}
-	</Toast>
+	</Toast>;
 }

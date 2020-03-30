@@ -52,7 +52,7 @@ export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: U
 			loader={getUser}
 			params={[userId]}
 			component={user =>
-				<Frame title={user.name} sidebar search>
+				<Frame title={user.name} sidebar search={{course: courseId, user: user.name}}>
 					<Loading<Course>
 						loader={getCourse}
 						params={[courseId]}
@@ -68,12 +68,12 @@ export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: U
 					<TabBar
 						tabs={[{
 							id: "submissions",
-							icon: <FiPackage size={28} color="#FFFFFF"/>,
+							icon: FiPackage,
 							text: "Submissions",
 							location: courseUserPath + "/submissions"
 						}, {
 							id: "comments",
-							icon: <FiMessageSquare size={28} color="#FFFFFF"/>,
+							icon: FiMessageSquare,
 							text: "Comments",
 							location: courseUserPath + "/comments"
 						}]}

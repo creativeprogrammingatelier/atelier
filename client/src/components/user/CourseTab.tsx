@@ -20,7 +20,6 @@ export function CourseTab({user}: CourseTabProperties) {
 						{courses.map((course: Course) => <PanelButton
 							display={course.name}
 							location={`/course/${course.ID}/user/${user.ID}`}
-							icon=''
 						/>)}
 					</div>
 				}
