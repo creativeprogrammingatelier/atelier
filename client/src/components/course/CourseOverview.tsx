@@ -32,10 +32,10 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
 	useEffect(() => {
-		coursePermission(courseId, true)
-		.then((permission: Permission) => {
-			setPermissions(permission.permissions);
-		});
+		coursePermission(courseId)
+			.then((permission: Permission) => {
+				setPermissions(permission.permissions);
+			});
 	}, []);
 
 	return (
@@ -72,7 +72,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 				}
 			/>
 			<Loading<Submission[]>
-				loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
+				loader={(courseId, reload) => getCourseSubmissions(courseId)}
 				params={[courseId, reload]}
 				component={submissions =>
 					<DataBlockList

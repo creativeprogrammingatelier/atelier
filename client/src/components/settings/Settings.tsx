@@ -20,12 +20,12 @@ export function Settings() {
 	// Roles user can set globally with permission (not unregistered)
 	const globalRoles = [globalRole.plugin, globalRole.user, globalRole.staff, globalRole.admin];
 
-	useEffect(() => {
-		getCurrentUser(true)
-		.then((user : User) => {
-			setPermissions(user.permission.permissions);
-		});
-	}, []);
+    useEffect(() => {
+        getCurrentUser()
+            .then((user : User) => {
+                setPermissions(user.permission.permissions);
+            });
+    }, []);
 
 	return (
 		<Frame title="Settings" sidebar search>

@@ -482,6 +482,14 @@ textarea:focus, textarea:active {
 	color: $colorWhite;
 	background: $gradientDanger;
 }
+.messages {
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 1rem;
+    width: 100%;
+    z-index: 1060;
+}
 
 .directoryNode {
 	margin: 0 0 0 0.5rem;
