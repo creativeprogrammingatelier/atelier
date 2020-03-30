@@ -1,12 +1,14 @@
-import React, { Fragment } from "react";
-import {FiActivity, FiHome, FiLogOut, FiSettings, FiUser, FiX} from "react-icons/fi";
-import {Logo} from "./Logo";
-import {SidebarEntry} from "./SidebarEntry";
-import {Loading} from "../general/loading/Loading";
+import React, {Fragment} from "react";
+import {FiActivity, FiHome, FiLogOut, FiSettings, FiSliders, FiUser, FiX} from "react-icons/fi";
 import {User} from "../../../../models/api/User";
-import {getCurrentUser} from "../../../helpers/APIHelper";
+import {Permission} from "../../../../models/api/Permission";
+import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {getCurrentUser, permission} from "../../../helpers/APIHelper";
+import {Loading} from "../general/loading/Loading";
 import {Heading} from "../general/Heading";
 import {Responsive} from "../general/Responsive";
+import {Logo} from "./Logo";
+import {SidebarEntry} from "./SidebarEntry";
 
 interface SidebarProperties {
 	position: string,
@@ -19,10 +21,24 @@ export function Sidebar({position, close}: SidebarProperties) {
 			<hr/>
 			<SidebarEntry location="/" icon={FiHome} close={close}>Home</SidebarEntry>
 			<SidebarEntry location="/activity" icon={FiActivity} close={close}>Activity</SidebarEntry>
-			<SidebarEntry location="/settings" icon={FiSettings} close={close}>Settings</SidebarEntry>
+			<SidebarEntry location="/account" icon={FiSliders} close={close}>Account</SidebarEntry>
+			<Loading<Permission>
+				loader={permission}
+				component={permission =>
+					containsPermissionAny([
+						PermissionEnum.addCourses,
+						PermissionEnum.manageUserPermissionsView,
+						PermissionEnum.manageUserPermissionsManager,
+						PermissionEnum.manageUserRole,
+						PermissionEnum.managePlugins
+					], permission.permissions) &&
+					<SidebarEntry location="/admin/settings" icon={FiSettings} close={close}>System</SidebarEntry>}
+				wrapper={() => null}
+			/>
 			<Loading<User>
 				loader={getCurrentUser}
 				component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>}
+				wrapper={() => null}
 			/>
 			<SidebarEntry location="/logout" icon={FiLogOut} close={close}>Logout</SidebarEntry>
 		</div>;

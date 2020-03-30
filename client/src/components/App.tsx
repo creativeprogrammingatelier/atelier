@@ -17,11 +17,12 @@ import "../styles/base.scss";
 import {SubmissionShare} from "./submission/SubmissionShare";
 import {Bootstrap} from "./Bootstrap";
 import {CourseUserOverview} from "./user/CourseUserOverview";
-import {Settings} from "./settings/Settings";
+import {SystemSettings} from "./settings/system/SystemSettings";
 import {Activity} from "./Activity";
 import {CourseSettings} from "./settings/course/CourseSettings";
 import {MessagingProvider} from "./feedback/MessagingProvider";
 import {CacheProvider} from "./general/loading/CacheProvider";
+import {UserSettings} from "./settings/user/UserSettings";
 
 export function App() {
 	return (
@@ -42,8 +43,9 @@ export function App() {
 					<AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings}/>
 					<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
 					<AuthenticatedRoute path='/search' component={SearchOverview}/>
-					<AuthenticatedRoute path='/settings' component={Settings}/>
+					<AuthenticatedRoute path='/account' component={UserSettings}/>
 					<AuthenticatedRoute path='/activity' component={Activity}/>
+					<AuthenticatedRoute path='/admin/settings' component={SystemSettings}/>
 					<AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
 					<AuthenticatedRoute path='/' component={Homepage}/>
 				</Switch>
