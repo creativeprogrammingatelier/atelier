@@ -97,5 +97,6 @@ export function userTest(){
             assert(instanceOfUser(response.body));
             expect(response.body.email).to.equal(newEmail);
         });
+        
     });
 }
