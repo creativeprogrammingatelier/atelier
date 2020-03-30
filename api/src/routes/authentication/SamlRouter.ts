@@ -101,12 +101,12 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                 // Get role from SAML attributes
                 let role = globalRole.user;
                 if (samlConfig.attributes?.role !== undefined) {
-                    role = result.attributes[samlConfig.attributes.role] || role;
+                    let samlRole = result.attributes[samlConfig.attributes.role] || role;
                     if (samlConfig.attributes.roleMapping !== undefined) {
-                        const samlRole = samlConfig.attributes.roleMapping[role] || role;
-                        if (checkEnum(globalRole, samlRole)){
-                            user = getEnum(globalRole, samlRole)
-                        }
+                        samlRole = samlConfig.attributes.roleMapping[role] || role;
+                    }
+                    if (checkEnum(globalRole, samlRole)){
+                        role = getEnum(globalRole, samlRole)
                     }
                 }
 
