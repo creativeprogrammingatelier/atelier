@@ -82,11 +82,12 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 	useEffect(() => {
 		// Poll every 100ms for the location of the caret in the textarea and update
 		// the caretPosition property
-		setInterval(() => {
+		const handle = setInterval(() => {
 			if (input.current !== null && input.current.selectionStart !== null) {
 				setCaretPosition(input.current.selectionStart);
 			}
-		}, 100);
+        }, 100);
+        return () => clearInterval(handle);
 	}, []);
 	useEffect(() => {
 		// Check of the current caret position is after an @ and check for mention

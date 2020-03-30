@@ -18,9 +18,10 @@ export function DataBlockList({header, list}: DataListProperties) {
 	const [currentTime, setCurrentTime] = useState(new Date());
 
 	useEffect(() => {
-		setInterval(() => {
+		const handle = setInterval(() => {
 			setCurrentTime(new Date())
-		}, 1000)
+        }, 1000);
+        return () => clearInterval(handle);
 	}, []);
 
 	return <DataList header={header}>

@@ -17,9 +17,10 @@ export function CachedDataBlockList<T>({ collection, header, refresh, timeout, b
 	const [currentTime, setCurrentTime] = useState(new Date());
 
 	useEffect(() => {
-		setInterval(() => {
+		const handle = setInterval(() => {
 			setCurrentTime(new Date())
-		}, 1000)
+        }, 1000);
+        return () => clearInterval(handle);
 	}, []);
 
     return <CachedList collection={collection} header={header} refresh={refresh} timeout={timeout} bottom={bottom}>{
