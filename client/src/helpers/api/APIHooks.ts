@@ -1,4 +1,4 @@
-import { CacheState, CacheInterface, CacheCollection } from './Cache';
+import { CacheState, CacheInterface, CacheCollection, getCacheInterface } from './Cache';
 import { Course } from '../../../../models/api/Course';
 import * as API from '../../../helpers/APIHelper';
 import { courseState } from '../../../../models/enums/courseStateEnum';
@@ -7,9 +7,12 @@ import { User } from '../../../../models/api/User';
 import { Permission } from '../../../../models/api/Permission';
 import { globalRole } from '../../../../models/enums/globalRoleEnum';
 import { Messaging, useMessaging } from '../../components/feedback/MessagingProvider';
-import { useCache } from '../../components/general/loading/CacheProvider';
+import { useCache, CacheContext, useRawCache } from '../../components/general/loading/CacheProvider';
 import { Submission } from '../../../../models/api/Submission';
 import { Mention } from '../../../../models/api/Mention';
+import { CommentThread, CreateCommentThread } from '../../../../models/api/CommentThread';
+import { Comment } from '../../../../models/api/Comment';
+import { File as APIFile } from '../../../../models/api/File';
 
 function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messaging: Messaging, selector?: (item: T) => boolean) {
     cache.setCollectionState(CacheState.Loading);
@@ -24,14 +27,16 @@ function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: C
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
     cache.add({ ...item, ID: tempID }, CacheState.Loading);
-    promise
+    return promise
         .then(result => {
             console.log("Creation of", tempID, "succeeded:", result);
             cache.replace(old => old.ID === tempID, result, CacheState.Loaded);
+            return true;
         })
         .catch((err: Error) => {
             messaging.addMessage({ type: "danger", message: err.message }),
             cache.remove(item => item.ID === tempID);
+            return false;
         });
 }
 
@@ -168,4 +173,167 @@ export function useCurrentUser() {
         user: cache.collection.items[0] || { item: { ID: "", name: "Loading", email: "", permission: {} as Permission }, state: cache.collection.state },
         refreshUser
     }
+}
+
+function refreshComments(promise: Promise<CommentThread[]>, threadCache: CacheInterface<CommentThread>, rawCache: CacheContext, messaging: Messaging, selector?: (ct: CommentThread) => boolean) {
+    threadCache.setCollectionState(CacheState.Loading);
+    promise
+        .then(result => {
+            if (selector) {
+                threadCache.replaceAll(result.map(thread => ({ ...thread, comments: [] })), CacheState.Loaded, selector);
+            }
+            for (const thread of result) {
+                if (!selector) {
+                    threadCache.replace(c => c.ID === thread.ID, { ...thread, comments: [] }, CacheState.Loaded);
+                }
+                const commentCache = getCacheInterface(`comments/${thread.ID}`, rawCache.cache, rawCache.updateCache);
+                commentCache.replaceAll(thread.comments, CacheState.Loaded);
+            }
+        })
+        .catch((err: Error) => {
+            messaging.addMessage({ type: "danger", message: err.message })
+        });
+}
+
+function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threadCache: CacheInterface<CommentThread>, rawCache: CacheContext, messaging: Messaging) {
+    const tempID = randomBytes(32).toString('hex');
+    console.log("Creating", tempID);
+    threadCache.add({ ID: tempID, visibility: thread.visibility, comments: [], references: { submissionID: "", courseID: "" } } as CommentThread, CacheState.Loading);
+    const tempCommentCache = getCacheInterface(`comments/${tempID}`, rawCache.cache, rawCache.updateCache);
+    tempCommentCache.add({ ID: "", user: {} as User, text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } }, CacheState.Loading);
+    return promise
+        .then(thread => {
+            console.log("Creation of", tempID, "succeeded:", thread);
+            threadCache.replace(old => old.ID === tempID, thread, CacheState.Loaded);
+            const commentCache = getCacheInterface(`comments/${thread.ID}`, rawCache.cache, rawCache.updateCache)
+            commentCache.replaceAll(thread.comments, CacheState.Loaded);
+            tempCommentCache.clear();
+            return true;
+        })
+        .catch((err: Error) => {
+            messaging.addMessage({ type: "danger", message: err.message }),
+            threadCache.remove(item => item.ID === tempID);
+            tempCommentCache.clear();
+            return false;
+        });
+}
+
+export function useProjectComments(submissionID: string) {
+    const raw = useRawCache();
+    const cache = useCache<CommentThread>(`commentThreads/submission/${submissionID}`);
+    const messaging = useMessaging();
+
+    const refreshProjectComments = () => refreshComments(API.getProjectComments(submissionID), cache, raw, messaging, ct => ct.file === undefined);
+    const createProjectComment = (thread: CreateCommentThread) => 
+        createCommentThread(
+            thread,
+            API.createSubmissionCommentThread(submissionID, thread),
+            cache,
+            raw,
+            messaging
+        );
+
+    return {
+        projectComments: filter(cache.collection, ct => ct.file === undefined),
+        refreshProjectComments,
+        createProjectComment
+    }
+}
+
+export function useRecentComments(submissionID: string) {
+    const raw = useRawCache();
+    const cache = useCache<CommentThread>(`commentThreads/submission/${submissionID}`);
+    const messaging = useMessaging();
+
+    const refreshRecentComments = () => refreshComments(API.getRecentComments(submissionID), cache, raw, messaging);
+
+    return {
+        // TODO: sorting
+        recentComments: cache.collection,
+        refreshRecentComments
+    }
+}
+
+export function useFileComments(submissionID: string, fileID: string) {
+    const raw = useRawCache();
+    const cache = useCache<CommentThread>(`commentThreads/submission/${submissionID}`);
+    const messaging = useMessaging();
+
+    const refreshFileComments = () => refreshComments(API.getFileComments(fileID), cache, raw, messaging, ct => ct.file?.ID === fileID);
+    const createFileComment = (thread: CreateCommentThread) => 
+        createCommentThread(
+            thread,
+            API.createFileCommentThread(fileID, thread),
+            cache,
+            raw,
+            messaging
+        );
+
+    return {
+        fileComments: filter(cache.collection, ct => ct.file?.ID === fileID),
+        refreshFileComments,
+        createFileComment
+    }
+}
+
+export function useComments(commentThreadID: string) {
+    const cache = useCache<Comment>(`comments/${commentThreadID}`);
+    const messaging = useMessaging();
+
+    const createReply = (comment: string) =>
+        create(
+            API.createComment(commentThreadID, comment),
+            { ID: "", user: {} as User, text: comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } },
+            cache,
+            messaging
+        );
+
+    return {
+        comments: cache.collection,
+        createReply
+    }
+}
+
+export function useFileBody(fileID: string) {
+    const cache = useCache<string>(`file/${fileID}/body`);
+    const messaging = useMessaging();
+
+    const refreshFileBody = () => refresh(API.getFileContents(fileID).then(f => [f]), cache, messaging);
+
+    if (cache.collection.state === CacheState.Uninitialized) refreshFileBody();
+
+    return {
+        fileBody: cache.collection.items[0] || { item: "", state: cache.collection.state },
+        refreshFileBody
+    }
+}
+
+export function useFiles(submissionID: string) {
+    const cache = useCache<APIFile>(`file/submission/${submissionID}`);
+    const messaging = useMessaging();
+
+    const refreshFiles = () => refresh(API.getFiles(submissionID), cache, messaging);
+    
+    return {
+        files: cache.collection,
+        refreshFiles
+    }
+}
+
+export function useFile(submissionID: string, fileID: string) {
+    const cache = useCache<APIFile>(`file/submission/${submissionID}`);
+    const messaging = useMessaging();
+
+    let file = cache.collection.items.find(({ item }) => item.ID === fileID);
+
+    if (file === undefined) {
+        API.getFile(fileID)
+            .then(result => cache.add(result, CacheState.Loaded))
+            .catch((err: Error) => {
+                messaging.addMessage({ type: "danger", message: err.message })
+            });
+        file = { item: { ID: fileID, name: "Loading", type: "undefined/undefined", references: { submissionID, courseID: "" } }, state: CacheState.Loading }
+    }
+
+    return { file };
 }

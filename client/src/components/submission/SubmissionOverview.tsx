@@ -1,24 +1,18 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 
 import {Frame} from "../frame/Frame";
-import {File} from "../../../../models/api/File";
-import {Loading} from "../general/loading/Loading";
-import {CommentThread} from "../../../../models/api/CommentThread";
 import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
-import {Submission} from "../../../../models/api/Submission";
 import {DataList} from "../data/DataList";
-import {Course} from "../../../../models/api/Course";
-import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 import {CommentCreator} from "../comment/CommentCreator";
 import {FiPlus, FiX} from "react-icons/all";
 import {threadState} from "../../../../models/enums/threadStateEnum";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
-import { useSubmission, useCourse } from "../../helpers/api/APIHooks";
+import { useSubmission, useCourse, useProjectComments, useRecentComments, useFiles } from "../../helpers/api/APIHooks";
 import { CachedItem } from "../general/loading/CachedItem";
+import { CachedList } from "../general/loading/CachedList";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -31,34 +25,26 @@ interface SubmissionOverviewProps {
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
     const {submission} = useSubmission(submissionId);
     const {course} = useCourse(submission.item.references.courseID);
+    const {files, refreshFiles} = useFiles(submissionId);
+    const {projectComments, refreshProjectComments, createProjectComment} = useProjectComments(submissionId);
+    const {recentComments, refreshRecentComments} = useRecentComments(submissionId);
     
 	const [creatingComment, setCreatingComment] = useState(false);
-	const [createdComments, setCreatedComments] = useState([] as CommentThread[]);
 	const submissionPath = "/submission/" + submissionId;
 
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-		try {
-			const commentThread = await createSubmissionCommentThread(submissionId, {
-				submissionID: submissionId,
-				comment,
-				visibility: restricted ? threadState.private : threadState.public
-			});
-			setCreatingComment(false);
-			setCreatedComments(createdComments => [
-				...createdComments,
-				commentThread
-			]);
-			return true;
-		} catch (error) {
-			if (error instanceof JsonFetchError) {
-				// TODO: handle error for the user
-				console.log(error);
-			} else {
-				throw error;
-			}
-		}
-		return false;
-	};
+        const res = await createProjectComment({
+            submissionID: submissionId,
+            comment,
+            visibility: restricted ? threadState.private : threadState.public
+        });
+        setCreatingComment(false);
+        return res;
+    };
+    
+    useEffect(() => {
+        if (files.lastRefresh === 0) refreshFiles();
+    }, []);
 
 	return <CachedItem item={submission} wrapper={children => <Frame title="Submission" sidebar search children={children} />}>{
 			submission => <Frame title={submission.name} sidebar search={{course: submission.references.courseID, submission: submissionId}}>
@@ -74,36 +60,23 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					<Button className="mb-2 mr-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
                     <Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
 				</Jumbotron>
-				<DataList header="Files">
-					<Loading<File[]>
-						loader={getFiles}
-						params={[submissionId]}
-						component={files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: file.type, transport: submissionPath + "/" + file.ID + "/view"}))}/>}
-					/>
-				</DataList>
+                <DataList header="Files">
+                    <DirectoryViewer filePaths={files.items.map(file => ({name: file.item.name, type: file.item.type, transport: submissionPath + "/" + file.item.ID + "/view"}))}/>
+                </DataList>
 				<DataList
 					header="Comments"
 					optional={{
 						icon: creatingComment ? FiX : FiPlus,
 						click: () => setCreatingComment(!creatingComment),
 						component: creatingComment && <CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
-					}}
-				>
-					{/* This map over new comment threads would not be needed once auto update works */}
-					{createdComments.map(thread => <CommentThreadComponent thread={thread}/>)}
-					<Loading<CommentThread[]>
-						loader={getProjectComments}
-						params={[submissionId]}
-						component={threads => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
-					/>
+					}} >
+					<CachedList collection={projectComments} refresh={refreshProjectComments}>{
+                        thread => <CommentThreadComponent thread={thread.item} />   
+                    }</CachedList>
 				</DataList>
-				<DataList header="Recent">
-					<Loading<CommentThread[]>
-						loader={getRecentComments}
-						params={[submissionId]}
-						component={(threads : CommentThread[]) => threads.map(thread => <CommentThreadComponent thread={thread}/>)}
-					/>
-				</DataList>
+				<CachedList header="Recent" collection={recentComments} refresh={refreshRecentComments}>{
+                    thread => <CommentThreadComponent thread={thread.item} />   
+                }</CachedList>
 			</Frame>
 		}
     </CachedItem>;

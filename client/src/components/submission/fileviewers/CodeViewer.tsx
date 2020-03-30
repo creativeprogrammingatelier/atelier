@@ -1,86 +1,56 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import {File} from "../../../../../models/api/File";
-import {getFileComments, getFileContents} from "../../../../helpers/APIHelper";
-import {JsonFetchError} from "../../../../helpers/FetchHelper";
-import {CommentThread} from "../../../../../models/api/CommentThread";
 import {CommentSelector} from "../../comment/CommentSelector";
 import {HighlightedCode, HighlightedCodeProperties, SnippetHighlight} from "../../code/HighlightedCode";
 import {useHistory} from "react-router-dom";
 import {Selection} from "../../../../../models/api/Snippet";
 import {FileViewer, FileViewerProperties} from "../FileOverview";
-import {Loading} from "../../general/loading/Loading";
 import {FiCode} from "react-icons/all";
+import { useFileComments, useFileBody } from "../../../helpers/api/APIHooks";
+import { CommentThread } from "../../../../../models/api/CommentThread";
+import { CacheItem, CacheState } from "../../../helpers/api/Cache";
+import { CachedItem } from "../../general/loading/CachedItem";
+
 
 export function CodeViewer({file, sendComment}: FileViewerProperties) {
-	const [commentThreads, setCommentThreads] = useState([] as CommentThread[]);
-	const [snippets, setSnippets] = useState([] as SnippetHighlight[]);
-	const history = useHistory();
+    const {fileComments} = useFileComments(file.references.submissionID, file.ID);
+    const {fileBody} = useFileBody(file.ID);
+    const history = useHistory();
+    
+    // TODO: refresh comments
 
-	const getCommentThreads = () => {
-		try {
-			getFileComments(file.ID).then(commentThreads => {
-				setCommentThreads(commentThreads);
-			});
-		} catch (error) {
-			if (error instanceof JsonFetchError) {
-				console.log(error);
-				// TODO: Give error to the user
-			} else {
-				throw error;
-			}
-		}
-	};
-	const getSnippets = () => {
+	const getSnippets = (threads: Array<CacheItem<CommentThread>>) => {
 		const snippets: SnippetHighlight[] = [];
-		for (const commentThread of commentThreads) {
-			if (commentThread.snippet !== undefined) {
+		for (const commentThread of threads) {
+			if (commentThread.item.snippet !== undefined) {
 				snippets.push({
 					onClick: () => {
 						console.log("clicked comment");
-						history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.ID}`);
+						history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.item.ID}`);
 					},
-					...commentThread.snippet
+					...commentThread.item.snippet
 				});
 			}
-		}
-		setSnippets(snippets);
-	};
+        }
+        return snippets;
+    };
+    
 	const handleCommentSend = async(comment: string, restricted: boolean, selection: Selection) => {
-		try {
-			const commentThread = await sendComment(comment, restricted, selection);
-			setCommentThreads(commentThreads => [
-				...commentThreads,
-				commentThread
-			]);
-			return true;
-		} catch (error) {
-			if (error instanceof JsonFetchError) {
-				// TODO: handle error for the user
-				console.log(error);
-			} else {
-				throw error;
-			}
-		}
-		return false;
-	};
+		return sendComment(comment, restricted, selection);
+    };
 
-	useEffect(getCommentThreads, []);
-	useEffect(getSnippets, [commentThreads]);
+    const snippets = useMemo(() => getSnippets(fileComments.items), [fileComments]);
 
 	return (
 		<div className="mb-6">
-			<Loading<string>
-				loader={getFileContents}
-				params={[file.ID]}
-				component={body =>
-					<CommentSelector<HighlightedCodeProperties>
-						codeViewer={HighlightedCode}
-						codeProperties={{code: body, snippets, options: {mode: file.type}}}
-						mentions={{courseID: file.references.courseID}}
-						sendHandler={handleCommentSend}
-					/>
-				}
-			/>
+			<CachedItem item={fileBody}>{body =>
+                <CommentSelector<HighlightedCodeProperties>
+                    codeViewer={HighlightedCode}
+                    codeProperties={{code: body, snippets, options: {mode: file.type}}}
+                    mentions={{courseID: file.references.courseID}}
+                    sendHandler={handleCommentSend}
+                />
+            }</CachedItem>
 		</div>
 	);
 }

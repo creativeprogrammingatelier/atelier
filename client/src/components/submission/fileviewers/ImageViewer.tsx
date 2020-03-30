@@ -3,23 +3,11 @@ import {FileViewer, FileViewerProperties} from "../FileOverview";
 import {File} from "../../../../../models/api/File";
 import {getFileUrl} from "../../../../helpers/APIHelper";
 import {FiImage} from "react-icons/all";
-import {JsonFetchError} from "../../../../helpers/FetchHelper";
 import {CommentCreator} from "../../comment/CommentCreator";
 
 export function ImageViewer({file, sendComment}: FileViewerProperties) {
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-		try {
-			await sendComment(comment, restricted);
-			return true;
-		} catch (error) {
-			if (error instanceof JsonFetchError) {
-				// TODO: handle error for the user
-				console.log(error);
-			} else {
-				throw error;
-			}
-		}
-		return false;
+		return sendComment(comment, restricted);
 	};
 
 	return <Fragment>
