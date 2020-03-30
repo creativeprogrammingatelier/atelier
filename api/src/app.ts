@@ -37,7 +37,13 @@ import {inviteRouter} from "./routes/InviteRouter";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
-app.use(logger('dev'));
+
+//since I can't find a way to remove this logger after 'use'ing it, it is now only added when running as main (so not as debug with mocha)
+if (require.main === module){
+    app.use(logger('dev'));
+} else {
+    // console.log=console.warn=console.error=()=>{};
+}
 app.use(express.json());
 app.use(express.urlencoded({
 	extended: false

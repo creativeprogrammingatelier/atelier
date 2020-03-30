@@ -4,7 +4,6 @@ import {Submission} from "./Submission";
 import {Comment} from "./Comment";
 import {File} from "./File";
 import {Snippet} from "./Snippet";
-import { CourseUser } from "./CourseUser";
 
 export interface SearchResultComment {
 	comment: Comment,

@@ -34,6 +34,7 @@ export interface DBCourseUser {
 	permission: string,
 }
 
+
 export function convertCourseUser(db : DBCourseUser) : CourseUserOutput{
 	checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"],db)
 	return {
