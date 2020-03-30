@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Cache, Update, getCacheInterface } from '../../../helpers/api/Cache';
 
 /** Context used for providing caching */
-interface CacheContext {
+export interface CacheContext {
     cache: Cache
     updateCache: Update<Cache>
 }
@@ -55,4 +55,8 @@ export function CacheProvider({ children }: { children: React.ReactNode }) {
 export function useCache<T>(key: string) {
     const { cache, updateCache } = useContext(cacheContext);
     return getCacheInterface<T>(key, cache, updateCache);
+}
+
+export function useRawCache() {
+    return useContext(cacheContext);
 }
