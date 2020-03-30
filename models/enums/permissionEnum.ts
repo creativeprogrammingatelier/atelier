@@ -42,7 +42,7 @@ export enum PermissionEnum {
 }
 
 export const viewPermissionBits = 71305281;
-export const managePermissionBits = 64827568271;
+export const managePermissionBits = 64827568287;
 
 export const viewPermissions = [
     {
@@ -74,6 +74,10 @@ export const managePermissions = [
     {
         display: 'Manage user role',
         name: 'manageUserRole'
+    },
+    {
+        display : 'Manage plugins',
+        name : 'managePlugins'
     },
     {
         display: 'Manage user registration',
@@ -130,6 +134,7 @@ export const permissionsSectionManage: {[key: string]: string} = {
     manageUserPermissionsView: "Manage user permissions view",
     manageUserPermissionsManager: "Manage user permissions manager",
     manageUserRole: "Manage user role",
+    managePlugins : "Manage plugins",
     manageUserRegistration: "Manage user registration",
     addCourses: "Add courses",
     manageCourses: "Manage courses",
