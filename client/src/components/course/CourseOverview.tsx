@@ -12,7 +12,7 @@ import {CoursePermission, Permission} from "../../../../models/api/Permission";
 import {FiPlus, FiX} from "react-icons/all";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {DataList} from "../data/DataList";
-import {PluginSettings} from "../settings/PluginSettings";
+import {PluginSettings} from "../settings/system/PluginSettings";
 import {Link} from "react-router-dom";
 
 interface CourseOverviewProps {

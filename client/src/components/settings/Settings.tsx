@@ -7,7 +7,7 @@ import {getCurrentUser, permission} from "../../../helpers/APIHelper";
 import {User} from "../../../../models/api/User";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {DataList} from "../data/DataList";
-import {PluginSettings} from "./PluginSettings";
+import {PluginSettings} from "./system/PluginSettings";
 import {Loading} from "../general/loading/Loading";
 import {Permission} from "../../../../models/api/Permission";
 import {UserSettingsRoles} from "./user/UserSettingsRoles";
