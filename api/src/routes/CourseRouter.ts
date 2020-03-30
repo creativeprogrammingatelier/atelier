@@ -148,12 +148,20 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 	// Require manageUserRegistration permission
 	await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
 
-	const courseRegistration : CourseUser = await CourseRegistrationDB.addEntry({
-		courseID,
-		userID,
-		courseRole : courseRole.student
-	});
-	response.status(200).send(courseRegistration);
+	// Get current user registrations
+	const courseRegistrations : CourseUser[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
+
+	// User already registered in the course
+	if (courseRegistrations.length !== 0) {
+		response.status(200).send(courseRegistrations[0]);
+	} else {
+		const courseRegistration : CourseUser = await CourseRegistrationDB.addEntry({
+			courseID,
+			userID,
+			courseRole : courseRole.student
+		});
+		response.status(200).send(courseRegistration);
+	}
 }));
 
 /** ---------- DELETE REQUESTS ---------- */

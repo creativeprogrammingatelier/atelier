@@ -3,12 +3,18 @@ import {Frame} from "../frame/Frame";
 import {DataBlockList} from "../data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
-import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions} from "../../../helpers/APIHelper";
+import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions, permission} from "../../../helpers/APIHelper";
 import {Uploader} from "../uploader/Uploader";
-import {Jumbotron} from "react-bootstrap";
+import {Button, Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../models/api/Course";
 import {Mention} from "../../../../models/api/Mention";
-import {Permission} from "../../../../models/api/Permission";
+import {CoursePermission, Permission} from "../../../../models/api/Permission";
+import {FiPlus, FiX} from "react-icons/all";
+import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {DataList} from "../data/DataList";
+import {PluginSettings} from "../settings/PluginSettings";
+import {Link} from "react-router-dom";
+
 interface CourseOverviewProps {
 	match: {
 		params: {
@@ -18,6 +24,7 @@ interface CourseOverviewProps {
 }
 
 export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProps) {
+	const [uploading, setUploading] = useState(false);
 	const [reload, updateReload] = useState(0);
 	const [permissions, setPermissions] = useState(0);
 
@@ -25,7 +32,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
 	useEffect(() => {
-		coursePermission(courseId, true)
+		coursePermission(courseId)
 			.then((permission: Permission) => {
 				setPermissions(permission.permissions);
 			});
@@ -39,33 +46,12 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					params={[courseId]}
 					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
 				/>
-			</Jumbotron>
-			<Loading<Submission[]>
-				loader={(courseId, reload) => getCourseSubmissions(courseId, false)}
-				params={[courseId, reload]}
-				component={submissions =>
-					<DataBlockList
-						header="Submissions"
-						list={submissions.map(submission => {
-							console.log(submission);
-							return {
-								transport: `/submission/${submission.ID}`,
-								title: submission.name,
-								text: "Submitted by " + submission.user.name,
-								time: new Date(submission.date),
-								tags: []
-								//tags: submission.tags
-							};
-						})}
-					/>
-				}
-			/>
-			<div className="m-3">
-				<Uploader
-					courseId={courseId}
-					onUploadComplete={() => updateReload(rel => rel + 1)}
+				<Loading<Permission>
+					loader={coursePermission}
+					params={[courseId]}
+					component={permission => containsPermission(PermissionEnum.manageCourses, permission.permissions) && <Link to={`/course/${courseId}/settings`}><Button>Settings</Button></Link>}
 				/>
-			</div>
+			</Jumbotron>
 			<Loading<Mention[]>
 				loader={courseID => getCourseMentions(courseID)}
 				params={[courseId]}
@@ -73,15 +59,42 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					<DataBlockList
 						header="Mentions"
 						list={mentions.map(mention => ({
-                            transport: 
-                                mention.comment.references.fileID !== undefined
-                                ? `/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
-                                : `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`, 
+							transport:
+								mention.comment.references.fileID !== undefined
+									? `/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
+									: `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`,
 							title: `Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle}`,
 							text: mention.comment.text,
 							time: new Date(mention.comment.created),
 							tags: []
 						}))}
+					/>
+				}
+			/>
+			<Loading<Submission[]>
+				loader={(courseId, reload) => getCourseSubmissions(courseId)}
+				params={[courseId, reload]}
+				component={submissions =>
+					<DataBlockList
+						header="Submissions"
+						optional={{
+							icon: uploading ? FiX : FiPlus,
+							click: () => setUploading(!uploading),
+							component: uploading &&
+								<Uploader
+									courseId={courseId}
+									onUploadComplete={() => updateReload(rel => rel + 1)}
+								/>
+						}}
+						list={submissions.map(submission => {
+							console.log(submission);
+							return {
+								transport: `/submission/${submission.ID}`,
+								title: submission.name,
+								text: "Submitted by " + submission.user.name,
+								time: new Date(submission.date)
+							};
+						})}
 					/>
 				}
 			/>

@@ -1,28 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, { Fragment } from "react";
 import {PanelButton} from "./general/PanelButton";
 import {Frame} from "./frame/Frame";
-import {Loading} from "./general/loading/Loading";
 import {AddCourse} from "./course/AddCourse";
-import {Course} from "../../../models/api/Course";
-import {getCourses, permission} from "../../helpers/APIHelper";
 import {Button, Jumbotron} from "react-bootstrap";
-import {Permission} from "../../../models/api/Permission";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {Permissions} from "./general/Permissions";
+import { useCourses } from "../helpers/api/APIHooks";
+import { CachedList } from "./general/loading/CachedList";
 
 export function Homepage() {
-	const [permissions, setPermissions] = useState(0);
-    const [reload, updateReload] = useState(0);
-
- 	useEffect(() => {
- 		permission()
-			.then((permission : Permission) => {
-				setPermissions(permission.permissions);
-			});
-	}, []);
-
-	function updateCourse(course: Course) {
-		updateReload(x => x + 1);
-	}
+    const {courses, refreshCourses} = useCourses();
 
 	return (
 		<Frame title="Home" sidebar search>
@@ -32,26 +19,19 @@ export function Homepage() {
 				<Button>Have a button!</Button>
 			</Jumbotron>
 			<div className="m-3">
-				<Loading<Course[]>
-                    loader={reload => getCourses(false)}
-                    params={[reload]}
-					component={courses =>
-						<div>
-							{courses.map((course: Course) => <PanelButton
-								display={course.name}
-								location={`/course/${course.ID}`}
-								icon=''
-							/>)}
-						</div>
-					}
-				/>
+                <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
+                    course => 
+                        <PanelButton 
+                            display={course.item.name} 
+                            location={`/course/${course.item.ID}`}
+                            state={course.state} />
+                }</CachedList>
 			</div>
-			{
-				((permissions & (1 << PermissionEnum.addCourses)) > 0) &&
-					<div className="m-3">
-						<AddCourse handleResponse={updateCourse}/>
-					</div>
-			}
+			<Permissions required={PermissionEnum.addCourses}>
+                <div className="m-3">
+                    <AddCourse />
+                </div>
+            </Permissions>
 		</Frame>
 	);
 }

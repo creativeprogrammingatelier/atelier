@@ -36,9 +36,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 		const commentTrimmed = comment.trim();
 		if (commentTrimmed !== "") {
 			try {
-				const comment = await createComment(thread.ID, {
-					commentBody: commentTrimmed
-				});
+				const comment = await createComment(thread.ID, commentTrimmed);
 				updateComments(comments => [
 					...comments,
 					comment
@@ -68,13 +66,13 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	useEffect(() => ScrollHelper.scrollToHash(), []);
 	useEffect(() => {
-		coursePermission(thread.references.courseID, true)
+		coursePermission(thread.references.courseID)
 			.then((permission : Permission) => {
 				if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions)) {
 					setManageRestrictedComments(true);
 				}
 			});
-		getCurrentUser(true)
+		getCurrentUser()
 			.then((user : User) => {
 				if (user.ID === commentThreadOwner(thread)) {
 					setManageRestrictedComments(true);
@@ -88,7 +86,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 			{opened ?
 				<Fragment>
 					{comments.map(comment => <CommentComponent comment={comment}/>)}
-					<CommentCreator placeholder="Reply..." sendHandler={handleCommentSend}/>
+					<CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
 				</Fragment>
 				:
 				comments[0] !== undefined && <CommentComponent comment={comments[0]}/>
@@ -101,7 +99,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 					</Fragment>
 				}
 				{thread.file && thread.snippet &&
-					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/code#${thread.snippet.start.line + 1}`}>
+					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/view#${thread.snippet.start.line + 1}`}>
 						<Button>
 							<FiCode size={14} color="#FFFFFF"/>
 						</Button>
