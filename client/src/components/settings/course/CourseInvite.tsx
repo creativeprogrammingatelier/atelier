@@ -13,12 +13,12 @@ interface CourseInviteProperties {
 	courseID: string,
 }
 export function CourseInvite({name, link, role, courseID}: CourseInviteProperties) {
-	const [inviteLink, setInviteLink] = useState(link ? window.location.origin + link : "");
+	const [inviteLink, setInviteLink] = useState(link ? `${window.location.origin}/invite/${link}` : "");
 
 	const createLink = (role: inviteRole) => {
 		getInvite(courseID, role)
 		.then((courseInvite: CourseInviteModel) => {
-			setInviteLink(window.location.origin + `/api/invite/${courseInvite.inviteID}`);
+			setInviteLink(`${window.location.origin}/invite/${courseInvite.inviteID}`);
 		});
 	};
 

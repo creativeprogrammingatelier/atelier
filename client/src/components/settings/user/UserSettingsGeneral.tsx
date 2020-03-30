@@ -23,7 +23,7 @@ export function UserSettingsGeneral() {
 		setUser({name, email}).then(() => setReload(true));
 	};
 	return <Loading
-		loader={reload => getCurrentUser(false)}
+		loader={reload => getCurrentUser()}
 		params={[reload]}
 		component={(user: User) => {
 			if (name.length === 0) {
