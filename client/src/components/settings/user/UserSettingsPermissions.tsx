@@ -34,7 +34,6 @@ export function UserSettingsPermissions({viewPermissions, managePermissions, cou
 	const [permissions, setPermissions] = useState({} as PermissionState);
 
 	const setPermission = (permission: string, state: boolean) => {
-		console.log("Setting a permission state " + permission + " to " + state);
 		setPermissions(permissions => ({...permissions, [permission]: state}));
 	};
 	const handleUpdate = () => {

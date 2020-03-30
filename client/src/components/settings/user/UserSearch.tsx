@@ -26,7 +26,7 @@ export function UserSearch({courseID, onSelected}: UserSearchProperties) {
 	};
 
 	useEffect(() => {
-		if (!(user && user.name === search)) {
+		if (search.length > 0 && !(user && user.name === search)) {
 			onSelected(undefined);
 			searchUsers(search, courseID, 10).then(setUsers);
 		}

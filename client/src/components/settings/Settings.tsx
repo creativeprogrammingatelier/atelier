@@ -57,7 +57,12 @@ export function Settings() {
 			<DataList header="Plugins">
 				<Loading<Permission>
 					loader={permission}
-					component={permission => containsPermission(PermissionEnum.managePlugins, permission.permissions) && <PluginSettings/>}
+					component={permission => {
+						console.log("Attempting to load a plugin settings component");
+						console.log(permission);
+						console.log(containsPermission(PermissionEnum.managePlugins, permission.permissions));
+						return containsPermission(PermissionEnum.managePlugins, permission.permissions) && <PluginSettings/>
+					}}
 				/>
 			</DataList>
 		</Frame>
