@@ -1,18 +1,19 @@
 import React, {Fragment, useEffect, useState} from "react";
-import {Frame} from "../../frame/Frame";
-import {Loading} from "../../general/loading/Loading";
-import {coursePermission, getCourse} from "../../../../helpers/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {Permission} from "../../../../../models/api/Permission";
-import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
-import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
-import {DataList} from "../../data/DataList";
-import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
-import {UserSettingsRoles} from "../user/UserSettingsRoles";
 import {courseRole} from "../../../../../models/enums/courseRoleEnum";
-import {CourseSettingsInvites} from "./CourseSettingsInvites";
+import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
+import {coursePermission, getCourse} from "../../../../helpers/APIHelper";
+import {DataList} from "../../data/DataList";
+import {Frame} from "../../frame/Frame";
+import {Loading} from "../../general/loading/Loading";
+import {Permissions} from "../../general/Permissions";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
+import {UserSettingsRoles} from "../user/UserSettingsRoles";
+import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
+import {CourseSettingsInvites} from "./CourseSettingsInvites";
+import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
 
 interface CourseOverviewProps {
 	match: {
@@ -30,6 +31,7 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 	const [reloadCourse, setReloadCourse] = useState(0);
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
+	// TODO: Only used as input to UserSettingsPermissions, probably change the structure for it
 	useEffect(() => {
 		coursePermission(courseId)
 		.then((permission: Permission) => {
@@ -49,32 +51,27 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
 				/>
 			</Jumbotron>
-			{
-				containsPermission(PermissionEnum.manageCourses, permissions) &&
-				<DataList header="Course settings">
+			<Permissions required={PermissionEnum.manageCourses}>
+				<DataList header="Course Settings">
 					<CourseSettingsGeneral courseID={courseId} handleResponse={courseUpdate}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
-				<DataList header="Course invites">
+			</Permissions>
+			<Permissions required={PermissionEnum.manageUserRegistration}>
+				<DataList header="Course Invites">
 					<CourseSettingsInvites courseID={courseId}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
-				<DataList header="Enroll a user">
+			</Permissions>
+			<Permissions required={PermissionEnum.manageUserRegistration}>
+				<DataList header="Enroll a User">
 					<CourseSettingsEnrollment courseID={courseId}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserRole, permissions) &&
+			</Permissions>
+			<Permissions required={PermissionEnum.manageUserRole}>
 				<DataList header="User Roles">
 					<UserSettingsRoles<typeof courseRole> roles={courseRole} courseID={courseId}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
+			</Permissions>
+			<Permissions required={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
 				<DataList header="User Permissions">
 					<UserSettingsPermissions
 						courseID={courseId}
@@ -82,7 +79,7 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 						managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
 					/>
 				</DataList>
-			}
+			</Permissions>
 		</Frame>
 	);
 }

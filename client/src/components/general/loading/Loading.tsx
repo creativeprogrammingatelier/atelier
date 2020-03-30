@@ -44,10 +44,8 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
 	}, [parameters]);
 
 	if (state === LoadingState.Loaded) {
-		console.log("Loading is rendering a component");
 		return Parent.constructChildren(component(result!));
 	} else if (state === LoadingState.Error) {
-		console.log("Loading had an error");
 		return wrapped(
 			<div>
 				An error occurred: {error!.message}.
