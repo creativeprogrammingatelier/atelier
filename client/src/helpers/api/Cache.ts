@@ -40,8 +40,10 @@ export interface CacheInterface<T> {
     replace: (selector: (oldItem: T) => boolean, newItem: T, state: CacheState, date?: number) => void,
     /** Remove all matching items */
     remove: (selector: (item: T) => boolean, date?: number) => void,
-    /** Replace all items in the collection with a new array of items */
-    replaceAll: (items: T[], state: CacheState, selector?: (item: T) => boolean, date?: number) => void
+    /** Replace all (or optionally a selection of) items in the collection with a new array of items */
+    replaceAll: (items: T[], state: CacheState, selector?: (item: T) => boolean, date?: number) => void,
+    /** Delete the entire collection from the cache */
+    clear: () => void
 }
 
 /** Get the collection if it exists, or get a default collection */
@@ -104,12 +106,20 @@ export function getCacheInterface<T>(key: string, cache: Cache, updateCache: Upd
         }));
     }
 
+    const clear = () => {
+        updateCache(cache => {
+            const { [key]: collection, ...rest } = cache;
+            return rest;
+        });
+    }
+
     return {
         collection: getCollection(cache, key), 
         setCollectionState,
         add, 
         replace, 
         remove, 
-        replaceAll 
+        replaceAll,
+        clear
     };
 }
