@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {DataBlock} from './DataBlock';
-import { DataList } from './DataList';
+import {DataList, DataListProperties} from "./DataList";
 import {TagProperties} from "../general/Tag";
 
 export interface DataListEntryProperties {
@@ -10,11 +10,10 @@ export interface DataListEntryProperties {
 	time: Date,
 	tags?: TagProperties[]
 }
-interface DataListProperties {
-	header: string,
+interface DataBlockListProperties extends DataListProperties {
 	list: DataListEntryProperties[]
 }
-export function DataBlockList({header, list}: DataListProperties) {
+export function DataBlockList({list, ...properties}: DataBlockListProperties) {
 	const [currentTime, setCurrentTime] = useState(new Date());
 
 	useEffect(() => {
@@ -24,7 +23,7 @@ export function DataBlockList({header, list}: DataListProperties) {
         return () => clearInterval(handle);
 	}, []);
 
-	return <DataList header={header}>
+	return <DataList {...properties}>
 		{list.map((block) => <DataBlock transport={block.transport} title={block.title} text={block.text} time={{start:block.time, offset:currentTime}} tags={block.tags}/>)}
 	</DataList>
 }

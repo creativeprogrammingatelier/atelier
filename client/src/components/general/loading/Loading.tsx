@@ -4,7 +4,7 @@ import {Spinner} from "react-bootstrap";
 // TODO: Define this locally, as it will be the only place it should be used
 import {LoadingState} from "../../../placeholdermodels";
 import {LoadingIcon} from "./LoadingIcon";
-import {Children} from "../../../helpers/ParentHelper";
+import {Children, ChildrenConstructor, Parent} from "../../../helpers/ParentHelper";
 
 // Disable the warning, it's how you define a generic function in TypeScript
 // tslint:disable-next-line: no-any 
@@ -31,7 +31,7 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
 	const [result, updateResult] = useState(undefined as R | undefined);
 	const [error, updateError] = useState(undefined as {error: string, message: string} | undefined);
 
-	const wrapped = (children: JSX.Element) => wrapper ? <Fragment>{wrapper(children)}</Fragment> : children;
+	const wrapped = (children: JSX.Element) => wrapper ? <Fragment key="wrapped">{wrapper(children)}</Fragment> : children;
 
 	useEffect(() => {
 		(parameters ? promise(...parameters, cache) : promise(cache)).then(res => {
@@ -44,12 +44,10 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
 	}, [parameters]);
 
 	if (state === LoadingState.Loaded) {
-		return (
-			<Fragment>
-				{component(result!)}
-			</Fragment>
-		);
+		console.log("Loading is rendering a component");
+		return Parent.constructChildren(component(result!));
 	} else if (state === LoadingState.Error) {
+		console.log("Loading had an error");
 		return wrapped(
 			<div>
 				An error occurred: {error!.message}.

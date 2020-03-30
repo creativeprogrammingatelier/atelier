@@ -1,5 +1,5 @@
 import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify, toBin } from "./HelperDB";
-import {Course, courseToAPIPartial, DBAPICourse} from '../../../models/database/Course';
+import {Course, courseToAPIPartial, DBAPICourse, courseToAPI} from '../../../models/database/Course';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { FileDB } from "./FileDB";
 import { User } from "../../../models/database/User";
@@ -132,7 +132,7 @@ export class CourseDB {
 					]
 		type argType = typeof args;
 		return client.query(`
-			SELECT c.* 
+			SELECT c.*, cu.courseRole as currentCourseRole, cu.globalRole as currentGlobalRole, cu.permission as currentPermission 
 			FROM "CoursesView" as c, "CourseUsersViewAll" as cu
 			WHERE
 			--current user
@@ -141,12 +141,8 @@ export class CourseDB {
 			AND 
 			( -- either registered
 				cu.courseRole != '${courseRole.unregistered}'	
-			OR
-				( -- or view all courses
-					SELECT permission
-					FROM "UsersView"
-					WHERE userID=$8
-				) & b'${toBin(2**PermissionEnum.viewAllCourses)}' = b'${toBin(2**PermissionEnum.viewAllCourses)}'
+			OR -- or permission
+				cu.permission & b'${toBin(2**PermissionEnum.viewAllCourses)}' = b'${toBin(2**PermissionEnum.viewAllCourses)}'
 			)
 			--ids
 			AND ($1::uuid IS NULL OR c.courseID=$1)
@@ -163,7 +159,7 @@ export class CourseDB {
 			LIMIT $9
 			OFFSET $10
 			`, args)
-			.then(extract).then(map(courseToAPIPartial))
+			.then(extract).then(map(courseToAPI))
 	}
 
 	/**

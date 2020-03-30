@@ -6,19 +6,19 @@ import {LoadingIcon} from "../general/loading/LoadingIcon";
 import {FiChevronDown, FiChevronUp} from "react-icons/all";
 import {IconType} from "react-icons";
 
-interface DataListOptional {
+export interface DataListOptional {
 	icon: IconType,
 	click: () => void,
 	component: Children
 }
-interface DataItemListProperties extends ParentalProperties {
+export interface DataListProperties extends ParentalProperties {
 	header: string,
 	optional?: DataListOptional,
 	collapse?: boolean,
 	more?: (limit: number, offset: number) => Children
 	size?: number
 }
-export function DataList({header, optional,  collapse, more, size=5, children}: DataItemListProperties) {
+export function DataList({header, optional,  collapse, more, size=5, children}: DataListProperties) {
 	const [data, setData] = useState(children);
 	const [collapsed, setCollapsed] = useState(false);
 	const [offset, setOffset] = useState(size);
@@ -26,6 +26,8 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 	const [loadingMore, setLoadingMore] = useState(false);
 
 	useEffect(() => {
+		console.log("Updating the children of a list");
+		console.log(children);
 		setData(children);
 		setComplete(Parent.countChildren(children) < size);
 		setOffset(size);
@@ -45,7 +47,7 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 		}
 	}
 
-	return <div className="list">
+	return <div>
 		{(optional || Parent.countChildren(data) > 0) &&
 			<Heading
 				title={header}
@@ -58,7 +60,7 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 				{optional.component}
 			</div>
 		}
-		{!collapsed &&
+		{!collapsed && Parent.countChildren(data) > 0 &&
 			<div className="m-3">
 				<Fragment>
 					{data}

@@ -12,7 +12,7 @@ export function ImageViewer({file, sendComment}: FileViewerProperties) {
 
 	return <Fragment>
 		<CommentCreator sendHandler={handleCommentSend}/>
-		<img src={getFileUrl(file.ID)} alt={file.name} className="w-100 my-3"/>
+		<img src={getFileUrl(file.ID)} alt={file.name} className="w-100 mt-3"/>
 	</Fragment>;
 }
 function acceptsType(type: string) {

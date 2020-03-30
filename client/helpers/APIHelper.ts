@@ -128,7 +128,7 @@ export function getRecentComments(submissionID: string) {
 }
 export function setCommentThreadVisibility(commentThreadID: string, visible: boolean) {
 	return Fetch.fetchJson<CommentThread>(
-		`/api/commentThread/${commentThreadID}`, 
+		`/api/commentThread/${commentThreadID}`,
 		putJson({ visibility : visible ? "public" : "private" })
 	);
 }
@@ -136,6 +136,7 @@ export function setCommentThreadVisibility(commentThreadID: string, visible: boo
 export function createFileCommentThread(fileID: string, thread: CreateCommentThread) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread));
 }
+
 export function createSubmissionCommentThread(submissionID: string, thread: CreateCommentThread) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread));
 }
@@ -187,11 +188,11 @@ export function permission() {
 	return Fetch.fetchJson<Permission>(`/api/permission`);
 }
 
-export function setPermissionCourse(courseID: string, userID: string, permissions: {permissions: Permissions}) {
-	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson(permissions));
+export function setPermissionCourse(courseID: string, userID: string, permissions: Permissions) {
+	return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson({permissions}));
 }
-export function setPermissionGlobal(userID: string, permissions: {permissions: Permissions}) {
-	return Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, putJson(permissions));
+export function setPermissionGlobal(userID: string, permissions: Permissions) {
+	return Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, putJson({permissions}));
 }
 
 // Invites

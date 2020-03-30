@@ -7,6 +7,7 @@ export interface TagProperties extends ParentalProperties {
 	round?: boolean,
 	light?: boolean,
 	color?: string,
+	click?: () => void,
 	theme?:
 		| "primary"
 		| "secondary"
@@ -17,6 +18,6 @@ export interface TagProperties extends ParentalProperties {
 		| "light"
 		| "dark";
 }
-export function Tag({children, large, round, light, color, theme}: TagProperties) {
-	return<Badge pill={round} className={(light ? "text-dark" : "text-white") + (large ? " badge-large" : "")} variant={theme} style={{backgroundColor: color}}>{children}</Badge>
+export function Tag({children, large, round, light, color, click, theme}: TagProperties) {
+	return<Badge pill={round} className={(light ? "text-dark" : "text-white") + (large ? " badge-large" : "")} variant={theme} style={{backgroundColor: color}} onClick={click}>{children}</Badge>
 }

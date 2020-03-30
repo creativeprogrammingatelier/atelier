@@ -208,8 +208,10 @@ textarea:focus, textarea:active {
 	margin: 0 1rem 1rem 0;
 }
 
-.block {
+.area {
 	background-color: $colorWhite;
+}
+.block {
 	border-left: 0.5rem solid $primaryColor;
 }
 
@@ -239,9 +241,6 @@ textarea:focus, textarea:active {
 }
 .dataItem:not(:last-child), .dataBlock:not(:last-child), .dataToggle:not(:last-child) {
 	margin-bottom: 0.5rem;
-}
-.list:not(:last-child) {
-	margin-bottom: 1rem;
 }
 .toast {
 	backdrop-filter: none;
@@ -316,6 +315,12 @@ textarea:focus, textarea:active {
 	outline: 0;
 	box-shadow: none;
 }
+.form-control:disabled, .form-control[readonly] {
+	background-color: transparent;
+}
+.form-control[readonly], .form-control-plaintext[readonly] {
+	background-color: transparent; // Maybe do give this a distinct color
+}
 .custom-control-input {
 	z-index: 1;
 }
@@ -388,6 +393,7 @@ textarea:focus, textarea:active {
 }
 
 .mentions {
+	background-color: $colorWhite;
 	box-shadow: $shadowSmallDown inset;
 }
 .mention {
@@ -607,4 +613,12 @@ textarea:focus, textarea:active {
 		padding-left: 1rem;
 		padding-right: 1rem;
 	}
+}
+
+.label {
+	margin: 0;
+	padding: 0.25rem 0.5rem;
+	display: inline-block;
+	color: $colorWhite;
+	background-color: $colorSecondary;
 }
