@@ -314,6 +314,12 @@ textarea:focus, textarea:active {
 	outline: 0;
 	box-shadow: none;
 }
+.form-control:disabled, .form-control[readonly] {
+	background-color: transparent;
+}
+.form-control[readonly], .form-control-plaintext[readonly] {
+	background-color: transparent; // Maybe do give this a distinct color
+}
 .custom-control-input {
 	z-index: 1;
 }

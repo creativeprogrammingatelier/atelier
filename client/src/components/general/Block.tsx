@@ -1,7 +1,10 @@
 import React from "react";
-import {ParentalProperties} from "../../helpers/ParentHelper";
 import {Area} from "./Area";
+import {HTMLProperties} from "../../helpers/HTMLHelper";
 
-export function Block({children}: ParentalProperties) {
-	return <Area className="block">{children}</Area>
+interface BlockProperties extends HTMLProperties {
+	transparent?: boolean
+}
+export function Block({transparent, className, id, key, children}: BlockProperties) {
+	return <Area transparent={transparent} className={className + " block"} id={id} key={key}>{children}</Area>
 }
