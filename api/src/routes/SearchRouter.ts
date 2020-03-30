@@ -20,7 +20,7 @@ import { getCommonQueryParams, InvalidParamsError } from '../helpers/ParamsHelpe
 import { CourseRegistrationDB } from '../database/CourseRegistrationDB';
 import { CourseDB } from '../database/CourseDB';
 import { CourseUserToUser } from '../../../models/database/CourseUser';
-import { getCurrentUserID } from '../helpers/AuthenticationHelper';
+import { getCurrentUserID, AuthError } from '../helpers/AuthenticationHelper';
 import { SubmissionDB } from '../database/SubmissionDB';
 import { FileDB } from '../database/FileDB';
 import { map } from '../database/HelperDB';
@@ -32,11 +32,18 @@ export const searchRouter = express.Router();
 // Authentication is required for all endpoints
 searchRouter.use(AuthMiddleware.requireAuth);
 
+interface Common {
+    courseID: string | undefined;
+    userID: string | undefined;
+    submissionID: string | undefined;
+    currentUserID: string;
+    limit?: number;
+    offset?: number;
+}
 /** Get the parameters for a search query, throws an error if invalid */
-async function getSearchParams(request: Request) {
-    const query : string | undefined = decodeURIComponent(request.query.q);
+async function getSearchParams(request: Request) : Promise<{query:string,common:Common}>{
+    const query : string | undefined = request.query.q;
     if (!query?.trim()) throw new InvalidParamsError("q", "it should not be empty");
-
     const common = getCommonQueryParams(request);
     const courseID = request.query.courseID as string | undefined;
     const userID = request.query.userID as string | undefined;
@@ -46,8 +53,19 @@ async function getSearchParams(request: Request) {
     return { query, common: { ...common, courseID, userID, submissionID, currentUserID } };
 }
 
-function filterUser(user: User & { courseID?: string }) {
-    return user.courseID
+async function filterUser(query : string, common : Common) {
+    try {
+        await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles], common.courseID);
+    } catch (e){
+        //this operation is not permitted. return an emtpy array.
+        if (e instanceof AuthError){
+            return []
+        } else {
+            throw e;
+        }
+    }
+    const user : User = {...common, userName:query}
+    return common.courseID
         ? CourseRegistrationDB.filterCourseUser(user).then(map(CourseUserToUser))
         : UserDB.filterUser(user);
 }
@@ -57,8 +75,7 @@ searchRouter.get('/', capture(async (request, response) => {
     const { query, common } = await getSearchParams(request);
     if (common.courseID) { // we are searching within a course
         await requireRegistered(common.currentUserID, common.courseID);
-        const users = (await CourseRegistrationDB.filterCourseUser({ userName: query, ...common }))
-                    .map(CourseUserToUser);
+        const users = await filterUser(query, common);
         const comments = await CommentDB.searchComments(query, common);
         const snippets = await SnippetDB.searchSnippets(query, common);
         const submissions = await SubmissionDB.searchSubmissions(query, common);
@@ -75,8 +92,9 @@ searchRouter.get('/', capture(async (request, response) => {
         response.send(result);
     } else {
         const courses = await CourseDB.searchCourse(query, common);
+        const users = await filterUser(query, common)
         const result = {
-            users: [], 
+            users, 
             courses, 
             submissions: [], 
             files: [],
@@ -88,14 +106,23 @@ searchRouter.get('/', capture(async (request, response) => {
     }
 }));
 
+/** search for courses */
+searchRouter.get('/courses', capture(async (request, response) => {
+    const { query, common } = await getSearchParams(request);
+    if (common.courseID) {
+        throw new InvalidParamsError("when searching for a course, a courseID is not allowed")
+    }
+    const courses = await CourseDB.searchCourse(query, common);
+    response.send(courses);
+}));
+
 /** Search for users */
 searchRouter.get('/users', capture(async (request, response) => {
     const { query, common } = await getSearchParams(request);
     if (common.courseID) {
         await requireRegistered(common.currentUserID, common.courseID)
     }
-    await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles], common.courseID);
-    const users = await filterUser({ userName: query, ...common });
+    const users = await filterUser(query, common);
     response.send(users);
 }));
 
@@ -121,6 +148,7 @@ searchRouter.get('/snippets', capture(async (request, response) => {
     response.send(snippets);
 }));
 
+/** search for submissions */
 searchRouter.get('/submissions', capture(async (request, response) => {
     const { query, common } = await getSearchParams(request);
     if (!common.courseID){
@@ -131,6 +159,7 @@ searchRouter.get('/submissions', capture(async (request, response) => {
     response.send(submissions);
 }));
 
+/** search for files */
 searchRouter.get('/files', capture(async (request, response)=>{
     const { query, common } = await getSearchParams(request);
     if (!common.courseID){

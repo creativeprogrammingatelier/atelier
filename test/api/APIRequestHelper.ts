@@ -41,6 +41,10 @@ export const getCommentsUser = () => chai.request(app)
 export const getCommentsByUserAndCourse = () => chai.request(app)
     .get(`/api/comment/course/${COURSE_ID}/user/${USER_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const putComment = ()=> chai.request(app)
+    .put(`/api/comment/${COMMENT_THREAD_ID}`)
+    .send({commentBody:"this is a comment used for testing"})
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
 
 /** Comment thread requests */
 export const getCommentThread = () => chai.request(app)
@@ -135,6 +139,47 @@ export const setCourseRole = (role : courseRole) => chai.request(app)
     .set({'Authorization' : USER_AUTHORIZATION_KEY});
 export const setGlobalRole = (role : globalRole) => chai.request(app)
     .put(`/api/role/user/${USER_ID}/${role}`)
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+
+/** Search requests */
+export interface SearchParameters {
+    query?: string, 
+    courseID?: boolean, 
+    userID?: boolean, 
+    submissionID?: boolean,
+    limit?: number, 
+    offset?: number
+}
+function parseParams({query, courseID, submissionID, userID, limit, offset} : SearchParameters){
+    const opts = []
+    if (query !== undefined) opts.push(`q=`+encodeURIComponent(query))
+    if (courseID) opts.push(`courseID=`+COURSE_ID)
+    if (submissionID) opts.push(`submissionID=`+SUBMISSION_ID)
+    if (userID) opts.push(`userID=`+USER_ID)
+    if (limit !== undefined) opts.push(`limit=`+limit)
+    if (offset !== undefined) opts.push(`offset=`+offset)
+    return opts.join('&')
+}
+export const getAllSearch = (params : SearchParameters) => chai.request(app)
+    .get("/api/search?"+parseParams(params))
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const getCourseSearch = (params : SearchParameters) => chai.request(app)
+    .get("/api/search/courses?"+parseParams(params))
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const getUserSearch = (params : SearchParameters) => chai.request(app)
+    .get("/api/search/users?"+parseParams(params))
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const getSubmissionSearch = (params : SearchParameters) => chai.request(app)
+    .get("/api/search/submissions?"+parseParams(params))
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const getFileSearch = (params : SearchParameters) => chai.request(app)
+    .get("/api/search/files?"+parseParams(params))
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const getThreadSearch = (params : SearchParameters) => chai.request(app)
+    .get("/api/search/comments?"+parseParams(params))
+    .set({'Authorization' : USER_AUTHORIZATION_KEY});
+export const getSnippetSearch = (params : SearchParameters) => chai.request(app)
+    .get("/api/search/snippets?"+parseParams(params))
     .set({'Authorization' : USER_AUTHORIZATION_KEY});
 
 /** Submission requests */
