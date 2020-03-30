@@ -136,6 +136,7 @@ export function setCommentThreadVisibility(commentThreadID: string, visible: boo
 export function createFileCommentThread(fileID: string, thread: CreateCommentThread) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread));
 }
+
 export function createSubmissionCommentThread(submissionID: string, thread: CreateCommentThread) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread));
 }

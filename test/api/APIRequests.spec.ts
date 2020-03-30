@@ -30,8 +30,8 @@ import {
     adminSetRoleGlobal,
     adminUnregisterCourse,
     COURSE_ID,
-    createCourse,
-    DEFAULT_PERMISSIONS,
+    createCourse, DEFAULT_COURSE_PERMISSIONS,
+    DEFAULT_GLOBAL_PERMISSIONS,
     deleteCourse,
     deleteInviteStudent,
     deleteInviteTA,
@@ -89,7 +89,7 @@ import {getEnum} from "../../models/enums/enumHelper";
 import {courseRole} from "../../models/enums/courseRoleEnum";
 import {globalRole} from "../../models/enums/globalRoleEnum";
 
-let createdCourseID : string | undefined = undefined;
+let createdCourseID: string | undefined = undefined;
 
 describe("API Tests", () => {
     /**
@@ -108,7 +108,7 @@ describe("API Tests", () => {
      * If a single test fails, permissions are not set back automatically in the test.
      * Thus they are reset before each test so that future tests do not fail.
      */
-    beforeEach(async() => {
+    beforeEach(async () => {
         await removeAllPermissions();
         await removeAllRegistrations();
         await setDefaultRoles();
@@ -116,31 +116,31 @@ describe("API Tests", () => {
 
     async function removeAllPermissions() {
         await adminSetPermissions({
-            "manageUserPermissionsView" : false,
-            "manageUserPermissionsManager" : false,
-            "manageUserRole" : false,
-            "viewAllUserProfiles" : false,
-            "manageUserRegistration" : false,
-            "viewAllCourses" : false,
-            "addCourses" : false,
-            "manageCourses" : false,
-            "addAssignments" : false,
-            "manageAssignments" : false,
-            "viewAllSubmissions" : false,
-            "viewRestrictedComments" : false,
-            "addRestrictedComments" : false,
-            "manageRestrictedComments" : false,
-            "mentionAllStudents" : false,
-            "mentionAllAssistants" : false,
-            "mentionAllTeachers" : false,
-            "mentionNoLimit" : false
+            "manageUserPermissionsView": false,
+            "manageUserPermissionsManager": false,
+            "manageUserRole": false,
+            "viewAllUserProfiles": false,
+            "manageUserRegistration": false,
+            "viewAllCourses": false,
+            "addCourses": false,
+            "manageCourses": false,
+            "addAssignments": false,
+            "manageAssignments": false,
+            "viewAllSubmissions": false,
+            "viewRestrictedComments": false,
+            "addRestrictedComments": false,
+            "manageRestrictedComments": false,
+            "mentionAllStudents": false,
+            "mentionAllAssistants": false,
+            "mentionAllTeachers": false,
+            "mentionNoLimit": false
         });
     }
 
     async function removeAllRegistrations() {
         const response = await adminCoursesToUnregister();
         for (let i = 0; i < response.body.length; i++) {
-            const course : CoursePartial = response.body[i];
+            const course: CoursePartial = response.body[i];
             assert(instanceOfCoursePartial(course));
             await adminUnregisterCourse(course.ID);
         }
@@ -161,7 +161,7 @@ describe("API Tests", () => {
 
         const user: User = response.body;
         assert(instanceOfUser(user));
-        expect(user.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+        expect(user.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
     });
 
     /**
@@ -296,7 +296,7 @@ describe("API Tests", () => {
             await adminSetPermissions({"viewAllCourses": false});
         });
 
-        it("Should not be possible to set visibility without permission.", async() => {
+        it("Should not be possible to set visibility without permission.", async () => {
             let response = await setCommentThreadPrivate();
             expect(response).to.have.status(401);
 
@@ -304,8 +304,8 @@ describe("API Tests", () => {
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to set visibility with permission", async() => {
-            await adminSetPermissions({"manageRestrictedComments" : true});
+        it("Should be possible to set visibility with permission", async () => {
+            await adminSetPermissions({"manageRestrictedComments": true});
 
             // Change comment thread to private
             let response = await setCommentThreadPrivate();
@@ -319,7 +319,7 @@ describe("API Tests", () => {
             expect(instanceOfCommentThread(response.body));
             expect(response.body.visibility === "public");
 
-            await adminSetPermissions({"manageRestrictedComments" : false});
+            await adminSetPermissions({"manageRestrictedComments": false});
         });
     });
 
@@ -420,13 +420,14 @@ describe("API Tests", () => {
             await adminSetPermissions({"viewAllCourses": false});
         });
 
+
         it("Should not be possible to create a course without permission.", async() => {
             const response = await createCourse("Test course", courseState.open);
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to create a course with permission, and have user be enrolled.", async() => {
-            await adminSetPermissions({"addCourses" : true});
+        it("Should be possible to create a course with permission, and have user be enrolled.", async () => {
+            await adminSetPermissions({"addCourses": true});
 
             // Create course
             let response = await createCourse("Test course", courseState.open);
@@ -439,22 +440,22 @@ describe("API Tests", () => {
             // User is enrolled
             response = await getCourses();
             expect(response).to.have.status(200);
-            assert(response.body.every((course : CoursePartial) => instanceOfCoursePartial(course)));
+            assert(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
 
-            const courses : CoursePartial[] = response.body;
-            assert(courses.some((course : CoursePartial) => course.ID === createdCourseID));
+            const courses: CoursePartial[] = response.body;
+            assert(courses.some((course: CoursePartial) => course.ID === createdCourseID));
 
-            await adminSetPermissions({"addCourses" : false});
+            await adminSetPermissions({"addCourses": false});
         });
 
-        it("Should not be possible to set name / state of a course without permission", async() => {
+        it("Should not be possible to set name / state of a course without permission", async () => {
             assert(createdCourseID !== undefined);
             const response = await updateCourse(createdCourseID!, {name : "Test course 2", state : courseState.hidden});
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to set name / state of a course with permission.", async() => {
-            await adminSetPermissions({"manageCourses" : true});
+        it("Should be possible to set name / state of a course with permission.", async () => {
+            await adminSetPermissions({"manageCourses": true});
 
             // Update course name / state
             const response = await updateCourse(createdCourseID!, {name : "Test course 3", state : courseState.hidden});
@@ -463,17 +464,17 @@ describe("API Tests", () => {
             expect(response.body.name).to.equal("Test course 3");
             expect(response.body.state).to.equal(courseState.hidden);
 
-            await adminSetPermissions({"manageCourses" : false});
+            await adminSetPermissions({"manageCourses": false});
         });
 
-        it("Should not be possible to remove a user from a course without permission.", async() => {
+        it("Should not be possible to remove a user from a course without permission.", async () => {
             assert(createdCourseID !== undefined);
             const response = await registerUserCourse(createdCourseID!, USER_ID);
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to enroll a user in a course with permission, and unregister.", async() => {
-            await adminSetPermissions({"manageUserRegistration" : true});
+        it("Should be possible to enroll a user in a course with permission, and unregister.", async () => {
+            await adminSetPermissions({"manageUserRegistration": true});
 
             // Enroll user ins course
             assert(createdCourseID !== undefined);
@@ -487,24 +488,24 @@ describe("API Tests", () => {
             assert(instanceOfCourseUser(response.body));
 
             await unregisterUserCourse(createdCourseID!, USER_ID);
-            await adminSetPermissions({"manageUserRegistration" : false});
+            await adminSetPermissions({"manageUserRegistration": false});
         });
 
-        it("Should not be possible to delete a course without permission", async() => {
+        it("Should not be possible to delete a course without permission", async () => {
             assert(createdCourseID !== undefined);
             const response = await deleteCourse(createdCourseID!);
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to delete a course with permission.", async() => {
-            await adminSetPermissions({"manageCourses" : true});
+        it("Should be possible to delete a course with permission.", async () => {
+            await adminSetPermissions({"manageCourses": true});
 
             assert(createdCourseID !== undefined);
             const response = await deleteCourse(createdCourseID!);
             expect(response).to.have.status(200);
             assert(instanceOfCoursePartial(response.body));
 
-            await adminSetPermissions({"manageCourses" : false});
+            await adminSetPermissions({"manageCourses": false});
         });
     });
 
@@ -530,12 +531,12 @@ describe("API Tests", () => {
             expect(response.body.teacher).to.equal(undefined);
         }
 
-        it("Should not be possible to request all invite links without permission", async() => {
+        it("Should not be possible to request all invite links without permission", async () => {
             const response = await getInvitesByUserAndCourse();
             expect(response).to.have.status(401);
         });
 
-        it("Should not be possible to request a specific invite link without permission", async() => {
+        it("Should not be possible to request a specific invite link without permission", async () => {
             // User cannot create a student invite link without permission
             let response = await getInviteStudent();
             expect(response).to.have.status(401);
@@ -549,36 +550,36 @@ describe("API Tests", () => {
             expect(response).to.have.status(401);
         });
 
-        it("Should have no links at the start.", async() => {
+        it("Should have no links at the start.", async () => {
             await deleteInviteStudent();
             await deleteInviteTA();
             await deleteInviteTeacher();
 
-            await setPermissionsGlobal({"manageUserRegistration" : true});
+            await setPermissionsGlobal({"manageUserRegistration": true});
             await checkInviteEmpty();
-            await setPermissionsGlobal({"manageUserRegistration" : false});
+            await setPermissionsGlobal({"manageUserRegistration": false});
         });
 
-        it("Should be possible to create and receive links.", async() => {
-            await adminSetPermissions({"manageUserRegistration" : true});
+        it("Should be possible to create and receive links.", async () => {
+            await adminSetPermissions({"manageUserRegistration": true});
 
             // User can create a student invite link with permission
             let response = await getInviteStudent();
             expect(response).to.have.status(200);
             assert(instanceOfInvite(response.body));
-            const studentInviteID : string = response.body.inviteID;
+            const studentInviteID: string = response.body.inviteID;
 
             // User can create a TA invite link with permission
             response = await getInviteTA();
             expect(response).to.have.status(200);
             assert(instanceOfInvite(response.body));
-            const taInviteID : string = response.body.inviteID;
+            const taInviteID: string = response.body.inviteID;
 
             // User can create a teacher invite link with permission
             response = await getInviteTeacher();
             expect(response).to.have.status(200);
             assert(instanceOfInvite(response.body));
-            const teacherInviteID : string = response.body.inviteID;
+            const teacherInviteID: string = response.body.inviteID;
 
             // Check that invite links exist now
             response = await getInvitesByUserAndCourse();
@@ -587,18 +588,18 @@ describe("API Tests", () => {
             expect(response.body.TA).to.equal(taInviteID);
             expect(response.body.teacher).to.equal(teacherInviteID);
 
-            await adminSetPermissions({"manageUserRegistration" : false});
+            await adminSetPermissions({"manageUserRegistration": false});
         });
 
-        it("Should be possible to delete links.", async() => {
-            await adminSetPermissions({"manageUserRegistration" : true});
+        it("Should be possible to delete links.", async () => {
+            await adminSetPermissions({"manageUserRegistration": true});
 
             let response = await getInvitesByUserAndCourse();
             expect(response).to.have.status(200);
 
-            const studentInviteID : string = response.body.student;
-            const taInviteID : string = response.body.TA;
-            const teacherInviteID : string = response.body.teacher;
+            const studentInviteID: string = response.body.student;
+            const taInviteID: string = response.body.TA;
+            const teacherInviteID: string = response.body.teacher;
 
             // User can delete a student invite link
             response = await deleteInviteStudent();
@@ -620,7 +621,7 @@ describe("API Tests", () => {
 
             await checkInviteEmpty();
 
-            await adminSetPermissions({"manageUserRegistration" : false});
+            await adminSetPermissions({"manageUserRegistration": false});
         });
     });
 
@@ -643,23 +644,23 @@ describe("API Tests", () => {
      * - user can set view permissions with permission to manage view permissions
      * - user can set manage permission with permission to manage manage permissions
      */
-    describe("Permissions", async() => {
-        function setManagePermissions(course : boolean, state : boolean) {
+    describe("Permissions", async () => {
+        function setManagePermissions(course: boolean, state: boolean) {
             const permissions = {
-                "manageUserPermissionsManager" : state,
-                "manageUserPermissionsView" : state,
-                "manageUserRole" : state,
-                "manageUserRegistration" : state,
-                "addCourses" : state,
-                "manageCourses" : state,
-                "addAssignments" : state,
-                "manageAssignments" : state,
-                "addRestrictedComments" : state,
-                "manageRestrictedComments" : state,
-                "mentionAllStudents" : state,
-                "mentionAllAssistants" : state,
-                "mentionAllTeachers" : state,
-                "mentionNoLimit" : state
+                "manageUserPermissionsManager": state,
+                "manageUserPermissionsView": state,
+                "manageUserRole": state,
+                "manageUserRegistration": state,
+                "addCourses": state,
+                "manageCourses": state,
+                "addAssignments": state,
+                "manageAssignments": state,
+                "addRestrictedComments": state,
+                "manageRestrictedComments": state,
+                "mentionAllStudents": state,
+                "mentionAllAssistants": state,
+                "mentionAllTeachers": state,
+                "mentionNoLimit": state
             };
             return course ?
                 setPermissionsCourse(permissions)
@@ -667,12 +668,12 @@ describe("API Tests", () => {
                 setPermissionsGlobal(permissions);
         }
 
-        function setViewPermissions(course : boolean, state : boolean) {
+        function setViewPermissions(course: boolean, state: boolean) {
             const permissions = {
-                "viewAllUserProfiles" : state,
-                "viewAllCourses" : state,
-                "viewAllSubmissions" : state,
-                "viewRestrictedComments" : state
+                "viewAllUserProfiles": state,
+                "viewAllCourses": state,
+                "viewAllSubmissions": state,
+                "viewRestrictedComments": state
             };
             return course ?
                 setPermissionsCourse(permissions)
@@ -680,18 +681,18 @@ describe("API Tests", () => {
                 setPermissionsGlobal(permissions);
         }
 
-        async function setAllPermissions(course : boolean, state : boolean) {
+        async function setAllPermissions(course: boolean, state: boolean) {
             await setViewPermissions(course, state);
             return setManagePermissions(course, state);
         }
 
-        it("Should be possible to get own global permissions", async() => {
-           const response = await getPermission();
-           expect(response).to.have.status(200);
-           assert(instanceOfPermission(response.body));
+        it("Should be possible to get own global permissions", async () => {
+            const response = await getPermission();
+            expect(response).to.have.status(200);
+            assert(instanceOfPermission(response.body));
         });
 
-        it("Should be possible to get course permissions if enrolled", async() => {
+        it("Should be possible to get course permissions if enrolled", async () => {
             await adminRegisterCourse();
 
             const response = await getPermissionByCourse();
@@ -701,36 +702,36 @@ describe("API Tests", () => {
             await adminUnregisterCourse();
         });
 
-        it("Should no permissions to a course if not enrolled", async() => {
+        it("Should no permissions to a course if not enrolled", async () => {
             const response = await getPermissionByCourse();
             expect(response).to.have.status(200);
             assert(instanceOfPermission(response.body));
-            expect(response.body.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
-        it("Should not be possible to update global user permissions without permission.", async() => {
+        it("Should not be possible to update global user permissions without permission.", async () => {
             const response = await setAllPermissions(false, true);
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
-        it("Should not be possible to set course permissions without being enrolled.", async() => {
+        it("Should not be possible to set course permissions without being enrolled.", async () => {
             const response = await setAllPermissions(true, false);
             expect(response).to.have.status(404);
         });
 
-        it("Should not be possible to update course user permissions without permission", async() => {
+        it("Should not be possible to update course user permissions without permission", async () => {
             await adminRegisterCourse();
 
             const response = await setAllPermissions(true, true);
             expect(response).to.have.status(200);
             assert(instanceOfCourseUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permission.permissions).to.equal(DEFAULT_COURSE_PERMISSIONS);
         });
 
-        it("Should be possible to update view user permissions permission", async() => {
-            await adminSetPermissions({"manageUserPermissionsView" : true});
+        it("Should be possible to update view user permissions permission", async () => {
+            await adminSetPermissions({"manageUserPermissionsView": true});
 
             const response = await setAllPermissions(false, true);
             expect(response).to.have.status(200);
@@ -750,11 +751,11 @@ describe("API Tests", () => {
                 }
             });
 
-            await adminSetPermissions({"manageUserPermissionsView" : false});
+            await adminSetPermissions({"manageUserPermissionsView": false});
         });
 
-        it("Should be possible to update manage user permissions globally with permission.", async() => {
-            await adminSetPermissions({"manageUserPermissionsManager" : true});
+        it("Should be possible to update manage user permissions globally with permission.", async () => {
+            await adminSetPermissions({"manageUserPermissionsManager": true});
 
             const response = await setAllPermissions(false, true);
             expect(response).to.have.status(200);
@@ -772,7 +773,7 @@ describe("API Tests", () => {
                 assert(containsPermission(bit, response.body.permission.permissions));
             });
 
-            await adminSetPermissions({"manageUserPermissionsManager" : false});
+            await adminSetPermissions({"manageUserPermissionsManager": false});
         });
     });
 
@@ -795,47 +796,43 @@ describe("API Tests", () => {
      * - user should have permission to manage user permissions
      */
     describe("Role", () => {
-       it("Should not be possible to set a role without permission.", async() => {
-           let response = await setCourseRole(courseRole.TA);
-           expect(response).to.have.status(401);
+        it("Should not be possible to set a role without permission.", async () => {
+            let response = await setCourseRole(courseRole.TA);
+            expect(response).to.have.status(401);
 
-           response = await setGlobalRole(globalRole.staff);
-           expect(response).to.have.status(401);
-       });
+            response = await setGlobalRole(globalRole.staff);
+            expect(response).to.have.status(401);
+        });
 
-       it("Should be possible to set global role with permission.", async() => {
-           await adminSetPermissions({"manageUserRole" : true});
+        it("Should be possible to set global role with permission.", async () => {
+            await adminSetPermissions({"manageUserRole": true});
 
-           let response = await setGlobalRole(globalRole.admin);
-           expect(response).to.have.status(200);
-           assert(instanceOfUser(response.body));
-           expect(response.body.permission.globalRole).to.equal(globalRole.admin);
+            const roles = [globalRole.user, globalRole.plugin, globalRole.staff, globalRole.admin];
+            for (let i = 0; i < roles.length; i++) {
+                const response = await setGlobalRole(roles[i]);
+                expect(response).to.have.status(200);
+                assert(instanceOfUser(response.body));
+                expect(response.body.permission.globalRole).to.equal(roles[i]);
+            }
 
-           response = await setGlobalRole(globalRole.user);
-           expect(response).to.have.status(200);
-           assert(instanceOfUser(response.body));
-           expect(response.body.permission.globalRole).to.equal(globalRole.user);
+            await adminSetPermissions({"manageUserRole": false});
+        });
 
-           await adminSetPermissions({"manageUserRole" : false});
-       });
+        it("Should be possible to set course role with permission.", async () => {
+            await adminRegisterCourse();
+            await adminSetPermissions({"manageUserRole": true});
 
-       it("Should be possible to set course role with permission.", async() => {
-           await adminRegisterCourse();
-           await adminSetPermissions({"manageUserRole" : true});
+            const roles = [courseRole.plugin, courseRole.student, courseRole.TA, courseRole.teacher, courseRole.moduleCoordinator];
+            for (let i = 0; i < roles.length; i++) {
+                const response = await setCourseRole(roles[i]);
+                expect(response).to.have.status(200);
+                assert(instanceOfCourseUser(response.body));
+                expect(response.body.permission.courseRole).to.equal(roles[i]);
+            }
 
-           let response = await setCourseRole(courseRole.TA);
-           expect(response).to.have.status(200);
-           assert(instanceOfCourseUser(response.body));
-           expect(response.body.permission.courseRole).to.equal(courseRole.TA);
-
-           response = await setCourseRole(courseRole.student);
-           expect(response).to.have.status(200);
-           assert(instanceOfCourseUser(response.body));
-           expect(response.body.permission.courseRole).to.equal(courseRole.student);
-
-           await adminSetPermissions({"manageUserRole" : false});
-           await adminUnregisterCourse();
-       });
+            await adminSetPermissions({"manageUserRole": false});
+            await adminUnregisterCourse();
+        });
     });
 
     /**
@@ -867,17 +864,17 @@ describe("API Tests", () => {
             // User can get submissions with permission
             response = await getSubmissionsByCourse();
             expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+            assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
 
             // User can get own submissions in a course if registered
             response = await getSubmissionsByOwnCourseUser();
             expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+            assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
 
             // User can get own submissions in a course if registered
             response = await getSubmissionsByOwnUser();
             expect(response).to.have.status(200);
-            assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+            assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
 
             // User can only get other users submissions with permission
             response = await getSubmissionsByOtherUser();
@@ -885,7 +882,7 @@ describe("API Tests", () => {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+                assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
             }
 
             // User can only get other users submission with permission
@@ -894,11 +891,11 @@ describe("API Tests", () => {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                assert(response.body.every((submission : Submission) => instanceOfSubmission(submission)));
+                assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
             }
         }
 
-        it("Should not be possible to view submissions if no permission.", async() => {
+        it("Should not be possible to view submissions if no permission.", async () => {
             // User cannot get a submission without permission
             let response = await getSubmission();
             expect(response).to.have.status(401);
@@ -920,7 +917,7 @@ describe("API Tests", () => {
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to view own submissions in enrolled course. Not of others without permission.", async() => {
+        it("Should be possible to view own submissions in enrolled course. Not of others without permission.", async () => {
             await adminRegisterCourse();
 
             await submissionPermissions(true);
@@ -928,13 +925,13 @@ describe("API Tests", () => {
             await adminUnregisterCourse();
         });
 
-        it("Should be possible to view all submissions in a course with permission", async() => {
+        it("Should be possible to view all submissions in a course with permission", async () => {
             await adminRegisterCourse();
-            await adminSetPermissions({"viewAllSubmissions" : true});
+            await adminSetPermissions({"viewAllSubmissions": true});
 
             await submissionPermissions();
 
-            await adminSetPermissions({"viewAllSubmissions" : false});
+            await adminSetPermissions({"viewAllSubmissions": false});
             await adminUnregisterCourse();
         });
     });
@@ -958,7 +955,7 @@ describe("API Tests", () => {
      */
     describe("Users", () => {
 
-        it("Should be possible to get own user profile", async() => {
+        it("Should be possible to get own user profile", async () => {
             let response = await getOwnUser1();
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
@@ -968,52 +965,52 @@ describe("API Tests", () => {
             assert(instanceOfUser(response.body));
         });
 
-        it("Should not be possible to get other user profile without permissions", async() => {
+        it("Should not be possible to get other user profile without permissions", async () => {
             const response = await getOtherUser();
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to get other user profile with permission.", async() => {
-            await adminSetPermissions({"viewAllUserProfiles" : true});
+        it("Should be possible to get other user profile with permission.", async () => {
+            await adminSetPermissions({"viewAllUserProfiles": true});
 
             const response = await getOtherUser();
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
 
-            await adminSetPermissions({"viewAllUserProfiles" : false});
+            await adminSetPermissions({"viewAllUserProfiles": false});
         });
 
-        it("Should not be possible to get course users without permission to view all user profiles", async() => {
+        it("Should not be possible to get course users without permission to view all user profiles", async () => {
             const response = await getUsersByCourse();
             expect(response).to.have.status(401);
         });
 
-        it("Should not be possible to get all users without permission to view all user profiles", async() => {
+        it("Should not be possible to get all users without permission to view all user profiles", async () => {
             const response = await getUsers();
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to get all course users with permission to view all user profiles", async() => {
-            await adminSetPermissions({"viewAllUserProfiles" : true});
+        it("Should be possible to get all course users with permission to view all user profiles", async () => {
+            await adminSetPermissions({"viewAllUserProfiles": true});
 
             const response = await getUsersByCourse();
             expect(response).to.have.status(200);
-            assert(response.body.every((user : CourseUser) => instanceOfCourseUser(user)));
+            assert(response.body.every((user: CourseUser) => instanceOfCourseUser(user)));
 
-            await adminSetPermissions({"viewAllUserProfiles" : false});
+            await adminSetPermissions({"viewAllUserProfiles": false});
         });
 
-        it("Should be possible to get all users with permission to view all user profiles", async() => {
-            await adminSetPermissions({"viewAllUserProfiles" : true});
+        it("Should be possible to get all users with permission to view all user profiles", async () => {
+            await adminSetPermissions({"viewAllUserProfiles": true});
 
             const response = await getUsers();
             expect(response).to.have.status(200);
-            assert(response.body.every((user : User) => instanceOfUser(user)));
+            assert(response.body.every((user: User) => instanceOfUser(user)));
 
-            await adminSetPermissions({"viewAllUserProfiles" : false});
+            await adminSetPermissions({"viewAllUserProfiles": false});
         });
 
-        it("Should be possible for a user to update name.", async() => {
+        it("Should be possible for a user to update name.", async () => {
             const newName = randomString();
             const response = await updateUserName(newName);
             expect(response).to.have.status(200);
@@ -1023,7 +1020,7 @@ describe("API Tests", () => {
             await updateUserName("test user");
         });
 
-        it("Should be possible for a user to update email.", async() => {
+        it("Should be possible for a user to update email.", async () => {
             const newEmail = randomString();
             const response = await updateUserEmail(newEmail);
             expect(response).to.have.status(200);
