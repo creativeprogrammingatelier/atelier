@@ -14,8 +14,6 @@ export function PluginSettings() {
 		<Loading<Plugin[]>
 			loader={getPlugins}
 			component={plugins => {
-				console.log("Rendering plugins");
-				console.log(plugins);
 				return <Fragment>
 					{plugins.map(plugin =>
 						<Block transparent className="mb-3 px-2">
@@ -33,7 +31,8 @@ export function PluginSettings() {
 							cancel: () => updateCreating(false)
 						}}/>
 						:
-						<Button onClick={() => updateCreating(true)}>Add</Button>}
+						<Button onClick={() => updateCreating(true)}>Add</Button>
+					}
 				</Fragment>
 			}}
 		/>
