@@ -30,8 +30,8 @@ import {
     adminSetRoleGlobal,
     adminUnregisterCourse,
     COURSE_ID,
-    createCourse,
-    DEFAULT_PERMISSIONS,
+    createCourse, DEFAULT_COURSE_PERMISSIONS,
+    DEFAULT_GLOBAL_PERMISSIONS,
     deleteCourse,
     deleteInviteStudent,
     deleteInviteTA,
@@ -161,7 +161,7 @@ describe("API Tests", () => {
 
         const user: User = response.body;
         assert(instanceOfUser(user));
-        expect(user.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+        expect(user.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
     });
 
     /**
@@ -705,14 +705,14 @@ describe("API Tests", () => {
             const response = await getPermissionByCourse();
             expect(response).to.have.status(200);
             assert(instanceOfPermission(response.body));
-            expect(response.body.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
         it("Should not be possible to update global user permissions without permission.", async () => {
             const response = await setAllPermissions(false, true);
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
         it("Should not be possible to set course permissions without being enrolled.", async () => {
@@ -726,7 +726,7 @@ describe("API Tests", () => {
             const response = await setAllPermissions(true, true);
             expect(response).to.have.status(200);
             assert(instanceOfCourseUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permission.permissions).to.equal(DEFAULT_COURSE_PERMISSIONS);
         });
 
         it("Should be possible to update view user permissions permission", async () => {

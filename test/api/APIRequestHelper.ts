@@ -13,8 +13,9 @@ export let USER_ID = "";
 /** ID of an admin account to set permissions on the user */
 const ADMIN_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 
-/** Default permissions used by the database */
-export const DEFAULT_PERMISSIONS = 1;
+/** Default permissions used by the database of user & student */
+export const DEFAULT_GLOBAL_PERMISSIONS = 0;
+export const DEFAULT_COURSE_PERMISSIONS = 25769803776;
 
 /** Default IDs assumed to be in the database */
 /** COMMENT_THREAD_ID in FILE_ID in SUBMISSION_ID in COURSE_ID */
