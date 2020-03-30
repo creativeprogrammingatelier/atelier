@@ -1,4 +1,4 @@
-import { courseRole } from "./courseRoleEnum";
+import { CourseRole } from "./CourseRoleEnum";
 interface EnumType {
 	[id : string] : string
 }

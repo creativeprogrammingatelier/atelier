@@ -1,4 +1,4 @@
-import {threadState} from '../enums/threadStateEnum'
+import {ThreadState} from '../enums/ThreadStateEnum'
 import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
 import {CommentThread as APIThread} from '../api/CommentThread'
 import { fileToAPI, DBAPIFile, isNotNullFile } from './File'
@@ -12,7 +12,7 @@ export interface Thread extends DBTools{
 	courseID?: string,
 	fileID?: string,
 	snippetID?: string,
-	visibilityState?: threadState,
+	visibilityState?: ThreadState,
 	//requires extra database call
 	addComments?:boolean,
 }
@@ -38,7 +38,7 @@ export function convertThread(db : DBThread) : Thread {
 		courseID: UUIDHelper.fromUUID(db.courseid),
 		fileID: UUIDHelper.fromUUID(db.fileid),
 		snippetID: UUIDHelper.fromUUID(db.snippetid),
-		visibilityState: getEnum(threadState, db.visibilitystate)
+		visibilityState: getEnum(ThreadState, db.visibilitystate)
 	}
 }
 export function threadToAPI(db : DBAPIThread) : APIThread{
@@ -47,7 +47,7 @@ export function threadToAPI(db : DBAPIThread) : APIThread{
 		ID: UUIDHelper.fromUUID(db.commentthreadid),
 		file: fileToAPI(db),
 		snippet: snippetToAPI(db),
-		visibility: getEnum(threadState, db.visibilitystate),
+		visibility: getEnum(ThreadState, db.visibilitystate),
 		comments: [],
 		references:{
 			courseID: UUIDHelper.fromUUID(db.courseid),

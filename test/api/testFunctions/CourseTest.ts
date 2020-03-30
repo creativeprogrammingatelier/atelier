@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { assert } from "console";
 import { instanceOfCoursePartial, instanceOfCourseUser } from "../../InstanceOf";
 import { CoursePartial } from "../../../models/api/Course";
-import { courseState } from "../../../models/enums/courseStateEnum";
+import { CourseState } from "../../../models/enums/CourseStateEnum";
 
 export function courseTest(){
 	let createdCourseID : string | undefined = undefined;
@@ -105,7 +105,7 @@ export function courseTest(){
         });
 
         it("Should not be possible to create a course without permission.", async() => {
-            const response = await createCourse("Test Course", courseState.open);
+            const response = await createCourse("Test Course", CourseState.open);
             expect(response).to.have.status(401);
         });
 
@@ -113,10 +113,10 @@ export function courseTest(){
             await adminSetPermissions({"addCourses" : true});
 
             // Create course
-            let response = await createCourse("Test Course", courseState.open);
+            let response = await createCourse("Test Course", CourseState.open);
             expect(response).to.have.status(200);
             assert(instanceOfCoursePartial(response.body));
-            expect(response.body.state).to.equal(courseState.open);
+            expect(response.body.state).to.equal(CourseState.open);
             expect(response.body.name).to.equal("Test Course");
             createdCourseID = response.body.ID;
 
@@ -133,7 +133,7 @@ export function courseTest(){
 
         it("Should not be possible to set name / state of a course without permission", async() => {
             assert(createdCourseID !== undefined);
-            const response = await updateCourse(createdCourseID!, {name : "Test Course 2", state : courseState.hidden});
+            const response = await updateCourse(createdCourseID!, {name : "Test Course 2", state : CourseState.hidden});
             expect(response).to.have.status(401);
         });
 
@@ -141,11 +141,11 @@ export function courseTest(){
             await adminSetPermissions({"manageCourses" : true});
 
             // Update course name / state
-            const response = await updateCourse(createdCourseID!, {name : "Test Course 3", state : courseState.hidden});
+            const response = await updateCourse(createdCourseID!, {name : "Test Course 3", state : CourseState.hidden});
             expect(response).to.have.status(200);
             assert(instanceOfCoursePartial(response.body));
             expect(response.body.name).to.equal("Test Course 3");
-            expect(response.body.state).to.equal(courseState.hidden);
+            expect(response.body.state).to.equal(CourseState.hidden);
 
             await adminSetPermissions({"manageCourses" : false});
         });

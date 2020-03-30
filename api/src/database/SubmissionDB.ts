@@ -1,6 +1,6 @@
 import {extract, map, one, pool, pgDB, checkAvailable, DBTools, _insert, searchify  } from "./HelperDB";
 import {Submission, DBSubmission, convertSubmission, submissionToAPI, APISubmission} from '../../../models/database/Submission';
-import {submissionStatus} from '../../../models/enums/submissionStatusEnum'
+import {SubmissionStatus} from '../../../models/enums/SubmissionStatusEnum'
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { User } from "../../../models/database/User";
 import { FileDB } from "./FileDB";
@@ -230,7 +230,7 @@ export class SubmissionDB {
 			userID,
 			title,
 			date = new Date(),
-			state = submissionStatus.new
+			state = SubmissionStatus.new
 		} = submission
 		const courseid = UUIDHelper.toUUID(courseID),
 			userid = UUIDHelper.toUUID(userID);

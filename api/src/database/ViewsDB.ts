@@ -1,5 +1,5 @@
 import {pool, end, toBin, permissionBits} from './HelperDB'
-import { PermissionEnum } from '../../../models/enums/permissionEnum'
+import { PermissionEnum } from '../../../models/enums/PermissionEnum'
 
 
 //This script can only be run locally, 

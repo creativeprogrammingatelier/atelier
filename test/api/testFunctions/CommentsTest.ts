@@ -18,10 +18,11 @@ export function commentTest(){
         it("Should be possible to get user comments", async () => {
             const response = await getCommentsUser();
             expect(response).to.have.status(200);
+            console.log("??????", response.body)
             assert(response.body.every((comment: Comment) =>
-                instanceOfComment(comment &&
+                instanceOfComment(comment) &&
                     comment.user.ID === USER_ID
-                )));
+                ));
         });
 
         it("Should be possible to get user comments in a course", async () => {

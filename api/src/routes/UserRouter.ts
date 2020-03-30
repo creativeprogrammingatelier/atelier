@@ -9,7 +9,7 @@ import {User} from "../../../models/api/User";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {requirePermission, requirePermissions} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import { CourseUser } from "../../../models/api/CourseUser";
 

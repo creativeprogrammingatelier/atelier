@@ -1,18 +1,18 @@
-import {courseState} from "../enums/courseStateEnum"
+import {CourseState} from "../enums/CourseStateEnum"
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Course as APICourse, CoursePartial as APICoursePartial } from "../api/Course"
 import { DBAPIUser, userToAPI, DBUser} from "./User"
 import { pgDB, DBTools, checkAvailable, toDec } from "../../api/src/database/HelperDB"
 import { Permission } from "../api/Permission"
 import { getEnum, checkEnum } from "../enums/enumHelper"
-import { globalRole } from "../enums/globalRoleEnum"
-import { courseRole } from "../enums/courseRoleEnum"
+import { GlobalRole } from "../enums/GlobalRoleEnum"
+import { CourseRole } from "../enums/CourseRoleEnum"
 
 export interface Course extends DBTools {
 	courseID?:string,
 	courseName?: string,
 	creatorID?: string,
-	state?: courseState
+	state?: CourseState
 }
 
 export interface DBCourse {
@@ -38,7 +38,7 @@ export function convertCourse(db : DBCourse) : Course {
 		courseID:UUIDHelper.fromUUID(db.courseid),
 		courseName:db.coursename,
 		creatorID:UUIDHelper.fromUUID(db.creatorid),
-		state: getEnum(courseState, db.state)
+		state: getEnum(CourseState, db.state)
 	}
 }
 export function courseToAPIPartial(db : DBAPICourse) : APICoursePartial {
@@ -46,7 +46,7 @@ export function courseToAPIPartial(db : DBAPICourse) : APICoursePartial {
 	return {
 		ID: UUIDHelper.fromUUID(db.courseid),
 		name: db.coursename,
-		state: getEnum(courseState, db.state),
+		state: getEnum(CourseState, db.state),
 		creator: userToAPI(db),
 	}
 }
@@ -56,8 +56,8 @@ export function courseToAPI(db : DBCourseExt) : APICourse {
 	return {
 		...courseToAPIPartial(db),
 		currentUserPermission: {
-			globalRole: getEnum(globalRole, db.currentglobalrole),
-			courseRole: getEnum(courseRole, db.currentcourserole),
+			globalRole: getEnum(GlobalRole, db.currentglobalrole),
+			courseRole: getEnum(CourseRole, db.currentcourserole),
 			permissions: toDec(db.currentpermission)
 		}
 	}

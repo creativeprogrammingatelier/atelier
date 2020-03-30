@@ -4,8 +4,8 @@ import { UUIDHelper } from "../helpers/UUIDHelper";
 import { FileDB } from "./FileDB";
 import { User } from "../../../models/database/User";
 import { CoursesView } from "./ViewsDB";
-import { PermissionEnum } from "../../../models/enums/permissionEnum";
-import { courseRole } from "../../../models/enums/courseRoleEnum";
+import { PermissionEnum } from "../../../models/enums/PermissionEnum";
+import { CourseRole } from "../../../models/enums/CourseRoleEnum";
 
 /**
  * @Author Rens Leendertz
@@ -140,7 +140,7 @@ export class CourseDB {
 			AND c.courseID = cu.courseID
 			AND 
 			( -- either registered
-				cu.courseRole != '${courseRole.unregistered}'	
+				cu.courseRole != '${CourseRole.unregistered}'	
 			OR -- or permission
 				cu.permission & b'${toBin(2**PermissionEnum.viewAllCourses)}' = b'${toBin(2**PermissionEnum.viewAllCourses)}'
 			)

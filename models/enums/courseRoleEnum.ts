@@ -1,6 +1,6 @@
 import { EnumError } from "./enumHelper"
 
-export enum courseRole {
+export enum CourseRole {
 	moduleCoordinator = "moduleCoordinator",
 	teacher = "teacher",
 	TA = "TA",
