@@ -24,7 +24,8 @@ $colorSecondary: $secondaryColor;
 $colorRestricted: #103C4C;
 $colorRestrictedAlternate: #1B4D5D;
 $colorDisabled: #AFB7B6;
-$colorSuccess: green;
+$colorSuccess: #21B517;
+$colorSuccessAlternate: #48AD36;
 $colorDanger: #CE3B33;
 $colorDangerAlternate: #CA4B25;
 $colorWarning: yellow;
@@ -37,6 +38,7 @@ $gradientHorizontal: linear-gradient(118deg, $secondaryColor 31%, $primaryColor 
 $gradientHorizontal: linear-gradient(171deg, $secondaryColor 0%, $primaryColor 54%);
 $gradientSecondary: linear-gradient(147deg, $tertiaryColor 0%, $secondaryColor 100%);
 
+$gradientSuccess: linear-gradient(147deg, $colorSuccessAlternate 0%, $colorSuccess 100%);
 $gradientDanger: linear-gradient(147deg, $colorDangerAlternate 0%, $colorDanger 100%);
 
 $fontTitle: "Fredoka One", cursive;

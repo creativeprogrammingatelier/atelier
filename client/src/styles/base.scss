@@ -476,6 +476,19 @@ textarea:focus, textarea:active {
 	padding: 0.5rem 1rem;
 	border: none;
 	border-radius: 0;
+
+	.btn {
+		top: 0;
+		right: 0;
+		padding: 0.5rem 0.75rem;
+		position: absolute;
+		background-color: transparent;
+	}
+	.btn:hover, .btn:not(:disabled):not(.disabled):hover, .btn:active, .btn:not(:disabled):not(.disabled):active, .btn:focus, .btn:not(:disabled):not(.disabled):focus {
+		color: $colorOffWhite;
+		background-color: transparent;
+		box-shadow: none;
+	}
 }
 .alert-dismissible {
 	padding-right: 3rem;
@@ -483,6 +496,10 @@ textarea:focus, textarea:active {
 	.close {
 		padding: 0.5rem 1rem;
 	}
+}
+.alert-success {
+	color: $colorWhite;
+	background: $gradientSuccess;
 }
 .alert-danger {
 	color: $colorWhite;

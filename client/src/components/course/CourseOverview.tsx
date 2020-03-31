@@ -14,6 +14,7 @@ import {containsPermission, PermissionEnum} from "../../../../models/enums/permi
 import {DataList} from "../data/DataList";
 import {PluginSettings} from "../settings/system/PluginSettings";
 import {Link} from "react-router-dom";
+import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
 
 interface CourseOverviewProps {
 	match: {
@@ -25,6 +26,7 @@ interface CourseOverviewProps {
 
 export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProps) {
 	const [uploading, setUploading] = useState(false);
+	const [uploadingSuccess, setUploadingSuccess] = useState(false);
 	const [reload, updateReload] = useState(0);
 	const [permissions, setPermissions] = useState(0);
 
@@ -80,11 +82,17 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 						optional={{
 							icon: uploading ? FiX : FiPlus,
 							click: () => setUploading(!uploading),
-							component: uploading &&
+							component: (
+								uploading &&
 								<Uploader
 									courseId={courseId}
-									onUploadComplete={() => updateReload(rel => rel + 1)}
+									onUploadComplete={() => {
+										setUploadingSuccess(true);
+										setUploading(false);
+										updateReload(rel => rel + 1)
+									}}
 								/>
+							) || <FeedbackSuccess show={uploadingSuccess} close={setUploadingSuccess}>Upload successful</FeedbackSuccess>
 						}}
 						list={submissions.map(submission => {
 							console.log(submission);

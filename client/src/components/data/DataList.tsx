@@ -26,8 +26,6 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 	const [loadingMore, setLoadingMore] = useState(false);
 
 	useEffect(() => {
-		console.log("Updating the children of a list");
-		console.log(children);
 		setData(children);
 		setComplete(Parent.countChildren(children) < size);
 		setOffset(size);
@@ -55,7 +53,7 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 				rightButton={collapse ? {icon: collapsed ? FiChevronDown : FiChevronUp, click: () => setCollapsed(!collapsed)} : (optional ? {icon: optional.icon, click: optional.click} : undefined)}
 			/>
 		}
-		{optional && optional.component &&
+		{optional && Parent.countChildren(optional.component) &&
 			<div className="m-3">
 				{optional.component}
 			</div>

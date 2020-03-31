@@ -51,10 +51,18 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 		return "webkitdirectory" in input;
 	})();
 
+	function resetValidation() {
+		updateValidation(defaultValidation<File>([]));
+	}
+	function resetErrors() {
+		updateErrors({upload: false as false | string});
+	}
 	function handleFilesSelected(event: React.ChangeEvent<HTMLInputElement>) {
 		if (event.target.files) {
 			console.log("Selected some files");
 			console.log(event.target.files);
+			resetValidation();
+			resetErrors();
 			updateSelectedFiles(Array.from(event.target.files));
 		}
 	}
@@ -132,9 +140,9 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 					</InputGroup>
 				</FileInput>
 				<div>
-					{validation.invalidProjectName && <FeedbackError>Project should contain a file called {folderName}.pde.</FeedbackError>}
-					{validation.containsNoCodeFiles && <FeedbackError>Project should contain at least one code file.</FeedbackError>}
-					{errors.upload && <FeedbackError>Something went wrong while uploading: {errors.upload}</FeedbackError>}
+					<FeedbackError show={validation.invalidProjectName}>Project should contain a file called {folderName}.pde.</FeedbackError>
+					<FeedbackError show={validation.containsNoCodeFiles}>Project should contain at least one code file.</FeedbackError>
+					<FeedbackError show={errors.upload !== false}>Something went wrong while uploading: {errors.upload}</FeedbackError>
 				</div>
 			</Form.Group>
 			{selectedFiles.length > 0 &&
@@ -154,15 +162,11 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 						/>
 					</Form.Group>
 				}
-				{uploadableFiles.length < selectedFiles.length &&
-				<div>
-					<FeedbackError>
-						These files won't be uploaded, because they are too large
-						{validation.projectTooLarge && " or the project as a whole would be too large"}:
-					</FeedbackError>
-					<DirectoryViewer filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath}))}/>
-				</div>
-				}
+				<FeedbackError show={uploadableFiles.length < selectedFiles.length}>
+					These files won't be uploaded, because they are too large
+					{validation.projectTooLarge && " or the project as a whole would be too large"}:
+				</FeedbackError>
+				<DirectoryViewer filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath}))}/>
 			</div>
 			}
 			{uploading ?
