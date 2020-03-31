@@ -32,6 +32,9 @@
         "host": "localhost",
         "database": "assistantassistant",
         "password": "0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel",
-        "port": 5432
+        "port": 5432,
+        "pool": {
+            "max": 1
+        }
     }
 }

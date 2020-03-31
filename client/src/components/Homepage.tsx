@@ -1,12 +1,16 @@
-import React, { Fragment } from "react";
+import React  from "react";
 import {PanelButton} from "./general/PanelButton";
 import {Frame} from "./frame/Frame";
-import {AddCourse} from "./course/AddCourse";
+import {CourseCreator} from "./settings/system/CourseCreator";
 import {Button, Jumbotron} from "react-bootstrap";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {containsPermissionAny, PermissionEnum} from "../../../models/enums/permissionEnum";
 import {Permissions} from "./general/Permissions";
 import { useCourses } from "../helpers/api/APIHooks";
 import { CachedList } from "./general/loading/CachedList";
+import {Loading} from "./general/loading/Loading";
+import {Permission} from "../../../models/api/Permission";
+import {permission} from "../../helpers/APIHelper";
+import {Link} from "react-router-dom";
 
 export function Homepage() {
     const {courses, refreshCourses} = useCourses();
@@ -16,20 +20,29 @@ export function Homepage() {
 			<Jumbotron>
 				<h1>Home</h1>
 				<p>Welcome to Atelyay!</p>
-				<Button>Have a button!</Button>
+				<Loading<Permission>
+					loader={permission}
+					component={permission =>
+						containsPermissionAny([
+							PermissionEnum.addCourses,
+							PermissionEnum.manageUserPermissionsView,
+							PermissionEnum.manageUserPermissionsManager,
+							PermissionEnum.manageUserRole,
+							PermissionEnum.managePlugins
+						], permission.permissions) &&
+						<Link to="/admin/settings"><Button>System settings</Button></Link>}
+					wrapper={() => null}
+				/>
 			</Jumbotron>
-            <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
-                course => 
-                    <PanelButton 
-                        display={course.item.name} 
-                        location={`/course/${course.item.ID}`}
-                        state={course.state} />
-            }</CachedList>
-			<Permissions required={PermissionEnum.addCourses}>
-                <div className="m-3">
-                    <AddCourse />
-                </div>
-            </Permissions>
+			<div className="m-3">
+                <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
+                    course => 
+                        <PanelButton 
+                            display={course.item.name} 
+                            location={`/course/${course.item.ID}`}
+                            state={course.state} />
+                }</CachedList>
+			</div>
 		</Frame>
 	);
 }

@@ -12,7 +12,7 @@ export type pgDB = pg.Pool | pg.PoolClient
  */
 export const pool = new pg.Pool({
 	...config.database,
-	max: 1
+	...config.database.pool
 });
 
 pool.on("connect", () => console.log("Connected to the database."));
