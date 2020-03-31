@@ -14,6 +14,7 @@ export let USER_ID = "";
 const ADMIN_ID = "AAAAAAAAAAAAAAAAAAAAAA";
 
 /** Default permissions used by the database of user & student */
+export const DEFAULT_PERMISSIONS = 1; // TODO: @Jarik: you removed this one, but the tests could not compile without it. It's back for now, you go fix it
 export const DEFAULT_GLOBAL_PERMISSIONS = 0;
 export const DEFAULT_COURSE_PERMISSIONS = 25769803776;
 
