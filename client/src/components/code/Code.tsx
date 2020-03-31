@@ -5,8 +5,6 @@ import 'codemirror/mode/clike/clike.js';
 import "codemirror/lib/codemirror.css";
 import "../../styles/codemirror.scss";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
-import {Block} from "../general/Block";
-import {Area} from "../general/Area";
 
 // TODO: Resolve inconsistent naming around Controlled, CodeMirror and codemirror
 
@@ -43,7 +41,6 @@ export function Code({code, options = {}, handleInitialize = defaultHandler, han
 
 	return <CodeMirror
 		value={code}
-		// options={{...defaultOptions, ...options}}
 		options={{...defaultOptions, ...options}}
 		editorDidMount={editor => {
 			// Standard code viewer initialization

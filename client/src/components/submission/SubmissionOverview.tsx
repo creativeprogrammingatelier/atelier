@@ -91,8 +91,6 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 						component: creatingComment && <CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
 					}}
 				>
-					{/* This map over new comment threads would not be needed once auto update works */}
-					{createdComments.map(thread => <CommentThreadComponent thread={thread}/>)}
 					<Loading<CommentThread[]>
 						loader={getProjectComments}
 						params={[submissionId]}

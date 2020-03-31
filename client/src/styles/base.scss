@@ -575,13 +575,8 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowMedium;
 }
 
-.commentThread {
-	h3 {
-		box-shadow: $shadowSmallDown;
-	}
-}
 .commentThread:not(:last-child) {
-	margin-bottom: 1rem;
+	//margin-bottom: 1rem;
 }
 .commentThread > *:not(:last-child) {
 	box-shadow: $shadowInsetSmallDown;

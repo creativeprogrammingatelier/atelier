@@ -18,6 +18,9 @@ import {User} from "../../../../models/api/User";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
 import {threadState} from "../../../../models/enums/threadStateEnum";
 import {Block} from "../general/Block";
+import {FeedbackError} from "../feedback/FeedbackError";
+import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
+import {FeedbackContent} from "../feedback/Feedback";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -29,9 +32,11 @@ interface CommentThreadProperties {
 
 export function CommentThread({thread}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
-	const [restricted, setRestricted] = useState(thread.visibility === threadState.private);
+	const [visible, setRestricted] = useState(thread.visibility === threadState.private);
 	const [manageRestrictedComments, setManageRestrictedComments] = useState(false);
 	const [comments, updateComments] = useState(thread.comments);
+	const [success, setSuccess] = useState(false as FeedbackContent);
+	const [error, setError] = useState(false as FeedbackContent);
 
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
@@ -45,8 +50,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				return true;
 			} catch (error) {
 				if (error instanceof JsonFetchError) {
-					// TODO: handle error for user
-					console.log(error);
+					setError(`Failed to reply: ${error}`);
 				} else {
 					throw error;
 				}
@@ -55,14 +59,14 @@ export function CommentThread({thread}: CommentThreadProperties) {
 		return false;
 	};
 	const handleDiscard = () => {
+		// TODO: Lol, maybe actually implement this
 		console.log("Clicked to discard");
 	};
 	const handleVisibility = () => {
-		setCommentThreadVisibility(thread.ID, restricted)
-			.then((commentThread : CommentThread) => {
-				setRestricted(commentThread.visibility === threadState.private);
-			});
-		// TODO: Some form of success feedback, probably
+		setCommentThreadVisibility(thread.ID, visible).then((commentThread : CommentThread) => {
+			setRestricted(commentThread.visibility === threadState.private);
+		});
+		setSuccess(`Visibility updated, now: ${visible ? "public" : "private"}`);
 	};
 
 	useEffect(() => ScrollHelper.scrollToHash(), []);
@@ -81,8 +85,8 @@ export function CommentThread({thread}: CommentThreadProperties) {
 			});
 	}, []);
 
-	return (
-		<Block id={thread.ID} className={"commentThread" + (restricted ? " restricted" : "")}>
+	return <div className="mb-3">
+		<Block id={thread.ID} className={"commentThread" + (visible ? " restricted" : "")}>
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
 			{opened ?
 				<Fragment>
@@ -96,7 +100,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				{manageRestrictedComments &&
 					<Fragment>
 						<Button onClick={handleDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
-						<Button onClick={handleVisibility}>{restricted ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
+						<Button onClick={handleVisibility}>{visible ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
 					</Fragment>
 				}
 				{thread.file && thread.snippet &&
@@ -109,5 +113,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				<Button onClick={() => setOpened(!opened)}>{opened ? <FiChevronUp size={14} color="#FFFFFF"/> : <FiChevronDown size={14} color="#FFFFFF"/>}</Button>
 			</ButtonBar>
 		</Block>
-	);
+		<FeedbackSuccess show={success !== false} close={setSuccess}>{success}</FeedbackSuccess>
+		<FeedbackError show={error !== false} close={setError}>{error}</FeedbackError>
+	</div>;
 }

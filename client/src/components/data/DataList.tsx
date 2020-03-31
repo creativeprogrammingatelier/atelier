@@ -53,7 +53,7 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 				rightButton={collapse ? {icon: collapsed ? FiChevronDown : FiChevronUp, click: () => setCollapsed(!collapsed)} : (optional ? {icon: optional.icon, click: optional.click} : undefined)}
 			/>
 		}
-		{optional && Parent.countChildren(optional.component) &&
+		{optional && Parent.countChildren(optional.component) > 0 &&
 			<div className="m-3">
 				{optional.component}
 			</div>
