@@ -1,9 +1,9 @@
-import React, { Fragment } from "react";
-import {Loading} from "../../general/loading/Loading";
-import {Permission} from "../../../../../models/api/Permission";
+import React, {Fragment} from "react";
 import {Invite} from "../../../../../models/api/Invite";
-import {coursePermission, getInvites} from "../../../../helpers/APIHelper";
+import {Permission} from "../../../../../models/api/Permission";
 import {inviteRole} from "../../../../../models/enums/inviteRoleEnum";
+import {coursePermission, getInvites} from "../../../../helpers/APIHelper";
+import {Loading} from "../../general/loading/Loading";
 import {CourseInvite} from "./CourseInvite";
 
 interface CourseSettingsInvitesProperties {

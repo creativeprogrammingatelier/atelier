@@ -4,6 +4,7 @@ import {courseState} from "../../../../../models/enums/courseStateEnum";
 import {Button, Form} from "react-bootstrap";
 import {updateCourse} from "../../../../helpers/APIHelper";
 import {Label} from "../../general/Label";
+import {LabeledInput} from "../../input/LabeledInput";
 
 interface CourseSettingsGeneralProperties {
 	courseID: string,
@@ -30,24 +31,22 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 	}
 
 	return <Form>
-		<Form.Label className="w-100">
-			<Label>Course name</Label>
+		<LabeledInput label="Course name">
 			<Form.Control
 				type="text"
 				placeholder="Course name"
 				value={name}
 				onChange={(event: React.FormEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
 			/>
-		</Form.Label>
-		<Form.Label className="w-100">
-			<Label>Course state</Label>
+		</LabeledInput>
+		<LabeledInput label="Course state">
 			<Form.Control as="select" onChange={event => setState((event.target as HTMLInputElement).value as courseState)}>
 				<option disabled selected>Select a state for this course</option>
 				<option value="open">Open</option>
 				<option value="hidden">Hidden</option>
 				<option value="finished">Finished</option>
 			</Form.Control>
-		</Form.Label>
+		</LabeledInput>
 		<Button onClick={handleUpdate}>Update Course</Button>
 	</Form>;
 }

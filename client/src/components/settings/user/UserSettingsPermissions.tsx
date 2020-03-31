@@ -1,15 +1,15 @@
 import React, {useState, Fragment, useEffect} from "react";
+import {Button, Form} from "react-bootstrap";
+import {CourseUser} from "../../../../../models/api/CourseUser";
+import {User} from "../../../../../models/api/User";
 import {getEnum} from "../../../../../models/enums/enumHelper";
 import {PermissionEnum, containsPermission, permissionsSectionView, permissionsSectionManage} from "../../../../../models/enums/permissionEnum";
 import {setPermissionCourse, setPermissionGlobal} from "../../../../helpers/APIHelper";
-import {User} from "../../../../../models/api/User";
-import {CourseUser} from "../../../../../models/api/CourseUser";
-import {UserSearch} from "./UserSearch";
-import {Button, Form} from "react-bootstrap";
-import {CheckboxInput} from "../../input/CheckboxInput";
-import {Label} from "../../general/Label";
 import {Area} from "../../general/Area";
+import {CheckboxInput} from "../../input/CheckboxInput";
+import {LabeledInput} from "../../input/LabeledInput";
 import {UserInfo} from "./UserInfo";
+import {UserSearch} from "./UserSearch";
 
 interface PermissionDisplay {
 	[key: string]: string
@@ -77,12 +77,11 @@ export function UserSettingsPermissions({viewPermissions, managePermissions, cou
 	</Form>;
 }
 function UserSettingsPermissionsSection({header, display, state, setState}: UserSettingsPermissionsSectionProperties) {
-	return <Form.Label className="w-100">
-		<Label>{header}</Label>
+	return <LabeledInput label={header}>
 		<Area>
 			{Object.entries(display).map(([name, display]: [string, string]) =>
 				<CheckboxInput value={name} name={display} selected={state[name]} onChange={(state) => setState(name, state)}/>
 			)}
 		</Area>
-	</Form.Label>;
+	</LabeledInput>;
 }

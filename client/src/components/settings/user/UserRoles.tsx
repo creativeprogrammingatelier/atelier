@@ -1,7 +1,7 @@
 import React from "react";
 import {Form} from "react-bootstrap";
-import {Label} from "../../general/Label";
 import {RoleHelper} from "../../../helpers/RoleHelper";
+import {LabeledInput} from "../../input/LabeledInput";
 
 interface UserRolesProperties<T> {
 	roles: T,
@@ -13,11 +13,10 @@ export function UserRoles<T>({roles, onSelected}: UserRolesProperties<T>) {
 		onSelected(role);
 	};
 
-	return <Form.Label className="w-100">
-		<Label>Select a role</Label>
+	return <LabeledInput label="Select a role">
 		<Form.Control as="select" onChange={event => handleSelected((event.target as HTMLInputElement).value as unknown as T)}>
 			<option disabled selected>Role of the user</option>
 			{Object.keys(roles).map((role: string) => <option value={role}>{RoleHelper.displayName(role)}</option>)}
 		</Form.Control>
-	</Form.Label>;
+	</LabeledInput>;
 }
