@@ -1,18 +1,10 @@
 import React, {useEffect, useState, Fragment} from "react";
 import {ParentalProperties} from "../../helpers/ParentHelper";
+import {breakpointValues} from "../../helpers/BootstrapHelper";
 
-// TODO: Maybe split this file into some form of helper for all the sizes and breakpoint stuff
 interface ResponsiveProperties extends ParentalProperties {
 	breakpoints: string[]
 }
-const breakpointValues = {
-	// Same breakpoints as Bootstrap, maybe find a way to merge declarations
-	extraSmall: 0,
-	small: 576,
-	medium: 768,
-	large: 992,
-	extraLarge: 1200
-};
 export function Responsive({breakpoints, children}: ResponsiveProperties) {
 	const [width, setWidth] = useState(windowWidth());
 	const [height, setHeight] = useState(windowHeight());
