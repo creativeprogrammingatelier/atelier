@@ -2,6 +2,7 @@ import { UUIDHelper } from "../../api/src/helpers/UUIDHelper"
 import { Comment as APIComment } from "../api/Comment"
 import { DBAPIUser, userToAPI } from "./User"
 import { pgDB, DBTools, checkAvailable } from "../../api/src/database/HelperDB";
+import { isNotNullSnippet } from "./Snippet";
 export interface Comment extends DBTools {
     commentID?: string,
 	commentThreadID?: string, 
@@ -25,7 +26,10 @@ export interface DBComment {
     userid: string,
 	created: Date,
 	edited: Date,
-    body: string
+	body: string,
+	//null checks
+	type: string,
+	linestart: number,
 }
 
 export {APIComment};
@@ -47,8 +51,8 @@ export function convertComment(db : DBComment) : Comment {
 	}
 }
 export function commentToAPI(db : DBAPIComment) : APIComment {
-	checkAvailable(["commentid", "body", "created", "edited", "userid", "courseid", "submissionid", "commentthreadid"], db)
-	return {
+	checkAvailable(["commentid", "body", "created", "edited", "userid", "courseid", "submissionid", "commentthreadid", "type", "linestart"], db)
+	const res = {
 		ID: UUIDHelper.fromUUID(db.commentid),
 		user: userToAPI(db),
 		text:db.body,
@@ -62,6 +66,13 @@ export function commentToAPI(db : DBAPIComment) : APIComment {
 			snippetID: UUIDHelper.fromUUID(db.snippetid)
 		}
 	}
+	if (db.linestart === -1){
+		delete res.references.snippetID
+		if (db.type === "undefined/undefined"){
+			delete res.references.fileID
+		}
+	}
+	return res
 }
 export function onlyComment(obj : Comment) : Comment{
     return {

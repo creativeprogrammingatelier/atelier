@@ -164,10 +164,15 @@ export function snippetsView(snippetsTable=`"Snippets"`, filesView=`"FilesView"`
 }
 
 export function commentsView(commentsTable=`"Comments"`, usersView=`"UsersView"`){
-     return `SELECT c.*, u.userName, u.globalrole, u.email, u.permission, ctr.submissionID, ctr.courseID, ctr.fileID, ctr.snippetID
-     FROM ${commentsTable} as c, ${usersView} as u, "CommentThreadRefs" as ctr
+     return `SELECT c.*, 
+          u.userName, u.globalrole, u.email, u.permission, 
+          ctr.submissionID, ctr.courseID, ctr.fileID, ctr.snippetID,
+          fv.type, sv.lineStart --null checks
+     FROM ${commentsTable} as c, ${usersView} as u, "CommentThreadRefs" as ctr, "FilesView" as fv, "SnippetsView" as sv
      WHERE c.userID = u.userID
-       AND ctr.commentThreadID = c.commentThreadID`
+       AND ctr.commentThreadID = c.commentThreadID
+       AND fv.fileID = ctr.fileID
+       AND sv.snippetID = ctr.snippetID`
 }
 
 export function commentThreadView(commentThreadTable=`"CommentThread"`){

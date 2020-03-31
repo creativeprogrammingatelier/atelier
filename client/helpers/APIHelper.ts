@@ -19,7 +19,7 @@ import {Plugin} from "../../models/api/Plugin";
 import {GlobalRole} from "../../models/enums/globalRoleEnum";
 import {InviteRole} from "../../models/enums/inviteRoleEnum";
 import {CourseRole} from "../../models/enums/courseRoleEnum";
-
+import {Sorting} from "../../models/enums/SortingEnum";
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
 	method,
@@ -28,7 +28,23 @@ const jsonBody = <T>(method: string, body: T) => ({
 });
 const postJson = <T>(body: T) => jsonBody("POST", body);
 const putJson = <T>(body: T) => jsonBody("PUT", body);
-
+/**
+ * function that takes an object specifying key:value pairs, and creating something that can be added to the end of an url.
+ * @param params an object specifying parameters to send to the backend
+ */
+const addParams = <T extends object>(params : T) => {
+	if (!params) return ''
+	const keys = Object.keys(params);
+	const items : string[]= []
+	keys.forEach(key => {
+		items.push(encodeURIComponent(key)+'='+encodeURIComponent(params[key]))
+	});
+	if (items.length > 0) {
+		return '?'+items.join('&')
+	} else {
+		return ''
+	}
+};
 // Courses
 export function getCourse(courseID: string) {
 	return Fetch.fetchJson<Course>(`/api/course/${courseID}`);
@@ -157,12 +173,13 @@ interface SearchParameters {
 	query: string,
 	limit?: number,
 	offset?: number,
+	sorting?: Sorting,
 	courseID?: string,
 	userID?: string,
 	submissionID?: string
 }
-export function search({query, limit = 20, offset = 0, courseID, userID, submissionID}: SearchParameters, doCache?: boolean) {
-	const path = `/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}${courseID ? `&courseID=${courseID}` : ""}${userID ? `&userID=${userID}` : ""}${submissionID ? `&submissionID=${submissionID}` : ""}`;
+export function search({query, limit = 20, offset = 0, sorting=Sorting.datetime, courseID, userID, submissionID}: SearchParameters, doCache?: boolean) {
+	const path = `/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}${sorting? `&sort=${sorting}`:``}${courseID ? `&courseID=${courseID}` : ``}${userID ? `&userID=${userID}` : ""}${submissionID ? `&submissionID=${submissionID}` : ""}`;
 	return Fetch.fetchJson<SearchResult>(path);
 }
 // If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
