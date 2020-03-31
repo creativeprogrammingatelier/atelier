@@ -1,6 +1,5 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
 import {Login} from "./Login";
 import Logout from "./Logout";
 import Register from "./Register";
@@ -30,7 +29,7 @@ export function App() {
 				<Switch>
 					<Route path='/register' render={(props) => <Register {...props} />}/>
 					<Route path='/login' render={() => <Login/>}/>
-					<PrivateRoute path='/logout' component={Logout}/>
+					<AuthenticatedRoute path='/logout' component={Logout}/>
 					<AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
 					<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
 					<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
