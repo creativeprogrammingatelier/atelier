@@ -7,7 +7,7 @@ interface LabeledInputProperties extends HTMLProperties {
 	label: string
 }
 export function LabeledInput({label, className, id, key, children}: LabeledInputProperties) {
-	return <Form.Label className={className ? className : "w-100"}>
+	return <Form.Label className={"w-100 d-block " + (className ? className : "")}>
 		<Label>{label}</Label>
 		<InputGroup>
 			{children}

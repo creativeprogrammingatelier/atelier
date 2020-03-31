@@ -8,6 +8,8 @@ import {UserRoles} from "../user/UserRoles";
 import {courseRole} from "../../../../../models/enums/courseRoleEnum";
 import {Label} from "../../general/Label";
 import {UserInfo} from "../user/UserInfo";
+import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
+import {FeedbackContent} from "../../feedback/Feedback";
 
 interface CourseSettingsEnrollmentProperties {
 	courseID: string
@@ -15,16 +17,14 @@ interface CourseSettingsEnrollmentProperties {
 export function CourseSettingsEnrollment({courseID}: CourseSettingsEnrollmentProperties) {
 	const [user, setUser] = useState(undefined as User | undefined);
 	const [role, setRole] = useState(undefined as typeof courseRole | undefined);
+	const [success, setSuccess] = useState(false as FeedbackContent);
 
 	function enrollUser() {
 		if (user) {
-			console.log("Enrolling user");
-			console.log(user);
-			console.log(role);
+			// TODO: Also send the default role
 			courseEnrollUser(courseID, user.ID)
 			.then((user: CourseUser) => {
-				console.log("Enrollment success");
-				// TODO: Visual user feedback
+				setSuccess(`Successfully enrolled ${user.userName}`);
 			});
 			setUser(undefined);
 		}
@@ -40,5 +40,6 @@ export function CourseSettingsEnrollment({courseID}: CourseSettingsEnrollmentPro
 				<Button onClick={enrollUser}>Enroll User</Button>
 			</Fragment>
 		}
+		<FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
 	</Form>;
 }

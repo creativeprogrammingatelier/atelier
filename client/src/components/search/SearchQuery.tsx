@@ -90,6 +90,6 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 				</InputGroup.Append>
 			</InputGroup>
 		</Form.Group>
-		<FeedbackError show={error !== false} close={setError}>{error}</FeedbackError>
+		<FeedbackError show={error} close={setError}>{error}</FeedbackError>
 	</Form>;
 }

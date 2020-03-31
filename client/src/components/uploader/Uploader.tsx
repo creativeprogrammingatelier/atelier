@@ -142,7 +142,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 				<div>
 					<FeedbackError show={validation.invalidProjectName}>Project should contain a file called {folderName}.pde.</FeedbackError>
 					<FeedbackError show={validation.containsNoCodeFiles}>Project should contain at least one code file.</FeedbackError>
-					<FeedbackError show={errors.upload !== false}>Something went wrong while uploading: {errors.upload}</FeedbackError>
+					<FeedbackError show={errors.upload}>Something went wrong while uploading: {errors.upload}</FeedbackError>
 				</div>
 			</Form.Group>
 			{selectedFiles.length > 0 &&
