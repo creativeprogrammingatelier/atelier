@@ -22,7 +22,7 @@ export function Feedback({show, close, timeout, variant, className, id, key, chi
 
 	// A component must always return an element or null
 	return show ?
-		<Alert variant={variant} className={"my-2 " + className} id={id} key={key}>
+		<Alert variant={variant} className={"buttonWrapper my-2 " + className} id={id} key={key}>
 			{children}
 			{close && <Button onClick={() => close(false)}><FiX/></Button>}
 		</Alert>

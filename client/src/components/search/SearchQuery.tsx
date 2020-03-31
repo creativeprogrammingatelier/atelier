@@ -11,6 +11,7 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {Loading} from "../general/loading/Loading";
 import {Tag} from "../general/Tag";
 import {SearchProperties} from "./SearchOverview";
+import {Link, useHistory} from "react-router-dom";
 
 interface SearchQueryProperties {
 	state: SearchProperties,
@@ -22,6 +23,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 	const [user, setUser] = useState(state.user as string | undefined);
 	const [submission, setSubmission] = useState(state.submission as string | undefined);
 	const [error, setError] = useState(false as FeedbackContent);
+	const history = useHistory();
 
 	async function handleSearch() {
 		setError(false);
@@ -45,16 +47,29 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 		<Form.Group>
 			{
 				user &&
-				<Tag large round theme="primary">
-					User: <Loading<User> loader={getUser} params={[user]} component={user => user.name} wrapper={() => null}/> <FiX onClick={() => setUser(undefined)}/>
-				</Tag>
+					<Tag large round theme="primary" click={() => history.push(`/user/${user}`)}>
+						User: <Loading<User> loader={getUser} params={[user]} component={user => user.name} wrapper={() => null}/>
+						<Button className="ml-1" onClick={(event: React.MouseEvent<HTMLElement>) => {
+							setSubmission(undefined);
+							event.stopPropagation();
+							event.nativeEvent.stopImmediatePropagation();
+						}}>
+							<FiX/>
+						</Button>
+					</Tag>
 			}
 			{
 				submission &&
-				<Tag large round theme="primary">
-					Submission: <Loading<Submission> loader={getSubmission} params={[submission]} component={submission => submission.name} wrapper={() => null}/>
-					<FiX onClick={() => setSubmission(undefined)}/>
-				</Tag>
+					<Tag large round theme="primary" click={() => history.push(`/submission/${submission}`)}>
+						Submission: <Loading<Submission> loader={getSubmission} params={[submission]} component={submission => submission.name} wrapper={() => null}/>
+						<Button className="ml-1" onClick={(event: React.MouseEvent<HTMLElement>) => {
+							setSubmission(undefined);
+							event.stopPropagation();
+							event.nativeEvent.stopImmediatePropagation();
+						}}>
+							<FiX/>
+						</Button>
+					</Tag>
 			}
 		</Form.Group>
 		<Form.Group>

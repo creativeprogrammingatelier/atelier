@@ -268,6 +268,11 @@ textarea:focus, textarea:active {
 	svg {
 		vertical-align: bottom;
 	}
+
+	.btn {
+		padding: 0;
+		line-height: 1;
+	}
 }
 .badge:not(.badge-pill) {
 	border-radius: 2px;
@@ -276,13 +281,17 @@ textarea:focus, textarea:active {
 	margin-bottom: 0.25rem;
 	margin-right: 0.25rem;
 }
-.badge-large {
-	padding-top: 0.75rem;
-	padding-bottom: 0.75rem;
-	font-size: 1rem;
-}
 .badge-primary {
 	background-color: $colorPrimary;
+}
+.tagLarge {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	font-size: 1rem;
+}
+.tagClick:hover {
+	box-shadow: $shadowSmall;
+	cursor: pointer;
 }
 
 .qrCode {
@@ -392,6 +401,13 @@ textarea:focus, textarea:active {
 		margin-bottom: 1rem;
 	}
 }
+.buttonWrapper {
+	.btn:hover, .btn:not(:disabled):not(.disabled):hover, .btn:active, .btn:not(:disabled):not(.disabled):active, .btn:focus, .btn:not(:disabled):not(.disabled):focus {
+		color: $colorOffWhite;
+		background-color: transparent;
+		box-shadow: none;
+	}
+}
 
 .mentions {
 	background-color: $colorWhite;
@@ -485,11 +501,6 @@ textarea:focus, textarea:active {
 		padding: 0.5rem 0.75rem;
 		position: absolute;
 		background-color: transparent;
-	}
-	.btn:hover, .btn:not(:disabled):not(.disabled):hover, .btn:active, .btn:not(:disabled):not(.disabled):active, .btn:focus, .btn:not(:disabled):not(.disabled):focus {
-		color: $colorOffWhite;
-		background-color: transparent;
-		box-shadow: none;
 	}
 }
 .alert-dismissible {
