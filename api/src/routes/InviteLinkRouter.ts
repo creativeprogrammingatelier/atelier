@@ -1,11 +1,12 @@
 import {capture} from "../helpers/ErrorHelper";
 import express, {Request, Response} from "express";
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {CourseInvite} from "../../../models/api/Invite";
 import {CourseInviteDB} from "../database/CourseInviteDB";
 import {CourseUser} from "../../../models/api/CourseUser";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {NotFoundDatabaseError} from "../database/DatabaseErrors";
 
 
 export const inviteLinkRouter = express.Router();
@@ -25,7 +26,7 @@ inviteLinkRouter.get("/:inviteID", capture(async(request: Request, response: Res
     });
 
     // Invite does not exist
-    if (invite.length === 0) throw new Error("Invite not found");
+    if (invite.length === 0) throw new NotFoundDatabaseError();
 
     // Get invite
     const courseInvite : CourseInvite = invite[0];

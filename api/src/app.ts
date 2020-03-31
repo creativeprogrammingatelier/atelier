@@ -35,6 +35,7 @@ import { ProjectValidationError } from '../../helpers/ProjectValidationHelper';
 import { InvalidParamsError } from './helpers/ParamsHelper';
 import {inviteRouter} from "./routes/InviteRouter";
 import {inviteLinkRouter} from "./routes/InviteLinkRouter";
+import {PermissionError} from "./helpers/PermissionHelper";
 
 export const app = express();
 // app.listen(5000, () => console.log('Listening on port 5000!'))
@@ -89,7 +90,10 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
 	console.log('\x1b[31m', error);
     
     if (error instanceof AuthError) {
-        response.status(401).send({ error: error.reason, message: error.message });
+        response.status(401).redirect('/login');
+        //response.status(401).send({ error: error.reason, message: error.message });
+    } else if (error instanceof PermissionError){
+        response.status(401).send({error : error.reason, message : error.message});
     } else if (error instanceof NotFoundDatabaseError) {
         response.status(404).send({ error: "item.notfound", message: "The requested item could not be found." });
     } else if (error instanceof InvalidParamsError) {

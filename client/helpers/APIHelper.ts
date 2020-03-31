@@ -48,6 +48,9 @@ export function updateCourse(courseID: string, update: {name?: string, state?: c
 export function courseEnrollUser(courseID: string, userID: string) {
 	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, putJson({}));
 }
+export function courseDisenrollUser(courseID: string, userID: string) {
+	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, {"method" : "DELETE"});
+}
 
 // Users
 export function getCurrentUser() {

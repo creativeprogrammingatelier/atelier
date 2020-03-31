@@ -41,8 +41,8 @@ export enum PermissionEnum {
     '39-reserved'
 }
 
-export const viewPermissionBits = 71305281;
-export const managePermissionBits = 64827568287;
+export const viewPermissionBits = 71305280;
+export const managePermissionBits = 64827568286;
 
 export const viewPermissions = [
     {

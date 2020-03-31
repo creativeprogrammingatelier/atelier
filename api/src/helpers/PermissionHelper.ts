@@ -12,6 +12,15 @@ import {SubmissionDB} from "../database/SubmissionDB";
 import { courseRole } from "../../../models/enums/courseRoleEnum";
 import { CourseUser } from "../../../models/api/CourseUser";
 
+/** Error that gets thrown when the user is missing certain permissions. */
+export class PermissionError extends Error {
+    reason: string;
+    constructor(reason: string, message: string) {
+        super(message);
+        this.reason = reason;
+    }
+}
+
 /**
  * Check permissions of a user. Unions global and course permissions (if courseID provided), then checks
  * whether the user has all the required permissions set.
@@ -33,7 +42,7 @@ export async function requirePermissions(userID : string, requiredPermissions : 
     const access : boolean = anyPermission ?
         requiredPermissions.some((permission : PermissionEnum) => containsPermission(permission, permissions)) :
         requiredPermissions.every((permission : PermissionEnum) => containsPermission(permission, permissions));
-    if (!access) throw new AuthError("permission.notAllowed", "You don't have the permissions to view/manage this data.");
+    if (!access) throw new PermissionError("permission.notAllowed", "You don't have the permissions to view/manage this data.");
 }
 
 /**
@@ -60,9 +69,9 @@ export async function requireRegistered(userID : string, courseID : string) {
 
     // Check registration
     const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-    console.log(courseUser);
-    console.log(courseUser.permission.courseRole);
-    if (courseUser.permission.courseRole === courseRole.unregistered) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
+    if (courseUser.permission.courseRole === courseRole.unregistered) {
+        throw new PermissionError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
+    }
 }
 
 /**

@@ -14,6 +14,7 @@ export interface Permissions {
 	manageUserPermissionsView? : boolean,
 	manageUserPermissionsManager? : boolean,
 	manageUserRole? : boolean,
+	managePlugins? : boolean,
 	viewAllUserProfiles? : boolean,
 	manageUserRegistration? : boolean,
 	viewAllCourses? : boolean,

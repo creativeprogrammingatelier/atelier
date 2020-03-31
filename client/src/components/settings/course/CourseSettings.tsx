@@ -13,6 +13,7 @@ import {UserSettingsRoles} from "../user/UserSettingsRoles";
 import {courseRole} from "../../../../../models/enums/courseRoleEnum";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
+import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
 
 interface CourseOverviewProps {
 	match: {
@@ -36,9 +37,6 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 			setPermissions(permission.permissions);
 		});
 	}, []);
-
-	// Roles to which you can set a user (excludes unregistered)
-	const courseRoles = [courseRole.student, courseRole.teacher, courseRole.TA, courseRole.moduleCoordinator, courseRole.plugin];
 
 	return (
 		<Frame title="Course" sidebar search={{course: courseId}}>
@@ -65,6 +63,12 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
 				<DataList header="Enroll a user">
 					<CourseSettingsEnrollment courseID={courseId}/>
+				</DataList>
+			}
+			{
+				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
+				<DataList header="Disenroll a user">
+					<CourseSettingsDisenrollment courseID={courseId}/>
 				</DataList>
 			}
 			{
