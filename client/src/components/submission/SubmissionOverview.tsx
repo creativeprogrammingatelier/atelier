@@ -1,22 +1,26 @@
 import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
+import {FiPlus, FiX} from "react-icons/all";
+
+import {Course} from "../../../../models/api/Course";
+import {CommentThread} from "../../../../models/api/CommentThread";
+import {File} from "../../../../models/api/File";
+import {Submission} from "../../../../models/api/Submission";
+import {threadState} from "../../../../models/enums/threadStateEnum";
+
+import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
+import {JsonFetchError} from "../../../helpers/FetchHelper";
+import {TimeHelper} from "../../../helpers/TimeHelper";
 
 import {Frame} from "../frame/Frame";
-import {File} from "../../../../models/api/File";
 import {Loading} from "../general/loading/Loading";
-import {CommentThread} from "../../../../models/api/CommentThread";
-import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
-import {Submission} from "../../../../models/api/Submission";
-import {DataList} from "../data/DataList";
-import {Course} from "../../../../models/api/Course";
-import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
 import {DirectoryViewer} from "../general/DirectoryViewer";
-import {TimeHelper} from "../../../helpers/TimeHelper";
+import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
 import {CommentCreator} from "../comment/CommentCreator";
-import {FiPlus, FiX} from "react-icons/all";
-import {threadState} from "../../../../models/enums/threadStateEnum";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
+import {DataList} from "../data/DataList";
+import {FeedbackContent} from "../feedback/Feedback";
+import {FeedbackError} from "../feedback/FeedbackError";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -28,26 +32,21 @@ interface SubmissionOverviewProps {
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
 	const [creatingComment, setCreatingComment] = useState(false);
-	const [createdComments, setCreatedComments] = useState([] as CommentThread[]);
+	const [error, setError] = useState(false as FeedbackContent);
 	const submissionPath = "/submission/" + submissionId;
 
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
 		try {
-			const commentThread = await createSubmissionCommentThread(submissionId, {
+			await createSubmissionCommentThread(submissionId, {
 				submissionID: submissionId,
 				comment,
 				visibility: restricted ? threadState.private : threadState.public
 			});
 			setCreatingComment(false);
-			setCreatedComments(createdComments => [
-				...createdComments,
-				commentThread
-			]);
 			return true;
 		} catch (error) {
 			if (error instanceof JsonFetchError) {
-				// TODO: handle error for the user
-				console.log(error);
+				setError(`Could not create comment: ${error}`);
 			} else {
 				throw error;
 			}
@@ -88,7 +87,10 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					optional={{
 						icon: creatingComment ? FiX : FiPlus,
 						click: () => setCreatingComment(!creatingComment),
-						component: creatingComment && <CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
+						component: (
+							creatingComment &&
+							<CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
+						) || <FeedbackError close={setError}>{error}</FeedbackError>
 					}}
 				>
 					<Loading<CommentThread[]>

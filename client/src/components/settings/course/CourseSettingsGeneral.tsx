@@ -1,9 +1,10 @@
 import React, {useState} from "react";
+import {Button, Form} from "react-bootstrap";
 import {CoursePartial} from "../../../../../models/api/Course";
 import {courseState} from "../../../../../models/enums/courseStateEnum";
-import {Button, Form} from "react-bootstrap";
 import {updateCourse} from "../../../../helpers/APIHelper";
-import {Label} from "../../general/Label";
+import {FeedbackContent} from "../../feedback/Feedback";
+import {FeedbackError} from "../../feedback/FeedbackError";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface CourseSettingsGeneralProperties {
@@ -14,6 +15,7 @@ interface CourseSettingsGeneralProperties {
 export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettingsGeneralProperties) {
 	const [name, setName] = useState("");
 	const [state, setState] = useState(courseState.open);
+	const [error, setError] = useState(false as FeedbackContent);
 
 	async function handleUpdate() {
 		try {
@@ -24,9 +26,8 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 			setName(course.name);
 			setState(course.state as courseState);
 			handleResponse(course);
-		} catch (err) {
-			// TODO: handle error
-			console.log(err);
+		} catch (error) {
+			setError(`Failed to update course: ${error}`);
 		}
 	}
 
@@ -47,6 +48,7 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 				<option value="finished">Finished</option>
 			</Form.Control>
 		</LabeledInput>
+		<FeedbackError close={setError}>{error}</FeedbackError>
 		<Button onClick={handleUpdate}>Update Course</Button>
 	</Form>;
 }

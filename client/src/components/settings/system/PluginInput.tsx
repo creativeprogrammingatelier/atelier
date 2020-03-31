@@ -8,6 +8,9 @@ import {WebhookEvent} from "../../../../../models/enums/webhookEventEnum";
 import {CheckboxInput} from "../../input/CheckboxInput";
 import {MaybeTextarea} from "../../input/maybe/MaybeTextarea";
 import {User} from "../../../../../models/api/User";
+import {FeedbackError} from "../../feedback/FeedbackError";
+import {FeedbackContent} from "../../feedback/Feedback";
+import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
 
 interface PluginInputProperties {
 	plugin?: Plugin,
@@ -19,6 +22,8 @@ interface PluginInputProperties {
 export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 	const [editing, setEditing] = useState(newPlugin !== undefined);
 	const [saving, setSaving] = useState(false);
+	const [success, setSuccess] = useState(false as FeedbackContent);
+	const [error, setError] = useState(false as FeedbackContent);
 
 	const [pluginID, setPluginID] = useState("");
 	const [pluginName, setPluginName] = useState("");
@@ -27,12 +32,6 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 	const [webhookSecret, setWebhookSecret] = useState("");
 	const [publicKey, setPublicKey] = useState("");
 	const [hooks, setHooks] = useState([] as string[]);
-
-	console.log("Rendering a plugin input");
-	console.log(plugin);
-	console.log(newPlugin);
-	console.log(newPlugin !== undefined);
-	console.log(editing);
 
 	function setInput(plugin: Plugin) {
 		setPluginID(plugin.pluginID);
@@ -68,9 +67,9 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 					} as User
 				});
 				newPlugin.create(plugin);
+				setSuccess(`Added new plugin ${plugin.user.name}`);
 			} catch (error) {
-				// TODO: handle error for the user
-				console.log(error);
+				setError(`Failed to add plugin: ${error}`);
 			} finally {
 				setSaving(false);
 			}
@@ -93,9 +92,9 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 				});
 				setInput(updated);
 				setEditing(false);
+				setSuccess(`Updated plugin`);
 			} catch (error) {
-				// TODO: handle error for the user
-				console.log(error);
+				setError(`Could not save changed: ${error}`);
 			} finally {
 				setSaving(false);
 			}
@@ -117,6 +116,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 			await deletePlugin(pluginID);
 			setSaving(false);
 			// TODO: somehow update state
+			// Probably can be done once the fancy new useCache is there
 		}
 	}
 
@@ -177,5 +177,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 				<Button onClick={handleDelete}>Delete</Button>
 			</div>
 		}
+		<FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
+		<FeedbackError close={setError}>{error}</FeedbackError>
 	</Form>;
 }

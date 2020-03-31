@@ -1,15 +1,14 @@
-import React, { Fragment } from "react";
-import {User} from "../../../../models/api/User";
-import {DataList} from "../data/DataList";
-import {Loading} from "../general/loading/Loading";
-import {Course} from "../../../../models/api/Course";
-import {getCourseUserComments, getUserComments, getUserCourses} from "../../../helpers/APIHelper";
-import {PanelButton} from "../general/PanelButton";
+import React from "react";
+
 import {Comment} from "../../../../models/api/Comment";
-import {DataItem} from "../data/DataItem";
-import {DataBlock} from "../data/DataBlock";
-import {DataBlockList} from "../data/DataBlockList";
+import {Course} from "../../../../models/api/Course";
+import {User} from "../../../../models/api/User";
+
+import {getCourseUserComments, getUserComments} from "../../../helpers/APIHelper";
 import {TimeHelper} from "../../../helpers/TimeHelper";
+
+import {DataBlockList} from "../data/DataBlockList";
+import {Loading} from "../general/loading/Loading";
 
 interface CommentTabProperties {
 	user: User,
@@ -24,11 +23,13 @@ export function CommentTab({user, course}: CommentTabProperties) {
 				<DataBlockList
 					header="Comments"
 					list={comments.map((comment: Comment) => {
+						console.log("Rendering a loose comment");
+						console.log(comment);
 						return {
 							title: comment.user.name,
 							text: comment.text,
 							time: TimeHelper.fromString(comment.created),
-							transport: "" // TODO: Link to correct /submission/:submissionId/:fileId/comments#:commentThreadId
+							transport: `/submission/${comment.references.submissionID}/${comment.references.fileID}/comments#${comment.references.commentThreadID}` // TODO: Link to correct /submission/:submissionId/#:commentThreadId for project-level comments
 						};
 					})}
 				/>

@@ -10,10 +10,14 @@ import {Selection} from "../../../../../models/api/Snippet";
 import {FileViewer, FileViewerProperties} from "../FileOverview";
 import {Loading} from "../../general/loading/Loading";
 import {FiCode} from "react-icons/all";
+import {Floater} from "../../general/Floater";
+import {FeedbackError} from "../../feedback/FeedbackError";
+import {FeedbackContent} from "../../feedback/Feedback";
 
 export function CodeViewer({file, sendComment}: FileViewerProperties) {
 	const [commentThreads, setCommentThreads] = useState([] as CommentThread[]);
 	const [snippets, setSnippets] = useState([] as SnippetHighlight[]);
+	const [error, setError] = useState(false as FeedbackContent);
 	const history = useHistory();
 
 	const getCommentThreads = () => {
@@ -23,8 +27,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 			});
 		} catch (error) {
 			if (error instanceof JsonFetchError) {
-				console.log(error);
-				// TODO: Give error to the user
+				setError(`Could not load existing comments`);
 			} else {
 				throw error;
 			}
@@ -35,10 +38,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 		for (const commentThread of commentThreads) {
 			if (commentThread.snippet !== undefined) {
 				snippets.push({
-					onClick: () => {
-						console.log("clicked comment");
-						history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.ID}`);
-					},
+					onClick: () => history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.ID}`),
 					...commentThread.snippet
 				});
 			}
@@ -55,8 +55,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 			return true;
 		} catch (error) {
 			if (error instanceof JsonFetchError) {
-				// TODO: handle error for the user
-				console.log(error);
+				setError(`Could not create comment: ${error}`);
 			} else {
 				throw error;
 			}
@@ -81,6 +80,9 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 					/>
 				}
 			/>
+			<Floater right={0} left={0} bottom={44} className="mx-2 my-1">
+				<FeedbackError close={setError} timeout={4000}>{error}</FeedbackError>
+			</Floater>
 		</div>
 	);
 }
