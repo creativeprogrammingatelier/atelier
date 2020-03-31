@@ -15,6 +15,7 @@ import {DataList} from "../data/DataList";
 import {PluginSettings} from "../settings/system/PluginSettings";
 import {Link} from "react-router-dom";
 import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
+import {FeedbackContent} from "../feedback/Feedback";
 
 interface CourseOverviewProps {
 	match: {
@@ -26,7 +27,7 @@ interface CourseOverviewProps {
 
 export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProps) {
 	const [uploading, setUploading] = useState(false);
-	const [uploadingSuccess, setUploadingSuccess] = useState(false);
+	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
 	const [reload, updateReload] = useState(0);
 	const [permissions, setPermissions] = useState(0);
 
@@ -87,12 +88,12 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 								<Uploader
 									courseId={courseId}
 									onUploadComplete={() => {
-										setUploadingSuccess(true);
+										setUploadingSuccess("Upload successful");
 										setUploading(false);
 										updateReload(rel => rel + 1)
 									}}
 								/>
-							) || <FeedbackSuccess show={uploadingSuccess} close={setUploadingSuccess}>Upload successful</FeedbackSuccess>
+							) || <FeedbackSuccess close={setUploadingSuccess}>{uploadingSuccess}</FeedbackSuccess>
 						}}
 						list={submissions.map(submission => {
 							console.log(submission);

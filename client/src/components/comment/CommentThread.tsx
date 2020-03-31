@@ -113,7 +113,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				<Button onClick={() => setOpened(!opened)}>{opened ? <FiChevronUp size={14} color="#FFFFFF"/> : <FiChevronDown size={14} color="#FFFFFF"/>}</Button>
 			</ButtonBar>
 		</Block>
-		<FeedbackSuccess show={success} close={setSuccess}>{success}</FeedbackSuccess>
-		<FeedbackError show={error} close={setError}>{error}</FeedbackError>
+		<FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
+		<FeedbackError close={setError}>{error}</FeedbackError>
 	</div>;
 }
