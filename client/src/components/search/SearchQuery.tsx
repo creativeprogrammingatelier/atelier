@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import {useHistory} from "react-router-dom";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {FiX} from "react-icons/all";
 import {Course} from "../../../../models/api/Course";
@@ -11,7 +12,6 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {Loading} from "../general/loading/Loading";
 import {Tag} from "../general/Tag";
 import {SearchProperties} from "./SearchOverview";
-import {Link, useHistory} from "react-router-dom";
 
 interface SearchQueryProperties {
 	state: SearchProperties,
@@ -50,7 +50,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 					<Tag large round theme="primary" click={() => history.push(`/user/${user}`)}>
 						User: <Loading<User> loader={getUser} params={[user]} component={user => user.name} wrapper={() => null}/>
 						<Button className="ml-1" onClick={(event: React.MouseEvent<HTMLElement>) => {
-							setSubmission(undefined);
+							setUser(undefined);
 							event.stopPropagation();
 							event.nativeEvent.stopImmediatePropagation();
 						}}>
