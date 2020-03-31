@@ -15,7 +15,7 @@ import {DirectoryViewer} from "../general/DirectoryViewer";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 import {CommentCreator} from "../comment/CommentCreator";
 import {FiPlus, FiX} from "react-icons/all";
-import {threadState} from "../../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../../models/enums/threadStateEnum";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
 
 interface SubmissionOverviewProps {
@@ -36,7 +36,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 			const commentThread = await createSubmissionCommentThread(submissionId, {
 				submissionID: submissionId,
 				comment,
-				visibility: restricted ? threadState.private : threadState.public
+				visibility: restricted ? ThreadState.private : ThreadState.public
 			});
 			setCreatingComment(false);
 			setCreatedComments(createdComments => [

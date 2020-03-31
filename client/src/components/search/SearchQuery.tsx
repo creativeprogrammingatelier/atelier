@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Badge, Button, Form, InputGroup} from "react-bootstrap";
 import {Course} from "../../../../models/api/Course";
 import {createCourse, getCourses, getSubmission, getUser, search} from "../../../helpers/APIHelper";
-import {courseState} from "../../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../../models/enums/courseStateEnum";
 import {Loading} from "../general/loading/Loading";
 import {SearchResult} from "../../../../models/api/SearchResult";
 import {SearchProperties} from "./SearchOverview";

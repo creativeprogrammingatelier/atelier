@@ -2,7 +2,14 @@ import { CourseRole } from "./CourseRoleEnum";
 interface EnumType {
 	[id : string] : string
 }
-
+/**
+ * A function to make sure a value is contained in an enum, this returns the correct enum value
+ * If the given enum is of type <string>=<sameString>, this function can be used multiple times without issue.
+ * 
+ * @param enumer the enum to select an item from
+ * @param item the (maybe) item to be selected
+ * @throws if the given item is not part of the given enumeration.
+ */
 export function getEnum<T>(enumer : T, item : string) {
 	if (checkEnum(enumer, item)){
 		return enumer[item];

@@ -14,11 +14,11 @@ import {SearchResult} from "../../models/api/SearchResult";
 import {Mention} from "../../models/api/Mention";
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {CourseUser} from "../../models/api/CourseUser";
-import {courseState} from "../../models/enums/courseStateEnum";
+import {CourseState} from "../../models/enums/courseStateEnum";
 import {Plugin} from "../../models/api/Plugin";
-import {globalRole} from "../../models/enums/globalRoleEnum";
-import {inviteRole} from "../../models/enums/inviteRoleEnum";
-import {courseRole} from "../../models/enums/courseRoleEnum";
+import {GlobalRole} from "../../models/enums/globalRoleEnum";
+import {InviteRole} from "../../models/enums/inviteRoleEnum";
+import {CourseRole} from "../../models/enums/courseRoleEnum";
 
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
@@ -42,7 +42,7 @@ export function getUserCourses(userId: string) {
 export function createCourse(course: {name: string, state: string}) {
 	return Fetch.fetchJson<Course>("/api/course", postJson(course));
 }
-export function updateCourse(courseID: string, update: {name?: string, state?: courseState}) {
+export function updateCourse(courseID: string, update: {name?: string, state?: CourseState}) {
 	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update));
 }
 export function courseEnrollUser(courseID: string, userID: string) {
@@ -200,20 +200,20 @@ export function getInvites(courseID: string) {
 	return Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`);
 }
 
-export function getInvite(courseID: string, role: inviteRole) {
+export function getInvite(courseID: string, role: InviteRole) {
 	return Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`);
 }
 
-export function deleteInvite(courseID: string, role: inviteRole) {
+export function deleteInvite(courseID: string, role: InviteRole) {
 	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {method: "DELETE"});
 }
 
 // Role
-export function updateGlobalRole(userID: string, role: globalRole) {
+export function updateGlobalRole(userID: string, role: GlobalRole) {
 	return Fetch.fetchJson<User>(`/api/role/user/${userID}/${role}`, putJson({}));
 }
 
-export function updateCourseRole(userID: string, courseID: string, role: courseRole) {
+export function updateCourseRole(userID: string, courseID: string, role: CourseRole) {
 	return Fetch.fetchJson<CourseUser>(`/api/role/course/${courseID}/user/${userID}/${role}`, putJson({}));
 }
 

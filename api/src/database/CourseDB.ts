@@ -67,7 +67,7 @@ export class CourseDB {
 			AND ($6::text IS NULL OR email ILIKE $6)
 			AND ($7::text IS NULL OR globalRole=$7)
 
-			ORDER BY state, courseName, courseID
+			ORDER BY courseName, state, courseID
 			LIMIT $8
 			OFFSET $9`, args)
 			.then(extract).then(map(courseToAPIPartial))

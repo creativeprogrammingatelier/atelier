@@ -1,4 +1,4 @@
-import {inviteRole} from "../../../../../models/enums/inviteRoleEnum";
+import {InviteRole} from "../../../../../models/enums/inviteRoleEnum";
 import React, {useState} from "react";
 import {deleteInvite, getInvite} from "../../../../helpers/APIHelper";
 import {CourseInvite as CourseInviteModel} from "../../../../../models/api/Invite";
@@ -9,13 +9,13 @@ import {Label} from "../../general/Label";
 interface CourseInviteProperties {
 	name: string,
 	link?: string,
-	role: inviteRole
+	role: InviteRole
 	courseID: string,
 }
 export function CourseInvite({name, link, role, courseID}: CourseInviteProperties) {
 	const [inviteLink, setInviteLink] = useState(link ? `${window.location.origin}/invite/${link}` : "");
 
-	const createLink = (role: inviteRole) => {
+	const createLink = (role: InviteRole) => {
 		getInvite(courseID, role)
 		.then((courseInvite: CourseInviteModel) => {
 			setInviteLink(`${window.location.origin}/invite/${courseInvite.inviteID}`);

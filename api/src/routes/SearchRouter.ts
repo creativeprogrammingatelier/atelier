@@ -26,6 +26,7 @@ import { FileDB } from '../database/FileDB';
 import { map } from '../database/HelperDB';
 import { requirePermissions, requireRegistered } from '../helpers/PermissionHelper';
 import { PermissionEnum } from '../../../models/enums/PermissionEnum';
+import { Sorting } from '../../../models/enums/SortingEnum';
 
 export const searchRouter = express.Router();
 
@@ -39,30 +40,21 @@ interface Common {
     currentUserID: string;
     limit?: number;
     offset?: number;
-    sorting?: string;
+    sorting?: Sorting;
 }
 /** Get the parameters for a search query, throws an error if invalid */
 async function getSearchParams(request: Request) : Promise<{query:string,common:Common}>{
     //special characters encoded in urls are parsed back to normal by express
     const query : string | undefined = request.query.q;
     if (!query?.trim()) throw new InvalidParamsError("q", "it should not be empty");
-    const sorting = request.query.sort
-    if (sorting !== undefined){
-        switch(sorting){
-            case "alphabetical":
-            case "datetime":
-                break
-            default:
-                throw new InvalidParamsError("sorting", "it was '"+sorting+"', should have been 'datetime' or 'alphabetical'.")
-        }
-    }  
+    
     const common = getCommonQueryParams(request);
     const courseID = request.query.courseID as string | undefined;
     const userID = request.query.userID as string | undefined;
     const submissionID = request.query.submissionID as string | undefined;
 
     const currentUserID = await getCurrentUserID(request);
-    return { query, common: { ...common, courseID, userID, submissionID, currentUserID, sorting} };
+    return { query, common: { ...common, courseID, userID, submissionID, currentUserID} };
 }
 
 async function filterUser(query : string, common : Common) {

@@ -5,7 +5,7 @@ import {courseEnrollUser} from "../../../../helpers/APIHelper";
 import {CourseUser} from "../../../../../models/api/CourseUser";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {UserRoles} from "../user/UserRoles";
-import {courseRole} from "../../../../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
 import {Label} from "../../general/Label";
 import {UserInfo} from "../user/UserInfo";
 
@@ -14,7 +14,7 @@ interface CourseSettingsEnrollmentProperties {
 }
 export function CourseSettingsEnrollment({courseID}: CourseSettingsEnrollmentProperties) {
 	const [user, setUser] = useState(undefined as User | undefined);
-	const [role, setRole] = useState(undefined as typeof courseRole | undefined);
+	const [role, setRole] = useState(undefined as typeof CourseRole | undefined);
 
 	function enrollUser() {
 		if (user) {
@@ -36,7 +36,7 @@ export function CourseSettingsEnrollment({courseID}: CourseSettingsEnrollmentPro
 			user &&
 			<Fragment>
 				<UserInfo user={user}/>
-				<UserRoles<typeof courseRole> roles={courseRole} onSelected={setRole}/>
+				<UserRoles<typeof CourseRole> roles={CourseRole} onSelected={setRole}/>
 				<Button onClick={enrollUser}>Enroll User</Button>
 			</Fragment>
 		}

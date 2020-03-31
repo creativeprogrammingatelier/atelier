@@ -1,4 +1,7 @@
 import { Request } from 'express';
+import { getEnum, EnumError } from '../../../models/enums/enumHelper';
+import { Sorting } from '../../../models/enums/SortingEnum';
+
 
 export class InvalidParamsError extends Error {
     reason: string;
@@ -19,6 +22,18 @@ export function getCommonQueryParams(request: Request, maxLimit = 50) {
 
     const offset = request.query.offset === undefined ? 0 : Number(request.query.offset);
     if (isNaN(offset)) throw new InvalidParamsError("offset", "it is not a number");
+    //this parameter is currently only looked at by the 'search-' methods in the database.
+    //in the future, it might be nice to allow it in other methods too.
+    let sorting : Sorting;
+    try{ 
+        sorting = request.query.sort? getEnum(Sorting, request.query.sort) : Sorting.datetime
+    } catch (e) {
+        if (e instanceof EnumError){
+            throw new InvalidParamsError("sort", e.message)
+        } else {
+            throw e;
+        }
+    }
 
-    return { limit, offset };
+    return { limit, offset, sorting};
 }
