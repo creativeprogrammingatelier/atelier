@@ -5,7 +5,7 @@ import { config } from './ConfigurationHelper';
 export function getProperType(mimeType: string, filePath: string) {
     if (mimeType === "application/octet-stream" || mimeType === "text/plain") {
         switch (path.extname(filePath)) {
-            case ".pde": // While it should really be processing specific, codemirror doesn't know it, so java it is.
+            case ".pde": // While it should really be processing specific, codemirror doesn't know it, so java it is. // The attempt to define text/x-processing as text/x-java didn't seem to work
             case ".java":
                 return "text/x-java";
             case ".ino":

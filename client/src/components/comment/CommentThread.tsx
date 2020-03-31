@@ -17,6 +17,7 @@ import {containsPermission, PermissionEnum} from "../../../../models/enums/permi
 import {User} from "../../../../models/api/User";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
 import {threadState} from "../../../../models/enums/threadStateEnum";
+import {Block} from "../general/Block";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -81,7 +82,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	}, []);
 
 	return (
-		<div id={thread.ID} className={"commentThread block" + (restricted ? " restricted" : "")}>
+		<Block id={thread.ID} className={"commentThread" + (restricted ? " restricted" : "")}>
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
 			{opened ?
 				<Fragment>
@@ -107,6 +108,6 @@ export function CommentThread({thread}: CommentThreadProperties) {
 				}
 				<Button onClick={() => setOpened(!opened)}>{opened ? <FiChevronUp size={14} color="#FFFFFF"/> : <FiChevronDown size={14} color="#FFFFFF"/>}</Button>
 			</ButtonBar>
-		</div>
+		</Block>
 	);
 }
