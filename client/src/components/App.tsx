@@ -12,7 +12,6 @@ import {CourseOverview} from "./course/CourseOverview";
 import {UserOverview} from "./user/UserOverview";
 import {Homepage} from "./Homepage";
 
-import "../styles/app.scss";
 import "../styles/base.scss";
 import {SubmissionShare} from "./submission/SubmissionShare";
 import {Bootstrap} from "./Bootstrap";

@@ -247,6 +247,7 @@ textarea:focus, textarea:active {
 	border: none;
 	border-left: 0.5rem solid $primaryColor;
 	border-radius: 0;
+	opacity: 1 !important;
 }
 .toast:not(:last-child) {
 	margin-bottom: 0.5rem;

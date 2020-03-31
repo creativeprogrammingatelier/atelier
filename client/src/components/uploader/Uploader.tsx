@@ -4,7 +4,6 @@ import "../../../../helpers/Extensions";
 import {DirectoryViewer} from "../general/DirectoryViewer";
 import {defaultValidation, validateProjectClient} from "../../../../helpers/ProjectValidationHelper";
 
-import "../../styles/file-uploader.scss";
 import {MAX_PROJECT_SIZE} from "../../../../helpers/Constants";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
 import {createSubmission} from "../../../helpers/APIHelper";
