@@ -1,10 +1,9 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useState} from "react";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../../models/api/Course";
-import {Permission} from "../../../../../models/api/Permission";
 import {CourseRole} from "../../../../../models/enums/CourseRoleEnum";
-import {containsPermission, PermissionEnum} from "../../../../../models/enums/PermissionEnum";
-import {coursePermission, getCourse} from "../../../../helpers/APIHelper";
+import {PermissionEnum} from "../../../../../models/enums/PermissionEnum";
+import {getCourse} from "../../../../helpers/APIHelper";
 import {DataList} from "../../data/DataList";
 import {Frame} from "../../frame/Frame";
 import {Loading} from "../../general/loading/Loading";
@@ -25,20 +24,9 @@ interface CourseOverviewProps {
 }
 
 export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProps) {
-	const [reload, updateReload] = useState(0);
-	const [permissions, setPermissions] = useState(0);
-
 	// Refresh course on course update
 	const [reloadCourse, setReloadCourse] = useState(0);
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
-
-	// TODO: Only used as input to UserSettingsPermissions, probably change the structure for it
-	useEffect(() => {
-		coursePermission(courseId)
-		.then((permission: Permission) => {
-			setPermissions(permission.permissions);
-		});
-	}, []);
 
 	return (
 		<Frame title="Course" sidebar search={{course: courseId}}>
@@ -76,11 +64,7 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 			</Permissions>
 			<Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
 				<DataList header="User Permissions">
-					<UserSettingsPermissions
-						courseID={courseId}
-						viewPermissions={containsPermission(PermissionEnum.manageUserPermissionsView, permissions)}
-						managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
-					/>
+					<UserSettingsPermissions courseID={courseId}/>
 				</DataList>
 			</Permissions>
 		</Frame>
