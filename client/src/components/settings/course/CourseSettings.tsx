@@ -2,8 +2,8 @@ import React, {Fragment, useEffect, useState} from "react";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {Permission} from "../../../../../models/api/Permission";
-import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
-import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
+import {CourseRole} from "../../../../../models/enums/CourseRoleEnum";
+import {containsPermission, PermissionEnum} from "../../../../../models/enums/PermissionEnum";
 import {coursePermission, getCourse} from "../../../../helpers/APIHelper";
 import {DataList} from "../../data/DataList";
 import {Frame} from "../../frame/Frame";
@@ -14,6 +14,7 @@ import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
+import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
 
 interface CourseOverviewProps {
 	match: {
@@ -61,6 +62,11 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 			<Permissions single={PermissionEnum.manageUserRegistration}>
 				<DataList header="Enroll a User">
 					<CourseSettingsEnrollment courseID={courseId}/>
+				</DataList>
+			</Permissions>
+			<Permissions single={PermissionEnum.manageUserRegistration}>
+				<DataList header="Disenroll a User">
+					<CourseSettingsDisenrollment courseID={courseId}/>
 				</DataList>
 			</Permissions>
 			<Permissions single={PermissionEnum.manageUserRole}>

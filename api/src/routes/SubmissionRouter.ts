@@ -14,10 +14,10 @@ import {FileDB} from '../database/FileDB';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
 import {filterSubmission} from '../helpers/APIFilterHelper';
-import {PermissionEnum} from '../../../models/enums/permissionEnum';
+import {PermissionEnum} from '../../../models/enums/PermissionEnum';
 import {requirePermission, requireRegistered} from '../helpers/PermissionHelper';
 import {transaction} from '../database/HelperDB';
-import {WebhookEvent} from '../../../models/enums/webhookEventEnum';
+import {WebhookEvent} from '../../../models/enums/WebhookEventEnum';
 import {UPLOADS_PATH} from '../lib/constants';
 import { getProperType } from '../helpers/FileHelper';
 

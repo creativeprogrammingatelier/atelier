@@ -6,7 +6,7 @@ import {Responsive} from "../general/Responsive";
 import { useCurrentUser } from "../../helpers/api/APIHooks";
 import {FiActivity, FiHome, FiLogOut, FiSettings, FiSliders, FiUser, FiX} from "react-icons/fi";
 import {Permission} from "../../../../models/api/Permission";
-import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/PermissionEnum";
 import {permission} from "../../../helpers/APIHelper";
 import {Loading} from "../general/loading/Loading";
 import { Cached } from "../general/loading/Cached";

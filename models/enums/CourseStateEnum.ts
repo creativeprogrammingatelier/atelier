@@ -1,4 +1,4 @@
-import { EnumError } from "./enumHelper";
+import { EnumError } from "./EnumHelper";
 
 export enum CourseState {
 	hidden = "hidden",

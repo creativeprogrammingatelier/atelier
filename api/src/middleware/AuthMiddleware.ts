@@ -12,7 +12,7 @@ import { captureNext } from '../helpers/ErrorHelper';
 import {User} from "../../../models/api/User";
 import { CourseRole } from '../../../models/enums/CourseRoleEnum';
 import { GlobalRole } from '../../../models/enums/GlobalRoleEnum';
-import { getEnum } from '../../../models/enums/enumHelper';
+import { getEnum } from '../../../models/enums/EnumHelper';
 
 export class AuthMiddleware {
     /** Middleware function that will refresh tokens in cookies */

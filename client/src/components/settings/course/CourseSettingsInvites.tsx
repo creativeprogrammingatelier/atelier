@@ -2,7 +2,7 @@ import React, {Fragment} from "react";
 
 import {Invite} from "../../../../../models/api/Invite";
 import {Permission} from "../../../../../models/api/Permission";
-import {InviteRole} from "../../../../../models/enums/inviteRoleEnum";
+import {InviteRole} from "../../../../../models/enums/InviteRoleEnum";
 
 import {coursePermission, getInvites} from "../../../../helpers/APIHelper";
 

@@ -14,11 +14,11 @@ import {SearchResult} from "../../models/api/SearchResult";
 import {Mention} from "../../models/api/Mention";
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {CourseUser} from "../../models/api/CourseUser";
-import {CourseState} from "../../models/enums/courseStateEnum";
+import {CourseState} from "../../models/enums/CourseStateEnum";
 import {Plugin} from "../../models/api/Plugin";
-import {GlobalRole} from "../../models/enums/globalRoleEnum";
-import {InviteRole} from "../../models/enums/inviteRoleEnum";
-import {CourseRole} from "../../models/enums/courseRoleEnum";
+import {GlobalRole} from "../../models/enums/GlobalRoleEnum";
+import {InviteRole} from "../../models/enums/InviteRoleEnum";
+import {CourseRole} from "../../models/enums/CourseRoleEnum";
 import {Sorting} from "../../models/enums/SortingEnum";
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
@@ -61,11 +61,14 @@ export function createCourse(course: {name: string, state: string}) {
 export function updateCourse(courseID: string, update: {name?: string, state?: CourseState}) {
 	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update));
 }
-export function courseEnrollUser(courseID: string, userID: string) {
-	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, putJson({}));
+export function courseEnrollUser(courseID: string, userID: string, role: CourseRole) {
+	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}/role/${role}`, putJson({}));
 }
 export function courseDisenrollUser(courseID: string, userID: string) {
 	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, {"method" : "DELETE"});
+}
+export function deleteCourse(courseID: string) {
+	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, {"method" : "DELETE"});
 }
 
 // Users

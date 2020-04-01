@@ -1,7 +1,7 @@
 import {CourseRole} from '../enums/CourseRoleEnum'
 import {CoursePermission as APICoursePermission} from '../api/Permission'
 import { pgDB, DBTools, checkAvailable, toDec } from '../../api/src/database/HelperDB'
-import { getEnum } from '../enums/enumHelper'
+import { getEnum } from '../enums/EnumHelper'
 import { GlobalRole } from '../enums/GlobalRoleEnum'
 export type CoursePermission = Partial<APICoursePermission>
 

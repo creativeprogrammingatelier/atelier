@@ -13,7 +13,7 @@ import { File as APIFile } from '../../../../models/api/File';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { useObservable } from 'observable-hooks';
-import { CourseState } from '../../../../models/enums/courseStateEnum';
+import { CourseState } from '../../../../models/enums/CourseStateEnum';
 
 export interface APICache<T> {
     observable: Observable<CacheCollection<T> | CacheItem<T>>

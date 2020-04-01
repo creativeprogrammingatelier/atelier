@@ -1,7 +1,7 @@
 
 import { DBTools, checkAvailable, toDec } from "../../api/src/database/HelperDB";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
-import { getEnum } from "../enums/enumHelper";
+import { getEnum } from "../enums/EnumHelper";
 import { CourseRole } from "../enums/CourseRoleEnum";
 import { GlobalRole } from "../enums/GlobalRoleEnum";
 import {CourseUser as APICourseUser } from '../api/CourseUser'

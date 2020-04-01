@@ -3,7 +3,7 @@ import { DatabaseError } from "../../api/src/database/DatabaseErrors";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { CourseInvite as Invite } from "../api/Invite";
 import { DBTools, checkAvailable } from "../../api/src/database/HelperDB";
-import {checkEnum, getEnum} from "../enums/enumHelper";
+import {checkEnum, getEnum} from "../enums/EnumHelper";
 
 export interface CourseInvite extends DBTools{
 	inviteID? : string,

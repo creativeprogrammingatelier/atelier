@@ -15,7 +15,7 @@ import { AuthError, setTokenCookie, clearTokenCookie, getCurrentUserID } from '.
 import { UserDB } from '../../database/UserDB';
 import { NotFoundDatabaseError } from '../../database/DatabaseErrors';
 import { GlobalRole } from '../../../../models/enums/GlobalRoleEnum';
-import { checkEnum, getEnum } from '../../../../models/enums/enumHelper';
+import { checkEnum, getEnum } from '../../../../models/enums/EnumHelper';
 
 setSchemaValidator(validator);
 

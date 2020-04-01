@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import {ParentalProperties} from "../../helpers/ParentHelper";
 import {Cached} from './loading/Cached';
 import {usePermission} from '../../helpers/api/APIHooks';
-import {PermissionEnum, containsPermissionAny, containsPermission, containsPermissionAll} from "../../../../models/enums/permissionEnum";
+import {PermissionEnum, containsPermissionAny, containsPermission, containsPermissionAll} from "../../../../models/enums/PermissionEnum";
 
 interface GenericPermissionsProperties extends ParentalProperties {
     /** Optional error to display if the user doesn't have the required permissions */

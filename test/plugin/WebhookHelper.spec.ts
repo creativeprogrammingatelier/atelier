@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 import { plugin } from './Plugin';
 import { createWebhookRequest, getSubscribedPlugins } from '../../api/src/helpers/WebhookHelper';
-import { WebhookEvent } from '../../models/enums/webhookEventEnum';
+import { WebhookEvent } from '../../models/enums/WebhookEventEnum';
 
 describe("WebhookHelper.createWebhookRequest", () => {
     const event = WebhookEvent.SubmissionFile;

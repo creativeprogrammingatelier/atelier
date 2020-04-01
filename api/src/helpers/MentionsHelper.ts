@@ -2,10 +2,10 @@ import { UserDB } from "../database/UserDB";
 import { pgDB } from "../database/HelperDB";
 import { NotFoundDatabaseError } from "../database/DatabaseErrors";
 import { User } from "../../../models/api/User";
-import { CourseRole } from "../../../models/enums/courseRoleEnum";
+import { CourseRole } from "../../../models/enums/CourseRoleEnum";
 import { MentionsDB } from "../database/MentionsDB";
 import { CourseRegistrationDB } from "../database/CourseRegistrationDB";
-import { containsPermission, PermissionEnum } from "../../../models/enums/permissionEnum";
+import { containsPermission, PermissionEnum } from "../../../models/enums/PermissionEnum";
 import { Mention } from "../../../models/api/Mention";
 
 /** Get the parts of the a comment following the @-sign, which starts a mention */

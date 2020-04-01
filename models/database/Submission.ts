@@ -3,7 +3,7 @@ import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
 import { Submission as APISubmission} from '../api/Submission'
 import { DBAPIUser, userToAPI } from './User'
 import { DBTools, checkAvailable } from '../../api/src/database/HelperDB'
-import { getEnum } from '../enums/enumHelper'
+import { getEnum } from '../enums/EnumHelper'
 
 export interface Submission extends DBTools{
 	submissionID?: string;

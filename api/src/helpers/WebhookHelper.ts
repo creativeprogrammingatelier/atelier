@@ -2,7 +2,7 @@ import fetch, { Request } from 'node-fetch';
 import crypto from 'crypto';
 import { PluginsDB } from '../database/PluginsDB';
 import { Plugin } from '../../../models/database/Plugin';
-import { WebhookEvent } from '../../../models/enums/webhookEventEnum';
+import { WebhookEvent } from '../../../models/enums/WebhookEventEnum';
 
 interface WebhookRequest<T> {
     event: WebhookEvent,

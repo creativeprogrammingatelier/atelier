@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { assert } from "console";
 import { instanceOfPermission, instanceOfUser, instanceOfCourseUser } from "../../InstanceOf";
 import { viewPermissions, PermissionEnum, containsPermission, managePermissions } from "../../../models/enums/PermissionEnum";
-import { getEnum } from "../../../models/enums/enumHelper";
+import { getEnum } from "../../../models/enums/EnumHelper";
 
 export function permissionTest(){
 	/**

@@ -3,7 +3,7 @@ import {Button, InputGroup, Form} from "react-bootstrap";
 import {FiPlus, FiX} from "react-icons/all";
 
 import {CourseInvite as CourseInviteModel} from "../../../../../models/api/Invite";
-import {InviteRole} from "../../../../../models/enums/inviteRoleEnum";
+import {InviteRole} from "../../../../../models/enums/InviteRoleEnum";
 
 import {deleteInvite, getInvite} from "../../../../helpers/APIHelper";
 

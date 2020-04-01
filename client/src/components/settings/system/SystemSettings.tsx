@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Button, Jumbotron} from "react-bootstrap";
 import {User} from "../../../../../models/api/User";
-import {GlobalRole} from "../../../../../models/enums/globalRoleEnum";
-import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
+import {GlobalRole} from "../../../../../models/enums/GlobalRoleEnum";
+import {containsPermission, PermissionEnum} from "../../../../../models/enums/PermissionEnum";
 import {getCurrentUser} from "../../../../helpers/APIHelper";
 import {Frame} from "../../frame/Frame";
 import {DataList} from "../../data/DataList";

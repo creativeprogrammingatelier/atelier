@@ -1,7 +1,7 @@
 import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
 import {CourseRole} from '../../../models/enums/CourseRoleEnum'
 import {convertRolePermission} from '../../../models/database/RolePermission'
-import { removeItem, addItem } from "../../../models/enums/enumHelper";
+import { removeItem, addItem } from "../../../models/enums/EnumHelper";
 /**
  * interface for interacting with rolepermissions
  * @Author Rens Leendertz
@@ -54,7 +54,7 @@ export class CourseRoleDB {
 	}
 	/**
 	 * Add some permissions to a role in the database
-	 * the @param permission should be constructed using the localPermissions Enum inside enums/courseRoleEnum 
+	 * the @param permission should be constructed using the localPermissions Enum inside enums/CourseRoleEnum 
 	 * If the role already has some of the rights, those will be retained
 	 * No permissions will be removed
 	 */
@@ -68,7 +68,7 @@ export class CourseRoleDB {
 
 	/**
 	 * Remove some permissions from a role in the database
-	 * the @param permission should be constructed using the localPermissions Enum inside enums/courseRoleEnum 
+	 * the @param permission should be constructed using the localPermissions Enum inside enums/CourseRoleEnum 
 	 * If the role already does not have (some of) the rights, those will not enabled
 	 * No permissions will be added
 	 */

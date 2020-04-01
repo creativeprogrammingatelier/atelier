@@ -25,7 +25,7 @@ import {createMentions} from '../helpers/MentionsHelper';
 import { readFileAsString, getFilePathOnDisk } from '../helpers/FilesystemHelper';
 import { getContextLines } from '../../../helpers/SnippetHelper';
 import {commentThreadOwner} from "../../../helpers/CommentThreadHelper";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
