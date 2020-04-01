@@ -62,8 +62,11 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
             submissionID: submissionId,
             comment,
             visibility: restricted ? ThreadState.private : ThreadState.public
+        }).catch(err => {
+            setError("Failed to create comment: " + err.message);
+            return false;
         });
-        setCreatingComment(false);
+        if (madeComment) setCreatingComment(false);
         return madeComment;
     };
 
@@ -91,12 +94,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					}}
                 >
 					<Cached cache={projectComments}>
-						{thread => <CommentThreadComponent thread={thread}/>}
+						{thread => <CommentThreadComponent key={thread.ID} thread={thread}/>}
 					</Cached>
 				</DataList>
                 <DataList header="Recent">
                     <Cached cache={recentComments}>{
-                        thread => <CommentThreadComponent thread={thread} />
+                        thread => <CommentThreadComponent key={thread.ID} thread={thread} />
                     }</Cached>
                 </DataList>
 			</Frame>
