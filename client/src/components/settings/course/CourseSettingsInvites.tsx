@@ -1,8 +1,11 @@
 import React, {Fragment} from "react";
+
 import {Invite} from "../../../../../models/api/Invite";
 import {Permission} from "../../../../../models/api/Permission";
 import {InviteRole} from "../../../../../models/enums/inviteRoleEnum";
+
 import {coursePermission, getInvites} from "../../../../helpers/APIHelper";
+
 import {Loading} from "../../general/loading/Loading";
 import {CourseInvite} from "./CourseInvite";
 

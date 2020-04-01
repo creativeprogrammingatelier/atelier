@@ -2,11 +2,14 @@ import React, {useState} from "react";
 import {useHistory} from "react-router-dom";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {FiX} from "react-icons/all";
+
 import {Course} from "../../../../models/api/Course";
 import {SearchResult} from "../../../../models/api/SearchResult";
 import {Submission} from "../../../../models/api/Submission";
 import {User} from "../../../../models/api/User";
+
 import {getCourses, getSubmission, getUser, search} from "../../../helpers/APIHelper";
+
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import {Loading} from "../general/loading/Loading";

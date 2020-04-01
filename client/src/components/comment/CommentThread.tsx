@@ -1,22 +1,28 @@
 import React, {Fragment, useEffect, useState} from "react";
-
-import {Comment as CommentComponent} from "./Comment";
-import {ButtonBar} from "../general/ButtonBar";
+import {Link} from "react-router-dom";
 import {Button} from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiCode, FiEye, FiEyeOff, FiTrash} from "react-icons/all";
+
 import {CommentThread} from "../../../../models/api/CommentThread";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
-import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {File} from "../../../../models/api/File";
-import {Snippet} from "../code/Snippet";
-import {Link} from "react-router-dom";
-import {CommentCreator} from "./CommentCreator";
-import {ScrollHelper} from "../../helpers/ScrollHelper";
 import {Permission} from "../../../../models/api/Permission";
-import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {User} from "../../../../models/api/User";
-import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
 import {ThreadState} from "../../../../models/enums/threadStateEnum";
+import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
+
+import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
+import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
+import {JsonFetchError} from "../../../helpers/FetchHelper";
+import {ScrollHelper} from "../../helpers/ScrollHelper";
+
+import {Snippet} from "../code/Snippet";
+import { Block } from "../general/Block";
+import {ButtonBar} from "../general/ButtonBar";
+import {FeedbackContent} from "../feedback/Feedback";
+import {FeedbackError} from "../feedback/FeedbackError";
+import { FeedbackSuccess } from "../feedback/FeedbackSuccess";
+import {Comment as CommentComponent} from "./Comment";
+import {CommentCreator} from "./CommentCreator";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */

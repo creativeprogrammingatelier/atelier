@@ -1,15 +1,17 @@
 import React, {useState, Fragment} from "react";
-import {User} from "../../../../../models/api/User";
-import {UserSearch} from "../user/UserSearch";
-import {courseEnrollUser} from "../../../../helpers/APIHelper";
-import {CourseUser} from "../../../../../models/api/CourseUser";
-import {Button, Form, InputGroup} from "react-bootstrap";
-import {UserRoles} from "../user/UserRoles";
+import {Button, Form} from "react-bootstrap";
+
 import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
-import {Label} from "../../general/Label";
-import {UserInfo} from "../user/UserInfo";
+import {CourseUser} from "../../../../../models/api/CourseUser";
+import {User} from "../../../../../models/api/User";
+
+import {courseEnrollUser} from "../../../../helpers/APIHelper";
+
 import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
 import {FeedbackContent} from "../../feedback/Feedback";
+import {UserInfo} from "../user/UserInfo";
+import {UserRoles} from "../user/UserRoles";
+import {UserSearch} from "../user/UserSearch";
 
 interface CourseSettingsEnrollmentProperties {
 	courseID: string

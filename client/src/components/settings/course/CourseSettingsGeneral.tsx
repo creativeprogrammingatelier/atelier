@@ -1,8 +1,11 @@
 import React, {useState} from "react";
 import {Button, Form} from "react-bootstrap";
+
 import {CoursePartial} from "../../../../../models/api/Course";
 import {CourseState} from "../../../../../models/enums/courseStateEnum";
+
 import {updateCourse} from "../../../../helpers/APIHelper";
+
 import {FeedbackContent} from "../../feedback/Feedback";
 import {FeedbackError} from "../../feedback/FeedbackError";
 import {LabeledInput} from "../../input/LabeledInput";
