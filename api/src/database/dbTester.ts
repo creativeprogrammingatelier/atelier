@@ -23,7 +23,7 @@ import util from 'util'
 import { Mention } from '../../../models/database/Mention'
 import { CourseInviteDB as CI, CourseInviteDB } from './CourseInviteDB'
 import { PluginsDB as P } from './PluginsDB'
-import { getEnum } from '../../../models/enums/enumHelper'
+import { getEnum } from '../../../models/enums/EnumHelper'
 import { GlobalRole } from '../../../models/enums/GlobalRoleEnum'
 import { User } from '../../../models/database/User'
 

@@ -1,7 +1,7 @@
 import React, {Fragment, useState} from "react";
 import {Button, Form} from "react-bootstrap";
 import {GlobalRole} from "../../../../../models/enums/globalRoleEnum";
-import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../../../../models/enums/CourseRoleEnum";
 import {User} from "../../../../../models/api/User";
 import {UserSearch} from "./UserSearch";
 import {updateCourseRole, updateGlobalRole} from "../../../../helpers/APIHelper";

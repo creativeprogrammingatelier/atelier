@@ -1,7 +1,7 @@
 import React, {useState, Fragment} from "react";
 import {Button, Form} from "react-bootstrap";
 
-import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../../../../models/enums/CourseRoleEnum";
 import {CourseUser} from "../../../../../models/api/CourseUser";
 import {User} from "../../../../../models/api/User";
 

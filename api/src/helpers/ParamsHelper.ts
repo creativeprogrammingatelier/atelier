@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { getEnum, EnumError } from '../../../models/enums/enumHelper';
+import { getEnum, EnumError } from '../../../models/enums/EnumHelper';
 import { Sorting } from '../../../models/enums/SortingEnum';
 
 

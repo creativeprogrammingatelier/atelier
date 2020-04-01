@@ -2,7 +2,7 @@ import { UUIDHelper, ID64, UUID } from "../../api/src/helpers/UUIDHelper";
 import { User as APIUser } from "../api/User";
 import { pgDB, DBTools, checkAvailable, toDec } from "../../api/src/database/HelperDB";
 import { GlobalRole } from "../enums/GlobalRoleEnum";
-import { getEnum } from "../enums/enumHelper";
+import { getEnum } from "../enums/EnumHelper";
 
 export interface User extends DBTools {
 	userID?: string,

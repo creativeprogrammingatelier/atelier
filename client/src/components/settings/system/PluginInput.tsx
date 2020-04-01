@@ -4,7 +4,7 @@ import {createPlugin, deletePlugin, updatePlugin} from "../../../../helpers/APIH
 import {Button, Form} from "react-bootstrap";
 import {LabeledInput} from "../../input/LabeledInput";
 import {MaybeInput} from "../../input/maybe/MaybeInput";
-import {WebhookEvent} from "../../../../../models/enums/webhookEventEnum";
+import {WebhookEvent} from "../../../../../models/enums/WebhookEventEnum";
 import {CheckboxInput} from "../../input/CheckboxInput";
 import {MaybeTextarea} from "../../input/maybe/MaybeTextarea";
 import {User} from "../../../../../models/api/User";

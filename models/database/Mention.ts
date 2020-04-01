@@ -2,7 +2,7 @@ import { DBTools, checkAvailable, toDec, noNull } from "../../api/src/database/H
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { Mention as APIMention } from "../api/Mention";
 import { CourseRole } from "../enums/CourseRoleEnum";
-import { checkEnum, getEnum } from "../enums/enumHelper";
+import { checkEnum, getEnum } from "../enums/EnumHelper";
 import { InvalidDatabaseResponseError } from "../../api/src/database/DatabaseErrors";
 import { userToAPI, DBUser } from "./User";
 import { User } from "../api/User";

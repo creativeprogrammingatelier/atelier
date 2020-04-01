@@ -18,7 +18,7 @@ import {CourseState} from "../../models/enums/courseStateEnum";
 import {Plugin} from "../../models/api/Plugin";
 import {GlobalRole} from "../../models/enums/globalRoleEnum";
 import {InviteRole} from "../../models/enums/inviteRoleEnum";
-import {CourseRole} from "../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../models/enums/CourseRoleEnum";
 import {Sorting} from "../../models/enums/SortingEnum";
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({

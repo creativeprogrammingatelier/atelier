@@ -7,7 +7,7 @@ import { Permission } from "../../../models/api/Permission";
 import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 
 import { CourseUser, CourseUserToAPI, APICourseUser } from "../../../models/database/CourseUser";
-import { getEnum } from "../../../models/enums/enumHelper";
+import { getEnum } from "../../../models/enums/EnumHelper";
 import { GlobalRole } from "../../../models/enums/GlobalRoleEnum";
 import { CourseRole } from "../../../models/enums/CourseRoleEnum";
 import { InvalidDatabaseResponseError } from "./DatabaseErrors";

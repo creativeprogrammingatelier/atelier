@@ -1,7 +1,7 @@
 import React  from "react";
 import {Frame} from "./frame/Frame";
 import {Button, Jumbotron} from "react-bootstrap";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {Permissions} from "./general/Permissions";
 import {useCourses} from "../helpers/api/APIHooks";
 import {Link} from "react-router-dom";

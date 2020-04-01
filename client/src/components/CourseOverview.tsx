@@ -7,7 +7,7 @@ import {Course, CoursePartial} from "../../../models/api/Course";
 import {Mention} from "../../../models/api/Mention";
 import {Permission} from "../../../models/api/Permission";
 import {Submission} from "../../../models/api/Submission";
-import {containsPermission, PermissionEnum} from "../../../models/enums/permissionEnum";
+import {containsPermission, PermissionEnum} from "../../../models/enums/PermissionEnum";
 
 import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions} from "../../helpers/APIHelper";
 

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, Fragment} from "react";
 import {permission} from "../../../helpers/APIHelper";
-import {CourseRole} from "../../../../models/enums/courseRoleEnum";
-import {PermissionEnum, containsPermission} from "../../../../models/enums/permissionEnum";
+import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
+import {PermissionEnum, containsPermission} from "../../../../models/enums/PermissionEnum";
 import {User} from "../../../../models/api/User";
 import {searchUsers} from "../../../helpers/APIHelper";
 import {Tag} from "../general/Tag";

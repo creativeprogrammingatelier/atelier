@@ -4,7 +4,7 @@ import {CommentThread as APIThread} from '../api/CommentThread'
 import { fileToAPI, DBAPIFile, isNotNullFile } from './File'
 import { snippetToAPI, DBAPISnippet, isNotNullSnippet } from './Snippet'
 import { DBTools, checkAvailable } from '../../api/src/database/HelperDB'
-import { getEnum } from '../enums/enumHelper'
+import { getEnum } from '../enums/EnumHelper'
 
 export interface Thread extends DBTools{
 	commentThreadID?: string,
