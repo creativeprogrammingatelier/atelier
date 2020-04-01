@@ -33,64 +33,74 @@ interface SubmissionOverviewProps {
 }
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
-    const submission = useSubmission(submissionId);
-    const files = useFiles(submissionId);
-    const projectComments = useProjectComments(submissionId);
-    const recentComments = useRecentComments(submissionId);
-
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [error, setError] = useState(false as FeedbackContent);
+
 	const submissionPath = "/submission/" + submissionId;
 
+	const submission = useSubmission(submissionId);
+	const files = useFiles(submissionId);
+	const projectComments = useProjectComments(submissionId);
+	const recentComments = useRecentComments(submissionId);
+
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-        const madeComment = await projectComments.create({
-            submissionID: submissionId,
-            comment,
-            visibility: restricted ? ThreadState.private : ThreadState.public
-        });
-        setCreatingComment(false);
-        return madeComment;
-    };
+		const createdComment = await projectComments.create({
+			submissionID: submissionId,
+			comment,
+			visibility: restricted ? ThreadState.private : ThreadState.public
+		}).catch(status => {
+			setError(`Failed to create comment`);
+			return status;
+		});
+		setCreatingComment(false);
+		return createdComment;
+	};
 
 	return (
-        <Cached cache={submission} wrapper={children => <Frame title="Submission" sidebar search children={children} />}>{submission =>
-            <Frame title={submission.name} sidebar search={{course: submission.references.courseID, submission: submissionId}}>
-				<Jumbotron>
-					<h1>{submission.name}</h1>
-					<Cached cache={useCourse(submission.references.courseID)}>{course =>
-                        <p>
-                            Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
-                            <br/>
-                            <small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
-                        </p>
-                    }</Cached>
-					<Button className="mb-2 mr-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
-                    <Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
-				</Jumbotron>
-                <Cached cache={files} wrapper={children => <DataList header="Files" children={children} />}>{
-                    files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: file.type, transport: submissionPath + "/" + file.ID + "/view"}))}/>
-                }</Cached>
-                <DataList
-					header="Comments"
-					optional={{
-						icon: creatingComment ? FiX : FiPlus,
-						click: () => setCreatingComment(!creatingComment),
-						component: (
-							creatingComment &&
-							<CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
-						) || <FeedbackError close={setError}>{error}</FeedbackError>
-					}}
-                >
-					<Cached cache={projectComments}>
-						{thread => <CommentThreadComponent thread={thread}/>}
-					</Cached>
-				</DataList>
-                <DataList header="Recent">
-                    <Cached cache={recentComments}>{
-                        thread => <CommentThreadComponent thread={thread} />
-                    }</Cached>
-                </DataList>
-			</Frame>
-		}</Cached>
-    );
+		<Cached cache={submission} wrapper={children => <Frame title="Submission" sidebar search children={children} />}>
+			{submission =>
+				<Frame title={submission.name} sidebar search={{course: submission.references.courseID, submission: submissionId}}>
+					<Jumbotron>
+						<h1>{submission.name}</h1>
+						<Cached cache={useCourse(submission.references.courseID)}>
+							{course =>
+								<p>
+									Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
+									<br/>
+									<small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
+								</p>
+							}
+						</Cached>
+						<Button className="mb-2 mr-2"><Link to={submissionPath + "/share"}>Share</Link></Button>
+						<Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
+					</Jumbotron>
+					<DataList header="Files">
+						<Cached cache={files} wrapper={children => <DataList header="Files" children={children} />}>
+							{files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: file.type, transport: submissionPath + "/" + file.ID + "/view"}))}/>}
+						</Cached>
+					</DataList>
+					<DataList
+						header="Comments"
+						optional={{
+							icon: creatingComment ? FiX : FiPlus,
+							click: () => setCreatingComment(!creatingComment),
+							component: (
+								creatingComment &&
+								<CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
+							) || <FeedbackError close={setError}>{error}</FeedbackError>
+						}}
+					>
+						<Cached cache={projectComments}>
+							{thread => <CommentThreadComponent thread={thread}/>}
+						</Cached>
+					</DataList>
+					<DataList header="Recent">
+						<Cached cache={recentComments}>
+							{thread => <CommentThreadComponent thread={thread} />}
+						</Cached>
+					</DataList>
+				</Frame>
+			}
+		</Cached>
+	);
 }
