@@ -3,25 +3,20 @@ import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 import {FiPlus, FiX} from "react-icons/all";
 
-import {Course} from "../../../../models/api/Course";
-import {CommentThread} from "../../../../models/api/CommentThread";
-import {File} from "../../../../models/api/File";
 import {Submission} from "../../../../models/api/Submission";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
 import {useSubmission, useFiles, useProjectComments, useRecentComments, useCourse} from "../../helpers/api/APIHooks";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 
-import {Frame} from "../frame/Frame";
-import {DirectoryViewer} from "../directory/DirectoryViewer";
-import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
+import {Cached} from "../general/loading/Cached";
 import {CommentCreator} from "../comment/CommentCreator";
+import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
 import {DataList} from "../data/DataList";
+import {DirectoryViewer} from "../directory/DirectoryViewer";
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
-import { Cached } from "../general/loading/Cached";
-import { useObservableState } from "observable-hooks";
-import { CacheItem } from "../../helpers/api/Cache";
+import {Frame} from "../frame/Frame";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -31,17 +26,19 @@ interface SubmissionOverviewProps {
 	}
 }
 
-function SubmissionDetails({ submission }: { submission: Submission }) {
-    const course = useCourse(submission.references.courseID);
-    return (
-        <Cached cache={course}>{course =>
-            <p>
-                Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
-                <br/>
-                <small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
-            </p>
-        }</Cached>
-    );
+function SubmissionDetails({submission}: {submission: Submission}) {
+	const course = useCourse(submission.references.courseID);
+	return (
+		<Cached cache={course}>
+			{course =>
+				<p>
+					Uploaded by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link>, for <Link to={"/course/" + course.ID}>{course.name}</Link>
+					<br/>
+					<small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small>
+				</p>
+			}
+		</Cached>
+	);
 }
 
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProps) {
