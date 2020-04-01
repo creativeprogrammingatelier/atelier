@@ -41,7 +41,6 @@ export function commentTest(){
             expect(response).to.have.status(200);
             const comment = response.body;
             assert(instanceOfComment(comment), "body should be comment, but was"+comment)
-
-        })
+        });
     });
 }
