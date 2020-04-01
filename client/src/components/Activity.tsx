@@ -17,6 +17,7 @@ export function Activity() {
             <DataList header="Mentions">
                 <Cached cache={mentions} timeout={30}>{mention => 
                     <DataBlock
+                        key={mention.ID}
                         title={`Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle} in ${mention.courseName}`}
                         text={mention.comment.text}
                         time={new Date(mention.comment.created)}

@@ -26,6 +26,7 @@ export function CommentTab({user, course}: CommentTabProperties) {
 						console.log("Rendering a loose comment");
 						console.log(comment);
 						return {
+                            key: comment.ID,
 							title: comment.user.name,
 							text: comment.text,
 							time: TimeHelper.fromString(comment.created),
