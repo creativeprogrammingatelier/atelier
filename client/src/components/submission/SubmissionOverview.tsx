@@ -9,7 +9,7 @@ import {DirectoryViewer} from "../general/DirectoryViewer";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 import {CommentCreator} from "../comment/CommentCreator";
 import {FiPlus, FiX} from "react-icons/all";
-import {threadState} from "../../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../../models/enums/threadStateEnum";
 import { useSubmission, useCourse, useProjectComments, useRecentComments, useFiles } from "../../helpers/api/APIHooks";
 import { Cached } from "../general/loading/Cached";
 
@@ -34,7 +34,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
         const res = await projectComments.create({
             submissionID: submissionId,
             comment,
-            visibility: restricted ? threadState.private : threadState.public
+            visibility: restricted ? ThreadState.private : ThreadState.public
         });
         setCreatingComment(false);
         return res;

@@ -32,7 +32,7 @@ const putJson = <T>(body: T) => jsonBody("PUT", body);
  * function that takes an object specifying key:value pairs, and creating something that can be added to the end of an url.
  * @param params an object specifying parameters to send to the backend
  */
-const addParams = <T extends object>(params : T) => {
+const addParams = (params: {[key: string]: string | number | boolean}) => {
 	if (!params) return ''
 	const keys = Object.keys(params);
 	const items : string[]= []
