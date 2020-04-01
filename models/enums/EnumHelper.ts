@@ -1,3 +1,5 @@
+// TODO: This file is not an enum, so it's probably in the wrong place
+
 import { CourseRole } from "./CourseRoleEnum";
 interface EnumType {
 	[id : string] : string
