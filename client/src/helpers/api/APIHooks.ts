@@ -119,10 +119,18 @@ export function useCourse(courseID: string): Refresh<Course> {
 }
 
 export function usePermission(): Refresh<Permission> {
-    const permission = useCacheItem<Permission>("currentUserPermission");
+    const permission = useCacheItem<Permission>("permission");
     return {
         observable: permission.observable,
         refresh: () => refreshItem(API.permission(), permission)
+    }
+}
+
+export function useCoursePermission(courseID: string): Refresh<Permission> {
+    const permission = useCacheItem<Permission>(`permission/course/${courseID}`);
+    return {
+        observable: permission.observable,
+        refresh: () => refreshItem(API.coursePermission(courseID), permission)
     }
 }
 
