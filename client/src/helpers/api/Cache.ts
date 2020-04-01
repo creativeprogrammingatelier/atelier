@@ -103,7 +103,7 @@ export class Cache {
     }
 
     static load(storageKey: string) {
-        const { items, collections } = JSON.parse(localStorage.getItem(storageKey) || "{ items: [], collections: [] }");
+        const { items, collections } = JSON.parse(localStorage.getItem(storageKey) || `{ "items": [], "collections": [] }`);
         return new Cache(items, collections);
     }
 
