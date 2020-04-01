@@ -140,9 +140,10 @@ courseRouter.put('/:courseID', capture(async(request : Request, response : Respo
  * - requirements:
  *  - manageUserRegistration permission
  */
-courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, response : Response) => {
+courseRouter.put('/:courseID/user/:userID/role/:role', capture(async(request : Request, response : Response) => {
 	const courseID : string = request.params.courseID;
 	const userID : string = request.params.userID;
+	const courseRole : CourseRole = request.params.role as CourseRole;
 	const currentUserID : string = await getCurrentUserID(request);
 
 	// Require manageUserRegistration permission
@@ -158,7 +159,7 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 		const courseRegistration : CourseUser = await CourseRegistrationDB.addEntry({
 			courseID,
 			userID,
-			courseRole : CourseRole.student
+			courseRole
 		});
 		response.status(200).send(courseRegistration);
 	}

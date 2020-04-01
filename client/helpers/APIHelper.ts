@@ -61,8 +61,8 @@ export function createCourse(course: {name: string, state: string}) {
 export function updateCourse(courseID: string, update: {name?: string, state?: CourseState}) {
 	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update));
 }
-export function courseEnrollUser(courseID: string, userID: string) {
-	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, putJson({}));
+export function courseEnrollUser(courseID: string, userID: string, role: CourseRole) {
+	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}/role/${role}`, putJson({}));
 }
 export function courseDisenrollUser(courseID: string, userID: string) {
 	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, {"method" : "DELETE"});

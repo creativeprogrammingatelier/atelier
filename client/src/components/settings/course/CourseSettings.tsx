@@ -14,6 +14,7 @@ import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
+import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
 
 interface CourseOverviewProps {
 	match: {
@@ -61,6 +62,11 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 			<Permissions single={PermissionEnum.manageUserRegistration}>
 				<DataList header="Enroll a User">
 					<CourseSettingsEnrollment courseID={courseId}/>
+				</DataList>
+			</Permissions>
+			<Permissions single={PermissionEnum.manageUserRegistration}>
+				<DataList header="Disenroll a User">
+					<CourseSettingsDisenrollment courseID={courseId}/>
 				</DataList>
 			</Permissions>
 			<Permissions single={PermissionEnum.manageUserRole}>
