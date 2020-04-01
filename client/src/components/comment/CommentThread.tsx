@@ -17,7 +17,7 @@ import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 import {Snippet} from "../code/Snippet";
 import { Block } from "../general/Block";
-import {ButtonBar} from "../general/ButtonBar";
+import {ButtonBar} from "../input/button/ButtonBar";
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import { FeedbackSuccess } from "../feedback/FeedbackSuccess";

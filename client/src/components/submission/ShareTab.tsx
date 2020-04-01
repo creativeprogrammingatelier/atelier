@@ -1,5 +1,5 @@
 import React from "react";
-import {Sharing} from "../general/Sharing";
+import {Sharing} from "../share/Sharing";
 import {File} from "../../../../models/api/File";
 
 interface ShareProperties {

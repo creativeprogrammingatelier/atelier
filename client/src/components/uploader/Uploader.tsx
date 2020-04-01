@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 
 import "../../../../helpers/Extensions";
-import {DirectoryViewer} from "../general/DirectoryViewer";
+import {DirectoryViewer} from "../directory/DirectoryViewer";
 import {defaultValidation, validateProjectClient} from "../../../../helpers/ProjectValidationHelper";
 
 import {MAX_PROJECT_SIZE} from "../../../../helpers/Constants";

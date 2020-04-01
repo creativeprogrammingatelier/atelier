@@ -7,7 +7,7 @@ import {Jumbotron} from "react-bootstrap";
 import {CommentTab} from "./CommentTab";
 import {SubmissionTab} from "./SubmissionTab";
 import {CourseTab} from "./CourseTab";
-import {TabBar} from "../general/TabBar";
+import {TabBar} from "../tab/TabBar";
 import {FiMessageSquare, FiPaperclip, FiArchive, FiCompass, FiPackage} from "react-icons/all";
 
 interface UserOverviewProperties {

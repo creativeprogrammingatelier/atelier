@@ -1,6 +1,6 @@
 import React from 'react';
 import {Frame} from '../frame/Frame';
-import {Sharing} from "../general/Sharing";
+import {Sharing} from "../share/Sharing";
 import {Jumbotron} from "react-bootstrap";
 import {Link} from "react-router-dom";
 

@@ -1,5 +1,5 @@
 import React  from "react";
-import {PanelButton} from "./general/PanelButton";
+import {Panel} from "./general/Panel";
 import {Frame} from "./frame/Frame";
 import {CourseCreator} from "./settings/system/CourseCreator";
 import {Button, Jumbotron} from "react-bootstrap";
@@ -37,10 +37,11 @@ export function Homepage() {
 			<div className="m-3">
                 <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
                     course => 
-                        <PanelButton 
+                        <Panel
                             display={course.item.name} 
                             location={`/course/${course.item.ID}`}
-                            state={course.state} />
+                            state={course.state}
+                        />
                 }</CachedList>
 			</div>
 		</Frame>

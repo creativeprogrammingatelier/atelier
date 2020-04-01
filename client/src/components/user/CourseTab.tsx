@@ -3,7 +3,7 @@ import {DataList} from "../data/DataList";
 import {Loading} from "../general/loading/Loading";
 import {Course} from "../../../../models/api/Course";
 import {getUserCourses} from "../../../helpers/APIHelper";
-import {PanelButton} from "../general/PanelButton";
+import {Panel} from "../general/Panel";
 import {User} from "../../../../models/api/User";
 
 interface CourseTabProperties {
@@ -17,7 +17,7 @@ export function CourseTab({user}: CourseTabProperties) {
 				params={[user.ID]}
 				component={courses =>
 					<div>
-						{courses.map((course: Course) => <PanelButton
+						{courses.map((course: Course) => <Panel
 							display={course.name}
 							location={`/course/${course.ID}/user/${user.ID}`}
 						/>)}

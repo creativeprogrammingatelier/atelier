@@ -15,7 +15,7 @@ import {TimeHelper} from "../../../helpers/TimeHelper";
 
 import {Frame} from "../frame/Frame";
 import {Loading} from "../general/loading/Loading";
-import {DirectoryViewer} from "../general/DirectoryViewer";
+import {DirectoryViewer} from "../directory/DirectoryViewer";
 import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
 import {CommentCreator} from "../comment/CommentCreator";
 import {DataList} from "../data/DataList";
