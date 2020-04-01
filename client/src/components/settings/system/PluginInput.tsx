@@ -1,16 +1,19 @@
-import {Plugin} from "../../../../../models/api/Plugin";
-import {default as React, useEffect, useState} from "react";
-import {createPlugin, deletePlugin, updatePlugin} from "../../../../helpers/APIHelper";
+import React, {useEffect, useState} from "react";
 import {Button, Form} from "react-bootstrap";
-import {LabeledInput} from "../../input/LabeledInput";
-import {MaybeInput} from "../../input/maybe/MaybeInput";
-import {WebhookEvent} from "../../../../../models/enums/WebhookEventEnum";
-import {CheckboxInput} from "../../input/CheckboxInput";
-import {MaybeTextarea} from "../../input/maybe/MaybeTextarea";
+
+import {Plugin} from "../../../../../models/api/Plugin";
 import {User} from "../../../../../models/api/User";
+import {WebhookEvent} from "../../../../../models/enums/WebhookEventEnum";
+
+import {createPlugin, deletePlugin, updatePlugin} from "../../../../helpers/APIHelper";
+
 import {FeedbackError} from "../../feedback/FeedbackError";
 import {FeedbackContent} from "../../feedback/Feedback";
 import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
+import {MaybeInput} from "../../input/maybe/MaybeInput";
+import {MaybeTextarea} from "../../input/maybe/MaybeTextarea";
+import {CheckboxInput} from "../../input/CheckboxInput";
+import {LabeledInput} from "../../input/LabeledInput";
 
 interface PluginInputProperties {
 	plugin?: Plugin,
@@ -150,8 +153,8 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 		<LabeledInput label="Public key">
 			<MaybeTextarea modify={editing} placeholder="Plugin public key" value={publicKey} onChange={setPublicKey}/>
 		</LabeledInput>
-		{Object.values(WebhookEvent).map(event =>
-			<Form.Label className="w-100">
+		<LabeledInput label="Used webhooks">
+			{Object.values(WebhookEvent).map(event =>
 				<CheckboxInput
 					name={event}
 					value={event}
@@ -164,8 +167,8 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 							setHooks(hooks => hooks.filter(hook => hook !== event));
 					}}
 				/>
-			</Form.Label>
-		)}
+			)}
+		</LabeledInput>
 		{editing ?
 			<div>
 				<Button disabled={saving} onClick={newPlugin ? handleCreate : handleSave} className="mr-2">{newPlugin ? "Create" : "Save"}</Button>

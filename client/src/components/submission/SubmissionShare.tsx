@@ -24,8 +24,8 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
 		{submission =>
 			<Frame title={submission.name} sidebar search={{course: submission.references.courseID, submission: submissionId}}>
 				<Jumbotron>
-					<h1>Share me!</h1>
-					<p>Back to submission <Link to={submissionPath}>{submission.name}</Link></p>
+					<h1>Share Me!</h1>
+					<p>Back to <Link to={submissionPath}>{submission.name}</Link></p>
 				</Jumbotron>
 				<div className="m-3">
 					<Sharing url={submissionURL}/>
