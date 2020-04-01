@@ -14,15 +14,13 @@ import {RadioInput} from "../input/RadioInput";
 import {FiUpload} from "react-icons/all";
 import {LoadingIcon} from "../general/loading/LoadingIcon";
 import { useCourseSubmissions } from "../../helpers/api/APIHooks";
-import { Submission } from "../../../../models/api/Submission";
 import { JsonFetchError } from "../../../helpers/FetchHelper";
-import { createSubmission } from "../../../helpers/APIHelper";
 
 interface UploaderProperties {
 	/** The courseId to upload the submission to */
 	courseId: string
 	/** Callback to call when uploading is finished */
-	onUploadComplete: (submission: Submission) => void
+	onUploadComplete: (submission: boolean) => void
 }
 
 /** If the browser supports uploading directories, the component
@@ -68,14 +66,14 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 			updateSelectedFiles(Array.from(event.target.files));
 		}
 	}
-	function handleUploadComplete(submission: Submission) {
+	function handleUploadComplete(result: boolean) {
 		updateUploading(false);
  		updateErrors(prev => ({...prev, upload: false}));
  		if (inputElement) {
  			inputElement.value = "";
  		}
  		updateSelectedFiles([]);
- 		onUploadComplete(submission);
+ 		onUploadComplete(result);
  	}
  	function handleUploadError(error: JsonFetchError) {
  		console.log(`Error uploading folder: ${error.message}`);
@@ -86,7 +84,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
  		event.preventDefault();
  		if (!uploadPrevented()) {
  			updateUploading(true);
- 			createSubmission(courseId, folderName, uploadableFiles)
+ 			submissions.create(folderName, uploadableFiles)
  			.then(handleUploadComplete)
  			.catch(handleUploadError);
 		}
