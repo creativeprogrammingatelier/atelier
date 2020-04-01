@@ -4,15 +4,13 @@ import {Button} from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiCode, FiEye, FiEyeOff, FiTrash} from "react-icons/all";
 
 import {CommentThread} from "../../../../models/api/CommentThread";
-import {File} from "../../../../models/api/File";
 import {Permission} from "../../../../models/api/Permission";
 import {User} from "../../../../models/api/User";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
-import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
+import {coursePermission, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 import {Snippet} from "../code/Snippet";
@@ -45,7 +43,11 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
-		return comments.create(commentTrimmed);
+        return comments.create(commentTrimmed)
+            .catch((err: Error) => {
+                setError("Failed to create reply: " + err.message)
+                return false;
+            });
 	};
 	const handleDiscard = () => {
 		// TODO: Lol, maybe actually implement this
