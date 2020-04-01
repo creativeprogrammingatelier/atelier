@@ -3,26 +3,19 @@ import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 import {FiPlus, FiX} from "react-icons/all";
 
-import {Course} from "../../../../models/api/Course";
-import {CommentThread} from "../../../../models/api/CommentThread";
-import {File} from "../../../../models/api/File";
-import {Submission} from "../../../../models/api/Submission";
 import {ThreadState} from "../../../../models/enums/threadStateEnum";
 
-import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
+import {useSubmission, useFiles, useProjectComments, useRecentComments, useCourse} from "../../helpers/api/APIHooks";
 import {TimeHelper} from "../../../helpers/TimeHelper";
 
 import {Frame} from "../frame/Frame";
-import {Loading} from "../general/loading/Loading";
 import {DirectoryViewer} from "../directory/DirectoryViewer";
 import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
 import {CommentCreator} from "../comment/CommentCreator";
 import {DataList} from "../data/DataList";
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
-import { useSubmission, useFiles, useProjectComments, useRecentComments, useCourse } from "../../helpers/api/APIHooks";
-import { Cached } from "../general/loading/Cached";
+import {Cached} from "../general/loading/Cached";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -57,7 +50,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	};
 
 	return (
-		<Cached cache={submission} wrapper={children => <Frame title="Submission" sidebar search children={children} />}>
+		<Cached cache={submission} wrapper={children => <Frame title="Submission" sidebar search>{children}</Frame>}>
 			{submission =>
 				<Frame title={submission.name} sidebar search={{course: submission.references.courseID, submission: submissionId}}>
 					<Jumbotron>
@@ -75,7 +68,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 						<Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
 					</Jumbotron>
 					<DataList header="Files">
-						<Cached cache={files} wrapper={children => <DataList header="Files" children={children} />}>
+						<Cached cache={files} wrapper={children => <DataList header="Files" children={children}/>}>
 							{files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: file.type, transport: submissionPath + "/" + file.ID + "/view"}))}/>}
 						</Cached>
 					</DataList>
@@ -96,7 +89,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					</DataList>
 					<DataList header="Recent">
 						<Cached cache={recentComments}>
-							{thread => <CommentThreadComponent thread={thread} />}
+							{thread => <CommentThreadComponent thread={thread}/>}
 						</Cached>
 					</DataList>
 				</Frame>
