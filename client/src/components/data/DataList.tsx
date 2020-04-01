@@ -65,8 +65,8 @@ export function DataList({header, optional,  collapse, more, size=5, empty, chil
 		{!collapsed &&
 			<NonEmpty empty={empty}>
 				<div className="m-3">
-						{data}
-						{more && !complete && (loadingMore ? <LoadingIcon/> : <Button onClick={loadMore}>Load More</Button>)}
+					{data}
+					{more && !complete && (loadingMore ? <LoadingIcon/> : <Button onClick={loadMore}>Load More</Button>)}
 				</div>
 			</NonEmpty>
 		}
