@@ -185,7 +185,7 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
     return promise.then(result => {
         threads.transaction(threads => {
             for (const thread of result) {
-                threads.add({ ...thread, comments: [] }, CacheState.Loaded);
+                threads.add({ ...thread, comments: [thread.comments[0]] }, CacheState.Loaded);
                 const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
                 comments.transaction(comments => {
                     comments.remove(comment => true);
@@ -207,7 +207,7 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
         console.log("Creation of", tempID, "succeeded:", thread);
         threads.transaction(threads => {
             threads.remove(thread => thread.ID === tempID);
-            threads.add({ ...thread, comments: [] }, CacheState.Loaded);
+            threads.add(thread, CacheState.Loaded);
         });
         const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
         comments.transaction(comments =>
