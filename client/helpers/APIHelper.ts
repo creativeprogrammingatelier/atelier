@@ -67,6 +67,9 @@ export function courseEnrollUser(courseID: string, userID: string, role: CourseR
 export function courseDisenrollUser(courseID: string, userID: string) {
 	return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, {"method" : "DELETE"});
 }
+export function deleteCourse(courseID: string) {
+	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, {"method" : "DELETE"});
+}
 
 // Users
 export function getCurrentUser() {
