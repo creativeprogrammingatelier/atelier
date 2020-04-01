@@ -1,5 +1,4 @@
 import React  from "react";
-import {Panel} from "./general/Panel";
 import {Frame} from "./frame/Frame";
 import {Button, Jumbotron} from "react-bootstrap";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
