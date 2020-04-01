@@ -2,7 +2,7 @@ import React from "react";
 import {File} from "../../../../models/api/File";
 import {Children} from "../../helpers/ParentHelper";
 import {Selection} from "../../../../models/api/Snippet";
-import {ThreadState} from "../../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 import {FileCommentHandler, FileViewerProperties} from "./FileOverview";
 import { useFileComments } from "../../helpers/api/APIHooks";
 

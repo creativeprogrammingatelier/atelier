@@ -7,7 +7,7 @@ import {CommentThread} from "../../../../models/api/CommentThread";
 import {File} from "../../../../models/api/File";
 import {Permission} from "../../../../models/api/Permission";
 import {User} from "../../../../models/api/User";
-import {ThreadState} from "../../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
 import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";

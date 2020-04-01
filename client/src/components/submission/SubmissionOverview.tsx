@@ -7,7 +7,7 @@ import {Course} from "../../../../models/api/Course";
 import {CommentThread} from "../../../../models/api/CommentThread";
 import {File} from "../../../../models/api/File";
 import {Submission} from "../../../../models/api/Submission";
-import {ThreadState} from "../../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
