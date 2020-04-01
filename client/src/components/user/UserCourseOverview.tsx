@@ -22,7 +22,7 @@ interface UserOverviewProperties {
 	}
 }
 
-export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: UserOverviewProperties) {
+export function UserCourseOverview({match: {params: {courseId, userId, tab}}}: UserOverviewProperties) {
 	const [activeTab, setActiveTab] = useState(tab);
 
 	useEffect(() => {

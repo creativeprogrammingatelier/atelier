@@ -1,26 +1,29 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
-import {Login} from "./Login";
-import Logout from "./Logout";
-import Register from "./Register";
+
+import {CacheProvider} from "./general/loading/CacheProvider";
+import {MessagingProvider} from "./feedback/MessagingProvider";
 import {AuthenticatedRoute} from "./AuthenticatedRoute";
-import {SubmissionOverview} from "./submission/SubmissionOverview";
-import {FileOverview} from "./submission/FileOverview";
-import {SearchOverview} from "./search/SearchOverview";
-import {CourseOverview} from "./course/CourseOverview";
-import {UserOverview} from "./user/UserOverview";
+
+import Register from "./Register";
+import Logout from "./Logout";
+import {Login} from "./Login";
+
 import {Homepage} from "./Homepage";
+import {Activity} from "./Activity";
+import {Bootstrap} from "./Bootstrap";
+import {CourseOverview} from "./CourseOverview";
+import {SearchOverview} from "./search/SearchOverview";
+import {CourseSettings} from "./settings/course/CourseSettings";
+import {SystemSettings} from "./settings/system/SystemSettings";
+import {UserSettings} from "./settings/user/UserSettings";
+import {FileOverview} from "./submission/FileOverview";
+import {SubmissionShare} from "./submission/SubmissionShare";
+import {SubmissionOverview} from "./submission/SubmissionOverview";
+import {UserOverview} from "./user/UserOverview";
+import {UserCourseOverview} from "./user/UserCourseOverview";
 
 import "../styles/base.scss";
-import {SubmissionShare} from "./submission/SubmissionShare";
-import {Bootstrap} from "./Bootstrap";
-import {CourseUserOverview} from "./user/CourseUserOverview";
-import {SystemSettings} from "./settings/system/SystemSettings";
-import {Activity} from "./Activity";
-import {CourseSettings} from "./settings/course/CourseSettings";
-import {MessagingProvider} from "./feedback/MessagingProvider";
-import {CacheProvider} from "./general/loading/CacheProvider";
-import {UserSettings} from "./settings/user/UserSettings";
 
 export function App() {
 	return (
@@ -35,8 +38,8 @@ export function App() {
 					<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
 					<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
 					<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
-					<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>
-					<AuthenticatedRoute path='/course/:courseId/user/:userId' component={CourseUserOverview}/>
+					<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={UserCourseOverview}/>
+					<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserCourseOverview}/>
 					<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
 					<AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings}/>
 					<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>

@@ -1,21 +1,22 @@
-import React, {useState, Fragment, useEffect} from "react";
-import {Frame} from "../frame/Frame";
-import {DataBlockList} from "../data/DataBlockList";
-import {Loading} from "../general/loading/Loading";
-import {Submission} from "../../../../models/api/Submission";
-import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions, permission} from "../../../helpers/APIHelper";
-import {Uploader} from "../uploader/Uploader";
-import {Button, Jumbotron} from "react-bootstrap";
-import {Course, CoursePartial} from "../../../../models/api/Course";
-import {Mention} from "../../../../models/api/Mention";
-import {CoursePermission, Permission} from "../../../../models/api/Permission";
-import {FiPlus, FiX} from "react-icons/all";
-import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
-import {DataList} from "../data/DataList";
-import {PluginSettings} from "../settings/system/PluginSettings";
+import React, {useState, Fragment} from "react";
 import {Link} from "react-router-dom";
-import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
-import {FeedbackContent} from "../feedback/Feedback";
+import {Button, Jumbotron} from "react-bootstrap";
+import {FiPlus, FiX} from "react-icons/all";
+
+import {Course, CoursePartial} from "../../../models/api/Course";
+import {Mention} from "../../../models/api/Mention";
+import {Permission} from "../../../models/api/Permission";
+import {Submission} from "../../../models/api/Submission";
+import {containsPermission, PermissionEnum} from "../../../models/enums/permissionEnum";
+
+import {coursePermission, getCourse, getCourseMentions, getCourseSubmissions} from "../../helpers/APIHelper";
+
+import {DataBlockList} from "./data/DataBlockList";
+import {FeedbackSuccess} from "./feedback/FeedbackSuccess";
+import {FeedbackContent} from "./feedback/Feedback";
+import {Frame} from "./frame/Frame";
+import {Loading} from "./general/loading/Loading";
+import {Uploader} from "./uploader/Uploader";
 
 interface CourseOverviewProps {
 	match: {
@@ -29,17 +30,9 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 	const [uploading, setUploading] = useState(false);
 	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
 	const [reload, updateReload] = useState(0);
-	const [permissions, setPermissions] = useState(0);
 
 	const [reloadCourse, setReloadCourse] = useState(0);
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
-
-	useEffect(() => {
-		coursePermission(courseId)
-			.then((permission: Permission) => {
-				setPermissions(permission.permissions);
-			});
-	}, []);
 
 	return (
 		<Frame title="Course" sidebar search={{course: courseId}}>
