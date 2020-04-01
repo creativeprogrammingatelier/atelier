@@ -3,6 +3,7 @@ import {Route, Switch} from "react-router-dom";
 
 import {CacheProvider} from "./general/loading/CacheProvider";
 import {MessagingProvider} from "./feedback/MessagingProvider";
+import {TimeProvider} from "./data/TimeProvider";
 import {AuthenticatedRoute} from "./AuthenticatedRoute";
 
 import Register from "./Register";
@@ -27,7 +28,7 @@ import "../styles/base.scss";
 
 export function App() {
 	return (
-		<MessagingProvider>
+		<TimeProvider>
 			<CacheProvider>
 				<Switch>
 					<Route path='/register' render={(props) => <Register {...props} />}/>
@@ -51,6 +52,6 @@ export function App() {
 					<AuthenticatedRoute path='/' component={Homepage}/>
 				</Switch>
 			</CacheProvider>
-		</MessagingProvider>
+		</TimeProvider>
 	);
 }

@@ -7,6 +7,7 @@ export interface ParentalProperties {
 export type Children =
 	| undefined
 	| null
+	| {}
 	| boolean
 	| boolean[]
 	| number
@@ -22,7 +23,7 @@ export type ChildrenConstructor =
 
 export class Parent {
 	static countChildren(children: Children) {
-		if (children === undefined || children === null) {
+		if (children === undefined || children === null || Object.keys(children).length === 0) {
 			return 0;
 		} else if (Array.isArray(children)) {
 			return children.length;

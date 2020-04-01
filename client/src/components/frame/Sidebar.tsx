@@ -1,20 +1,23 @@
-import React, {Fragment} from "react";
-import {FiActivity, FiHome, FiLogOut, FiSettings, FiSliders, FiUser, FiX} from "react-icons/fi";
-import {User} from "../../../../models/api/User";
-import {Permission} from "../../../../models/api/Permission";
-import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/permissionEnum";
-import {getCurrentUser, permission} from "../../../helpers/APIHelper";
-import {Loading} from "../general/loading/Loading";
-import {Heading} from "../general/Heading";
-import {Responsive} from "../general/Responsive";
+import React, { Fragment } from "react";
 import {Logo} from "./Logo";
 import {SidebarEntry} from "./SidebarEntry";
+import {Heading} from "../general/Heading";
+import {Responsive} from "../general/Responsive";
+import { useCurrentUser } from "../../helpers/api/APIHooks";
+import {FiActivity, FiHome, FiLogOut, FiSettings, FiSliders, FiUser, FiX} from "react-icons/fi";
+import {Permission} from "../../../../models/api/Permission";
+import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {permission} from "../../../helpers/APIHelper";
+import {Loading} from "../general/loading/Loading";
+import { Cached } from "../general/loading/Cached";
 
 interface SidebarProperties {
 	position: string,
 	close: React.MouseEventHandler
 }
 export function Sidebar({position, close}: SidebarProperties) {
+    const user = useCurrentUser();
+
 	const content = () =>
 		<div className="sidebarContent p-0">
 			<Logo/>
@@ -35,11 +38,9 @@ export function Sidebar({position, close}: SidebarProperties) {
 					<SidebarEntry location="/admin/settings" icon={FiSettings} close={close}>System</SidebarEntry>}
 				wrapper={() => null}
 			/>
-			<Loading<User>
-				loader={getCurrentUser}
-				component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>}
-				wrapper={() => null}
-			/>
+			<Cached cache={user}>{
+                user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>
+            }</Cached>
 			<SidebarEntry location="/logout" icon={FiLogOut} close={close}>Logout</SidebarEntry>
 		</div>;
 

@@ -1,25 +1,64 @@
-import React, { Fragment } from 'react';
-import {PermissionEnum, containsPermission, containsPermissionAny} from "../../../../models/enums/permissionEnum";
-import { CacheState } from '../../helpers/api/Cache';
-import { usePermission } from '../../helpers/api/APIHooks';
+import React, { Fragment, useMemo } from 'react';
 import {ParentalProperties} from "../../helpers/ParentHelper";
+import {Cached} from './loading/Cached';
+import {usePermission} from '../../helpers/api/APIHooks';
+import {PermissionEnum, containsPermissionAny, containsPermission, containsPermissionAll} from "../../../../models/enums/permissionEnum";
 
-interface PermissionProperties extends ParentalProperties {
-    required: PermissionEnum | PermissionEnum[],
+interface GenericPermissionsProperties extends ParentalProperties {
+    /** Optional error to display if the user doesn't have the required permissions */
     error?: React.ReactNode
 }
 
-/** Only shows its children if the current user has one of the required permissions */
-export function Permissions({ required, children, error }: PermissionProperties) {
-    const {permission} = usePermission();
+interface SinglePermissionsProperties extends GenericPermissionsProperties {
+    /** A single permission is required */
+    single: PermissionEnum
+}
 
-    const requiredPermission = required instanceof Array ? required : [required];
+interface AnyPermissionsProperties extends GenericPermissionsProperties {
+    /** One of the listed permissions is required */
+    any: PermissionEnum[]
+}
 
-    if (permission.state === CacheState.Loaded && containsPermissionAny(requiredPermission, permission.item.permissions)) {
-        return <Fragment>{children}</Fragment>;
-    } else if (permission.state === CacheState.Loaded && error) {
-        return <Fragment>{error}</Fragment>;
-    } else {
-        return <Fragment />;
-    }
+interface AllPermissionsProperties extends GenericPermissionsProperties {
+    /** All of the listed permissions are required */
+    all: PermissionEnum[]
+}
+
+type PermissionsProperties = 
+    | SinglePermissionsProperties
+    | AllPermissionsProperties
+    | AnyPermissionsProperties
+
+/**
+ * Only shows its children if the current user has the required permissions. You can use
+ * either the `single`, `any` or `all` attribute to indicate that the user needs to have
+ * respectively that single permission, any of the listed permissions or all of the listed
+ * permissions.
+ */
+export function Permissions({ children, error, ...props }: PermissionsProperties) {
+    const permission = usePermission();
+
+    const permissionCheck = useMemo(() => {
+        if ("single" in props) {
+            return (permissions: number) => containsPermission(props.single, permissions);
+        } else if ("any" in props) {
+            return (permissions: number) => containsPermissionAny(props.any, permissions);
+        } else {
+            return (permissions: number) => containsPermissionAll(props.all, permissions);
+        }
+    }, [props]);
+
+    return (
+        <Cached cache={permission} wrapper={_ => <Fragment />}>{
+            permission => {
+                if (permissionCheck(permission.permissions)) {
+                    return <Fragment children={children} />
+                } else if (error) {
+                    return <Fragment children={error} />
+                } else {
+                    return <Fragment />;
+                }
+            }
+        }</Cached>
+    );
 }

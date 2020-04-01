@@ -17,18 +17,7 @@ export function ImageViewer({file, sendComment}: FileViewerProperties) {
 	const [error, setError] = useState(false as FeedbackContent);
 
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-		try {
-			await sendComment(comment, restricted);
-			setSuccess(`Started new comment thread`);
-			return true;
-		} catch (error) {
-			if (error instanceof JsonFetchError) {
-				setError(`Could leave comment: ${error}`);
-			} else {
-				throw error;
-			}
-		}
-		return false;
+		return sendComment(comment, restricted);
 	};
 
 	return <Fragment>

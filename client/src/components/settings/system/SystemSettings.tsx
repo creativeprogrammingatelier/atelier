@@ -32,17 +32,17 @@ export function SystemSettings() {
 				<h1>Atelier System Settings</h1>
 				<p>Manage the Atelier platform here</p>
 			</Jumbotron>
-			<Permissions required={PermissionEnum.addCourses}>
+			<Permissions single={PermissionEnum.addCourses}>
 				<DataList header="Create a new course">
 					<CourseCreator/>
 				</DataList>
 			</Permissions>
-			<Permissions required={PermissionEnum.manageUserRole}>
+			<Permissions single={PermissionEnum.manageUserRole}>
 				<DataList header="Global User Roles">
 					<UserSettingsRoles<typeof GlobalRole> roles={GlobalRole}/>
 				</DataList>
 			</Permissions>
-			<Permissions required={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
+			<Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
 				<DataList header="Global User Permissions">
 					<UserSettingsPermissions
 						viewPermissions={containsPermission(PermissionEnum.manageUserPermissionsView, permissions)}
@@ -50,7 +50,7 @@ export function SystemSettings() {
 					/>
 				</DataList>
 			</Permissions>
-			<Permissions required={PermissionEnum.managePlugins}>
+			<Permissions single={PermissionEnum.managePlugins}>
 				<DataList header="Plugins">
 					<PluginSettings/>
 				</DataList>

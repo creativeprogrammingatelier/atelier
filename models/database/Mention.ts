@@ -103,7 +103,7 @@ export function mentionToAPI(db : DBMention) : APIMention{
 		}
 	}
 	return {
-		mentionID: UUIDHelper.fromUUID(db.mentionid),
+		ID: UUIDHelper.fromUUID(db.mentionid),
 		mentionGroup: db.usergroup,
         user,
         comment: {

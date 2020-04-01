@@ -51,27 +51,27 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
 				/>
 			</Jumbotron>
-			<Permissions required={PermissionEnum.manageCourses}>
+			<Permissions single={PermissionEnum.manageCourses}>
 				<DataList header="Course Settings">
 					<CourseSettingsGeneral courseID={courseId} handleResponse={courseUpdate}/>
 				</DataList>
 			</Permissions>
-			<Permissions required={PermissionEnum.manageUserRegistration}>
+			<Permissions single={PermissionEnum.manageUserRegistration}>
 				<DataList header="Course Invites">
 					<CourseSettingsInvites courseID={courseId}/>
 				</DataList>
 			</Permissions>
-			<Permissions required={PermissionEnum.manageUserRegistration}>
+			<Permissions single={PermissionEnum.manageUserRegistration}>
 				<DataList header="Enroll a User">
 					<CourseSettingsEnrollment courseID={courseId}/>
 				</DataList>
 			</Permissions>
-			<Permissions required={PermissionEnum.manageUserRole}>
+			<Permissions single={PermissionEnum.manageUserRole}>
 				<DataList header="User Roles">
 					<UserSettingsRoles<typeof CourseRole> roles={CourseRole} courseID={courseId}/>
 				</DataList>
 			</Permissions>
-			<Permissions required={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
+			<Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
 				<DataList header="User Permissions">
 					<UserSettingsPermissions
 						courseID={courseId}

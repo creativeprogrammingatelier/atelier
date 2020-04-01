@@ -24,7 +24,7 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 		const opacityRange = ["00", "6F", "BF", "FF"];
 
 		// Highlight based on ranges
-		if (snippets) {
+		if (codeMirror && snippets) {
 			// Transform each snippet into a range of characters
 			const ranges: Range[] = snippets.map(snippet => {
 				return {

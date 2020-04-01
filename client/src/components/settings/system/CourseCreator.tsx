@@ -15,25 +15,26 @@ interface CourseCreatorProperties {
 }
 
 export function CourseCreator({handleResponse}: CourseCreatorProperties) {
-	const [courseName, setCourseName] = useState("");
-	const [error, setError] = useState(false as FeedbackContent);
-	const {createCourse} = useCourses();
+    const [courseName, setCourseName] = useState("");
+    const [error, setError] = useState(false as FeedbackContent);
+    const {createCourse} = useCourses();
+    const courses = useCourses();
 
-	// Create course
-	async function handleSubmission(courseName: string) {
-		try {
-			await createCourse({
-				name: courseName,
-				state: CourseState.open
-			});
-			setCourseName("");
-			if (handleResponse !== undefined) {
-				// handleResponse(course);
-			}
-		} catch (error) {
-			setError(`Failed to create new course: ${error}`);
-		}
-	}
+    // Create course
+    async function handleSubmission(courseName : string) {
+        try {
+            await courses.create({
+                name : courseName,
+                state : CourseState.open
+            });
+            setCourseName("");
+            if (handleResponse !== undefined) {
+                // handleResponse(course);
+            }
+        } catch (error) {
+            setError(`Failed to create new course: ${error}`);
+        }
+    }
 
 	return <Form>
 		<LabeledInput label="Course name">

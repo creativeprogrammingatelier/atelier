@@ -1,90 +1,73 @@
-import React, {useEffect, useState} from "react";
+import React, {useMemo} from "react";
 import {File} from "../../../../../models/api/File";
-import {getFileComments, getFileContents} from "../../../../helpers/APIHelper";
-import {JsonFetchError} from "../../../../helpers/FetchHelper";
-import {CommentThread} from "../../../../../models/api/CommentThread";
 import {CommentSelector} from "../../comment/CommentSelector";
 import {HighlightedCode, HighlightedCodeProperties, SnippetHighlight} from "../../code/HighlightedCode";
 import {useHistory} from "react-router-dom";
 import {Selection} from "../../../../../models/api/Snippet";
 import {FileViewer, FileViewerProperties} from "../FileOverview";
-import {Loading} from "../../general/loading/Loading";
 import {FiCode} from "react-icons/all";
 import {Floater} from "../../general/Floater";
 import {FeedbackError} from "../../feedback/FeedbackError";
 import {FeedbackContent} from "../../feedback/Feedback";
 
+import { useFileComments, useFileBody, useCollectionCombined } from "../../../helpers/api/APIHooks";
+import { CommentThread } from "../../../../../models/api/CommentThread";
+import { CacheItem } from "../../../helpers/api/Cache";
+import { Cached } from "../../general/loading/Cached";
+import { useObservable } from "observable-hooks";
+import { map } from "rxjs/operators";
+
 export function CodeViewer({file, sendComment}: FileViewerProperties) {
-	const [commentThreads, setCommentThreads] = useState([] as CommentThread[]);
-	const [snippets, setSnippets] = useState([] as SnippetHighlight[]);
+	const fileComments = useFileComments(file.references.submissionID, file.ID);
+	const combinedCommentsObservable = useCollectionCombined(fileComments.observable);
+	const snippetsObservable = useObservable(() =>
+			combinedCommentsObservable.pipe(map(item => ({ ...item, value: getSnippets(item.value) })))
+		, [combinedCommentsObservable]);
+	const fileBody = useFileBody(file.ID);
 	const [error, setError] = useState(false as FeedbackContent);
 	const history = useHistory();
 
-	const getCommentThreads = () => {
-		try {
-			getFileComments(file.ID).then(commentThreads => {
-				setCommentThreads(commentThreads);
-			});
-		} catch (error) {
-			if (error instanceof JsonFetchError) {
-				setError(`Could not load existing comments`);
-			} else {
-				throw error;
-			}
-		}
-	};
+	const snippets = {
+		observable: snippetsObservable,
+		refresh: fileComments.refresh
+	}
+
 	const getSnippets = () => {
 		const snippets: SnippetHighlight[] = [];
-		for (const commentThread of commentThreads) {
+		for (const commentThread of threads) {
 			if (commentThread.snippet !== undefined) {
 				snippets.push({
 					onClick: () => history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.ID}`),
 					...commentThread.snippet
 				});
 			}
-		}
-		setSnippets(snippets);
-	};
+        }
+        return snippets;
+    };
+
 	const handleCommentSend = async(comment: string, restricted: boolean, selection: Selection) => {
-		try {
-			const commentThread = await sendComment(comment, restricted, selection);
-			setCommentThreads(commentThreads => [
-				...commentThreads,
-				commentThread
-			]);
-			return true;
-		} catch (error) {
-			if (error instanceof JsonFetchError) {
-				setError(`Could not create comment: ${error}`);
-			} else {
-				throw error;
-			}
-		}
-		return false;
-	};
+		return sendComment(comment, restricted, selection);
+    };
 
-	useEffect(getCommentThreads, []);
-	useEffect(getSnippets, [commentThreads]);
-
-	return (
-		<div className="mb-6">
-			<Loading<string>
-				loader={getFileContents}
-				params={[file.ID]}
-				component={body =>
-					<CommentSelector<HighlightedCodeProperties>
-						codeViewer={HighlightedCode}
-						codeProperties={{code: body, snippets, options: {mode: file.type}}}
-						mentions={{courseID: file.references.courseID}}
-						sendHandler={handleCommentSend}
-					/>
-				}
-			/>
-			<Floater right={0} left={0} bottom={44} className="mx-2 my-1">
-				<FeedbackError close={setError} timeout={4000}>{error}</FeedbackError>
-			</Floater>
-		</div>
-	);
+	return <div className="mb-6">
+        <Cached cache={snippets}>
+	        {snippets =>
+	            <Cached cache={fileBody}>
+		            {body =>
+		                <CommentSelector<HighlightedCodeProperties>
+		                    codeViewer={HighlightedCode}
+		                    codeProperties={{code: body, snippets, options: {mode: file.type}}}
+		                    mentions={{courseID: file.references.courseID}}
+		                    sendHandler={handleCommentSend}
+		                />
+		            }
+	            </Cached>
+	        }
+        </Cached>
+		<Floater right={0} left={0} bottom={44} className="mx-2 my-1">
+			<FeedbackError close={setError} timeout={4000}>{error}</FeedbackError>
+		</Floater>
+	</div>;
 }
 function acceptsType(type: string) {
 	return type.startsWith("text/");
