@@ -52,6 +52,6 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 			</Form.Control>
 		</LabeledInput>
 		<FeedbackError close={setError}>{error}</FeedbackError>
-		<Button onClick={handleUpdate}>Update Course</Button>
+		<Button onClick={handleUpdate}>Update course</Button>
 	</Form>;
 }
