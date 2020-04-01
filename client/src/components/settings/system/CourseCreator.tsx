@@ -17,7 +17,6 @@ interface CourseCreatorProperties {
 export function CourseCreator({handleResponse}: CourseCreatorProperties) {
     const [courseName, setCourseName] = useState("");
     const [error, setError] = useState(false as FeedbackContent);
-    const {createCourse} = useCourses();
     const courses = useCourses();
 
     // Create course

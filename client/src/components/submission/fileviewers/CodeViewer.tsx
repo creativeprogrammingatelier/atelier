@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import {File} from "../../../../../models/api/File";
 import {CommentSelector} from "../../comment/CommentSelector";
 import {HighlightedCode, HighlightedCodeProperties, SnippetHighlight} from "../../code/HighlightedCode";

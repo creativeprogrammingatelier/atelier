@@ -23,6 +23,8 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import { FeedbackSuccess } from "../feedback/FeedbackSuccess";
 import {Comment as CommentComponent} from "./Comment";
 import {CommentCreator} from "./CommentCreator";
+import {useCollectionCombined, useComments} from "../../helpers/api/APIHooks";
+import {Cached} from "../general/loading/Cached";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -33,7 +35,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
     const comments = useComments(thread.ID);
     const commentsCombined = {
         observable: useCollectionCombined(comments.observable)
-    }
+    };
 
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
 	const [visible, setRestricted] = useState(thread.visibility === ThreadState.private);
