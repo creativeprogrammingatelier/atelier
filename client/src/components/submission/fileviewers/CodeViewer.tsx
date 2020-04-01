@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo} from "react";
+import React, {useMemo} from "react";
 import {File} from "../../../../../models/api/File";
 import {CommentSelector} from "../../comment/CommentSelector";
 import {HighlightedCode, HighlightedCodeProperties, SnippetHighlight} from "../../code/HighlightedCode";
@@ -6,29 +6,37 @@ import {useHistory} from "react-router-dom";
 import {Selection} from "../../../../../models/api/Snippet";
 import {FileViewer, FileViewerProperties} from "../FileOverview";
 import {FiCode} from "react-icons/all";
-import { useFileComments, useFileBody } from "../../../helpers/api/APIHooks";
+import { useFileComments, useFileBody, useCollectionCombined } from "../../../helpers/api/APIHooks";
 import { CommentThread } from "../../../../../models/api/CommentThread";
-import { CacheItem, CacheState } from "../../../helpers/api/Cache";
-import { CachedItem } from "../../general/loading/CachedItem";
-
+import { CacheItem } from "../../../helpers/api/Cache";
+import { Cached } from "../../general/loading/Cached";
+import { useObservable } from "observable-hooks";
+import { map } from "rxjs/operators";
 
 export function CodeViewer({file, sendComment}: FileViewerProperties) {
-    const {fileComments} = useFileComments(file.references.submissionID, file.ID);
-    const {fileBody} = useFileBody(file.ID);
+    const fileComments = useFileComments(file.references.submissionID, file.ID);
+    const combinedCommentsObservable = useCollectionCombined(fileComments.observable);
+    const snippetsObservable = useObservable(() => 
+        combinedCommentsObservable.pipe(map(item => ({ ...item, value: getSnippets(item.value) })))
+    , [combinedCommentsObservable]);
+    const fileBody = useFileBody(file.ID);
     const history = useHistory();
-    
-    // TODO: refresh comments
 
-	const getSnippets = (threads: Array<CacheItem<CommentThread>>) => {
+    const snippets = {
+        observable: snippetsObservable,
+        refresh: fileComments.refresh
+    }
+
+	const getSnippets = (threads: CommentThread[]) => {
 		const snippets: SnippetHighlight[] = [];
 		for (const commentThread of threads) {
-			if (commentThread.item.snippet !== undefined) {
+			if (commentThread.snippet !== undefined) {
 				snippets.push({
 					onClick: () => {
 						console.log("clicked comment");
-						history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.item.ID}`);
+						history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.ID}`);
 					},
-					...commentThread.item.snippet
+					...commentThread.snippet
 				});
 			}
         }
@@ -39,18 +47,18 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 		return sendComment(comment, restricted, selection);
     };
 
-    const snippets = useMemo(() => getSnippets(fileComments.items), [fileComments]);
-
 	return (
 		<div className="mb-6">
-			<CachedItem item={fileBody}>{body =>
-                <CommentSelector<HighlightedCodeProperties>
-                    codeViewer={HighlightedCode}
-                    codeProperties={{code: body, snippets, options: {mode: file.type}}}
-                    mentions={{courseID: file.references.courseID}}
-                    sendHandler={handleCommentSend}
-                />
-            }</CachedItem>
+            <Cached cache={snippets}>{snippets =>
+                <Cached cache={fileBody}>{body =>
+                    <CommentSelector<HighlightedCodeProperties>
+                        codeViewer={HighlightedCode}
+                        codeProperties={{code: body, snippets, options: {mode: file.type}}}
+                        mentions={{courseID: file.references.courseID}}
+                        sendHandler={handleCommentSend}
+                    />
+                }</Cached>
+            }</Cached>
 		</div>
 	);
 }

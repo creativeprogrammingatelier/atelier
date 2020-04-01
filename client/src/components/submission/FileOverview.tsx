@@ -17,7 +17,7 @@ import {FileViewerImage} from "./fileviewers/ImageViewer";
 import {ViewTab} from "./ViewTab";
 import {FileViewerUnsupported} from "./fileviewers/UnsupportedViewer";
 import { useSubmission, useFile } from "../../helpers/api/APIHooks";
-import { CachedItem } from "../general/loading/CachedItem";
+import { Cached } from "../general/loading/Cached";
 
 interface FileOverviewProperties {
 	match: {
@@ -29,8 +29,8 @@ interface FileOverviewProperties {
 	}
 }
 export function FileOverview({match: {params: {submissionId, fileId, tab}}}: FileOverviewProperties) {
-    const {submission} = useSubmission(submissionId);
-    const {file} = useFile(submissionId, fileId);
+    const submission = useSubmission(submissionId);
+    const file = useFile(submissionId, fileId);
 
     const [activeFileViewer, setActiveFileViewer] = useState(FileViewerUnsupported);
 	const [activatedFileViewer, setActivatedFileViewer] = useState(false);
@@ -56,14 +56,14 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 	}
 
 	return (
-        <CachedItem item={file} wrapper={children => <Frame title="File" sidebar search={{submission: submissionId}}>{children}</Frame>}>{
+        <Cached cache={file} wrapper={children => <Frame title="File" sidebar search={{submission: submissionId}}>{children}</Frame>}>{
             file =>
                 <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={{course: file.references.courseID, submission: submissionId}}>
                     <Jumbotron>
                         <h1>{FileNameHelper.fromPath(file.name)}</h1>
-                        <CachedItem item={submission}>{
+                        <Cached cache={submission}>{
                             submission => <p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>
-                        }</CachedItem>
+                        }</Cached>
                         {tab === "view" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
                     </Jumbotron>
                     {renderTabContents(file)}
@@ -87,7 +87,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
                         active={tab}
                     />
                 </Frame>
-        }</CachedItem>
+        }</Cached>
 	);
 }
 

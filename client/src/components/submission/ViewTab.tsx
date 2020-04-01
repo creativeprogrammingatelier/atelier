@@ -11,10 +11,10 @@ interface ViewTabProperties {
 	viewer: (properties: FileViewerProperties) => Children,
 }
 export function ViewTab({file, viewer}: ViewTabProperties) {
-    const {createFileComment} = useFileComments(file.references.submissionID, file.ID);
+    const fileComments = useFileComments(file.references.submissionID, file.ID);
 
 	const sendComment: FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => {
-		return createFileComment({
+		return fileComments.create({
 			submissionID: file.references.submissionID,
 			comment,
 			snippet: selection,

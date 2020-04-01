@@ -4,19 +4,19 @@ import {SidebarEntry} from "./SidebarEntry";
 import {Heading} from "../general/Heading";
 import {Responsive} from "../general/Responsive";
 import { useCurrentUser } from "../../helpers/api/APIHooks";
-import { CachedItem } from "../general/loading/CachedItem";
 import {FiActivity, FiHome, FiLogOut, FiSettings, FiSliders, FiUser, FiX} from "react-icons/fi";
 import {Permission} from "../../../../models/api/Permission";
 import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {permission} from "../../../helpers/APIHelper";
 import {Loading} from "../general/loading/Loading";
+import { Cached } from "../general/loading/Cached";
 
 interface SidebarProperties {
 	position: string,
 	close: React.MouseEventHandler
 }
 export function Sidebar({position, close}: SidebarProperties) {
-    const {user} = useCurrentUser();
+    const user = useCurrentUser();
 
 	const content = () =>
 		<div className="sidebarContent p-0">
@@ -38,9 +38,9 @@ export function Sidebar({position, close}: SidebarProperties) {
 					<SidebarEntry location="/admin/settings" icon={FiSettings} close={close}>System</SidebarEntry>}
 				wrapper={() => null}
 			/>
-			<CachedItem item={user}>{
+			<Cached cache={user}>{
                 user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>
-            }</CachedItem>
+            }</Cached>
 			<SidebarEntry location="/logout" icon={FiLogOut} close={close}>Logout</SidebarEntry>
 		</div>;
 

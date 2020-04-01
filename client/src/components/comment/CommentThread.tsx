@@ -15,7 +15,8 @@ import {containsPermission, PermissionEnum} from "../../../../models/enums/permi
 import {User} from "../../../../models/api/User";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
 import {threadState} from "../../../../models/enums/threadStateEnum";
-import { useComments } from "../../helpers/api/APIHooks";
+import { useComments, useCollectionCombined } from "../../helpers/api/APIHooks";
+import { Cached } from "../general/loading/Cached";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -23,7 +24,10 @@ interface CommentThreadProperties {
 }
 
 export function CommentThread({thread}: CommentThreadProperties) {
-    const {comments, createReply} = useComments(thread.ID);
+    const comments = useComments(thread.ID);
+    const commentsCombined = {
+        observable: useCollectionCombined(comments.observable)
+    }
 
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
 	const [restricted, setRestricted] = useState(thread.visibility === threadState.private);
@@ -31,7 +35,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
-		return createReply(commentTrimmed);
+		return comments.create(commentTrimmed);
 	};
 	const handleDiscard = () => {
 		console.log("Clicked to discard");
@@ -63,14 +67,16 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	return (
 		<div id={thread.ID} className={"commentThread block" + (restricted ? " restricted" : "")}>
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
-			{opened ?
-				<Fragment>
-					{comments.items.map(comment => <CommentComponent comment={comment.item}/>)}
-					<CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
-				</Fragment>
-				:
-				comments.items[0] !== undefined && <CommentComponent comment={comments.items[0].item}/>
-			}
+            <Cached cache={commentsCombined}>
+                {comments => opened ?
+                    <Fragment>
+                        {comments.map(comment => <CommentComponent comment={comment}/>)}
+                        <CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
+                    </Fragment>
+                    :
+                    comments[0] !== undefined && <CommentComponent comment={comments[0]}/>
+                }
+            </Cached>
 			<ButtonBar align="right">
 				{manageRestrictedComments &&
 					<Fragment>

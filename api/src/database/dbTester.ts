@@ -254,10 +254,10 @@ async function DBmentionTest(){
 	await promise(M.getMentionsByComment(uuid0), "getMentionsByComment")
 	await promise(M.getMentionsByUser(uuid0), "getMentionsByUser")
 	const m1 : Mention = {userID:uuid0,commentID:uuid0} 
-	m1.mentionID = (await promise(M.addMention(m1), "addMention")).mentionID
+	m1.mentionID = (await promise(M.addMention(m1), "addMention")).ID
 	await promise(M.updateMention(m1), "updateMention")
 	await promise(M.updateMention({mentionID:m1.mentionID}), "updateMention2")
-	await promise(M.deleteMention(m1.mentionID), "deleteMention")
+	await promise(M.deleteMention(m1.mentionID!), "deleteMention")
 }
 
 async function courseIDBnviteTest(){

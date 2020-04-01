@@ -27,7 +27,7 @@ interface UploaderProperties {
  *  to upload and choose the main file to use for the project name.
  */
 export function Uploader({courseId}: UploaderProperties) {
-    const {createSubmission} = useCourseSubmissions(courseId);
+    const submissions = useCourseSubmissions(courseId);
 
 	const [folderName, updateFolderName] = useState("");
 	const [selectedFiles, updateSelectedFiles] = useState([] as File[]);
@@ -68,7 +68,7 @@ export function Uploader({courseId}: UploaderProperties) {
 		event.preventDefault();
 		if (!uploadPrevented()) {
 			updateUploading(true);
-            createSubmission(folderName, uploadableFiles);
+            submissions.create(folderName, uploadableFiles);
             handleUploadComplete();
 		}
 	}

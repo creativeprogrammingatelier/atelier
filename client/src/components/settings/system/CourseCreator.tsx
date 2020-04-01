@@ -11,12 +11,12 @@ interface AddCourseProps {
 
 export function CourseCreator({handleResponse} : AddCourseProps) {
     const [courseName, setCourseName] = useState("");
-    const {createCourse} = useCourses();
+    const courses = useCourses();
 
     // Create course
     async function handleSubmission(courseName : string) {
         try {
-            await createCourse({
+            await courses.create({
                 name : courseName,
                 state : courseState.open
             });

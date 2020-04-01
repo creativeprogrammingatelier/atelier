@@ -1,125 +1,230 @@
-export type Update<T> = (update: (cache: T) => T) => void
+import { Observable, Subscriber, BehaviorSubject } from 'rxjs';
 
-/** State of an item or collection in the cache */
 export enum CacheState {
     Uninitialized,
     Loading,
     Loaded
 }
 
-/** An item in the cache, stored in a collection */
-export interface CacheItem<T> {
-    readonly state: CacheState,
-    readonly item: T
+export interface CacheProperties {
+    readonly createdAt: number,
+    readonly updatedAt: number,
+    readonly state: CacheState
 }
 
-/** A collection of items of a single type in the cache */
-export interface CacheCollection<T> {
-    readonly lastRefresh: number,
-    readonly lastUpdate: number,
-    readonly state: CacheState,
-    readonly items: Array<CacheItem<T>>
+export interface CacheItem<T> extends CacheProperties {
+    readonly value: T
 }
 
-/** The cache is an indexed set of CacheCollections */
-export interface Cache {
-    // The cache should be able to store anything
-    // tslint:disable-next-line: no-any 
-    readonly [key: string]: CacheCollection<any>
-}
+export const emptyCacheItem = <T>(defaultValue?: T) => ({
+    createdAt: 0,
+    updatedAt: 0,
+    state: CacheState.Uninitialized,
+    value: defaultValue
+});
 
-/** An interface for working with a single CacheCollection */
-export interface CacheInterface<T> {
-    /** Get the raw cache collection */
-    collection: CacheCollection<T>,
-    /** Set the state of the collection */
-    setCollectionState: (state: CacheState) => void,
-    /** Add a new item */
-    add: (item: T, state: CacheState, date?: number) => void,
-    /** Replace all matching items with a single new item */
-    replace: (selector: (oldItem: T) => boolean, newItem: T, state: CacheState, date?: number) => void,
-    /** Remove all matching items */
-    remove: (selector: (item: T) => boolean, date?: number) => void,
-    /** Replace all (or optionally a selection of) items in the collection with a new array of items */
-    replaceAll: (items: T[], state: CacheState, selector?: (item: T) => boolean, date?: number) => void,
-    /** Delete the entire collection from the cache */
+export interface CacheItemInterface<T> {
+    observable: Observable<CacheItem<T>>,
+    updateItem: (update: (t: T) => T, state: CacheState, date?: number) => void,
     clear: () => void
 }
 
-/** Get the collection if it exists, or get a default collection */
-const getCollection = <T>(cache: Cache, key: string): CacheCollection<T> =>
-    cache[key] !== undefined
-    ? cache[key]
-    : { state: CacheState.Uninitialized, items: [], lastRefresh: 0, lastUpdate: 0 };
+export interface CacheCollection<T> extends CacheProperties {
+    readonly items: Array<CacheItem<T>>
+}
 
-/**
- * Get the cache interface with functions to read and write the cache for a single CacheCollection 
- * @param key The key for the collection you want to work with
- * @param cache The global cache object
- * @param updateCache A function that can be called to update the cache
- */
-export function getCacheInterface<T>(key: string, cache: Cache, updateCache: Update<Cache>): CacheInterface<T> {
-    const updateCollection: Update<CacheCollection<T>> = (update) => 
-        updateCache(cache => ({ 
-            ...cache, 
-            [key]: update(getCollection(cache, key))
-        }));
+export interface CacheCollectionInterface<T> {
+    observable: Observable<CacheCollection<T>>,
+    transaction: (update: (funcs: {
+        addAll: (values: T[], state: CacheState) => void,
+        add: (value: T, state: CacheState) => void,
+        remove: (selector: (value: T) => boolean) => void,
+        removeExpired: (expiration: number) => void,
+        clear: () => void
+    }) => void, state?: CacheState, date?: number) => void
+}
 
-    const setCollectionState = (state: CacheState) => {
-        updateCollection(collection => ({
-            ...collection,
-            state
-        }));
-    }
+export interface Store<T> { [key: string]: T }
 
-    const add = (item: T, state: CacheState, date = Date.now()) => {
-        updateCollection(collection => ({
-            ...collection,
-            lastUpdate: date,
-            items: collection.items.concat({ item, state })
-        }));
-    }
+export interface ExportedCache {
+    // tslint:disable-next-line: no-any
+    items: Store<CacheItem<any>>,
+    // tslint:disable-next-line: no-any
+    collections: Store<CacheCollection<any>>
+}
 
-    const replace = (selector: (oldItem: T) => boolean, newItem: T, state: CacheState, date = Date.now()) => {
-        updateCollection(collection => ({ 
-            ...collection,
-            lastUpdate: date,
-            items: [{ item: newItem, state }, ...collection.items.filter(({item}) => !selector(item))]
-        }));
-    }
+interface SubscribableCollection<T> {
+    collection: CacheCollection<T>,
+    subscribers: Array<{
+        filter?: (value: T) => boolean,
+        subscriber: Subscriber<CacheCollection<T>>,
+    }>
+}
 
-    const remove = (selector: (item: T) => boolean, date = Date.now()) => {
-        updateCollection(collection => ({
-            ...collection,
-            lastUpdate: date,
-            items: collection.items.filter(item => !selector(item.item))
-        }));
-    }
-
-    const replaceAll = (items: T[], state: CacheState, selector = (item: T) => true, date = Date.now()) => {
-        updateCollection(collection => ({
-            ...collection,
-            state,
-            lastUpdate: date, 
-            lastRefresh: date,
-            items: items.map(item => ({ item, state })).concat(collection.items.filter(item => !selector(item.item)))
-        }));
-    }
-
-    const clear = () => {
-        updateCache(cache => {
-            const { [key]: collection, ...rest } = cache;
-            return rest;
-        });
-    }
-
+function filterCollection<T>(collection: CacheCollection<T>, filter?: (value: T) => boolean) {
     return {
-        collection: getCollection(cache, key), 
-        setCollectionState,
-        add, 
-        replace, 
-        remove, 
-        replaceAll,
-        clear
-    };
+        ...collection,
+        items: 
+            filter !== undefined 
+            ? collection.items.filter(({value}) => filter(value)) 
+            : collection.items
+    }
+}
+
+export class Cache {
+    // The cache has to store any type of data
+    // tslint:disable-next-line: no-any
+    private items: Store<BehaviorSubject<CacheItem<any>>>
+    // tslint:disable-next-line: no-any
+    private collections: Store<SubscribableCollection<any>>
+    private exported: BehaviorSubject<ExportedCache>
+
+    // tslint:disable-next-line: no-any
+    constructor(items?: Store<CacheItem<any>>, collections?: Store<CacheCollection<any>>) {
+        this.items = {};
+        this.collections = {};
+        
+        if (items) {
+            for (const key of Object.keys(items)) {
+                this.items[key] = new BehaviorSubject(items[key]);
+            }
+        }
+        
+        if (collections) {
+            for (const key of Object.keys(collections)) {
+                this.collections[key] = {
+                    collection: collections[key],
+                    subscribers: []
+                }
+            }
+        }
+
+        this.exported = new BehaviorSubject(this.export());
+    }
+
+    static load(storageKey: string) {
+        const { items, collections } = JSON.parse(localStorage.getItem(storageKey) || "{ items: [], collections: [] }");
+        return new Cache(items, collections);
+    }
+
+    static save(storageKey: string, exported: ExportedCache) {
+        localStorage.setItem(storageKey, JSON.stringify(exported));
+    }
+
+    private export(): ExportedCache {
+        return {
+            items: Object.assign({}, ...Object.keys(this.items).map(key => ({ [key]: this.items[key].value }))),
+            collections: Object.assign({}, ...Object.keys(this.collections).map(key => ({ [key]: this.collections[key].collection })))
+        }
+    }
+
+    getExport(): Observable<ExportedCache> {
+        return this.exported.asObservable();
+    }
+
+    getItem<T>(key: string, defaultValue?: T): CacheItemInterface<T> {
+        if (!this.items[key]) {
+            this.items[key] = new BehaviorSubject(emptyCacheItem(defaultValue));
+        }
+        return {
+            observable: this.items[key].asObservable(),
+            updateItem: (update, state, date = Date.now()) => {
+                const item: CacheItem<T> = this.items[key].value;
+                this.items[key].next({
+                    createdAt: item.createdAt || date,
+                    updatedAt: date,
+                    state,
+                    value: update(item.value)
+                });
+                this.exported.next(this.export());
+            },
+            clear: () => {
+                this.items[key].complete();
+                this.items[key].unsubscribe();
+                delete this.items[key];
+            }
+        }
+    }
+
+    getCollection<T extends { ID: string }>(key: string, filter?: (value: T) => boolean): CacheCollectionInterface<T> {
+        if (!this.collections[key]) {
+            this.collections[key] = {
+                subscribers: [],
+                collection: {
+                    createdAt: 0,
+                    updatedAt: 0,
+                    state: CacheState.Uninitialized,
+                    items: []
+                }
+            }
+        }
+        return {
+            observable: new Observable(subscriber => {
+                const length = this.collections[key].subscribers.push({ filter, subscriber });
+                subscriber.next(filterCollection(this.collections[key].collection, filter));
+                return () => {
+                    this.collections[key].subscribers.splice(length - 1, 1);
+                }
+            }),
+            transaction: (update, state = CacheState.Loaded, date = Date.now()) => {
+                let collection = this.collections[key].collection;
+                let changed: Array<CacheItem<T>> = [];
+                const addAll = (values: T[], state: CacheState) => {
+                    const items = [...collection.items];
+                    for (const value of values) {
+                        const index = items.findIndex(item => item.value.ID === value.ID);
+                        if (index === -1) {
+                            const item = { createdAt: date, updatedAt: date, state, value };
+                            items.push(item);
+                            changed.push(item);
+                        } else {
+                            const item = { createdAt: items[index].createdAt, updatedAt: date, state, value }
+                            items[index] = item;
+                            changed.push(item);
+                        }
+                    }
+                    collection = { ...collection, items };
+                }
+                update({
+                    addAll,
+                    add: (value, state) => addAll([value], state),
+                    remove: (selector) => {
+                        const itemSelector = (item: CacheItem<T>) => selector(item.value)
+                        changed = changed.filter(item => !itemSelector(item)).concat(collection.items.filter(itemSelector));
+                        collection = {
+                            ...collection,
+                            items: collection.items.filter(item => !itemSelector(item))
+                        }
+                    },
+                    removeExpired: (expiration) => {
+                        const selector = (item: CacheItem<T>) => item.updatedAt + expiration < date;
+                        changed = changed.filter(item => !selector(item)).concat(collection.items.filter(selector));
+                        collection = {
+                            ...collection,
+                            items: collection.items.filter(item => !selector(item))
+                        }
+                    },
+                    clear: () => {
+                        for (const { subscriber } of this.collections[key].subscribers) {
+                            subscriber.complete();
+                            subscriber.unsubscribe();
+                        }
+                        delete this.collections[key];
+                    }
+                });
+                this.collections[key].collection = {
+                    createdAt: collection.createdAt | date,
+                    updatedAt: date,
+                    state,
+                    items: collection.items
+                };
+                for (const { filter, subscriber } of this.collections[key].subscribers) {
+                    if (!filter || changed.some(item => filter(item.value)) || state !== collection.state) {
+                        subscriber.next(filterCollection(this.collections[key].collection, filter));
+                    }
+                }
+                this.exported.next(this.export());
+            }
+        }
+    }
 }

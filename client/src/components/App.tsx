@@ -20,13 +20,13 @@ import {CourseUserOverview} from "./user/CourseUserOverview";
 import {SystemSettings} from "./settings/system/SystemSettings";
 import {Activity} from "./Activity";
 import {CourseSettings} from "./settings/course/CourseSettings";
-import {MessagingProvider} from "./feedback/MessagingProvider";
 import {CacheProvider} from "./general/loading/CacheProvider";
 import {UserSettings} from "./settings/user/UserSettings";
+import { TimeProvider } from "./data/TimeProvider";
 
 export function App() {
 	return (
-		<MessagingProvider>
+		<TimeProvider>
 			<CacheProvider>
 				<Switch>
 					<Route path='/register' render={(props) => <Register {...props} />}/>
@@ -50,6 +50,6 @@ export function App() {
 					<AuthenticatedRoute path='/' component={Homepage}/>
 				</Switch>
 			</CacheProvider>
-		</MessagingProvider>
+		</TimeProvider>
 	);
 }

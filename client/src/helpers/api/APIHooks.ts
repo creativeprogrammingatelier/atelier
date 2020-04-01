@@ -1,339 +1,298 @@
-import { CacheState, CacheInterface, CacheCollection, getCacheInterface } from './Cache';
+import { Cache, CacheState, CacheCollection, CacheItem, CacheCollectionInterface, emptyCacheItem, CacheItemInterface } from './Cache';
 import { Course } from '../../../../models/api/Course';
 import * as API from '../../../helpers/APIHelper';
 import { courseState } from '../../../../models/enums/courseStateEnum';
 import { randomBytes } from 'crypto';
 import { User } from '../../../../models/api/User';
 import { Permission } from '../../../../models/api/Permission';
-import { globalRole } from '../../../../models/enums/globalRoleEnum';
-import { Messaging, useMessaging } from '../../components/feedback/MessagingProvider';
-import { useCache, CacheContext, useRawCache } from '../../components/general/loading/CacheProvider';
+import { useCacheItem, useCacheCollection, useRawCache } from '../../components/general/loading/CacheProvider';
 import { Submission } from '../../../../models/api/Submission';
 import { Mention } from '../../../../models/api/Mention';
 import { CommentThread, CreateCommentThread } from '../../../../models/api/CommentThread';
 import { Comment } from '../../../../models/api/Comment';
 import { File as APIFile } from '../../../../models/api/File';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { useObservable } from 'observable-hooks';
 
-function refresh<T>(promise: Promise<T[]>, cache: CacheInterface<T>, messaging: Messaging, selector?: (item: T) => boolean) {
-    cache.setCollectionState(CacheState.Loading);
-    promise
-        .then(result => cache.replaceAll(result, CacheState.Loaded, selector))
-        .catch((err: Error) => {
-            messaging.addMessage({ type: "danger", message: err.message })
-        });
+export interface APICache<T> {
+    observable: Observable<CacheCollection<T> | CacheItem<T>>
 }
 
-function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheInterface<T>, messaging: Messaging) {
+export interface Refresh<T> extends APICache<T> {
+    refresh: () => Promise<boolean>
+}
+
+export interface Create<Arg extends Array<any>, T> extends APICache<T> {
+    create: (...args: Arg) => Promise<boolean>
+}
+
+export function useCollectionAsSingle<T>(observable: Observable<CacheCollection<T>>) {
+    return useObservable(() => observable.pipe(
+        map(collection => collection.items[0] || emptyCacheItem<T>())
+    ), [observable]);
+}
+
+export function useCollectionCombined<T>(observable: Observable<CacheCollection<T> | CacheItem<T>>): Observable<CacheItem<T[]>> {
+    return useObservable(() => observable.pipe(
+        map(collection => {
+            if ("items" in collection) {
+                const { items, ...props } = collection;
+                return {
+                    ...props,
+                    value: items.map(item => item.value)
+                }
+            } else {
+                const { value, ...props } = collection;
+                return {
+                    ...props,
+                    value: [value]
+                }
+            }
+        }),
+    ), [observable])
+}
+
+function refreshCollection<T extends { ID: string }>(promise: Promise<T | T[]>, cache: CacheCollectionInterface<T>) {
+    return promise.then(result => {
+        cache.transaction(cache => {
+            if (result instanceof Array) {
+                cache.addAll(result, CacheState.Loaded);
+            } else {
+                cache.add(result, CacheState.Loaded);
+            }
+        }, result instanceof Array ? CacheState.Loaded : CacheState.Uninitialized);
+        return true;
+    });
+}
+
+function refreshItem<T>(promise: Promise<T>, cache: CacheItemInterface<T>) {
+    return promise.then(result => {
+        cache.updateItem(old => result, CacheState.Loaded);
+        return true;
+    });
+}
+
+function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheCollectionInterface<T>) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
-    cache.add({ ...item, ID: tempID }, CacheState.Loading);
+    cache.transaction(cache => cache.add({ ...item, ID: tempID }, CacheState.Loading));
     return promise
         .then(result => {
             console.log("Creation of", tempID, "succeeded:", result);
-            cache.replace(old => old.ID === tempID, result, CacheState.Loaded);
+            cache.transaction(cache => {
+                cache.remove(item => item.ID === tempID);
+                cache.add(result, CacheState.Loaded);
+            });
             return true;
         })
         .catch((err: Error) => {
-            messaging.addMessage({ type: "danger", message: err.message }),
-            cache.remove(item => item.ID === tempID);
-            return false;
+            console.log("Creation of", tempID, "failed:", err);
+            cache.transaction(cache => {
+                cache.remove(item => item.ID === tempID);
+            });
+            throw err;
         });
 }
 
-function filter<T>(collection: CacheCollection<T>, selector: (item: T) => boolean) {
+export function useCourses(): Refresh<Course> & Create<[{ name: string, state: courseState }], Course> {
+    const courses = useCacheCollection<Course>("courses");
     return {
-        ...collection,
-        items: collection.items.filter(item => selector(item.item))
+        observable: courses.observable,
+        refresh: () => refreshCollection(API.getCourses(), courses),
+        create: ({ name, state }: { name: string, state: courseState }) => 
+            create(
+                API.createCourse({ name, state }), 
+                { ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission }, 
+                courses
+            )
     };
 }
 
-export function useCourses() {
-    const cache = useCache<Course>("courses");
-    const messages = useMessaging();
-
-    const refreshCourses = () => refresh(API.getCourses(), cache, messages);
-    const createCourse = ({ name, state }: { name: string, state: courseState }) => 
-        create(
-            API.createCourse({ name, state }), 
-            { ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission }, 
-            cache, 
-            messages
-        );
-
-    return {
-        courses: cache.collection,
-        createCourse,
-        refreshCourses
+export function useCourse(courseID: string): Refresh<Course> {
+    const courses = useCacheCollection<Course>("courses", course => course?.ID === courseID);
+    const course = useCollectionAsSingle(courses.observable);
+    return { 
+        observable: course,
+        refresh: () => refreshCollection(API.getCourse(courseID), courses)
     };
 }
 
-export function useCourse(courseID: string) {
-    const cache = useCache<Course>("courses");
-    const messaging = useMessaging();
-    
-    let course = cache.collection.items.find(({ item }) => item.ID === courseID);
-
-    if (course === undefined) {
-        API.getCourse(courseID)
-            .then(result => cache.add(result, CacheState.Loaded))
-            .catch((err: Error) => {
-                messaging.addMessage({ type: "danger", message: err.message })
-            });
-        course = { item: { ID: courseID, name: "Loading", state: courseState.hidden, creator: {} as User, currentUserPermission: {} as Permission }, state: CacheState.Loading }
-    }
-
-    return { course };
-}
-
-export function usePermission() {
-    const cache = useCache<Permission>("currentUserPermission");
-    const messages = useMessaging();
-
-    const refreshPermission = () => refresh(API.permission().then(p => [p]), cache, messages);
-
-    if (cache.collection.state === CacheState.Uninitialized) refreshPermission();
-
+export function usePermission(): Refresh<Permission> {
+    const permission = useCacheItem<Permission>("currentUserPermission");
     return {
-        permission: cache.collection.items[0] || { item: { permissions: 0, globalRole: globalRole.unregistered }, state: cache.collection.state },
-        refreshPermission
+        observable: permission.observable,
+        refresh: () => refreshItem(API.permission(), permission)
     }
 }
 
-export function useCourseSubmissions(courseID: string) {
-    const cache = useCache<Submission>(`submissions`);
-    const messages = useMessaging();
-
-    const refreshSubmissions = () => refresh(API.getCourseSubmissions(courseID), cache, messages, submission => submission.references.courseID === courseID);
-    const createSubmission = (projectName: string, files: File[]) => 
-        create(
-            API.createSubmission(courseID, projectName, files),
-            { ID: "", name: projectName, date: new Date(Date.now()).toISOString(), user: {} as User, state: "new", files: [], references: { courseID } },
-            cache,
-            messages
-        );
-
+export function useCourseSubmissions(courseID: string): Refresh<Submission> & Create<[string, File[]], Submission> {
+    const submissions = useCacheCollection<Submission>(`submissions`, submission => submission?.references?.courseID === courseID);
     return {
-        submissions: filter(cache.collection, submission => submission.references.courseID === courseID),
-        createSubmission,
-        refreshSubmissions
+        observable: submissions.observable,
+        refresh: () => refreshCollection(API.getCourseSubmissions(courseID), submissions),
+        create: (projectName: string, files: File[]) => 
+            create(
+                API.createSubmission(courseID, projectName, files),
+                { ID: "", name: projectName, date: new Date(Date.now()).toISOString(), user: {} as User, state: "new", files: [], references: { courseID } },
+                submissions
+            )
     }
 }
 
-export function useSubmission(submissionID: string) {
-    const cache = useCache<Submission>(`submissions`);
-    const messaging = useMessaging();
-
-    let submission = cache.collection.items.find(({ item }) => item.ID === submissionID);
-
-    if (submission === undefined) {
-        API.getSubmission(submissionID)
-            .then(result => cache.add(result, CacheState.Loaded))
-            .catch((err: Error) => {
-                messaging.addMessage({ type: "danger", message: err.message })
-            });
-        submission = { item: { ID: submissionID, name: "Loading", date: new Date(Date.now()).toISOString(), user: {} as User, state: "new", files: [], references: { courseID: "" } }, state: CacheState.Loading }
-    }
-
-    return { submission };
+export function useSubmission(submissionID: string): Refresh<Submission> {
+    const submissions = useCacheCollection<Submission>(`submissions`, submission => submission?.ID === submissionID);
+    const submission = useCollectionAsSingle(submissions.observable);
+    return { 
+        observable: submission,
+        refresh: () => refreshCollection(API.getSubmission(submissionID), submissions)
+    };
 }
 
-export function useMentions() {
-    const cache = useCache<Mention>("mentions");
-    const messaging = useMessaging();
-
-    const refreshMentions = () => refresh(API.getMentions(), cache, messaging);
-
+export function useMentions(): Refresh<Mention> {
+    const mentions = useCacheCollection<Mention>("mentions");
     return {
-        mentions: cache.collection,
-        refreshMentions
+        observable: mentions.observable,
+        refresh: () => refreshCollection(API.getMentions(), mentions)
     }
 }
 
-export function useCourseMentions(courseID: string) {
-    const cache = useCache<Mention>("mentions");
-    const messaging = useMessaging();
-
-    const refreshMentions = () => refresh(API.getCourseMentions(courseID), cache, messaging, mention => mention.references.courseID === courseID);
-
+export function useCourseMentions(courseID: string): Refresh<Mention> {
+    const mentions = useCacheCollection<Mention>("mentions", mention => mention?.references?.courseID === courseID);
     return {
-        mentions: filter(cache.collection, mention => mention.references.courseID === courseID),
-        refreshMentions
+        observable: mentions.observable,
+        refresh: () => refreshCollection(API.getCourseMentions(courseID), mentions)
     }
 }
 
-export function useCurrentUser() {
-    const cache = useCache<User>("currentUser");
-    const messaging = useMessaging();
-
-    const refreshUser = () => refresh(API.getCurrentUser().then(u => [u]), cache, messaging);
-
-    if (cache.collection.state === CacheState.Uninitialized) refreshUser();
-
+export function useCurrentUser(): Refresh<User> {
+    const currentUser = useCacheItem<User>("currentUser");
     return {
-        user: cache.collection.items[0] || { item: { ID: "", name: "Loading", email: "", permission: {} as Permission }, state: cache.collection.state },
-        refreshUser
+        observable: currentUser.observable,
+        refresh: () => refreshItem(API.getCurrentUser(), currentUser)
     }
 }
 
-function refreshComments(promise: Promise<CommentThread[]>, threadCache: CacheInterface<CommentThread>, rawCache: CacheContext, messaging: Messaging, selector?: (ct: CommentThread) => boolean) {
-    threadCache.setCollectionState(CacheState.Loading);
-    promise
-        .then(result => {
-            if (selector) {
-                threadCache.replaceAll(result.map(thread => ({ ...thread, comments: [] })), CacheState.Loaded, selector);
-            }
+function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
+    return promise.then(result => {
+        threads.transaction(threads => {
             for (const thread of result) {
-                if (!selector) {
-                    threadCache.replace(c => c.ID === thread.ID, { ...thread, comments: [] }, CacheState.Loaded);
-                }
-                const commentCache = getCacheInterface(`comments/${thread.ID}`, rawCache.cache, rawCache.updateCache);
-                commentCache.replaceAll(thread.comments, CacheState.Loaded);
+                threads.add({ ...thread, comments: [] }, CacheState.Loaded);
+                const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
+                comments.transaction(comments => {
+                    comments.remove(comment => true);
+                    comments.addAll(thread.comments, CacheState.Loaded);
+                });
             }
-        })
-        .catch((err: Error) => {
-            messaging.addMessage({ type: "danger", message: err.message })
         });
+        return true;
+    });
 }
 
-function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threadCache: CacheInterface<CommentThread>, rawCache: CacheContext, messaging: Messaging) {
+function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
-    threadCache.add({ ID: tempID, visibility: thread.visibility, comments: [], references: { submissionID: "", courseID: "" } } as CommentThread, CacheState.Loading);
-    const tempCommentCache = getCacheInterface(`comments/${tempID}`, rawCache.cache, rawCache.updateCache);
-    tempCommentCache.add({ ID: "", user: {} as User, text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } }, CacheState.Loading);
-    return promise
-        .then(thread => {
-            console.log("Creation of", tempID, "succeeded:", thread);
-            threadCache.replace(old => old.ID === tempID, thread, CacheState.Loaded);
-            const commentCache = getCacheInterface(`comments/${thread.ID}`, rawCache.cache, rawCache.updateCache)
-            commentCache.replaceAll(thread.comments, CacheState.Loaded);
-            tempCommentCache.clear();
-            return true;
-        })
-        .catch((err: Error) => {
-            messaging.addMessage({ type: "danger", message: err.message }),
-            threadCache.remove(item => item.ID === tempID);
-            tempCommentCache.clear();
-            return false;
+    threads.transaction(threads => threads.add({ ID: tempID, visibility: thread.visibility, comments: [], references: { submissionID: "", courseID: "" } } as CommentThread, CacheState.Loading));
+    const tempComments = cache.getCollection<Comment>(`comments/${tempID}`);
+    tempComments.transaction(tempComments => tempComments.add({ ID: "", user: {} as User, text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } }, CacheState.Loading));
+    return promise.then(thread => {
+        console.log("Creation of", tempID, "succeeded:", thread);
+        threads.transaction(threads => {
+            threads.remove(thread => thread.ID === tempID);
+            threads.add(thread, CacheState.Loaded);
         });
+        const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
+        comments.transaction(comments =>
+            comments.addAll(thread.comments, CacheState.Loaded)
+        );
+        tempComments.transaction(tempComments => tempComments.clear());
+        return true;
+    })
+    .catch((err: Error) => {
+        console.log("Creation of", tempID, "failed:", err);
+        threads.transaction(threads => threads.remove(item => item.ID === tempID));
+        tempComments.transaction(tempComments => tempComments.clear());
+        throw err;
+    });
 }
 
-export function useProjectComments(submissionID: string) {
-    const raw = useRawCache();
-    const cache = useCache<CommentThread>(`commentThreads/submission/${submissionID}`);
-    const messaging = useMessaging();
-
-    const refreshProjectComments = () => refreshComments(API.getProjectComments(submissionID), cache, raw, messaging, ct => ct.file === undefined);
-    const createProjectComment = (thread: CreateCommentThread) => 
-        createCommentThread(
-            thread,
-            API.createSubmissionCommentThread(submissionID, thread),
-            cache,
-            raw,
-            messaging
-        );
-
+export function useProjectComments(submissionID: string): Refresh<CommentThread> & Create<[CreateCommentThread], CommentThread> {
+    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`);
+    const cache = useRawCache();
     return {
-        projectComments: filter(cache.collection, ct => ct.file === undefined),
-        refreshProjectComments,
-        createProjectComment
+        observable: threads.observable,
+        refresh: () => refreshComments(API.getProjectComments(submissionID), threads, cache),
+        create: (thread: CreateCommentThread) => 
+            createCommentThread(
+                thread,
+                API.createSubmissionCommentThread(submissionID, thread),
+                threads,
+                cache
+            )
     }
 }
 
-export function useRecentComments(submissionID: string) {
+export function useRecentComments(submissionID: string): Refresh<CommentThread> {
     const raw = useRawCache();
-    const cache = useCache<CommentThread>(`commentThreads/submission/${submissionID}`);
-    const messaging = useMessaging();
-
-    const refreshRecentComments = () => refreshComments(API.getRecentComments(submissionID), cache, raw, messaging);
-
+    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`);
     return {
         // TODO: sorting
-        recentComments: cache.collection,
-        refreshRecentComments
+        observable: threads.observable,
+        refresh: () => refreshComments(API.getRecentComments(submissionID), threads, raw)
     }
 }
 
-export function useFileComments(submissionID: string, fileID: string) {
-    const raw = useRawCache();
-    const cache = useCache<CommentThread>(`commentThreads/submission/${submissionID}`);
-    const messaging = useMessaging();
-
-    const refreshFileComments = () => refreshComments(API.getFileComments(fileID), cache, raw, messaging, ct => ct.file?.ID === fileID);
-    const createFileComment = (thread: CreateCommentThread) => 
-        createCommentThread(
-            thread,
-            API.createFileCommentThread(fileID, thread),
-            cache,
-            raw,
-            messaging
-        );
-
+export function useFileComments(submissionID: string, fileID: string): Refresh<CommentThread> & Create<[CreateCommentThread], CommentThread> {
+    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, thread => thread?.file?.ID === fileID);
+    const cache = useRawCache();
     return {
-        fileComments: filter(cache.collection, ct => ct.file?.ID === fileID),
-        refreshFileComments,
-        createFileComment
+        observable: threads.observable,
+        refresh: () => refreshComments(API.getFileComments(fileID), threads, cache),
+        create: (thread: CreateCommentThread) =>
+            createCommentThread(
+                thread,
+                API.createFileCommentThread(fileID, thread),
+                threads,
+                cache
+            )
     }
 }
 
-export function useComments(commentThreadID: string) {
-    const cache = useCache<Comment>(`comments/${commentThreadID}`);
-    const messaging = useMessaging();
-
-    const createReply = (comment: string) =>
-        create(
-            API.createComment(commentThreadID, comment),
-            { ID: "", user: {} as User, text: comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } },
-            cache,
-            messaging
-        );
-
+export function useComments(commentThreadID: string): Create<[string], Comment> {
+    const comments = useCacheCollection<Comment>(`comments/${commentThreadID}`);
     return {
-        comments: cache.collection,
-        createReply
+        observable: comments.observable,
+        create: (comment: string) => 
+            create(
+                API.createComment(commentThreadID, comment),
+                { ID: "", user: {} as User, text: comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } },
+                comments
+            )
     }
 }
 
-export function useFileBody(fileID: string) {
-    const cache = useCache<string>(`file/${fileID}/body`);
-    const messaging = useMessaging();
-
-    const refreshFileBody = () => refresh(API.getFileContents(fileID).then(f => [f]), cache, messaging);
-
-    if (cache.collection.state === CacheState.Uninitialized) refreshFileBody();
-
+export function useFileBody(fileID: string): Refresh<string> {
+    const fileBodies = useCacheItem<string>(`file/${fileID}/body`);
     return {
-        fileBody: cache.collection.items[0] || { item: "", state: cache.collection.state },
-        refreshFileBody
+        observable: fileBodies.observable,
+        refresh: () => refreshItem(API.getFileContents(fileID), fileBodies)
     }
 }
 
-export function useFiles(submissionID: string) {
-    const cache = useCache<APIFile>(`file/submission/${submissionID}`);
-    const messaging = useMessaging();
-
-    const refreshFiles = () => refresh(API.getFiles(submissionID), cache, messaging);
-    
+export function useFiles(submissionID: string): Refresh<APIFile[]> {
+    const files = useCacheCollection<APIFile>(`file/submission/${submissionID}`);
+    const fileList = useCollectionCombined(files.observable);
     return {
-        files: cache.collection,
-        refreshFiles
+        observable: fileList,
+        refresh: () => refreshCollection(API.getFiles(submissionID), files)
     }
 }
 
-export function useFile(submissionID: string, fileID: string) {
-    const cache = useCache<APIFile>(`file/submission/${submissionID}`);
-    const messaging = useMessaging();
-
-    let file = cache.collection.items.find(({ item }) => item.ID === fileID);
-
-    if (file === undefined) {
-        API.getFile(fileID)
-            .then(result => cache.add(result, CacheState.Loaded))
-            .catch((err: Error) => {
-                messaging.addMessage({ type: "danger", message: err.message })
-            });
-        file = { item: { ID: fileID, name: "Loading", type: "undefined/undefined", references: { submissionID, courseID: "" } }, state: CacheState.Loading }
+export function useFile(submissionID: string, fileID: string): Refresh<APIFile> {
+    const files = useCacheCollection<APIFile>(`file/submission/${submissionID}`, file => file?.ID === fileID);
+    const file = useCollectionAsSingle(files.observable);
+    return {
+        observable: file,
+        refresh: () => refreshCollection(API.getFile(fileID), files)
     }
-
-    return { file };
 }
