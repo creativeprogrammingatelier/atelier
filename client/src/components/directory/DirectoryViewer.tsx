@@ -90,5 +90,5 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 		}
 	}
 
-	return <Fragment>{Object.values(topLevelNodes).map(node => <DirectoryNode node={node}/>)}</Fragment>;
+	return <Fragment>{Object.values(topLevelNodes).map(node => <DirectoryNode key={node.name} node={node}/>)}</Fragment>;
 }

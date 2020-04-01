@@ -74,7 +74,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 					setManageRestrictedComments(true);
 				}
 			});
-	}, []);
+	}, [thread.references.courseID]);
 
 	return <div className="mb-3">
 		<Block id={thread.ID} className={"commentThread" + (visible ? " restricted" : "")}>
@@ -82,11 +82,11 @@ export function CommentThread({thread}: CommentThreadProperties) {
             <Cached cache={commentsCombined}>
                 {comments => opened ?
                     <Fragment>
-                        {comments.map(comment => <CommentComponent comment={comment}/>)}
+                        {comments.map(comment => <CommentComponent key={comment.ID} comment={comment}/>)}
                         <CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
                     </Fragment>
                     :
-                    comments[0] !== undefined && <CommentComponent comment={comments[0]}/>
+                    comments[0] !== undefined && <CommentComponent key={comments[0].ID} comment={comments[0]}/>
                 }
             </Cached>
 			<ButtonBar align="right">
