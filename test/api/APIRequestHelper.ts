@@ -94,7 +94,7 @@ export const deleteCourse = (courseID: string) => chai.request(app)
     .delete(`/api/course/${courseID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
 export const registerUserCourse = (courseID: string, userID: string) => chai.request(app)
-    .put(`/api/course/${courseID}/user/${userID}`)
+    .put(`/api/course/${courseID}/user/${userID}/role/student`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
 export const unregisterUserCourse = (courseID: string, userID: string) => chai.request(app)
     .delete(`/api/course/${courseID}/user/${userID}`)
@@ -240,7 +240,7 @@ export const setPermissionsCourse = (permissions : Permissions) => chai.request(
 
 /** Admin requests */
 export const adminRegisterCourse = () => chai.request(app)
-    .put(`/api/course/${COURSE_ID}/user/${USER_ID}`)
+    .put(`/api/course/${COURSE_ID}/user/${USER_ID}/role/student`)
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
 export const adminUnregisterCourse = (course = COURSE_ID) => chai.request(app)
     .delete(`/api/course/${course}/user/${USER_ID}`)
