@@ -1,11 +1,14 @@
 import React, {useEffect, useState} from "react";
-import {Button, Jumbotron} from "react-bootstrap";
+import {Jumbotron} from "react-bootstrap";
+
 import {User} from "../../../../../models/api/User";
 import {GlobalRole} from "../../../../../models/enums/GlobalRoleEnum";
 import {containsPermission, PermissionEnum} from "../../../../../models/enums/PermissionEnum";
+
 import {getCurrentUser} from "../../../../helpers/APIHelper";
-import {Frame} from "../../frame/Frame";
+
 import {DataList} from "../../data/DataList";
+import {Frame} from "../../frame/Frame";
 import {Permissions} from "../../general/Permissions";
 import {UserSettingsRoles} from "../user/UserSettingsRoles";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
@@ -33,7 +36,7 @@ export function SystemSettings() {
 				<p>Manage the Atelier platform here</p>
 			</Jumbotron>
 			<Permissions single={PermissionEnum.addCourses}>
-				<DataList header="Create a new course">
+				<DataList header="Create a New Course">
 					<CourseCreator/>
 				</DataList>
 			</Permissions>

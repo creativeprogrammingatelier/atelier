@@ -15,6 +15,8 @@ export function CommentTab({file}: CommentTabProperties) {
     const fileComments = useFileComments(file.references.submissionID, file.ID);
 
 	return <div className="contentTab">
-        <Cached cache={fileComments}>{thread => <CommentThread key={thread.ID} thread={thread}/>}</Cached>
+		<div className="m-3">
+			<Cached cache={fileComments}>{thread => <CommentThread key={thread.ID} thread={thread}/>}</Cached>
+		</div>
     </div>
 }

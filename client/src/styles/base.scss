@@ -44,7 +44,7 @@ textarea:focus, textarea:active {
 }
 
 .navbar {
-	width: 100%;
+	//width: 100%;
 	height: $headerHeight;
 	margin: 0 !important;
 	background-color: $primaryColor;
@@ -158,10 +158,13 @@ textarea:focus, textarea:active {
 	//margin-top: $headerHeight;
 }
 .contentPage {
-	//padding: 1rem 1.5rem 0 !important;
+	min-height: 100vh;
+	display: flex;
+	flex-flow: column;
 }
 .contentTab {
-	padding-bottom: calc(28px + 1rem);
+	//padding-bottom: calc(28px + 1rem);
+	flex: 1 1 auto;
 }
 
 .panel {
@@ -374,6 +377,14 @@ textarea:focus, textarea:active {
 	color: $colorOffWhite;
 	background-color: $secondaryColor;
 }
+.btn-danger {
+	color: $colorWhite;
+	background-color: $colorDanger;
+}
+.btn-danger:not(:disabled):not(.disabled):hover, .btn-danger:not(:disabled):not(.disabled):focus, .btn-danger:not(:disabled):not(.disabled):active {
+	color: $colorOffWhite;
+	background-color: $colorDangerAlternate;
+}
 .buttonFloating {
 	bottom: 44px;
 	right: 0;
@@ -578,7 +589,7 @@ textarea:focus, textarea:active {
 }
 
 .floater {
-	position: fixed;
+	position: sticky;
 	z-index: 1040;
 
 	.btn {
