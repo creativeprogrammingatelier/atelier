@@ -7,6 +7,7 @@ import {Permissions} from "./general/Permissions";
 import {useCourses} from "../helpers/api/APIHooks";
 import {Link} from "react-router-dom";
 import {Cached} from "./general/loading/Cached";
+import {PanelButton} from "./general/PanelButton";
 
 export function Homepage() {
     const courses = useCourses();

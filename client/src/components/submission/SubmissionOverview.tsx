@@ -21,6 +21,8 @@ import {CommentCreator} from "../comment/CommentCreator";
 import {DataList} from "../data/DataList";
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
+import { useSubmission, useFiles, useProjectComments, useRecentComments, useCourse } from "../../helpers/api/APIHooks";
+import { Cached } from "../general/loading/Cached";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -41,13 +43,13 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	const submissionPath = "/submission/" + submissionId;
 
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-        const comment = await projectComments.create({
+        const madeComment = await projectComments.create({
             submissionID: submissionId,
             comment,
             visibility: restricted ? ThreadState.private : ThreadState.public
         });
         setCreatingComment(false);
-        return comment;
+        return madeComment;
     };
 
 	return (

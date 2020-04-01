@@ -16,7 +16,12 @@ import {FeedbackSuccess} from "./feedback/FeedbackSuccess";
 import {FeedbackContent} from "./feedback/Feedback";
 import {Frame} from "./frame/Frame";
 import {Loading} from "./general/loading/Loading";
+import {Permissions} from "./general/Permissions";
 import {Uploader} from "./uploader/Uploader";
+import { useCourse, useCourseSubmissions, useCourseMentions } from "../helpers/api/APIHooks";
+import { Cached } from "./general/loading/Cached";
+import { DataList } from "./data/DataList";
+import { DataBlock } from "./data/DataBlock";
 
 interface CourseOverviewProps {
 	match: {
@@ -33,6 +38,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 
     const [uploading, setUploading] = useState(false);
 	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
+	const [reload, updateReload] = useState(0);
 
 	return (
 		<Frame title="Course" sidebar search={{course: courseId}}>
@@ -81,7 +87,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 							}}
 						/>
 					) || <FeedbackSuccess close={setUploadingSuccess}>{uploadingSuccess}</FeedbackSuccess>
-				}}
+				}} 
 			>
 				<Cached cache={submissions} timeout={30}>
 					{

@@ -2,7 +2,6 @@ import React from "react";
 import {Route, Switch} from "react-router-dom";
 
 import {CacheProvider} from "./general/loading/CacheProvider";
-import {MessagingProvider} from "./feedback/MessagingProvider";
 import {TimeProvider} from "./data/TimeProvider";
 import {AuthenticatedRoute} from "./AuthenticatedRoute";
 

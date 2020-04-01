@@ -14,10 +14,15 @@ import {RadioInput} from "../input/RadioInput";
 import {FiUpload} from "react-icons/all";
 import {LoadingIcon} from "../general/loading/LoadingIcon";
 import { useCourseSubmissions } from "../../helpers/api/APIHooks";
+import { Submission } from "../../../../models/api/Submission";
+import { JsonFetchError } from "../../../helpers/FetchHelper";
+import { createSubmission } from "../../../helpers/APIHelper";
 
 interface UploaderProperties {
 	/** The courseId to upload the submission to */
 	courseId: string
+	/** Callback to call when uploading is finished */
+	onUploadComplete: (submission: Submission) => void
 }
 
 /** If the browser supports uploading directories, the component
@@ -25,7 +30,7 @@ interface UploaderProperties {
  *  If folder upload is not supported, the user may choose multiple files
  *  to upload and choose the main file to use for the project name.
  */
-export function Uploader({courseId}: UploaderProperties) {
+export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
     const submissions = useCourseSubmissions(courseId);
 
 	const [folderName, updateFolderName] = useState("");
@@ -63,20 +68,27 @@ export function Uploader({courseId}: UploaderProperties) {
 			updateSelectedFiles(Array.from(event.target.files));
 		}
 	}
-	function handleUploadComplete() {
+	function handleUploadComplete(submission: Submission) {
 		updateUploading(false);
-		updateErrors(prev => ({...prev, upload: false}));
-		if (inputElement) {
-			inputElement.value = "";
-		}
-		updateSelectedFiles([]);
-	}
-	function handleSubmit(event: React.FormEvent) {
-		event.preventDefault();
-		if (!uploadPrevented()) {
-			updateUploading(true);
-            submissions.create(folderName, uploadableFiles);
-            handleUploadComplete();
+ 		updateErrors(prev => ({...prev, upload: false}));
+ 		if (inputElement) {
+ 			inputElement.value = "";
+ 		}
+ 		updateSelectedFiles([]);
+ 		onUploadComplete(submission);
+ 	}
+ 	function handleUploadError(error: JsonFetchError) {
+ 		console.log(`Error uploading folder: ${error.message}`);
+ 		updateErrors(prev => ({...prev, upload: error.message}));
+ 		updateUploading(false);
+ 	}
+ 	function handleSubmit(event: React.FormEvent) {
+ 		event.preventDefault();
+ 		if (!uploadPrevented()) {
+ 			updateUploading(true);
+ 			createSubmission(courseId, folderName, uploadableFiles)
+ 			.then(handleUploadComplete)
+ 			.catch(handleUploadError);
 		}
 	}
 
