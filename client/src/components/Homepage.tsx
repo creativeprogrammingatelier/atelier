@@ -1,5 +1,4 @@
 import React  from "react";
-import {Panel} from "./general/Panel";
 import {Frame} from "./frame/Frame";
 import {Button, Jumbotron} from "react-bootstrap";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
@@ -7,6 +6,7 @@ import {Permissions} from "./general/Permissions";
 import {useCourses} from "../helpers/api/APIHooks";
 import {Link} from "react-router-dom";
 import {Cached} from "./general/loading/Cached";
+import {PanelButton} from "./general/PanelButton";
 
 export function Homepage() {
     const courses = useCourses();
