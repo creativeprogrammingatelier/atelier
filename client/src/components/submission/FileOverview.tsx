@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {FiCode, FiMessageSquare, FiShare2} from "react-icons/all";
+import React from "react";
+import {FiMessageSquare, FiShare2} from "react-icons/all";
 
 import {Frame} from "../frame/Frame";
 import {TabBar} from "../tab/TabBar";
@@ -9,7 +9,6 @@ import {File} from "../../../../models/api/File";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
 import {Button, Jumbotron} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {Children} from "../../helpers/ParentHelper";
 import {IconType} from "react-icons";
 import {Selection} from "../../../../models/api/Snippet";
 import {FileViewerCode} from "./fileviewers/CodeViewer";
@@ -18,6 +17,9 @@ import {ViewTab} from "./ViewTab";
 import {FileViewerUnsupported} from "./fileviewers/UnsupportedViewer";
 import { useSubmission, useFile } from "../../helpers/api/APIHooks";
 import { Cached } from "../general/loading/Cached";
+import { useObservableState } from "observable-hooks";
+import { map } from "rxjs/operators";
+import { CacheItem } from "../../helpers/api/Cache";
 
 interface FileOverviewProperties {
 	match: {
@@ -32,21 +34,21 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
     const submission = useSubmission(submissionId);
     const file = useFile(submissionId, fileId);
 
-    const [activeFileViewer, setActiveFileViewer] = useState(FileViewerUnsupported);
-	const [activatedFileViewer, setActivatedFileViewer] = useState(false);
+    const fileViewer = useObservableState(
+        file.observable.pipe(
+            map(item => {
+                const file = (item as CacheItem<File>)?.value;
+                return (file !== undefined && getFileViewer(file)) || FileViewerUnsupported;
+            })
+        ), FileViewerUnsupported
+    );
+
 	const submissionPath = "/submission/" + submissionId;
 	const filePath = submissionPath + "/" + fileId;
 
 	function renderTabContents(file: File) {
 		if (tab === "view") {
-			if (!activatedFileViewer) {
-				const fileViewer = getFileViewer(file);
-				if (fileViewer) {
-					setActiveFileViewer(fileViewer);
-				}
-				setActivatedFileViewer(true);
-			}
-			return <ViewTab file={file} viewer={activeFileViewer.viewer}/>;
+			return <ViewTab file={file} viewer={fileViewer.viewer}/>;
 		} else if (tab === "comments") {
 			return <CommentTab file={file} submissionID={submissionId}/>;
 		} else if (tab === "share") {
@@ -70,8 +72,8 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
                     <TabBar
                         tabs={[{
                             id: "view",
-                            icon: activeFileViewer.icon,
-                            text: activeFileViewer.name,
+                            icon: fileViewer.icon,
+                            text: fileViewer.name,
                             location: filePath + "/view"
                         }, {
                             id: "comments",
