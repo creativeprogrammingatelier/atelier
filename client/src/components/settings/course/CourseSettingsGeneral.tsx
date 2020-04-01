@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Button, Form} from "react-bootstrap";
 
 import {CoursePartial} from "../../../../../models/api/Course";
-import {CourseState} from "../../../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../../../models/enums/CourseStateEnum";
 
 import {updateCourse} from "../../../../helpers/APIHelper";
 

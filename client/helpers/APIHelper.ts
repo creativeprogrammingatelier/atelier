@@ -14,10 +14,10 @@ import {SearchResult} from "../../models/api/SearchResult";
 import {Mention} from "../../models/api/Mention";
 import {CourseInvite, Invite} from "../../models/api/Invite";
 import {CourseUser} from "../../models/api/CourseUser";
-import {CourseState} from "../../models/enums/courseStateEnum";
+import {CourseState} from "../../models/enums/CourseStateEnum";
 import {Plugin} from "../../models/api/Plugin";
-import {GlobalRole} from "../../models/enums/globalRoleEnum";
-import {InviteRole} from "../../models/enums/inviteRoleEnum";
+import {GlobalRole} from "../../models/enums/GlobalRoleEnum";
+import {InviteRole} from "../../models/enums/InviteRoleEnum";
 import {CourseRole} from "../../models/enums/CourseRoleEnum";
 import {Sorting} from "../../models/enums/SortingEnum";
 // Helpers
