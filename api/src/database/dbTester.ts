@@ -10,10 +10,10 @@ import {ThreadDB as TH} 	from './ThreadDB'
 import {CommentDB as C} 	from './CommentDB'
 import {MentionsDB as M}	from './MentionsDB'
 
-import {courseState} 		from '../../../models/enums/courseStateEnum'
-import {courseRole} 			from '../../../models/enums/courseRoleEnum'
-import {submissionStatus}	from '../../../models/enums/submissionStatusEnum'
-import {threadState}		from '../../../models/enums/threadStateEnum'
+import {CourseState} 		from '../../../models/enums/CourseStateEnum'
+import {CourseRole} 			from '../../../models/enums/CourseRoleEnum'
+import {SubmissionStatus}	from '../../../models/enums/SubmissionStatusEnum'
+import {ThreadState}		from '../../../models/enums/ThreadStateEnum'
 
 import {Snippet, DBSnippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
@@ -24,7 +24,7 @@ import { Mention } from '../../../models/database/Mention'
 import { CourseInviteDB as CI, CourseInviteDB } from './CourseInviteDB'
 import { PluginsDB as P } from './PluginsDB'
 import { getEnum } from '../../../models/enums/enumHelper'
-import { globalRole } from '../../../models/enums/globalRoleEnum'
+import { GlobalRole } from '../../../models/enums/GlobalRoleEnum'
 import { User } from '../../../models/database/User'
 
 const ok = "✓",
@@ -62,7 +62,7 @@ function promise<T>(pr : Promise<T>, s : string) : Promise<T>{
 }
 async function DBusersTest() {
 	log("\n\nUSERSTEST\n\n")
-	const user : User = {userName:"C", email:"C@CAA", globalRole:globalRole.admin,password:"C", permission:1}
+	const user : User = {userName:"C", email:"C@CAA", globalRole:GlobalRole.admin,password:"C", permission:1}
 	const t1 = new Date()
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
@@ -74,7 +74,7 @@ async function DBusersTest() {
 	const samlid = await promise(UH.getSamlIDForUserID(u1.ID), 'saml by user')
 	equal(samlid, 'samling_admin', 'samlid should still be equal for the same user')
 	const {ID:userID} = await promise(UH.createUser(user), 'createUser')
-	await promise(UH.updateUser({userID, globalRole:globalRole.user}), 'updateUser')
+	await promise(UH.updateUser({userID, globalRole:GlobalRole.user}), 'updateUser')
 	const {permission : {permissions:p1}} = await promise(UH.addPermissionsUser(userID, 15), 'addPermissions')
 	equal(p1, 15, "addPermissions")
 	const {permission: {permissions:p2}} = await promise(UH.removePermissionsUser(userID, 6), 'addPermissions')
@@ -84,8 +84,8 @@ async function DBusersTest() {
 
 async function DBcoursesTest() {
 	log("\n\nCOURSESTEST\n\n")
-	const course : Course= {courseName:"cname",creatorID:uuid0,state:courseState.open}
-	const course2 = {courseName:"newname",creatorID:uuid0,state:courseState.hidden}
+	const course : Course= {courseName:"cname",creatorID:uuid0,state:CourseState.open}
+	const course2 = {courseName:"newname",creatorID:uuid0,state:CourseState.hidden}
 	const res = await promise(CH.getAllCourses(), 'getAllCourses')
 	const r1 = await promise(CRH.addPermissionsCourse(res, {userID:uuid0}), "addPermissions")
 	const {ID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
@@ -103,7 +103,7 @@ async function DBrolesTest(){
 	let noError;
 	try {
 		noError=false
-		getEnum(courseRole, role)
+		getEnum(CourseRole, role)
 		noError = true
 	} catch (e){
 		//pass, do nothing
@@ -114,7 +114,7 @@ async function DBrolesTest(){
 	await promise(RPH.addNewCourseRole(role, perm), 'addNewCourseRole')
 	try {
 		noError = false
-		getEnum(courseRole,role)
+		getEnum(CourseRole,role)
 		noError = true
 	} catch (e){
 		//pass, do nothing
@@ -128,7 +128,7 @@ async function DBrolesTest(){
 	await promise(RPH.deleteCourseRole(role), 'deleteCourseRole')
 	try {
 		noError=false
-		getEnum(courseRole,role)
+		getEnum(CourseRole,role)
 		noError = true
 	} catch (e){
 		//pass, do nothing
@@ -139,17 +139,17 @@ async function DBrolesTest(){
 async function courseRegistrationDBTest(){
 
 	log("\n\nCOURSEREGISTRATIONTEST\n\n")
-	const newEntry = {userID:uuid0, courseID:uuid1, courseRole:courseRole.teacher,permission:5}
+	const newEntry = {userID:uuid0, courseID:uuid1, courseRole:CourseRole.teacher,permission:5}
 	equal(newEntry.permission, 5)
 	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid0), 'getEntriesByCourse')
 	await promise(CRH.filterCourseUser({}), 'filterCourseReg')
 	await promise(CRH.filterCourseUser({userID:uuid0}), 'filterCourseReg2')
-	await promise(CRH.filterCourseUser({courseRole:courseRole.plugin}), 'filterCourseReg3')
+	await promise(CRH.filterCourseUser({courseRole:CourseRole.plugin}), 'filterCourseReg3')
 	await promise(CRH.filterCourseUser({permission:0}), 'filterCourseReg4')
 	await promise(CRH.filterCourseUser({permission:3}), 'filterCourseReg5')
 	const res = await promise(CRH.addEntry(newEntry), 'addEntry')
-	const upd = {userID:res.userID, courseID:res.courseID, courseRole:courseRole.TA}
+	const upd = {userID:res.userID, courseID:res.courseID, courseRole:CourseRole.TA}
 	await promise(CRH.getEntriesByUser(uuid0), 'getEntriesByUser')
 	await promise(CRH.updateRole(upd), 'updateRole')
 	await promise(CRH.addPermission({...newEntry, permission:2048}), "addPermission")
@@ -165,8 +165,8 @@ async function DBsubmissionTest(){
 	await promise(SH.getSubmissionsByCourse(uuid0), 'getSubmissionsByCourse')
 	await promise(SH.getRecents({addFiles:true}), 'addFiles')
 	await promise(SH.searchSubmissions('plan', {currentUserID:uuid0, courseID:uuid0}), "searchSubmissions")
-	const sub = {submissionID: undefined, courseID: uuid0, title: "myProject", userID:uuid0, date:undefined, state: submissionStatus.new}
-	const sub2 = {submissionID: undefined, title: "mySecondProject", userID:uuid0, date:undefined, state: submissionStatus.closed}
+	const sub = {submissionID: undefined, courseID: uuid0, title: "myProject", userID:uuid0, date:undefined, state: SubmissionStatus.new}
+	const sub2 = {submissionID: undefined, title: "mySecondProject", userID:uuid0, date:undefined, state: SubmissionStatus.closed}
 	const res = await promise(SH.addSubmission(sub), 'addSubmission')
 	if (res.ID===undefined) throw new Error("no submissionid")
 	await promise(SH.updateSubmission({...sub2, submissionID:res.ID}), 'updateSubmission')
@@ -211,7 +211,7 @@ async function TDBhreadTest() {
 	const snippetID = await promise(SPH.createNullSnippet(), "addSnippet")
 	const fileID = await promise(FH.createNullFile(uuid0), "createNULL")
 	notEqual(fileID, undefined, "fileID not null"+fileID )
-	const T0={submissionID:uuid0, fileID, snippetID, visibilityState:threadState.public}
+	const T0={submissionID:uuid0, fileID, snippetID, visibilityState:ThreadState.public}
 	const items = await promise(TH.getAllThreads(), "getAllThreads")
 	const i0 = await promise(TH.getAllThreads({limit:1}), "getThreadsLimit")
 	const i1 = await promise(TH.getAllThreads({limit:1,offset:1}), "getThreadsLimitOffset")
@@ -230,7 +230,7 @@ async function TDBhreadTest() {
 	const T1 = await promise(TH.addThread(T0), "addThread")
 	equal("snippet" in T1, false, "undefined snippet is still returned")
 	equal("file" in T1, false, "file is still returned")
-	const T2 = {commentThreadID:T1.ID, visibilityState:threadState.private}
+	const T2 = {commentThreadID:T1.ID, visibilityState:ThreadState.private}
 	await promise(TH.updateThread(T2), "updateThread")
 	await promise(TH.deleteThread(T1.ID), "deleteThread")
 	await promise(FH.deleteFile(fileID), "deleteNullFile")
@@ -261,7 +261,7 @@ async function DBmentionTest(){
 }
 
 async function courseIDBnviteTest(){
-	const invite = {creatorID: uuid0, courseID: uuid0, type:'', joinRole: courseRole.TA}
+	const invite = {creatorID: uuid0, courseID: uuid0, type:'', joinRole: CourseRole.TA}
 	await promise(CI.filterInvite({}), "filterInvite")
 	const resinv = await promise(CI.addInvite(invite), "addInvite")
 	await(promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"))

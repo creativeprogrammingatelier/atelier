@@ -2,7 +2,7 @@ import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
 import { isPostgresError } from '../../helpers/DatabaseErrorHelper'
 import { databaseSamples } from "./DatabaseSamples";
-import { PermissionEnum } from "../../../../models/enums/permissionEnum";
+import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 if (require.main === module){
 	//args without node & path name

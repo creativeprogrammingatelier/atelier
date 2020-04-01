@@ -1,7 +1,7 @@
 import { expect, assert } from "chai";
 import { setCourseRole, setGlobalRole, adminSetPermissions, adminRegisterCourse, adminUnregisterCourse } from "../APIRequestHelper";
-import { courseRole } from "../../../models/enums/courseRoleEnum";
-import { globalRole } from "../../../models/enums/globalRoleEnum";
+import { CourseRole } from "../../../models/enums/CourseRoleEnum";
+import { GlobalRole } from "../../../models/enums/GlobalRoleEnum";
 import { instanceOfUser, instanceOfCourseUser } from "../../InstanceOf";
 
 export function roleTest(){
@@ -18,17 +18,17 @@ export function roleTest(){
 	 */
 	describe("Role", () => {
         it("Should not be possible to set a role without permission.", async () => {
-            let response = await setCourseRole(courseRole.TA);
+            let response = await setCourseRole(CourseRole.TA);
             expect(response).to.have.status(401);
 
-            response = await setGlobalRole(globalRole.staff);
+            response = await setGlobalRole(GlobalRole.staff);
             expect(response).to.have.status(401);
         });
 
         it("Should be possible to set global role with permission.", async () => {
             await adminSetPermissions({"manageUserRole": true});
 
-            const roles = [globalRole.user, globalRole.plugin, globalRole.staff, globalRole.admin];
+            const roles = [GlobalRole.user, GlobalRole.plugin, GlobalRole.staff, GlobalRole.admin];
             for (let i = 0; i < roles.length; i++) {
                 const response = await setGlobalRole(roles[i]);
                 expect(response).to.have.status(200);
@@ -43,7 +43,7 @@ export function roleTest(){
             await adminRegisterCourse();
             await adminSetPermissions({"manageUserRole": true});
 
-            const roles = [courseRole.plugin, courseRole.student, courseRole.TA, courseRole.teacher, courseRole.moduleCoordinator];
+            const roles = [CourseRole.plugin, CourseRole.student, CourseRole.TA, CourseRole.teacher, CourseRole.moduleCoordinator];
             for (let i = 0; i < roles.length; i++) {
                 const response = await setCourseRole(roles[i]);
                 expect(response).to.have.status(200);

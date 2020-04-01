@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Button, InputGroup, Form} from "react-bootstrap";
 import { useCourses } from "../../../helpers/api/APIHooks";
 import {Course} from '../../../../../models/api/Course';
-import {courseState} from "../../../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../../../models/enums/courseStateEnum";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface AddCourseProps {
@@ -18,7 +18,7 @@ export function CourseCreator({handleResponse} : AddCourseProps) {
         try {
             await courses.create({
                 name : courseName,
-                state : courseState.open
+                state : CourseState.open
             });
             setCourseName("");
             if (handleResponse !== undefined) {

@@ -1,4 +1,4 @@
-import {courseRole} from "../enums/courseRoleEnum";
+import {CourseRole} from "../enums/CourseRoleEnum";
 
 /** String if link exists, otherwise undefined */
 export interface Invite {
@@ -12,5 +12,5 @@ export interface CourseInvite {
     creatorID : string,
     courseID : string,
     type : string,
-    joinRole : courseRole,
+    joinRole : CourseRole,
 }

@@ -1,5 +1,5 @@
 import {pool, extract, map, one, toBin, pgDB } from "./HelperDB";
-import {courseRole} from '../../../models/enums/courseRoleEnum'
+import {CourseRole} from '../../../models/enums/CourseRoleEnum'
 import {convertRolePermission} from '../../../models/database/RolePermission'
 import { removeItem, addItem } from "../../../models/enums/enumHelper";
 /**
@@ -34,7 +34,7 @@ export class CourseRoleDB {
 		
 		//this might not be the best place,
 		// this will add an entry to the courseRole enum.
-		addItem(courseRole, name)
+		addItem(CourseRole, name)
 
 		return DB.query(`INSERT INTO "CourseRolePermissions" 
 			VALUES ($1,$2) 
@@ -91,7 +91,7 @@ export class CourseRoleDB {
 			RETURNING *`,[name])
 		.then(extract).then(map(convertRolePermission)).then(one).then((res) =>{
 			//this will also remove the entry from the courseRole enum on the server, no longer allowing it as a valid item.
-			removeItem(courseRole, name)
+			removeItem(CourseRole, name)
 			return res
 		})
 	}

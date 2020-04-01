@@ -1,10 +1,10 @@
 import {CommentThread} from "../../../models/api/CommentThread";
 import {getCoursePermissions, getGlobalPermissions} from "./PermissionHelper";
-import {containsPermission, PermissionEnum} from "../../../models/enums/permissionEnum";
+import {containsPermission, PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {CoursePartial} from "../../../models/api/Course";
 import {Comment} from "../../../models/api/Comment";
 import {Submission} from "../../../models/api/Submission";
-import {threadState} from "../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../models/enums/ThreadStateEnum";
 import {User} from "../../../models/api/User";
 import {Snippet} from "../../../models/api/Snippet";
 
@@ -24,7 +24,7 @@ export async function filterCommentThread(commentThreads : CommentThread[], user
     }
     if (!containsPermission(PermissionEnum.viewRestrictedComments, permissions)) {
         return commentThreads.filter((commentThread : CommentThread) =>
-            commentThread.visibility === threadState.public ||
+            commentThread.visibility === ThreadState.public ||
             userPartOfCommentThread(userID, commentThread)
         );
     }

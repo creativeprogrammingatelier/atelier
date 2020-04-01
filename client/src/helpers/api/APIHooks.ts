@@ -1,7 +1,6 @@
 import { Cache, CacheState, CacheCollection, CacheItem, CacheCollectionInterface, emptyCacheItem, CacheItemInterface } from './Cache';
 import { Course } from '../../../../models/api/Course';
 import * as API from '../../../helpers/APIHelper';
-import { courseState } from '../../../../models/enums/courseStateEnum';
 import { randomBytes } from 'crypto';
 import { User } from '../../../../models/api/User';
 import { Permission } from '../../../../models/api/Permission';
@@ -14,6 +13,7 @@ import { File as APIFile } from '../../../../models/api/File';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { useObservable } from 'observable-hooks';
+import { CourseState } from '../../../../models/enums/courseStateEnum';
 
 export interface APICache<T> {
     observable: Observable<CacheCollection<T> | CacheItem<T>>
@@ -95,12 +95,12 @@ function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: C
         });
 }
 
-export function useCourses(): Refresh<Course> & Create<[{ name: string, state: courseState }], Course> {
+export function useCourses(): Refresh<Course> & Create<[{ name: string, state: CourseState }], Course> {
     const courses = useCacheCollection<Course>("courses");
     return {
         observable: courses.observable,
         refresh: () => refreshCollection(API.getCourses(), courses),
-        create: ({ name, state }: { name: string, state: courseState }) => 
+        create: ({ name, state }: { name: string, state: CourseState }) => 
             create(
                 API.createCourse({ name, state }), 
                 { ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission }, 

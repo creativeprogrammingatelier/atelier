@@ -8,7 +8,7 @@ import { Submission } from "../models/api/Submission";
 import { User } from "../models/api/User";
 import { CourseUser } from "../models/api/CourseUser";
 import {CourseInvite} from "../models/api/Invite";
-import {courseRole} from "../models/enums/courseRoleEnum";
+import {CourseRole} from "../models/enums/CourseRoleEnum";
 import { SearchResult, SearchResultSnippet, SearchResultComment, SearchResultFile } from "../models/api/SearchResult";
 
 /**

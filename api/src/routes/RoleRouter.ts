@@ -3,13 +3,13 @@ import {AuthMiddleware} from '../middleware/AuthMiddleware';
 import {capture} from "../helpers/ErrorHelper";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {courseRole} from "../../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {requirePermission} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {getEnum} from '../../../models/enums/enumHelper';
 import {CourseUser} from '../../../models/api/CourseUser';
 import {UserDB} from "../database/UserDB";
-import {globalRole} from "../../../models/enums/globalRoleEnum";
+import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
 import {User} from "../../../models/api/User";
 
 export const roleRouter = express.Router();
@@ -34,7 +34,7 @@ roleRouter.put('/course/:courseID/user/:userID/:role', capture(async(request : R
     const courseUser : CourseUser = await CourseRegistrationDB.updateRole({
         userID,
         courseID,
-        courseRole : getEnum(courseRole, role)
+        courseRole : getEnum(CourseRole, role)
     });
     response.status(200).send(courseUser);
 }));
@@ -47,7 +47,7 @@ roleRouter.put('/course/:courseID/user/:userID/:role', capture(async(request : R
 roleRouter.put('/user/:userID/:role', capture(async(request : Request, response : Response) => {
     const currentUserID : string = await getCurrentUserID(request);
     const userID : string = request.params.userID;
-    const globalRole : globalRole = request.params.role as globalRole;
+    const globalRole : GlobalRole = request.params.role as GlobalRole;
 
     // require manage user role permission
     await requirePermission(currentUserID, PermissionEnum.manageUserRole);

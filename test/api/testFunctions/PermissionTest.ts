@@ -1,8 +1,8 @@
-import { setPermissionsCourse, setPermissionsGlobal, getPermission, adminRegisterCourse, getPermissionByCourse, adminUnregisterCourse, DEFAULT_PERMISSIONS, adminSetPermissions } from "../APIRequestHelper";
+import { setPermissionsCourse, setPermissionsGlobal, getPermission, adminRegisterCourse, getPermissionByCourse, adminUnregisterCourse, adminSetPermissions, DEFAULT_GLOBAL_PERMISSIONS, DEFAULT_COURSE_PERMISSIONS } from "../APIRequestHelper";
 import { expect } from "chai";
 import { assert } from "console";
 import { instanceOfPermission, instanceOfUser, instanceOfCourseUser } from "../../InstanceOf";
-import { viewPermissions, PermissionEnum, containsPermission, managePermissions } from "../../../models/enums/permissionEnum";
+import { viewPermissions, PermissionEnum, containsPermission, managePermissions } from "../../../models/enums/PermissionEnum";
 import { getEnum } from "../../../models/enums/enumHelper";
 
 export function permissionTest(){
@@ -87,14 +87,14 @@ export function permissionTest(){
             const response = await getPermissionByCourse();
             expect(response).to.have.status(200);
             assert(instanceOfPermission(response.body));
-            expect(response.body.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
         it("Should not be possible to update global user permissions without permission.", async() => {
             const response = await setAllPermissions(false, true);
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
         it("Should not be possible to set course permissions without being enrolled.", async() => {
@@ -108,7 +108,7 @@ export function permissionTest(){
             const response = await setAllPermissions(true, true);
             expect(response).to.have.status(200);
             assert(instanceOfCourseUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+            expect(response.body.permission.permissions).to.equal(DEFAULT_COURSE_PERMISSIONS);
         });
 
         it("Should be possible to update view user permissions permission", async() => {

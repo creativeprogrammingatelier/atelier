@@ -5,11 +5,11 @@ import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {AuthError} from "./AuthenticationHelper";
 import {User} from "../../../models/api/User";
 import {UserDB} from "../database/UserDB";
-import {containsPermission, PermissionEnum} from "../../../models/enums/permissionEnum";
+import {containsPermission, PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {FileDB} from "../database/FileDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {SubmissionDB} from "../database/SubmissionDB";
-import { courseRole } from "../../../models/enums/courseRoleEnum";
+import { CourseRole } from "../../../models/enums/CourseRoleEnum";
 import { CourseUser } from "../../../models/api/CourseUser";
 
 /**
@@ -62,7 +62,7 @@ export async function requireRegistered(userID : string, courseID : string) {
     const courseUser : CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
     console.log(courseUser);
     console.log(courseUser.permission.courseRole);
-    if (courseUser.permission.courseRole === courseRole.unregistered) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
+    if (courseUser.permission.courseRole === CourseRole.unregistered) throw new AuthError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
 }
 
 /**

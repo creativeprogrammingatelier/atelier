@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Jumbotron} from "react-bootstrap";
 import {User} from "../../../../../models/api/User";
-import {globalRole} from "../../../../../models/enums/globalRoleEnum";
+import {GlobalRole} from "../../../../../models/enums/globalRoleEnum";
 import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
 import {getCurrentUser} from "../../../../helpers/APIHelper";
 import {Frame} from "../../frame/Frame";
@@ -16,7 +16,7 @@ export function SystemSettings() {
 	const [permissions, setPermissions] = useState(0);
 
 	// Roles user can set globally with permission (not unregistered)
-	const globalRoles = [globalRole.plugin, globalRole.user, globalRole.staff, globalRole.admin];
+	const globalRoles = [GlobalRole.plugin, GlobalRole.user, GlobalRole.staff, GlobalRole.admin];
 
 	// TODO: Only used as input to UserSettingsPermissions, probably change the structure for it
 	useEffect(() => {
@@ -39,7 +39,7 @@ export function SystemSettings() {
 			</Permissions>
 			<Permissions single={PermissionEnum.manageUserRole}>
 				<DataList header="Global User Roles">
-					<UserSettingsRoles<typeof globalRole> roles={globalRole}/>
+					<UserSettingsRoles<typeof GlobalRole> roles={GlobalRole}/>
 				</DataList>
 			</Permissions>
 			<Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>

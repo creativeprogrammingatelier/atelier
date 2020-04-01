@@ -7,16 +7,15 @@ import {
 	adminUnregisterCourse,
 	adminSetRoleCourse,
 	adminSetRoleGlobal,
-	getOwnUser1,
-	DEFAULT_PERMISSIONS,
-	getCourses 
+    getOwnUser1,
+	getCourses, 
+    DEFAULT_GLOBAL_PERMISSIONS
 } from "../APIRequestHelper";
 import { CoursePartial } from "../../../models/api/Course";
 import { assert } from "console";
 import { instanceOfCoursePartial, instanceOfUser } from "../../InstanceOf";
 import { expect } from "chai";
 import { User } from "../../../models/api/User";
-import { app } from "../../../api/src/app";
 
 export function setup(){
     
@@ -89,7 +88,7 @@ export function setup(){
 
         const user: User = response.body;
         assert(instanceOfUser(user));
-        expect(user.permission.permissions).to.equal(DEFAULT_PERMISSIONS);
+        expect(user.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
     });
 
     /**

@@ -14,9 +14,9 @@ import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {User} from "../../../../models/api/User";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
-import {threadState} from "../../../../models/enums/threadStateEnum";
 import { useComments, useCollectionCombined } from "../../helpers/api/APIHooks";
 import { Cached } from "../general/loading/Cached";
+import {ThreadState} from "../../../../models/enums/threadStateEnum";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -30,7 +30,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
     }
 
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
-	const [restricted, setRestricted] = useState(thread.visibility === threadState.private);
+	const [restricted, setRestricted] = useState(thread.visibility === ThreadState.private);
 	const [manageRestrictedComments, setManageRestrictedComments] = useState(false);
 
 	const handleCommentSend = async(comment: string) => {
@@ -43,7 +43,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	const handleVisibility = () => {
 		setCommentThreadVisibility(thread.ID, restricted)
 			.then((commentThread : CommentThread) => {
-				setRestricted(commentThread.visibility === threadState.private);
+				setRestricted(commentThread.visibility === ThreadState.private);
 			});
 		// TODO: Some form of success feedback, probably
 	};

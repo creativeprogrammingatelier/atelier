@@ -4,7 +4,7 @@ import {MentionSuggestions} from "../../comment/MentionSuggestions";
 import {User} from "../../../../../models/api/User";
 import {Button, Form} from "react-bootstrap";
 import {Label} from "../../general/Label";
-import {courseState} from "../../../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../../../models/enums/courseStateEnum";
 import {Tag} from "../../general/Tag";
 import {searchUsers} from "../../../../helpers/APIHelper";
 
