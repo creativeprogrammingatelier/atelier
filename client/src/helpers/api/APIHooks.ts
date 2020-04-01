@@ -199,7 +199,7 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
         console.log("Creation of", tempID, "succeeded:", thread);
         threads.transaction(threads => {
             threads.remove(thread => thread.ID === tempID);
-            threads.add(thread, CacheState.Loaded);
+            threads.add({ ...thread, comments: [] }, CacheState.Loaded);
         });
         const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
         comments.transaction(comments =>
