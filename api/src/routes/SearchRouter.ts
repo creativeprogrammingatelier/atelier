@@ -24,7 +24,7 @@ import { getCurrentUserID, AuthError } from '../helpers/AuthenticationHelper';
 import { SubmissionDB } from '../database/SubmissionDB';
 import { FileDB } from '../database/FileDB';
 import { map } from '../database/HelperDB';
-import { requirePermissions, requireRegistered } from '../helpers/PermissionHelper';
+import {PermissionError, requirePermissions, requireRegistered} from '../helpers/PermissionHelper';
 import { PermissionEnum } from '../../../models/enums/PermissionEnum';
 import { Sorting } from '../../../models/enums/SortingEnum';
 
@@ -62,13 +62,13 @@ async function filterUser(query : string, common : Common) {
         await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles], common.courseID);
     } catch (e){
         //this operation is not permitted. return an emtpy array.
-        if (e instanceof AuthError){
+        if (e instanceof PermissionError) {
             return []
         } else {
             throw e;
         }
     }
-    const user : User = {...common, userName:query}
+    const user : User = {...common, userName:query};
     return common.courseID
         ? CourseRegistrationDB.filterCourseUser(user).then(map(CourseUserToUser))
         : UserDB.filterUser(user);

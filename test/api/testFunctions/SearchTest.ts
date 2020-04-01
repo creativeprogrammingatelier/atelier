@@ -56,7 +56,9 @@ export function searchTest() {
      *
      */
     describe("Search", () => {
-        beforeEach(async () => adminRegisterCourse());
+        beforeEach(async () => {
+            await adminRegisterCourse()
+        });
 
         it("should be possible to search", async () => {
             await equalResults({query: 's'})
