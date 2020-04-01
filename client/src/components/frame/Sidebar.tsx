@@ -5,11 +5,9 @@ import {Heading} from "../general/Heading";
 import {Responsive} from "../general/Responsive";
 import { useCurrentUser } from "../../helpers/api/APIHooks";
 import {FiActivity, FiHome, FiLogOut, FiSettings, FiSliders, FiUser, FiX} from "react-icons/fi";
-import {Permission} from "../../../../models/api/Permission";
-import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/PermissionEnum";
-import {permission} from "../../../helpers/APIHelper";
-import {Loading} from "../general/loading/Loading";
+import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
 import { Cached } from "../general/loading/Cached";
+import { Permissions } from "../general/Permissions";
 
 interface SidebarProperties {
 	position: string,
@@ -25,19 +23,15 @@ export function Sidebar({position, close}: SidebarProperties) {
 			<SidebarEntry location="/" icon={FiHome} close={close}>Home</SidebarEntry>
 			<SidebarEntry location="/activity" icon={FiActivity} close={close}>Activity</SidebarEntry>
 			<SidebarEntry location="/account" icon={FiSliders} close={close}>Account</SidebarEntry>
-			<Loading<Permission>
-				loader={permission}
-				component={permission =>
-					containsPermissionAny([
+			<Permissions any={[
 						PermissionEnum.addCourses,
 						PermissionEnum.manageUserPermissionsView,
 						PermissionEnum.manageUserPermissionsManager,
 						PermissionEnum.manageUserRole,
 						PermissionEnum.managePlugins
-					], permission.permissions) &&
-					<SidebarEntry location="/admin/settings" icon={FiSettings} close={close}>System</SidebarEntry>}
-				wrapper={() => null}
-			/>
+					]}>
+					<SidebarEntry location="/admin/settings" icon={FiSettings} close={close}>System</SidebarEntry>
+			</Permissions>
 			<Cached cache={user}>{
                 user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>
             }</Cached>
