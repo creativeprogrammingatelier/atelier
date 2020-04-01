@@ -8,8 +8,8 @@ import { APICourse, coursePartialToAPI } from "../../../models/database/Course";
 
 import { CourseUser, CourseUserToAPI, APICourseUser } from "../../../models/database/CourseUser";
 import { getEnum } from "../../../models/enums/enumHelper";
-import { globalRole } from "../../../models/enums/globalRoleEnum";
-import { courseRole } from "../../../models/enums/courseRoleEnum";
+import { GlobalRole } from "../../../models/enums/GlobalRoleEnum";
+import { CourseRole } from "../../../models/enums/CourseRoleEnum";
 import { InvalidDatabaseResponseError } from "./DatabaseErrors";
 import { CourseUsersView } from "./ViewsDB";
 /**

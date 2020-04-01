@@ -1,29 +1,46 @@
 import React, { Fragment } from "react";
-import {FiActivity, FiHome, FiLogOut, FiSettings, FiUser, FiX} from "react-icons/fi";
 import {Logo} from "./Logo";
 import {SidebarEntry} from "./SidebarEntry";
-import {Loading} from "../general/loading/Loading";
-import {User} from "../../../../models/api/User";
-import {getCurrentUser} from "../../../helpers/APIHelper";
 import {Heading} from "../general/Heading";
 import {Responsive} from "../general/Responsive";
+import { useCurrentUser } from "../../helpers/api/APIHooks";
+import {FiActivity, FiHome, FiLogOut, FiSettings, FiSliders, FiUser, FiX} from "react-icons/fi";
+import {Permission} from "../../../../models/api/Permission";
+import {containsPermissionAny, PermissionEnum} from "../../../../models/enums/permissionEnum";
+import {permission} from "../../../helpers/APIHelper";
+import {Loading} from "../general/loading/Loading";
+import { Cached } from "../general/loading/Cached";
 
 interface SidebarProperties {
 	position: string,
 	close: React.MouseEventHandler
 }
 export function Sidebar({position, close}: SidebarProperties) {
+    const user = useCurrentUser();
+
 	const content = () =>
 		<div className="sidebarContent p-0">
 			<Logo/>
 			<hr/>
 			<SidebarEntry location="/" icon={FiHome} close={close}>Home</SidebarEntry>
 			<SidebarEntry location="/activity" icon={FiActivity} close={close}>Activity</SidebarEntry>
-			<SidebarEntry location="/settings" icon={FiSettings} close={close}>Settings</SidebarEntry>
-			<Loading<User>
-				loader={getCurrentUser}
-				component={user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>}
+			<SidebarEntry location="/account" icon={FiSliders} close={close}>Account</SidebarEntry>
+			<Loading<Permission>
+				loader={permission}
+				component={permission =>
+					containsPermissionAny([
+						PermissionEnum.addCourses,
+						PermissionEnum.manageUserPermissionsView,
+						PermissionEnum.manageUserPermissionsManager,
+						PermissionEnum.manageUserRole,
+						PermissionEnum.managePlugins
+					], permission.permissions) &&
+					<SidebarEntry location="/admin/settings" icon={FiSettings} close={close}>System</SidebarEntry>}
+				wrapper={() => null}
 			/>
+			<Cached cache={user}>{
+                user => <SidebarEntry location={"/user/" + user.ID} icon={FiUser} close={close}>{user.name}</SidebarEntry>
+            }</Cached>
 			<SidebarEntry location="/logout" icon={FiLogOut} close={close}>Logout</SidebarEntry>
 		</div>;
 

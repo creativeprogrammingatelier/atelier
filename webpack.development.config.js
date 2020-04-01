@@ -27,10 +27,10 @@ module.exports = {
             }
             
         }),
-        new webpack.ProvidePlugin({
-            "React": "react",
-            'ReactDOM':   'react-dom',
-        }),
+        // new webpack.ProvidePlugin({
+        //     "React": "react",
+        //     'ReactDOM':   'react-dom',
+        // }),
     ],
     module: {
         rules: [{
@@ -59,10 +59,10 @@ module.exports = {
         ],
 
     },
-    externals: {
-        "react": "React",
-        "react-dom": "ReactDOM"
-    },
+    // externals: {
+    //     "react": "React",
+    //     "react-dom": "ReactDOM"
+    // },
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".jsx"]
     },

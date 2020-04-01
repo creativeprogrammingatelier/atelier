@@ -3,8 +3,8 @@ import {User} from '../../../models/database/User';
 import {Request, Response} from 'express';
 import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { UserDB } from '../database/UserDB';
-import { courseRole } from '../../../models/enums/courseRoleEnum';
-import { globalRole } from '../../../models/enums/globalRoleEnum';
+import { CourseRole } from '../../../models/enums/CourseRoleEnum';
+import { GlobalRole } from '../../../models/enums/GlobalRoleEnum';
 
 /**
  * @TODO this does in not the required behaviour
@@ -65,7 +65,7 @@ export default class PermissionsMiddleware {
 	static async isTa(request: Request, result: Response, onSuccess: Function) {
         const userID = await getCurrentUserID(request);
         const user = await UserDB.getUserByID(userID);
-        const teacherString = courseRole.teacher;
+        const teacherString = CourseRole.teacher;
         if (user.permission.courseRole?.toLowerCase() === teacherString) {
             onSuccess();
         } else {
@@ -76,7 +76,7 @@ export default class PermissionsMiddleware {
 	static async isAdmin(request: Request, result: Response, onSuccess: Function) {
 		const userID = await getCurrentUserID(request);
         const user = await UserDB.getUserByID(userID);
-        const adminString = globalRole.admin;
+        const adminString = GlobalRole.admin;
         if (user.permission.globalRole.toLowerCase() === adminString) {
             onSuccess();
         } else {

@@ -1,8 +1,8 @@
-import {courseRole} from '../enums/courseRoleEnum'
+import {CourseRole} from '../enums/CourseRoleEnum'
 import {CoursePermission as APICoursePermission} from '../api/Permission'
 import { pgDB, DBTools, checkAvailable, toDec } from '../../api/src/database/HelperDB'
 import { getEnum } from '../enums/enumHelper'
-import { globalRole } from '../enums/globalRoleEnum'
+import { GlobalRole } from '../enums/GlobalRoleEnum'
 export type CoursePermission = Partial<APICoursePermission>
 
 export {APICoursePermission}
@@ -17,7 +17,7 @@ export type DBAPIRolePermission = DBRolePermission
 export function convertRolePermission(db : DBRolePermission) : CoursePermission {
 	checkAvailable(["courseroleid", "permission"], db)
 	return {
-		courseRole: getEnum(courseRole, db.courseroleid),
+		courseRole: getEnum(CourseRole, db.courseroleid),
 		permissions: toDec(db.permission)
 	}
 }

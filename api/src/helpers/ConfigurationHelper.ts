@@ -55,7 +55,16 @@ export interface Configuration {
         port: number,
         user: string,
         password: string,
-        database: string
+        database: string,
+        /** Extra configuration for the pool of connections */
+        pool: {
+            /** Maximum number of clients in the pool */
+            max?: number,
+            /** Maximum time to wait before timing out when connecting a new client */
+            connectionTimeoutMillis?: number,
+            /** Time to wait before disconnecting a client when it sits idle */
+            idleTimeoutMillis?: number
+        }
     }
 }
 
@@ -141,7 +150,12 @@ export const config: Configuration = {
         port: prop("database.port", json.database.port, 5432),
         user: prop("database.user", json.database.user),
         password: prop("database.password", json.database.password),
-        database: prop("database.database", json.database.database)
+        database: prop("database.database", json.database.database),
+        pool: {
+            max: json.database.pool.max,
+            connectionTimeoutMillis: json.database.pool.connectionTimeoutMillis,
+            idleTimeoutMillis: json.database.pool.idleTimeoutMillis
+        }
     }
 };
 

@@ -5,9 +5,7 @@ import {ButtonBar} from "../general/ButtonBar";
 import {Button} from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiCode, FiEye, FiEyeOff, FiTrash} from "react-icons/all";
 import {CommentThread} from "../../../../models/api/CommentThread";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
-import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
-import {File} from "../../../../models/api/File";
+import {coursePermission, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {Snippet} from "../code/Snippet";
 import {Link} from "react-router-dom";
 import {CommentCreator} from "./CommentCreator";
@@ -16,42 +14,28 @@ import {Permission} from "../../../../models/api/Permission";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/permissionEnum";
 import {User} from "../../../../models/api/User";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
-import {threadState} from "../../../../models/enums/threadStateEnum";
+import { useComments, useCollectionCombined } from "../../helpers/api/APIHooks";
+import { Cached } from "../general/loading/Cached";
+import {ThreadState} from "../../../../models/enums/threadStateEnum";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
-	thread: CommentThread,
-	submissionID?: string,
-	file?: File,
-	body?: string
+	thread: CommentThread
 }
 
 export function CommentThread({thread}: CommentThreadProperties) {
+    const comments = useComments(thread.ID);
+    const commentsCombined = {
+        observable: useCollectionCombined(comments.observable)
+    }
+
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
-	const [restricted, setRestricted] = useState(thread.visibility === threadState.private);
+	const [restricted, setRestricted] = useState(thread.visibility === ThreadState.private);
 	const [manageRestrictedComments, setManageRestrictedComments] = useState(false);
-	const [comments, updateComments] = useState(thread.comments);
 
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
-		if (commentTrimmed !== "") {
-			try {
-				const comment = await createComment(thread.ID, commentTrimmed);
-				updateComments(comments => [
-					...comments,
-					comment
-				]);
-				return true;
-			} catch (error) {
-				if (error instanceof JsonFetchError) {
-					// TODO: handle error for user
-					console.log(error);
-				} else {
-					throw error;
-				}
-			}
-		}
-		return false;
+		return comments.create(commentTrimmed);
 	};
 	const handleDiscard = () => {
 		console.log("Clicked to discard");
@@ -59,7 +43,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	const handleVisibility = () => {
 		setCommentThreadVisibility(thread.ID, restricted)
 			.then((commentThread : CommentThread) => {
-				setRestricted(commentThread.visibility === threadState.private);
+				setRestricted(commentThread.visibility === ThreadState.private);
 			});
 		// TODO: Some form of success feedback, probably
 	};
@@ -83,14 +67,16 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	return (
 		<div id={thread.ID} className={"commentThread block" + (restricted ? " restricted" : "")}>
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
-			{opened ?
-				<Fragment>
-					{comments.map(comment => <CommentComponent comment={comment}/>)}
-					<CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
-				</Fragment>
-				:
-				comments[0] !== undefined && <CommentComponent comment={comments[0]}/>
-			}
+            <Cached cache={commentsCombined}>
+                {comments => opened ?
+                    <Fragment>
+                        {comments.map(comment => <CommentComponent comment={comment}/>)}
+                        <CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
+                    </Fragment>
+                    :
+                    comments[0] !== undefined && <CommentComponent comment={comments[0]}/>
+                }
+            </Cached>
 			<ButtonBar align="right">
 				{manageRestrictedComments &&
 					<Fragment>

@@ -1,11 +1,12 @@
 import {extract, map, one, pool, pgDB, checkAvailable, DBTools, _insert, searchify  } from "./HelperDB";
 import {Submission, DBSubmission, convertSubmission, submissionToAPI, APISubmission} from '../../../models/database/Submission';
-import {submissionStatus} from '../../../models/enums/submissionStatusEnum'
+import {SubmissionStatus} from '../../../models/enums/SubmissionStatusEnum'
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { User } from "../../../models/database/User";
 import { FileDB } from "./FileDB";
 import { APIFile } from "../../../models/database/File";
 import { submissionsView } from "./ViewsDB";
+import { Sorting } from "../../../models/enums/SortingEnum";
 
 /**
  * submissionID, userID, title, date, state
@@ -125,6 +126,7 @@ export class SubmissionDB {
 
 			limit = undefined,
 			offset = undefined,
+			sorting = Sorting.datetime,
 			currentUserID = undefined,
 			client = pool,
 
@@ -135,28 +137,7 @@ export class SubmissionDB {
 			userid = UUIDHelper.toUUID(userID),
 			currentuserid = UUIDHelper.toUUID(currentUserID),
 			searchTitle = searchify(title)
-		_insert(`SELECT s.* 
-		FROM "SubmissionsView" as s, viewableSubmissions($12, $2) as opts
-		WHERE 
-			($1::uuid IS NULL OR s.submissionID=$1)
-		AND ($2::uuid IS NULL OR s.courseID=$2)
-		AND ($3::uuid IS NULL OR s.userID=$3)
-		--submission
-		AND ($4::text IS NULL OR s.title=$4)
-		AND ($5::timestamp IS NULL OR s.date <= $5)
-		AND ($6::text IS NULL OR s.state=$6)
-		--user
-		AND ($7::text IS NULL OR s.userName=$7)
-		AND ($8::text IS NULL OR s.email=$8)
-		AND ($9::text IS NULL OR s.globalrole=$9)
-		AND s.submissionID = opts.submissionID
-		ORDER BY date DESC
-		LIMIT $10
-		OFFSET $11
-		`, [submissionid, courseid, userid, 
-			searchTitle, date, state, 
-			name, email, role,
-			limit, offset, currentuserid])
+		
 		const query = pool.query(`
 			SELECT s.* 
 			FROM "SubmissionsView" as s, viewableSubmissions($12, $2) as opts
@@ -173,11 +154,11 @@ export class SubmissionDB {
 			AND ($8::text IS NULL OR s.email=$8)
 			AND ($9::text IS NULL OR s.globalrole=$9)
 			AND s.submissionID = opts.submissionID
-			ORDER BY date DESC
+			ORDER BY ${sorting === Sorting.datetime? `date DESC` : `title`}
 			LIMIT $10
 			OFFSET $11
 			`, [submissionid, courseid, userid, 
-				title, date, state, 
+				searchTitle, date, state, 
 				name, email, role,
 				limit, offset, currentuserid])
 			.then(extract).then(map(submissionToAPI))
@@ -230,7 +211,7 @@ export class SubmissionDB {
 			userID,
 			title,
 			date = new Date(),
-			state = submissionStatus.new
+			state = SubmissionStatus.new
 		} = submission
 		const courseid = UUIDHelper.toUUID(courseID),
 			userid = UUIDHelper.toUUID(userID);

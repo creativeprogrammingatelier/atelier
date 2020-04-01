@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Fragment} from "react";
 import {permission} from "../../../helpers/APIHelper";
-import {courseRole} from "../../../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../../../models/enums/courseRoleEnum";
 import {PermissionEnum, containsPermission} from "../../../../models/enums/permissionEnum";
 import {User} from "../../../../models/api/User";
 import {searchUsers} from "../../../helpers/APIHelper";
@@ -19,7 +19,7 @@ interface MentionSuggestionsProperties {
 }
 
 export function MentionSuggestions({prefix, suggestionBase, round, courseID, onSelected}: MentionSuggestionsProperties) {
-	const [allowedGroups, updateAllowedGroups] = useState([] as courseRole[]);
+	const [allowedGroups, updateAllowedGroups] = useState([] as CourseRole[]);
 	const [suggestions, updateSuggestions] = useState({users: [] as User[], base: suggestionBase});
 
 	const displayPrefix: string = prefix === undefined ? "" : prefix;
@@ -32,13 +32,13 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
 		permission().then(permission => {
 			const groups = [];
 			if (containsPermission(PermissionEnum.mentionAllTeachers, permission.permissions)) {
-				groups.push(courseRole.teacher);
+				groups.push(CourseRole.teacher);
 			}
 			if (containsPermission(PermissionEnum.mentionAllAssistants, permission.permissions)) {
-				groups.push(courseRole.TA);
+				groups.push(CourseRole.TA);
 			}
 			if (containsPermission(PermissionEnum.mentionAllStudents, permission.permissions)) {
-				groups.push(courseRole.student);
+				groups.push(CourseRole.student);
 			}
 			console.log("Allowed groups to mention: ", groups);
 			updateAllowedGroups(groups);

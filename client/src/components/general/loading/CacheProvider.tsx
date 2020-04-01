@@ -1,18 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Cache, Update, getCacheInterface } from '../../../helpers/api/Cache';
-
-/** Context used for providing caching */
-interface CacheContext {
-    cache: Cache
-    updateCache: Update<Cache>
-}
+import React, { createContext, useContext } from 'react';
+import { Cache } from '../../../helpers/api/Cache';
+import { debounceTime } from 'rxjs/operators';
 
 /** 
  * A React context for the cache. By using a context we can allow any component
  * access to the cache by using a hook, without needing to pass down a Cache
  * object to every component manually.
  */
-const cacheContext = createContext<CacheContext>({ cache: {}, updateCache: f => {} });
+const cacheContext = createContext<Cache>(new Cache());
 
 /** Detect if the page was reloaded, tested to work with IE5 */
 function pageRefreshed() {
@@ -35,24 +30,33 @@ function pageRefreshed() {
  * the cache.
  */
 export function CacheProvider({ children }: { children: React.ReactNode }) {
-    let storedCache: Cache;
+    let cache: Cache;
     if (pageRefreshed()) {
-        storedCache = {};
+        cache = new Cache();
     } else {
-        storedCache = JSON.parse(localStorage.getItem("cache") || "{}");
+        cache = Cache.load("cache");
     }
 
-    const [cache, updateCache] = useState(storedCache);
+    cache.getExport()
+        .pipe(debounceTime(750))
+        .subscribe(exported => Cache.save("cache", exported));
 
-    useEffect(() => {
-        localStorage.setItem("cache", JSON.stringify(cache));
-    }, [cache]);
-
-    return <cacheContext.Provider value={{cache, updateCache}} children={children} />
+    return <cacheContext.Provider value={cache} children={children} />
 }
 
 /** Hook to get access to specific CacheCollection */
-export function useCache<T>(key: string) {
-    const { cache, updateCache } = useContext(cacheContext);
-    return getCacheInterface<T>(key, cache, updateCache);
+export function useCacheCollection<T extends { ID: string }>(key: string, filter?: (value: T) => boolean) {
+    const cache = useContext(cacheContext);
+    return cache.getCollection<T>(key, filter);
+}
+
+/** Hook to get access to a specific CacheItem */
+export function useCacheItem<T>(key: string, defaultValue?: T) {
+    const cache = useContext(cacheContext);
+    return cache.getItem<T>(key, defaultValue);
+}
+
+/** Hook to get access to the raw cache context */
+export function useRawCache() {
+    return useContext(cacheContext);
 }

@@ -153,7 +153,7 @@ export class CommentDB {
 			AND ($8::text IS NULL OR c.body ILIKE $8)
 			
 			AND c.submissionID = opts.submissionID
-			ORDER BY c.created DESC, c.commentID --unique in case 2 comments same time
+			ORDER BY c.created DESC, c.commentID --unique when 2 comments same time
 			LIMIT $9
 			OFFSET $10
 			`, args)

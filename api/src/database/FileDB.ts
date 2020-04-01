@@ -1,9 +1,10 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify } from "./HelperDB";
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify, _insert } from "./HelperDB";
 import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles, isNotNullFile} from '../../../models/database/File';
 import { UUIDHelper } from "../helpers/UUIDHelper";
 import { filesView } from "./ViewsDB";
 import { SearchResultFile } from "../../../models/api/SearchResult";
 import { submissionToAPI } from "../../../models/database/Submission";
+import { Sorting } from "../../../models/enums/SortingEnum";
 
 /**
  * fileID, submissionID, pathname, type
@@ -94,6 +95,7 @@ export class FileDB {
 
 			limit = undefined,
 			offset = undefined,
+			sorting = Sorting.datetime,
 			client = pool,
 			currentUserID = undefined,
 
@@ -113,9 +115,9 @@ export class FileDB {
 			AND ($2::uuid IS NULL OR f.submissionID=$2)
 			AND ($3::uuid IS NULL OR f.courseID=$3)
 			AND ($5::text IS NULL OR f.type=$5)
-			AND ($4::text IS NULL OR f.pathname ILIKE (s.title||$4))
+			AND ($4::text IS NULL OR f.pathname ILIKE right(f.pathname, -length(s.title)-1))
 			AND f.submissionID = opts.submissionID
-			ORDER BY f.pathname, f.type, f.fileID
+			ORDER BY ${sorting === Sorting.alphabetical?`right(f.pathname, -length(s.title)-1)` : `s.date`}, f.type, f.fileID
 			LIMIT $6
 			OFFSET $7
 			`, [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid])

@@ -2,7 +2,7 @@ import { UserDB } from "../database/UserDB";
 import { pgDB } from "../database/HelperDB";
 import { NotFoundDatabaseError } from "../database/DatabaseErrors";
 import { User } from "../../../models/api/User";
-import { courseRole } from "../../../models/enums/courseRoleEnum";
+import { CourseRole } from "../../../models/enums/courseRoleEnum";
 import { MentionsDB } from "../database/MentionsDB";
 import { CourseRegistrationDB } from "../database/CourseRegistrationDB";
 import { containsPermission, PermissionEnum } from "../../../models/enums/permissionEnum";
@@ -31,7 +31,7 @@ async function getUserForPossibleMention(possibleMention: string, courseID: stri
 
 /** Find a course role that matches the first part of a possible mention */
 function getRoleForPossibleMention(possibleMention: string) {
-    const roles = Object.values(courseRole).filter(cr => possibleMention.toLowerCase().startsWith(cr.toLowerCase()));
+    const roles = Object.values(CourseRole).filter(cr => possibleMention.toLowerCase().startsWith(cr.toLowerCase()));
     if (roles.length >= 1) {
         return roles.sort((a, b) => a.length - b.length)[0];
     } else {
@@ -50,23 +50,23 @@ export async function getMentions(commentBody: string, courseID: string, client?
             typeof(userOrComment) === "string" 
             ? getRoleForPossibleMention(userOrComment) 
             : userOrComment)
-        .filter(u => u !== undefined) as Array<courseRole | User>;
+        .filter(u => u !== undefined) as Array<CourseRole | User>;
 }
 
 /** Add the mentions the user is allowed to make to the database */
-export async function createAllowedMentions(commentID: string, mentions: Array<courseRole | User>, currentUserID: string, courseID: string, client?: pgDB) {
+export async function createAllowedMentions(commentID: string, mentions: Array<CourseRole | User>, currentUserID: string, courseID: string, client?: pgDB) {
     const { permission: { permissions } } = await CourseRegistrationDB.getSingleEntry(courseID, currentUserID, { client });
     const dbMentions = await Promise.all(mentions.map(mention => {
         if (typeof(mention) === "string") {
             let allowed;
             switch (mention) {
-                case courseRole.teacher:
+                case CourseRole.teacher:
                     allowed = containsPermission(PermissionEnum.mentionAllTeachers, permissions);
                     break;
-                case courseRole.TA:
+                case CourseRole.TA:
                     allowed = containsPermission(PermissionEnum.mentionAllAssistants, permissions);
                     break;
-                case courseRole.student:
+                case CourseRole.student:
                     allowed = containsPermission(PermissionEnum.mentionAllStudents, permissions);
                     break;
                 default:

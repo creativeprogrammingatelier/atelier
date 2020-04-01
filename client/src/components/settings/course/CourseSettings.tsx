@@ -1,19 +1,19 @@
 import React, {Fragment, useEffect, useState} from "react";
-import {Frame} from "../../frame/Frame";
-import {Loading} from "../../general/loading/Loading";
-import {coursePermission, getCourse} from "../../../../helpers/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {Permission} from "../../../../../models/api/Permission";
+import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
 import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
-import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
+import {coursePermission, getCourse} from "../../../../helpers/APIHelper";
 import {DataList} from "../../data/DataList";
-import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
+import {Frame} from "../../frame/Frame";
+import {Loading} from "../../general/loading/Loading";
+import {Permissions} from "../../general/Permissions";
 import {UserSettingsRoles} from "../user/UserSettingsRoles";
-import {courseRole} from "../../../../../models/enums/courseRoleEnum";
+import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
-import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
+import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
 
 interface CourseOverviewProps {
 	match: {
@@ -31,6 +31,7 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 	const [reloadCourse, setReloadCourse] = useState(0);
 	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
 
+	// TODO: Only used as input to UserSettingsPermissions, probably change the structure for it
 	useEffect(() => {
 		coursePermission(courseId)
 		.then((permission: Permission) => {
@@ -47,38 +48,27 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
 				/>
 			</Jumbotron>
-			{
-				containsPermission(PermissionEnum.manageCourses, permissions) &&
-				<DataList header="Course settings">
+			<Permissions single={PermissionEnum.manageCourses}>
+				<DataList header="Course Settings">
 					<CourseSettingsGeneral courseID={courseId} handleResponse={courseUpdate}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
-				<DataList header="Course invites">
+			</Permissions>
+			<Permissions single={PermissionEnum.manageUserRegistration}>
+				<DataList header="Course Invites">
 					<CourseSettingsInvites courseID={courseId}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
-				<DataList header="Enroll a user">
+			</Permissions>
+			<Permissions single={PermissionEnum.manageUserRegistration}>
+				<DataList header="Enroll a User">
 					<CourseSettingsEnrollment courseID={courseId}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserRegistration, permissions) &&
-				<DataList header="Disenroll a user">
-					<CourseSettingsDisenrollment courseID={courseId}/>
-				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserRole, permissions) &&
+			</Permissions>
+			<Permissions single={PermissionEnum.manageUserRole}>
 				<DataList header="User Roles">
-					<UserSettingsRoles<typeof courseRole> roles={courseRole} courseID={courseId}/>
+					<UserSettingsRoles<typeof CourseRole> roles={CourseRole} courseID={courseId}/>
 				</DataList>
-			}
-			{
-				containsPermission(PermissionEnum.manageUserPermissionsManager, permissions) &&
+			</Permissions>
+			<Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
 				<DataList header="User Permissions">
 					<UserSettingsPermissions
 						courseID={courseId}
@@ -86,7 +76,7 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 						managePermissions={containsPermission(PermissionEnum.manageUserPermissionsManager, permissions)}
 					/>
 				</DataList>
-			}
+			</Permissions>
 		</Frame>
 	);
 }

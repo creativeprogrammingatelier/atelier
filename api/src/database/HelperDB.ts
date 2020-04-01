@@ -1,6 +1,7 @@
 import * as pg from "pg"
 import { NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResponseError } from "./DatabaseErrors";
 import { config } from "../helpers/ConfigurationHelper";
+import { Sorting } from "../../../models/enums/SortingEnum";
 
 /**
  * type on which queries can be run
@@ -12,7 +13,7 @@ export type pgDB = pg.Pool | pg.PoolClient
  */
 export const pool = new pg.Pool({
 	...config.database,
-	max: 1
+	...config.database.pool
 });
 
 pool.on("connect", () => console.log("Connected to the database."));
@@ -237,6 +238,7 @@ export function funmap3<A,a,B,b,C,c>(
 export interface DBTools {
 	limit?: number,
 	offset?: number,
+	sorting?: Sorting,
 	currentUserID?: string,
 	client?: pgDB
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {FiChevronsRight} from 'react-icons/all';
 import {Link} from 'react-router-dom';
 import { CacheState } from '../../helpers/api/Cache';
@@ -9,9 +9,18 @@ interface CourseButtonProperties {
 	location: string,
 	state?: CacheState
 }
+
+function OptionalLink({ to, children }: { to?: string, children: React.ReactNode }) {
+    if (to !== undefined) {
+        return <Link to={to} children={children} />;
+    } else {
+        return <Fragment children={children} />;
+    }
+}
+
 export function PanelButton({display, location, state = CacheState.Loaded}: CourseButtonProperties) {
 	return <div className="panel">
-		<Link to={location}>
+		<OptionalLink to={state === CacheState.Loaded ? location : undefined}>
 			<div className="panelText">
 				<h3>{display}</h3>
 			</div>
@@ -20,6 +29,6 @@ export function PanelButton({display, location, state = CacheState.Loaded}: Cour
 				 ? <FiChevronsRight size={32} strokeWidth={1.5}/>
                  : <LoadingIcon /> }
 			</div>
-		</Link>
+		</OptionalLink>
 	</div>
 }

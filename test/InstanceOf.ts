@@ -8,7 +8,8 @@ import { Submission } from "../models/api/Submission";
 import { User } from "../models/api/User";
 import { CourseUser } from "../models/api/CourseUser";
 import {CourseInvite} from "../models/api/Invite";
-import {courseRole} from "../models/enums/courseRoleEnum";
+import {CourseRole} from "../models/enums/CourseRoleEnum";
+import { SearchResult, SearchResultSnippet, SearchResultComment, SearchResultFile } from "../models/api/SearchResult";
 
 /**
  * Interface type checking, because this is not built in...
@@ -82,11 +83,6 @@ export function instanceOfPermission(object: any): object is Permission {
         );
 }
 
-// tslint:disable-next-line:no-any
-export function instanceOfSearch(object: any) {
-    return ('comments' in object
-        && 'users' in object);
-}
 
 // tslint:disable-next-line:no-any
 export function instanceOfSnippet(object: any): object is Snippet {
@@ -150,6 +146,12 @@ export function instanceOfCoursePartial(object: any) : object is CoursePartial {
         && instanceOfUser(object.creator)
     )
 }
+// tslint:disable-next-line: no-any
+export function instanceofCourse(object : any) : object is Course {
+    return 'currentUserPermission' in object
+    && instanceOfPermission(object.currentUserPermission)
+    && instanceOfCoursePartial(object)
+}
 
 // tslint:disable-next-line:no-any
 export function instanceOfCourseRegistration(object : any) : object is CourseUser {
@@ -179,4 +181,44 @@ export function instanceOfInvite(object : any) : object is CourseInvite {
         && 'joinRole' in object
         && typeof object.joinRole === 'string'
     )
+}
+
+// tslint:disable-next-line: no-any
+export function instanceOfSearchComment(object : any) : object is SearchResultComment{
+    return 'comment' in object
+        && instanceOfComment(object.comment)
+        && 'submission' in object
+        && instanceOfSubmission(object.submission)
+}
+// tslint:disable-next-line: no-any
+export function instanceOfSearchFile(object : any) : object is SearchResultFile{
+    return 'file' in object
+        && instanceOfFile(object.file)
+        && 'submission' in object
+        && instanceOfSubmission(object.submission)
+}
+
+// tslint:disable-next-line: no-any
+export function instanceOfSearchSnippet(object : any) : object is SearchResultSnippet{
+    return 'snippet' in object
+        && instanceOfSnippet(object.snippet)
+        && 'file' in object
+        && instanceOfFile(object.file)
+        && 'submission' in object
+        && instanceOfSubmission(object.submission)
+}
+// tslint:disable-next-line:no-any
+export function instanceOfSearch(object: any) : object is SearchResult {
+    return 'courses' in object
+        && object.courses.every(instanceofCourse)
+        && 'users' in object
+        && object.users.every(instanceOfUser)
+        && 'submissions' in object
+        && object.submissions.every(instanceOfSubmission)
+        && 'comments' in object
+        && object.comments.every(instanceOfSearchComment)
+        && 'files' in object
+        && object.files.every(instanceOfSearchFile)
+        && 'snippets' in object
+        && object.snippets.every(instanceOfSearchSnippet)
 }

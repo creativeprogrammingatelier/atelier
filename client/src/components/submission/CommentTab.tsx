@@ -2,9 +2,8 @@ import React from "react";
 
 import {CommentThread} from "../comment/CommentThread";
 import {File} from "../../../../models/api/File";
-import {Loading} from "../general/loading/Loading";
-import {CommentThread as APICommentThread} from "../../../../models/api/CommentThread";
-import {getFileComments} from "../../../helpers/APIHelper";
+import { useFileComments } from "../../helpers/api/APIHooks";
+import { Cached } from "../general/loading/Cached";
 
 interface CommentTabProperties {
     file: File,
@@ -13,13 +12,9 @@ interface CommentTabProperties {
 
 // TODO sort threads once new interface is implemented. Useful for switch between code and comment threads.
 export function CommentTab({file}: CommentTabProperties) {
+    const fileComments = useFileComments(file.references.submissionID, file.ID);
+
 	return <div className="contentTab">
-		<div className="m-3">
-			<Loading<APICommentThread[]>
-				loader={getFileComments}
-				params={[file.ID]}
-				component={threads => threads.map(thread => <CommentThread thread={thread}/>)}
-			/>
-		</div>
+        <Cached cache={fileComments}>{thread => <CommentThread thread={thread}/>}</Cached>
     </div>
 }

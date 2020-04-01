@@ -6,20 +6,18 @@ import {TabBar} from "../general/TabBar";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/api/File";
-import {Loading} from "../general/loading/Loading";
 import {FileNameHelper} from "../../helpers/FileNameHelper";
-import {getFile, getSubmission} from "../../../helpers/APIHelper";
 import {Button, Jumbotron} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {Submission} from "../../../../models/api/Submission";
 import {Children} from "../../helpers/ParentHelper";
 import {IconType} from "react-icons";
 import {Selection} from "../../../../models/api/Snippet";
-import {CommentThread} from "../../../../models/api/CommentThread";
 import {FileViewerCode} from "./fileviewers/CodeViewer";
 import {FileViewerImage} from "./fileviewers/ImageViewer";
 import {ViewTab} from "./ViewTab";
 import {FileViewerUnsupported} from "./fileviewers/UnsupportedViewer";
+import { useSubmission, useFile } from "../../helpers/api/APIHooks";
+import { Cached } from "../general/loading/Cached";
 
 interface FileOverviewProperties {
 	match: {
@@ -31,18 +29,16 @@ interface FileOverviewProperties {
 	}
 }
 export function FileOverview({match: {params: {submissionId, fileId, tab}}}: FileOverviewProperties) {
-	const [activeTab, setActiveTab] = useState(tab);
-	const [activeFileViewer, setActiveFileViewer] = useState(FileViewerUnsupported);
+    const submission = useSubmission(submissionId);
+    const file = useFile(submissionId, fileId);
+
+    const [activeFileViewer, setActiveFileViewer] = useState(FileViewerUnsupported);
 	const [activatedFileViewer, setActivatedFileViewer] = useState(false);
 	const submissionPath = "/submission/" + submissionId;
 	const filePath = submissionPath + "/" + fileId;
 
-	useEffect(() => {
-		setActiveTab(tab);
-	}, [tab]);
-
 	function renderTabContents(file: File) {
-		if (activeTab === "view") {
+		if (tab === "view") {
 			if (!activatedFileViewer) {
 				const fileViewer = getFileViewer(file);
 				if (fileViewer) {
@@ -51,57 +47,51 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 				setActivatedFileViewer(true);
 			}
 			return <ViewTab file={file} viewer={activeFileViewer.viewer}/>;
-		} else if (activeTab === "comments") {
+		} else if (tab === "comments") {
 			return <CommentTab file={file} submissionID={submissionId}/>;
-		} else if (activeTab === "share") {
+		} else if (tab === "share") {
 			return <ShareTab file={file} url={window.location.origin + filePath}/>;
 		}
 		return <div><h1>Tab not found!</h1></div>; // TODO: Better error
 	}
 
 	return (
-		<Loading<File>
-			loader={getFile}
-			params={[fileId]}
-			component={file =>
-				<Frame title={FileNameHelper.fromPath(file.name)} sidebar search={{course: file.references.courseID, submission: submissionId}}>
-					<Jumbotron>
-						<h1>{FileNameHelper.fromPath(file.name)}</h1>
-						<Loading<Submission>
-							loader={getSubmission}
-							params={[submissionId]}
-							component={submission => <p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>}
-						/>
-						{activeTab === "view" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
-					</Jumbotron>
-					{renderTabContents(file)}
-					<TabBar
-						tabs={[{
-							id: "view",
-							icon: activeFileViewer.icon,
-							text: activeFileViewer.name,
-							location: filePath + "/view"
-						}, {
-							id: "comments",
-							icon: FiMessageSquare,
-							text: "Comments",
-							location: filePath + "/comments"
-						}, {
-							id: "share",
-							icon: FiShare2,
-							text: "Share",
-							location: filePath + "/share"
-						}]}
-						active={activeTab}
-					/>
-				</Frame>
-			}
-			wrapper={children => <Frame title="File" sidebar search={{submission: submissionId}}>{children}</Frame>}
-		/>
+        <Cached cache={file} wrapper={children => <Frame title="File" sidebar search={{submission: submissionId}}>{children}</Frame>}>{
+            file =>
+                <Frame title={FileNameHelper.fromPath(file.name)} sidebar search={{course: file.references.courseID, submission: submissionId}}>
+                    <Jumbotron>
+                        <h1>{FileNameHelper.fromPath(file.name)}</h1>
+                        <Cached cache={submission}>{
+                            submission => <p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>
+                        }</Cached>
+                        {tab === "view" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
+                    </Jumbotron>
+                    {renderTabContents(file)}
+                    <TabBar
+                        tabs={[{
+                            id: "view",
+                            icon: activeFileViewer.icon,
+                            text: activeFileViewer.name,
+                            location: filePath + "/view"
+                        }, {
+                            id: "comments",
+                            icon: FiMessageSquare,
+                            text: "Comments",
+                            location: filePath + "/comments"
+                        }, {
+                            id: "share",
+                            icon: FiShare2,
+                            text: "Share",
+                            location: filePath + "/share"
+                        }]}
+                        active={tab}
+                    />
+                </Frame>
+        }</Cached>
 	);
 }
 
-export type FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => Promise<CommentThread>;
+export type FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => Promise<boolean>;
 export interface FileViewerProperties {
 	file: File,
 	sendComment: FileCommentHandler

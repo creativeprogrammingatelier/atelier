@@ -1,17 +1,17 @@
 import { DBTools, checkAvailable, toDec, noNull } from "../../api/src/database/HelperDB";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { Mention as APIMention } from "../api/Mention";
-import { courseRole } from "../enums/courseRoleEnum";
+import { CourseRole } from "../enums/CourseRoleEnum";
 import { checkEnum, getEnum } from "../enums/enumHelper";
 import { InvalidDatabaseResponseError } from "../../api/src/database/DatabaseErrors";
 import { userToAPI, DBUser } from "./User";
 import { User } from "../api/User";
-import { globalRole } from "../enums/globalRoleEnum";
+import { GlobalRole } from "../enums/GlobalRoleEnum";
 
 
 export interface Mention extends DBTools {
 	mentionID? : string,
-	mentionGroup?: courseRole | null,
+	mentionGroup?: CourseRole | null,
 	
 	userID? : string | null,
 	userName? : string | null,
@@ -74,7 +74,7 @@ export function convertMention(db : DBMention) : Mention{
 	}
 	return {
 		mentionID: UUIDHelper.fromUUID(db.mentionid),
-		mentionGroup: db.usergroup == null? undefined : getEnum(courseRole, db.usergroup),
+		mentionGroup: db.usergroup == null? undefined : getEnum(CourseRole, db.usergroup),
 		userID: UUIDHelper.fromUUID(db.userid),
 		commentID: UUIDHelper.fromUUID(db.commentid),
 	}
@@ -88,7 +88,7 @@ export function mentionToAPI(db : DBMention) : APIMention{
 		throw new InvalidDatabaseResponseError('a mention should have either a user, or a group as target.')
 	}
 	const isUser = db.userid !== undefined && db.userid !== null
-	if (!isUser) checkEnum(courseRole, db.usergroup!)
+	if (!isUser) checkEnum(CourseRole, db.usergroup!)
 	let user : User | undefined = undefined;
 	if (isUser){
 		user = {
@@ -96,14 +96,14 @@ export function mentionToAPI(db : DBMention) : APIMention{
 			name: noNull(db.username),
 			email: noNull(db.email),
 			permission: {
-				globalRole: getEnum(globalRole, noNull(db.globalrole)),
-				courseRole: getEnum(courseRole, noNull(db.courserole)),
+				globalRole: getEnum(GlobalRole, noNull(db.globalrole)),
+				courseRole: getEnum(CourseRole, noNull(db.courserole)),
 				permissions: toDec(noNull(db.permission)),
 			}
 		}
 	}
 	return {
-		mentionID: UUIDHelper.fromUUID(db.mentionid),
+		ID: UUIDHelper.fromUUID(db.mentionid),
 		mentionGroup: db.usergroup,
         user,
         comment: {
@@ -113,7 +113,7 @@ export function mentionToAPI(db : DBMention) : APIMention{
                 name: db.cmuusername,
                 email: db.cmuemail,
                 permission: {
-                    globalRole: getEnum(globalRole, db.cmuglobalrole),
+                    globalRole: getEnum(GlobalRole, db.cmuglobalrole),
                     permissions: toDec(db.cmupermission)
                 }
             },

@@ -160,3 +160,9 @@ export function containsPermission(permission: PermissionEnum, permissions: numb
     const permissionBit = BigInt(1) << BigInt(permission);
     return (permissionBit & permissionsBigInt) > BigInt(0);
 }
+export function containsPermissionAny(permission: PermissionEnum[], permissions: number) {
+    return permission.some((element) => containsPermission(element, permissions));
+}
+export function containsPermissionAll(permission: PermissionEnum[], permissions: number) {
+    return permission.every((element) => containsPermission(element, permissions));
+}

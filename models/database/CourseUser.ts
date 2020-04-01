@@ -2,8 +2,8 @@
 import { DBTools, checkAvailable, toDec } from "../../api/src/database/HelperDB";
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { getEnum } from "../enums/enumHelper";
-import { courseRole } from "../enums/courseRoleEnum";
-import { globalRole } from "../enums/globalRoleEnum";
+import { CourseRole } from "../enums/CourseRoleEnum";
+import { GlobalRole } from "../enums/GlobalRoleEnum";
 import {CourseUser as APICourseUser } from '../api/CourseUser'
 import { User } from "../api/User";
 export {APICourseUser}
@@ -14,8 +14,8 @@ export interface CourseUserOutput{
 	userName: string,
 	email: string,
 
-	globalRole: globalRole,
-	courseRole: courseRole,
+	globalRole: GlobalRole,
+	courseRole: CourseRole,
 	permission: number,
 }
 export interface CourseUser extends Partial<CourseUserOutput>, DBTools {
@@ -34,6 +34,7 @@ export interface DBCourseUser {
 	permission: string,
 }
 
+
 export function convertCourseUser(db : DBCourseUser) : CourseUserOutput{
 	checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"],db)
 	return {
@@ -41,8 +42,8 @@ export function convertCourseUser(db : DBCourseUser) : CourseUserOutput{
 		courseID: UUIDHelper.fromUUID(db.courseid),
 		userName: db.username,
 		email: db.email,
-		globalRole: getEnum(globalRole, db.globalrole),
-		courseRole: getEnum(courseRole, db.courserole),
+		globalRole: getEnum(GlobalRole, db.globalrole),
+		courseRole: getEnum(CourseRole, db.courserole),
 		permission: toDec(db.permission)
 	}
 }
@@ -56,8 +57,8 @@ export function CourseUserToAPI(db : DBCourseUser) : APICourseUser{
 		userName: db.username,
 		email: db.email,
 		permission: {
-			globalRole: getEnum(globalRole, db.globalrole),
-			courseRole: getEnum(courseRole, db.courserole),
+			globalRole: getEnum(GlobalRole, db.globalrole),
+			courseRole: getEnum(CourseRole, db.courserole),
 			permissions: toDec(db.permission)
 		}
 	}

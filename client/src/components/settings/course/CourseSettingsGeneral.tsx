@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {CoursePartial} from "../../../../../models/api/Course";
-import {courseState} from "../../../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../../../models/enums/courseStateEnum";
 import {Button, Form} from "react-bootstrap";
 import {updateCourse} from "../../../../helpers/APIHelper";
 import {Label} from "../../general/Label";
@@ -12,7 +12,7 @@ interface CourseSettingsGeneralProperties {
 
 export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettingsGeneralProperties) {
 	const [name, setName] = useState("");
-	const [state, setState] = useState(courseState.open);
+	const [state, setState] = useState(CourseState.open);
 
 	async function handleUpdate() {
 		try {
@@ -21,7 +21,7 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 				state
 			});
 			setName(course.name);
-			setState(course.state as courseState);
+			setState(course.state as CourseState);
 			handleResponse(course);
 		} catch (err) {
 			// TODO: handle error
@@ -41,7 +41,7 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 		</Form.Label>
 		<Form.Label className="w-100">
 			<Label>Course state</Label>
-			<Form.Control as="select" onChange={event => setState((event.target as HTMLInputElement).value as courseState)}>
+			<Form.Control as="select" onChange={event => setState((event.target as HTMLInputElement).value as CourseState)}>
 				<option disabled selected>Select a state for this course</option>
 				<option value="open">Open</option>
 				<option value="hidden">Hidden</option>
