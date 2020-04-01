@@ -99,7 +99,7 @@ export interface FileViewerProperties {
 export interface FileViewer {
 	name: string,
 	icon: IconType,
-	viewer: (properties: FileViewerProperties) => Children,
+	viewer: (properties: FileViewerProperties) => JSX.Element,
 	acceptsType: (type: string) => boolean,
 	acceptsFile: (file: File) => boolean
 }
