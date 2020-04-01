@@ -15,9 +15,10 @@ export interface FeedbackProperties extends HTMLProperties {
 export function Feedback({show, close, timeout, variant, className, id, key, children}: FeedbackProperties) {
 	useEffect(() => {
 		if (!(show === false) && close && timeout) {
-			setTimeout(() => {
+			const handle = setTimeout(() => {
 				close(false);
-			}, timeout);
+            }, timeout);
+            return () => clearTimeout(handle);
 		}
 	}, [show, children]);
 
