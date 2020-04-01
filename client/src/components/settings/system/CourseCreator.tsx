@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Button, Form} from "react-bootstrap";
 
 import {Course} from "../../../../../models/api/Course";
-import {courseState} from "../../../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../../../models/enums/courseStateEnum";
 
 import {useCourses} from "../../../helpers/api/APIHooks";
 
@@ -24,7 +24,7 @@ export function CourseCreator({handleResponse}: CourseCreatorProperties) {
 		try {
 			await createCourse({
 				name: courseName,
-				state: courseState.open
+				state: CourseState.open
 			});
 			setCourseName("");
 			if (handleResponse !== undefined) {

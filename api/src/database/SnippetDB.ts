@@ -5,6 +5,7 @@ import { snippetsView } from "./ViewsDB";
 import { fileToAPI } from "../../../models/database/File";
 import { submissionToAPI } from "../../../models/database/Submission";
 import { SearchResultSnippet } from "../../../models/api/SearchResult";
+import { Sorting } from "../../../models/enums/SortingEnum";
 
 /**
  * 
@@ -95,6 +96,7 @@ export class SnippetDB {
 
 			limit = undefined,
 			offset = undefined,
+			sorting = Sorting.datetime,
 			currentUserID = undefined,
 			client = pool,
 			includeNulls = false //exclude them normally
@@ -110,10 +112,10 @@ export class SnippetDB {
 			searchAfter = searchify(contextAfter)
 		return client.query(`
 		SELECT * 
-		FROM "SnippetsView" as s, "FilesView" as f, "SubmissionsView" as su, viewableSubmissions($13, $5) as opts
+		FROM "SnippetsView" as s, "FilesView" as f, "SubmissionsView" as sv, viewableSubmissions($13, $5) as opts
 		WHERE
 			s.fileid = f.fileid
-		AND s.submissionID = su.submissionID
+		AND s.submissionID = sv.submissionID
 		AND ($1::uuid IS NULL OR s.snippetID=$1)
 		AND ($2::uuid IS NULL OR s.fileID=$2)
 		AND ($3::uuid IS NULL OR s.commentThreadID=$3)
@@ -128,7 +130,7 @@ export class SnippetDB {
 		AND ($12::text IS NULL OR s.contextAfter ILIKE $12)
 
 		AND s.submissionID = opts.submissionID
-		ORDER BY s.snippetID
+		ORDER BY ${sorting === Sorting.datetime?`sv.date DESC` : 's.body'}, s.snippetID
 		LIMIT $14
 		OFFSET $15
 		`, [snippetid, fileid, commentthreadid, submissionid, courseid, 

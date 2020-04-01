@@ -7,13 +7,13 @@ import {CourseDB} from "../database/CourseDB";
 import {CoursePartial} from "../../../models/api/Course";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {capture} from "../helpers/ErrorHelper";
-import {courseState} from "../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../models/enums/CourseStateEnum";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {courseRole} from "../../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {transaction} from "../database/HelperDB";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
-import {PermissionEnum} from "../../../models/enums/permissionEnum";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {filterCourse} from "../helpers/APIFilterHelper";
 import {CourseUser} from "../../../models/api/CourseUser";
 import {CourseInviteDB} from "../database/CourseInviteDB";
@@ -83,7 +83,7 @@ courseRouter.get("/:courseID", capture(async(request: Request, response: Respons
  */
 courseRouter.post('/', capture(async(request : Request, response : Response) => {
 	const name : string = request.body.name;
-	const state : courseState = request.body.state;
+	const state : CourseState = request.body.state;
 	const currentUserID : string = await getCurrentUserID(request);
 
 	// Requires addCourses permission
@@ -100,7 +100,7 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 		await CourseRegistrationDB.addEntry({
 			courseID : course.ID,
 			userID : currentUserID,
-			courseRole : courseRole.student,
+			courseRole : CourseRole.student,
 			client
 		});
 
@@ -121,7 +121,7 @@ courseRouter.put('/:courseID', capture(async(request : Request, response : Respo
 	const courseID : string = request.params.courseID;
 	const currentUserID : string = await getCurrentUserID(request);
 	const name : string | undefined = request.body.name;
-	const state : courseState | undefined = request.body.state as courseState;
+	const state : CourseState | undefined = request.body.state as CourseState;
 
 	// Require manageCourses permission
 	await requirePermission(currentUserID, PermissionEnum.manageCourses, courseID);
@@ -158,7 +158,7 @@ courseRouter.put('/:courseID/user/:userID', capture(async(request : Request, res
 		const courseRegistration : CourseUser = await CourseRegistrationDB.addEntry({
 			courseID,
 			userID,
-			courseRole : courseRole.student
+			courseRole : CourseRole.student
 		});
 		response.status(200).send(courseRegistration);
 	}

@@ -3,7 +3,7 @@ import {createFileCommentThread} from "../../../helpers/APIHelper";
 import {File} from "../../../../models/api/File";
 import {Children} from "../../helpers/ParentHelper";
 import {Selection} from "../../../../models/api/Snippet";
-import {threadState} from "../../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../../models/enums/threadStateEnum";
 import {FileCommentHandler, FileViewerProperties} from "./FileOverview";
 
 interface ViewTabProperties {
@@ -16,7 +16,7 @@ export function ViewTab({file, viewer}: ViewTabProperties) {
 			submissionID: file.references.submissionID,
 			comment,
 			snippet: selection,
-			visibility: restricted ? threadState.private : threadState.public
+			visibility: restricted ? ThreadState.private : ThreadState.public
 		});
 	};
 	

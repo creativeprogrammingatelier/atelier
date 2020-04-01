@@ -1,13 +1,13 @@
 import express from 'express';
 import { capture, captureNext } from '../helpers/ErrorHelper';
 import { UserDB } from '../database/UserDB';
-import { globalRole } from '../../../models/enums/globalRoleEnum';
+import { GlobalRole } from '../../../models/enums/GlobalRoleEnum';
 import { PluginsDB } from '../database/PluginsDB';
 import { transaction, one, map } from '../database/HelperDB';
 import { Plugin } from '../../../models/api/Plugin';
 import { requirePermission } from '../helpers/PermissionHelper';
 import { getCurrentUserID } from '../helpers/AuthenticationHelper';
-import { PermissionEnum } from '../../../models/enums/permissionEnum';
+import { PermissionEnum } from '../../../models/enums/PermissionEnum';
 
 export const pluginRouter = express.Router()
 
@@ -39,7 +39,7 @@ pluginRouter.post('/', capture(async (request, response) => {
         const user = await UserDB.createUser({
             userName,
             email, 
-            globalRole: globalRole.plugin,
+            globalRole: GlobalRole.plugin,
             password: UserDB.invalidPassword(),
             client
         });
@@ -114,7 +114,7 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
 pluginRouter.delete('/:userID', capture(async (request, response) => {
     const user = await UserDB.getUserByID(request.params.userID);
 
-    if (user.permission.globalRole === globalRole.plugin) {
+    if (user.permission.globalRole === GlobalRole.plugin) {
         await UserDB.deleteUser(request.params.userID);
     }
 

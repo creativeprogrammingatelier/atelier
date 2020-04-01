@@ -1,5 +1,5 @@
 import { adminSetPermissions, getCommentThread, getCommentThreadByFile, getCommentThreadBySubmission, getCommentThreadBySubmissionRecent, adminRegisterCourse, adminUnregisterCourse, setCommentThreadPrivate, setCommentThreadPublic } from "../APIRequestHelper";
-import { threadState } from "../../../models/enums/threadStateEnum";
+import { ThreadState } from "../../../models/enums/ThreadStateEnum";
 import { expect } from "chai";
 import { assert } from "console";
 import { instanceOfCommentThread } from "../../InstanceOf";
@@ -31,7 +31,7 @@ export function commentThreadTest(){
 	 * - user should have permission to manage the comment thread
 	 */
     describe("Comment threads", () => {
-        async function commentThreadsPermissions(threadStates = [threadState.public, threadState.private]) {
+        async function commentThreadsPermissions(threadStates = [ThreadState.public, ThreadState.private]) {
             // User can access a specific comment thread with permission
             let response = await getCommentThread();
             expect(response).to.have.status(200);

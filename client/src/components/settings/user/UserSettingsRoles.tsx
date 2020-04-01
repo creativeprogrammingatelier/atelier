@@ -1,7 +1,7 @@
 import React, {Fragment, useState} from "react";
 import {Button, Form} from "react-bootstrap";
-import {globalRole} from "../../../../../models/enums/globalRoleEnum";
-import {courseRole} from "../../../../../models/enums/courseRoleEnum";
+import {GlobalRole} from "../../../../../models/enums/globalRoleEnum";
+import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
 import {User} from "../../../../../models/api/User";
 import {UserSearch} from "./UserSearch";
 import {updateCourseRole, updateGlobalRole} from "../../../../helpers/APIHelper";
@@ -21,7 +21,7 @@ export function UserSettingsRoles<T>({roles, courseID}: UserSettingsRolesPropert
 	const handleUpdate = () => {
 	    if (user && role) {
             if (courseID) {
-                updateCourseRole(user.ID, courseID, role as unknown as courseRole)
+                updateCourseRole(user.ID, courseID, role as unknown as CourseRole)
                 .then((user: CourseUser) => {
                     console.log("Updated role in course");
                     console.log(user);
@@ -30,7 +30,7 @@ export function UserSettingsRoles<T>({roles, courseID}: UserSettingsRolesPropert
                     // TODO: Visual feedback
                 });
             } else {
-                updateGlobalRole(user.ID, role as unknown as globalRole)
+                updateGlobalRole(user.ID, role as unknown as GlobalRole)
                 .then((user: User) => {
                     console.log("Updated global role");
                     console.log(user);

@@ -23,12 +23,12 @@ const uuid0 = `'00000000-0000-0000-0000-000000000000'`,
 export function databaseSamples(client : pgDB = pool) : Promise<void> {
      const query = `
      INSERT INTO "Users" VALUES
-          (DEFAULT, NULL, 'normal', 'Cas@Caaas', 'admin', ${permissionType}, '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
+          (${uuid5}, NULL, 'normal', 'Cas@Caaas', 'admin', ${permissionType}, '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
           (${uuid0}, 'samling_admin','Cs', 'admin@Cas', 'admin', ${permissionType}, ''),
-          (DEFAULT, 'samling_user','Cas', 'user@Cas', 'user', ${permissionType}, ''),
-          (DEFAULT, 'samling_teacher','Caas', 'teacher@Cas', 'user', ${permissionType}, ''),
-          (DEFAULT, 'samling_TA','Caaas', 'TA@Cas', 'user', ${permissionType}, ''),
-          (DEFAULT, NULL, 'PMD', 'pmd@plugin', 'plugin', ${permissionType}, ''),
+          (${uuid1}, 'samling_user','Cas', 'user@Cas', 'user', ${permissionType}, ''),
+          (${uuid2}, 'samling_teacher','Caas', 'teacher@Cas', 'user', ${permissionType}, ''),
+          (${uuid3}, 'samling_TA','Caaas', 'TA@Cas', 'user', ${permissionType}, ''),
+          (${uuid4}, NULL, 'PMD', 'pmd@plugin', 'plugin', ${permissionType}, ''),
           (${uuid6}, NULL, 'test user', 'test@test', 'user', ${permissionType}, '');
 
      INSERT INTO "Plugins" VALUES
@@ -51,12 +51,12 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
           );
 	
      INSERT INTO "Courses" VALUES 
-          (${uuid0}, 'Pearls of Computer Science', DEFAULT, (SELECT userID from "Users" LIMIT 1)),
-		(${uuid1}, 'Art, Impact and Technology', DEFAULT, (SELECT userID from "Users" LIMIT 1));
+          (${uuid0}, 'Pearls of Computer Science', DEFAULT, ${uuid0}),
+		(${uuid1}, 'Art, Impact and Technology', DEFAULT, ${uuid0});
 	
 	
      INSERT INTO "CourseRegistration" VALUES
-          ((SELECT courseID from "Courses" LIMIT 1), (SELECT userID from "Users" LIMIT 1), 'student', 3${permissionType}),
+          (${uuid1}, ${uuid5}, 'student', 3${permissionType}),
           (${uuid0}, ${uuid0}, 'student', ${permissionType}),
           (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', ${permissionType}),
           (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', ${permissionType}),
@@ -72,7 +72,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
 		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'Planets', DEFAULT, DEFAULT);
 		
      INSERT INTO "Files" VALUES
-	     (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), 'MyFirstSubmission/MyFirstSubmission', 'processing'),
+	     (${uuid0}, ${uuid0}, 'MyFirstSubmission/MyFirstSubmission', 'processing'),
 	     (${uuid1}, ${uuid1}, 'Planets/Perlin.pde', 'text/x-java'),
 	     (${uuid2}, ${uuid1}, 'Planets/Planets.pde', 'text/x-java'),
 	     (${uuid3}, ${uuid1}, 'Planets/data/mercury.jpg', 'image/jpg'),
@@ -86,11 +86,6 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
                'this is a snippet of a file',
                'head context',
                'footer context'
-          ),
-          ( -- a null snippet
-               'ffffffff-ffff-ffff-ffff-ffffffffffff',
-               -1, -1, -1, -1,
-               '','',''
           ),
 	     (${uuid1}, 
 	          29, 58, 2, 4, 
@@ -166,26 +161,31 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
           ${uuid4},
           -1, -1, -1, -1,
           '','',''
+     ),
+     ( -- another null snippet
+          ${uuid5},
+          -1, -1, -1, -1,
+          '','',''
      );
 	     
      INSERT INTO "CommentThread" VALUES
-          (${uuid0}, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), ${uuid0}, DEFAULT),
-          (DEFAULT, (SELECT submissionID from "Submissions" LIMIT 1), (SELECT fileID from "Files" LIMIT 1), 'ffffffff-ffff-ffff-ffff-ffffffffffff', DEFAULT),
+          (${uuid0}, ${uuid0}, ${uuid0}, ${uuid0}, DEFAULT),
 		(${uuid1}, ${uuid1}, ${uuid2}, ${uuid1}, DEFAULT),
 		(${uuid2}, ${uuid1}, ${uuid2}, ${uuid2}, DEFAULT),
 		(${uuid3}, ${uuid1}, ${uuid1}, ${uuid3}, DEFAULT),
-		(${uuid4}, ${uuid1}, (SELECT fileid FROM "Files" WHERE submissionid=${uuid1} AND type='undefined/undefined'), ${uuid4}, DEFAULT);
+          (${uuid4}, ${uuid1}, (SELECT fileid FROM "Files" WHERE submissionid=${uuid1} AND type='undefined/undefined'), ${uuid4}, DEFAULT),
+          (${uuid5}, ${uuid1}, ${uuid6}, ${uuid5}, DEFAULT);
 	
      INSERT INTO "Comments" VALUES
-          (${uuid0}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
-          (${uuid5}, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a multi
+          (${uuid0}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
+          (${uuid6}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is a multi
 line comment, mentioning 
 all @teachers in one go!'),
-          (DEFAULT, (SELECT commentThreadID from "CommentThread" LIMIT 1), (SELECT userID from "Users" LIMIT 1), DEFAULT, DEFAULT, 'This is a comment about nothing at all..'),
 		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
 		(${uuid2}, ${uuid2}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Bad names'),
 		(${uuid3}, ${uuid3}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'All these names are totally incomprehensible to anyone, horrible to do this!'),
-		(${uuid4}, ${uuid4}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), DEFAULT, DEFAULT, 'Youre missing some planets, Pluto example');
+          (${uuid4}, ${uuid4}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), DEFAULT, DEFAULT, 'Youre missing some planets, Pluto example'),
+          (${uuid5}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is a comment about nothing at all..');
      
           INSERT INTO "Mentions" VALUES 
                (${uuid0}, ${uuid0}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'), null),

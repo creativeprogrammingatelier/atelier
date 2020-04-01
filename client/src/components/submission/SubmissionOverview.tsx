@@ -7,7 +7,7 @@ import {Course} from "../../../../models/api/Course";
 import {CommentThread} from "../../../../models/api/CommentThread";
 import {File} from "../../../../models/api/File";
 import {Submission} from "../../../../models/api/Submission";
-import {threadState} from "../../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../../models/enums/threadStateEnum";
 
 import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
 import {JsonFetchError} from "../../../helpers/FetchHelper";
@@ -40,7 +40,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 			await createSubmissionCommentThread(submissionId, {
 				submissionID: submissionId,
 				comment,
-				visibility: restricted ? threadState.private : threadState.public
+				visibility: restricted ? ThreadState.private : ThreadState.public
 			});
 			setCreatingComment(false);
 			return true;

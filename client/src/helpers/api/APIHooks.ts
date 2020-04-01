@@ -1,11 +1,11 @@
 import { CacheState, CacheInterface } from './Cache';
 import { Course } from '../../../../models/api/Course';
 import * as API from '../../../helpers/APIHelper';
-import { courseState } from '../../../../models/enums/courseStateEnum';
+import { CourseState } from '../../../../models/enums/courseStateEnum';
 import { randomBytes } from 'crypto';
 import { User } from '../../../../models/api/User';
 import { Permission } from '../../../../models/api/Permission';
-import { globalRole } from '../../../../models/enums/globalRoleEnum';
+import { GlobalRole } from '../../../../models/enums/globalRoleEnum';
 import { Messaging, useMessaging } from '../../components/feedback/MessagingProvider';
 import { useCache } from '../../components/general/loading/CacheProvider';
 
@@ -38,7 +38,7 @@ export function useCourses() {
     const messages = useMessaging();
 
     const refreshCourses = () => refresh(API.getCourses(), cache, messages);
-    const createCourse = ({ name, state }: { name: string, state: courseState }) => 
+    const createCourse = ({ name, state }: { name: string, state: CourseState }) => 
         create(
             API.createCourse({ name, state }), 
             { ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission }, 
@@ -62,7 +62,7 @@ export function usePermission() {
     if (cache.collection.state === CacheState.Uninitialized) refreshPermission();
 
     return {
-        permission: cache.collection.items[0] || { item: { permissions: 0, globalRole: globalRole.unregistered }, state: cache.collection.state },
+        permission: cache.collection.items[0] || { item: { permissions: 0, globalRole: GlobalRole.unregistered }, state: cache.collection.state },
         refreshPermission
     }
 }

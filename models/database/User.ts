@@ -1,7 +1,7 @@
 import { UUIDHelper, ID64, UUID } from "../../api/src/helpers/UUIDHelper";
 import { User as APIUser } from "../api/User";
 import { pgDB, DBTools, checkAvailable, toDec } from "../../api/src/database/HelperDB";
-import { globalRole } from "../enums/globalRoleEnum";
+import { GlobalRole } from "../enums/GlobalRoleEnum";
 import { getEnum } from "../enums/enumHelper";
 
 export interface User extends DBTools {
@@ -9,7 +9,7 @@ export interface User extends DBTools {
 	samlID?: string,
 	userName?: string,
 	email?: string,
-	globalRole?: globalRole,
+	globalRole?: GlobalRole,
 	permission?: number,
 	password?: string,
 
@@ -36,7 +36,7 @@ export function convertUser(db : DBUser) : User{
 		samlID:db.samlid,
 		userName:db.username,
 		email:db.email,
-		globalRole:getEnum(globalRole, db.globalrole),
+		globalRole:getEnum(GlobalRole, db.globalrole),
 		permission:toDec(db.permission)
 	}
 }
@@ -48,7 +48,7 @@ export function userToAPI(db : DBAPIUser) : APIUser {
 		name: db.username,
 		email: db.email,
 		permission: { 
-			globalRole:getEnum(globalRole, db.globalrole),
+			globalRole:getEnum(GlobalRole, db.globalrole),
 			permissions:toDec(db.permission)
 		}
 	}

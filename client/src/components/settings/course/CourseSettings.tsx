@@ -2,7 +2,7 @@ import React, {Fragment, useEffect, useState} from "react";
 import {Jumbotron} from "react-bootstrap";
 import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {Permission} from "../../../../../models/api/Permission";
-import {courseRole} from "../../../../../models/enums/courseRoleEnum";
+import {CourseRole} from "../../../../../models/enums/courseRoleEnum";
 import {containsPermission, PermissionEnum} from "../../../../../models/enums/permissionEnum";
 import {coursePermission, getCourse} from "../../../../helpers/APIHelper";
 import {DataList} from "../../data/DataList";
@@ -40,7 +40,7 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 	}, []);
 
 	// Roles to which you can set a user (excludes unregistered)
-	const courseRoles = [courseRole.student, courseRole.teacher, courseRole.TA, courseRole.moduleCoordinator, courseRole.plugin];
+	const courseRoles = [CourseRole.student, CourseRole.teacher, CourseRole.TA, CourseRole.moduleCoordinator, CourseRole.plugin];
 
 	return (
 		<Frame title="Course" sidebar search={{course: courseId}}>
@@ -68,7 +68,7 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 			</Permissions>
 			<Permissions required={PermissionEnum.manageUserRole}>
 				<DataList header="User Roles">
-					<UserSettingsRoles<typeof courseRole> roles={courseRole} courseID={courseId}/>
+					<UserSettingsRoles<typeof CourseRole> roles={CourseRole} courseID={courseId}/>
 				</DataList>
 			</Permissions>
 			<Permissions required={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>

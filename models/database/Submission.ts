@@ -1,4 +1,4 @@
-import {submissionStatus} from '../enums/submissionStatusEnum'
+import {SubmissionStatus} from '../enums/SubmissionStatusEnum'
 import { UUIDHelper } from '../../api/src/helpers/UUIDHelper'
 import { Submission as APISubmission} from '../api/Submission'
 import { DBAPIUser, userToAPI } from './User'
@@ -11,7 +11,7 @@ export interface Submission extends DBTools{
 	userID?: string;
 	title?: string;
 	date?: Date;
-	state?: submissionStatus,
+	state?: SubmissionStatus,
 	//requires extra database call
 	addFiles?: boolean,
 }
@@ -37,7 +37,7 @@ export function convertSubmission(db : DBSubmission) : Submission {
 		userID: UUIDHelper.fromUUID(db.userid),
 		title: db.title,
 		date: db.date,
-		state: getEnum(submissionStatus, db.state),
+		state: getEnum(SubmissionStatus, db.state),
 	}
 }
 export function submissionToAPI(db : DBAPISubmission) : APISubmission {
@@ -48,7 +48,7 @@ export function submissionToAPI(db : DBAPISubmission) : APISubmission {
 		name: db.title,
 		user: userToAPI(db),
 		date: db.date.toISOString(),
-		state: getEnum(submissionStatus, db.state),
+		state: getEnum(SubmissionStatus, db.state),
 		files: [],
 		references:{
 			courseID: UUIDHelper.fromUUID(db.courseid)

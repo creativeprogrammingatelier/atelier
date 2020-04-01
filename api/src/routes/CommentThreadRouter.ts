@@ -3,7 +3,7 @@
  */
 
 import express, {Request} from "express";
-import {threadState} from "../../../models/enums/threadStateEnum";
+import {ThreadState} from "../../../models/enums/ThreadStateEnum";
 import {ThreadDB} from "../database/ThreadDB";
 import {SnippetDB} from "../database/SnippetDB";
 
@@ -116,7 +116,7 @@ commentThreadRouter.get("/submission/:submissionID/recent", capture(async(reques
  */
 commentThreadRouter.put('/:commentThreadID', capture(async (request, response) => {
     const commentThreadID : string = request.params.commentThreadID;
-    const visibilityState : threadState | undefined = request.body.visibility as threadState;
+    const visibilityState : ThreadState | undefined = request.body.visibility as ThreadState;
 
     const oldCommentThread : CommentThread = await ThreadDB.getThreadByID(commentThreadID);
     const courseID : string = oldCommentThread.references.courseID;
@@ -149,7 +149,7 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
         submissionID,
         fileID,
         snippetID,
-        visibilityState : request.body.visibility ? request.body.visibility : threadState.public,
+        visibilityState : request.body.visibility ? request.body.visibility : ThreadState.public,
         client
     });
 

@@ -1,6 +1,6 @@
 import { EnumError } from "./enumHelper";
 
-export enum courseState {
+export enum CourseState {
 	hidden = "hidden",
 	open = "open",
 	finished = "finished"

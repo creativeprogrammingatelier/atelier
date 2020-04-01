@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Button, Form} from "react-bootstrap";
 import {CoursePartial} from "../../../../../models/api/Course";
-import {courseState} from "../../../../../models/enums/courseStateEnum";
+import {CourseState} from "../../../../../models/enums/courseStateEnum";
 import {updateCourse} from "../../../../helpers/APIHelper";
 import {FeedbackContent} from "../../feedback/Feedback";
 import {FeedbackError} from "../../feedback/FeedbackError";
@@ -14,7 +14,7 @@ interface CourseSettingsGeneralProperties {
 
 export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettingsGeneralProperties) {
 	const [name, setName] = useState("");
-	const [state, setState] = useState(courseState.open);
+	const [state, setState] = useState(CourseState.open);
 	const [error, setError] = useState(false as FeedbackContent);
 
 	async function handleUpdate() {
@@ -24,7 +24,7 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 				state
 			});
 			setName(course.name);
-			setState(course.state as courseState);
+			setState(course.state as CourseState);
 			handleResponse(course);
 		} catch (error) {
 			setError(`Failed to update course: ${error}`);
@@ -41,7 +41,7 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 			/>
 		</LabeledInput>
 		<LabeledInput label="Course state">
-			<Form.Control as="select" onChange={event => setState((event.target as HTMLInputElement).value as courseState)}>
+			<Form.Control as="select" onChange={event => setState((event.target as HTMLInputElement).value as CourseState)}>
 				<option disabled selected>Select a state for this course</option>
 				<option value="open">Open</option>
 				<option value="hidden">Hidden</option>

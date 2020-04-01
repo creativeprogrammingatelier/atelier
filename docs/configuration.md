@@ -95,6 +95,22 @@ Atelier requires access to a PostgreSQL database with its table structure set up
 - `password`: the password of the user connecting to the database
 - `database`: the name of the database Atelier should connect to
 
+### Connection pool
+
+Atelier uses a connection pool for the database, which can also be configured using the optional `pool` field on the database object, with three optional fields:
+
+```json
+"database": {
+    "pool": {
+        "max": 40,
+        "connectionTimeoutMillis": 10000,
+        "idleTimeoutMillis": 10000
+    }
+}
+```
+
+To learn more about these settings, please refer to the [node-postgres documentation](https://node-postgres.com/api/pool). Please note that for development environments, it is recommended to set the `max` field to allow 1 concurrent connection to the database. This way, it's easy to spot when you forget to release a client or try to use multiple clients within a transaction. On production servers this value should be set to scale with the number of concurrent users and the capacity of the database server.
+
 ## Using environment variables or files
 
 Atelier can also read configuration values from your environment variables or files on disk. This can be useful when the values are also needed by other processes, for example in the case of a database password. 

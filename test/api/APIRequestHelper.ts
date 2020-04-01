@@ -3,9 +3,9 @@ import chai from "chai";
 import {app} from "../../api/src/app";
 import {Permissions} from "../../models/api/Permission";
 import chaiHttp from "chai-http";
-import {courseState} from "../../models/enums/courseStateEnum";
-import {courseRole} from "../../models/enums/courseRoleEnum";
-import {globalRole} from "../../models/enums/globalRoleEnum";
+import {CourseState} from "../../models/enums/CourseStateEnum";
+import {CourseRole} from "../../models/enums/CourseRoleEnum";
+import {GlobalRole} from "../../models/enums/GlobalRoleEnum";
 
 chai.use(chaiHttp);
 
@@ -44,7 +44,7 @@ export const getCommentsByUserAndCourse = () => chai.request(app)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
 export const putComment = ()=> chai.request(app)
     .put(`/api/comment/${COMMENT_THREAD_ID}`)
-    .send({commentBody:"this is a comment used for testing"})
+    .send({comment:"this is a comment used for testing"})
     .set({'Authorization': USER_AUTHORIZATION_KEY});
 
 /** Comment thread requests */
@@ -82,11 +82,11 @@ export const getCoursesByOwnUser = () => chai.request(app)
 export const getCoursesByOtherUser = () => chai.request(app)
     .get(`/api/course/user/${ADMIN_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
-export const createCourse = (name: string, state: courseState) => chai.request(app)
+export const createCourse = (name: string, state: CourseState) => chai.request(app)
     .post(`/api/course`)
     .send({"name": name, "state": state})
     .set({'Authorization': USER_AUTHORIZATION_KEY});
-export const updateCourse = (courseID: string, update: { name?: string, state?: courseState }) => chai.request(app)
+export const updateCourse = (courseID: string, update: { name?: string, state?: CourseState }) => chai.request(app)
     .put(`/api/course/${courseID}`)
     .send(update)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
@@ -135,10 +135,10 @@ export const getPermissionByCourse = () => chai.request(app)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
 
 /** Role requests */
-export const setCourseRole = (role : courseRole) => chai.request(app)
+export const setCourseRole = (role : CourseRole) => chai.request(app)
     .put(`/api/role/course/${COURSE_ID}/user/${USER_ID}/${role}`)
     .set({'Authorization' : USER_AUTHORIZATION_KEY});
-export const setGlobalRole = (role : globalRole) => chai.request(app)
+export const setGlobalRole = (role : GlobalRole) => chai.request(app)
     .put(`/api/role/user/${USER_ID}/${role}`)
     .set({'Authorization' : USER_AUTHORIZATION_KEY});
 

@@ -1,6 +1,6 @@
 import { EnumError } from './enumHelper'
 
-export enum globalRole {
+export enum GlobalRole {
 	admin = "admin",
 	staff = "staff",
 	user = "user",
