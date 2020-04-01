@@ -2,8 +2,8 @@ import { getCommentsUser, USER_ID, getCommentsByUserAndCourse, COURSE_ID, putCom
 import { expect } from "chai";
 import { assert } from "console";
 import { instanceOfComment } from "../../InstanceOf";
-import { Comment } from "../../../models/api/Comment"
-import { response } from "express";
+import { Comment } from "../../../models/api/Comment";
+
 export function commentTest(){
 	/**
 	 * GET requests:
@@ -18,7 +18,7 @@ export function commentTest(){
         it("Should be possible to get user comments", async () => {
             const response = await getCommentsUser();
             expect(response).to.have.status(200);
-            console.log("??????", response.body)
+            console.log("??????", response.body);
             assert(response.body.every((comment: Comment) =>
                 instanceOfComment(comment) &&
                     comment.user.ID === USER_ID
@@ -36,10 +36,10 @@ export function commentTest(){
         });
 
         it("Should be possible to post a comment", async ()=>{
-            await adminRegisterCourse()
-            const response = await putComment()
-            expect(response).to.have.status(200)
-            const comment = response.body
+            await adminRegisterCourse();
+            const response = await putComment();
+            expect(response).to.have.status(200);
+            const comment = response.body;
             assert(instanceOfComment(comment), "body should be comment, but was"+comment)
 
         })
