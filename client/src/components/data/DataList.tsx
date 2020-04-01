@@ -1,10 +1,13 @@
 import React, {useState, Fragment, useEffect} from "react";
-import {Children, Parent, ParentalProperties} from "../../helpers/ParentHelper";
-import {Heading} from "../general/Heading";
 import {Button} from "react-bootstrap";
-import {LoadingIcon} from "../general/loading/LoadingIcon";
-import {FiChevronDown, FiChevronUp} from "react-icons/all";
 import {IconType} from "react-icons";
+import {FiChevronDown, FiChevronUp} from "react-icons/all";
+
+import {Children, Parent, ParentalProperties} from "../../helpers/ParentHelper";
+
+import {LoadingIcon} from "../general/loading/LoadingIcon";
+import {Heading} from "../general/Heading";
+import {NonEmpty} from "../general/NonEmpty";
 
 export interface DataListOptional {
 	icon: IconType,
@@ -16,9 +19,10 @@ export interface DataListProperties extends ParentalProperties {
 	optional?: DataListOptional,
 	collapse?: boolean,
 	more?: (limit: number, offset: number) => Children
-	size?: number
+	size?: number,
+	empty?: Children
 }
-export function DataList({header, optional,  collapse, more, size=5, children}: DataListProperties) {
+export function DataList({header, optional,  collapse, more, size=5, empty, children}: DataListProperties) {
 	const [data, setData] = useState(children);
 	const [collapsed, setCollapsed] = useState(false);
 	const [offset, setOffset] = useState(size);
@@ -58,13 +62,13 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 				{optional.component}
 			</div>
 		}
-		{!collapsed && Parent.countChildren(data) > 0 &&
-			<div className="m-3">
-				<Fragment>
-					{data}
-					{more && !complete && (loadingMore ? <LoadingIcon/> : <Button onClick={loadMore}>Load More</Button>)}
-				</Fragment>
-			</div>
+		{!collapsed &&
+			<NonEmpty empty={empty}>
+				<div className="m-3">
+						{data}
+						{more && !complete && (loadingMore ? <LoadingIcon/> : <Button onClick={loadMore}>Load More</Button>)}
+				</div>
+			</NonEmpty>
 		}
 	</div>
 }

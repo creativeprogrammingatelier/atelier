@@ -35,6 +35,7 @@ export function Homepage() {
 				/>
 			</Jumbotron>
 			<div className="m-3">
+				{/* TODO: Add a NonEmpty wrapper for if the user is not enrolled in any course */}
                 <CachedList collection={courses} refresh={refreshCourses} timeout={3600}>{
                     course => 
                         <Panel
