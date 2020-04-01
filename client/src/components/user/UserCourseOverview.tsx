@@ -7,7 +7,7 @@ import {Jumbotron} from "react-bootstrap";
 import {CommentTab} from "./CommentTab";
 import {SubmissionTab} from "./SubmissionTab";
 import {CourseTab} from "./CourseTab";
-import {TabBar} from "../general/TabBar";
+import {TabBar} from "../tab/TabBar";
 import {FiMessageSquare, FiPaperclip, FiArchive, FiCompass, FiPackage} from "react-icons/all";
 import { Course } from "../../../../models/api/Course";
 import { Link } from "react-router-dom";
@@ -22,7 +22,7 @@ interface UserOverviewProperties {
 	}
 }
 
-export function CourseUserOverview({match: {params: {courseId, userId, tab}}}: UserOverviewProperties) {
+export function UserCourseOverview({match: {params: {courseId, userId, tab}}}: UserOverviewProperties) {
 	const [activeTab, setActiveTab] = useState(tab);
 
 	useEffect(() => {

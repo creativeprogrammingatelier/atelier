@@ -1,10 +1,13 @@
 import React, {useState, Fragment, useEffect} from "react";
-import {Children, Parent, ParentalProperties} from "../../helpers/ParentHelper";
-import {Heading} from "../general/Heading";
 import {Button} from "react-bootstrap";
-import {LoadingIcon} from "../general/loading/LoadingIcon";
-import {FiChevronDown, FiChevronUp} from "react-icons/all";
 import {IconType} from "react-icons";
+import {FiChevronDown, FiChevronUp} from "react-icons/all";
+
+import {Children, Parent, ParentalProperties} from "../../helpers/ParentHelper";
+
+import {LoadingIcon} from "../general/loading/LoadingIcon";
+import {Heading} from "../general/Heading";
+import {NonEmpty} from "../general/NonEmpty";
 
 export interface DataListOptional {
 	icon: IconType,
@@ -16,9 +19,10 @@ export interface DataListProperties extends ParentalProperties {
 	optional?: DataListOptional,
 	collapse?: boolean,
 	more?: (limit: number, offset: number) => Children
-	size?: number
+	size?: number,
+	empty?: Children
 }
-export function DataList({header, optional,  collapse, more, size=5, children}: DataListProperties) {
+export function DataList({header, optional,  collapse, more, size=5, empty, children}: DataListProperties) {
 	const [data, setData] = useState(children);
 	const [collapsed, setCollapsed] = useState(false);
 	const [offset, setOffset] = useState(size);
@@ -26,8 +30,6 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 	const [loadingMore, setLoadingMore] = useState(false);
 
 	useEffect(() => {
-		console.log("Updating the children of a list");
-		console.log(children);
 		setData(children);
 		setComplete(Parent.countChildren(children) < size);
 		setOffset(size);
@@ -55,18 +57,18 @@ export function DataList({header, optional,  collapse, more, size=5, children}: 
 				rightButton={collapse ? {icon: collapsed ? FiChevronDown : FiChevronUp, click: () => setCollapsed(!collapsed)} : (optional ? {icon: optional.icon, click: optional.click} : undefined)}
 			/>
 		}
-		{optional && optional.component &&
+		{optional && Parent.countChildren(optional.component) > 0 &&
 			<div className="m-3">
 				{optional.component}
 			</div>
 		}
-		{!collapsed && Parent.countChildren(data) > 0 &&
-			<div className="m-3">
-				<Fragment>
+		{!collapsed &&
+			<NonEmpty empty={empty}>
+				<div className="m-3">
 					{data}
 					{more && !complete && (loadingMore ? <LoadingIcon/> : <Button onClick={loadMore}>Load More</Button>)}
-				</Fragment>
-			</div>
+				</div>
+			</NonEmpty>
 		}
 	</div>
 }

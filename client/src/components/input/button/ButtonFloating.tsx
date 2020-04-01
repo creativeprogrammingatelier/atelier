@@ -1,5 +1,5 @@
 import React from "react";
-import {ParentalProperties} from "../../helpers/ParentHelper";
+import {ParentalProperties} from "../../../helpers/ParentHelper";
 import {Button} from "react-bootstrap";
 
 interface ButtonFloatingProperties extends ParentalProperties {

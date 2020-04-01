@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {FiCode, FiMessageSquare, FiShare2} from "react-icons/all";
 
 import {Frame} from "../frame/Frame";
-import {TabBar} from "../general/TabBar";
+import {TabBar} from "../tab/TabBar";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {File} from "../../../../models/api/File";

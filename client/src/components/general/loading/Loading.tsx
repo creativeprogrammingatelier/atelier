@@ -1,14 +1,17 @@
 import React, {useState, useEffect, Fragment} from "react";
-import {Spinner} from "react-bootstrap";
-
-// TODO: Define this locally, as it will be the only place it should be used
-import {LoadingState} from "../../../placeholdermodels";
 import {LoadingIcon} from "./LoadingIcon";
-import {Children, ChildrenConstructor, Parent} from "../../../helpers/ParentHelper";
+import {Children, Parent} from "../../../helpers/ParentHelper";
 
 // Disable the warning, it's how you define a generic function in TypeScript
 // tslint:disable-next-line: no-any 
 type LoadingFunc<R> = (...args: any[]) => Promise<R>;
+
+export enum LoadingState {
+	Unloaded,
+	Loading,
+	Loaded,
+	Error
+}
 
 interface LoadingProperties<R, F extends LoadingFunc<R>> {
 	/** Asynchronous function that takes arguments and returns a Promise of the data */

@@ -248,6 +248,7 @@ textarea:focus, textarea:active {
 	border: none;
 	border-left: 0.5rem solid $primaryColor;
 	border-radius: 0;
+	opacity: 1 !important;
 }
 .toast:not(:last-child) {
 	margin-bottom: 0.5rem;
@@ -269,6 +270,11 @@ textarea:focus, textarea:active {
 	svg {
 		vertical-align: bottom;
 	}
+
+	.btn {
+		padding: 0;
+		line-height: 1;
+	}
 }
 .badge:not(.badge-pill) {
 	border-radius: 2px;
@@ -277,11 +283,17 @@ textarea:focus, textarea:active {
 	margin-bottom: 0.25rem;
 	margin-right: 0.25rem;
 }
-.badge-large {
-	font-size: 1rem;
-}
 .badge-primary {
 	background-color: $colorPrimary;
+}
+.tagLarge {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	font-size: 1rem;
+}
+.tagClick:hover {
+	box-shadow: $shadowSmall;
+	cursor: pointer;
 }
 
 .qrCode {
@@ -391,6 +403,13 @@ textarea:focus, textarea:active {
 		margin-bottom: 1rem;
 	}
 }
+.buttonWrapper {
+	.btn:hover, .btn:not(:disabled):not(.disabled):hover, .btn:active, .btn:not(:disabled):not(.disabled):active, .btn:focus, .btn:not(:disabled):not(.disabled):focus {
+		color: $colorOffWhite;
+		background-color: transparent;
+		box-shadow: none;
+	}
+}
 
 .mentions {
 	background-color: $colorWhite;
@@ -477,6 +496,14 @@ textarea:focus, textarea:active {
 	padding: 0.5rem 1rem;
 	border: none;
 	border-radius: 0;
+
+	.btn {
+		top: 0;
+		right: 0;
+		padding: 0.5rem 0.75rem;
+		position: absolute;
+		background-color: transparent;
+	}
 }
 .alert-dismissible {
 	padding-right: 3rem;
@@ -484,6 +511,10 @@ textarea:focus, textarea:active {
 	.close {
 		padding: 0.5rem 1rem;
 	}
+}
+.alert-success {
+	color: $colorWhite;
+	background: $gradientSuccess;
 }
 .alert-danger {
 	color: $colorWhite;
@@ -559,16 +590,11 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowMedium;
 }
 
-.comment, .snippet {
-	box-shadow: $shadowInsetSmallDown;
-}
-.commentThread {
-	h3 {
-		box-shadow: $shadowSmallDown;
-	}
-}
 .commentThread:not(:last-child) {
-	margin-bottom: 1rem;
+	//margin-bottom: 1rem;
+}
+.commentThread > *:not(:last-child) {
+	box-shadow: $shadowInsetSmallDown;
 }
 
 .commentCreator {

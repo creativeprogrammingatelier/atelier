@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from "react";
 
 import "../../../../helpers/Extensions";
-import {DirectoryViewer} from "../general/DirectoryViewer";
+import {DirectoryViewer} from "../directory/DirectoryViewer";
 import {defaultValidation, validateProjectClient} from "../../../../helpers/ProjectValidationHelper";
 
-import "../../styles/file-uploader.scss";
 import {MAX_PROJECT_SIZE} from "../../../../helpers/Constants";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {FileInput} from "../input/FileInput";
@@ -49,10 +48,18 @@ export function Uploader({courseId}: UploaderProperties) {
 		return "webkitdirectory" in input;
 	})();
 
+	function resetValidation() {
+		updateValidation(defaultValidation<File>([]));
+	}
+	function resetErrors() {
+		updateErrors({upload: false as false | string});
+	}
 	function handleFilesSelected(event: React.ChangeEvent<HTMLInputElement>) {
 		if (event.target.files) {
 			console.log("Selected some files");
 			console.log(event.target.files);
+			resetValidation();
+			resetErrors();
 			updateSelectedFiles(Array.from(event.target.files));
 		}
 	}
@@ -123,9 +130,9 @@ export function Uploader({courseId}: UploaderProperties) {
 					</InputGroup>
 				</FileInput>
 				<div>
-					{validation.invalidProjectName && <FeedbackError>Project should contain a file called {folderName}.pde.</FeedbackError>}
-					{validation.containsNoCodeFiles && <FeedbackError>Project should contain at least one code file.</FeedbackError>}
-					{errors.upload && <FeedbackError>Something went wrong while uploading: {errors.upload}</FeedbackError>}
+					<FeedbackError show={validation.invalidProjectName}>Project should contain a file called {folderName}.pde.</FeedbackError>
+					<FeedbackError show={validation.containsNoCodeFiles}>Project should contain at least one code file.</FeedbackError>
+					<FeedbackError show={errors.upload}>Something went wrong while uploading: {errors.upload}</FeedbackError>
 				</div>
 			</Form.Group>
 			{selectedFiles.length > 0 &&
@@ -145,15 +152,11 @@ export function Uploader({courseId}: UploaderProperties) {
 						/>
 					</Form.Group>
 				}
-				{uploadableFiles.length < selectedFiles.length &&
-				<div>
-					<FeedbackError>
-						These files won't be uploaded, because they are too large
-						{validation.projectTooLarge && " or the project as a whole would be too large"}:
-					</FeedbackError>
-					<DirectoryViewer filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath}))}/>
-				</div>
-				}
+				<FeedbackError show={uploadableFiles.length < selectedFiles.length}>
+					These files won't be uploaded, because they are too large
+					{validation.projectTooLarge && " or the project as a whole would be too large"}:
+				</FeedbackError>
+				<DirectoryViewer filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath}))}/>
 			</div>
 			}
 			{uploading ?

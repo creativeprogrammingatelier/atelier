@@ -1,5 +1,5 @@
 import React  from "react";
-import {PanelButton} from "./general/PanelButton";
+import {Panel} from "./general/Panel";
 import {Frame} from "./frame/Frame";
 import {Button, Jumbotron} from "react-bootstrap";
 import {PermissionEnum} from "../../../models/enums/permissionEnum";
@@ -26,13 +26,16 @@ export function Homepage() {
                 </Permissions>
 			</Jumbotron>
 			<div className="m-3">
-                <Cached cache={courses} timeout={3600}>{
-                    (course, state) => 
-                        <PanelButton 
-                            display={course.name} 
-                            location={`/course/${course.ID}`}
-                            state={state} />
-                }</Cached>
+				{/* TODO: Add a NonEmpty wrapper for if the user is not enrolled in any course */}
+				<Cached cache={courses} timeout={3600}>
+					{(course, state) =>
+						<PanelButton
+							display={course.name}
+							location={`/course/${course.ID}`}
+							state={state}
+						/>
+					}
+				</Cached>
 			</div>
 		</Frame>
 	);

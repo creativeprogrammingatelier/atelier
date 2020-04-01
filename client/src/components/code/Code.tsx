@@ -1,7 +1,9 @@
-import {Block} from "../general/Block";
-import {Controlled as CodeMirror} from "react-codemirror2";
 import React, {useEffect} from "react";
 import * as codemirror from "codemirror";
+import {Controlled as CodeMirror} from "react-codemirror2";
+import 'codemirror/mode/clike/clike.js';
+import "codemirror/lib/codemirror.css";
+import "../../styles/codemirror.scss";
 import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 // TODO: Resolve inconsistent naming around Controlled, CodeMirror and codemirror
@@ -34,30 +36,26 @@ export function Code({code, options = {}, handleInitialize = defaultHandler, han
 		}
 	}
 
-	console.log("Rendering a code viewer");
-
 	// Define syntax highlighting for MIME types
-	codemirror.defineMIME("text/x-processing", "clike");
+	codemirror.defineMIME("text/x-processing", "text/x-java");
 
-	return <Block>
-		<CodeMirror
-			value={code}
-			options={{...defaultOptions, ...options}}
-			editorDidMount={editor => {
-				// Standard code viewer initialization
-				editor.setSize('100%', '100%');
-				setLineIDs();
-				
-				// Given initialization
-				handleInitialize(editor);
-			}}
-			onSelection={handleSelect}
-			onMouseDown={handleClick}
-			onTouchStart={handleClick}
-			onBeforeChange={handleChange}
-			onChange={handleChange}
-		/>
-	</Block>
+	return <CodeMirror
+		value={code}
+		options={{...defaultOptions, ...options}}
+		editorDidMount={editor => {
+			// Standard code viewer initialization
+			editor.setSize('100%', '100%');
+			setLineIDs();
+
+			// Given initialization
+			handleInitialize(editor);
+		}}
+		onSelection={handleSelect}
+		onMouseDown={handleClick}
+		onTouchStart={handleClick}
+		onBeforeChange={handleChange}
+		onChange={handleChange}
+	/>
 }
 export const defaultOptions = {
 	mode: "text/x-java",

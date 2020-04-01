@@ -1,12 +1,10 @@
 import React, {useEffect} from "react";
 import {useState} from "react";
-import {MentionSuggestions} from "../../comment/MentionSuggestions";
+import {Form} from "react-bootstrap";
 import {User} from "../../../../../models/api/User";
-import {Button, Form} from "react-bootstrap";
-import {Label} from "../../general/Label";
-import {CourseState} from "../../../../../models/enums/courseStateEnum";
-import {Tag} from "../../general/Tag";
 import {searchUsers} from "../../../../helpers/APIHelper";
+import {Tag} from "../../general/Tag";
+import {LabeledInput} from "../../input/LabeledInput";
 
 interface UserSearchProperties {
 	courseID?: string,
@@ -32,8 +30,7 @@ export function UserSearch({courseID, onSelected}: UserSearchProperties) {
 		}
 	}, [search]);
 
-	return <Form.Label className="w-100">
-		<Label>Search for a user</Label>
+	return <LabeledInput label="Search for a user">
 		<Form.Control
 			type="text"
 			placeholder="Name"
@@ -46,5 +43,5 @@ export function UserSearch({courseID, onSelected}: UserSearchProperties) {
 				{users.map(user => <Tag large round theme="primary" click={() => handleSelected(user)}>{user.name}</Tag>)}
 			</ul>
 		}
-	</Form.Label>;
+	</LabeledInput>;
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import {ButtonGroup} from "react-bootstrap";
-import {ParentalProperties} from "../../helpers/ParentHelper";
+import {ParentalProperties} from "../../../helpers/ParentHelper";
 
 interface ButtonBarProperties extends ParentalProperties {
 	align?: string,

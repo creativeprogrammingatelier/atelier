@@ -24,6 +24,7 @@ export function PluginSettings() {
 						<PluginInput newPlugin={{
 							create: plugin => {
 								// TODO: Show new plugin?
+								// Probably can be fixed with the new use cache stuff
 								console.log("Created a new plugin");
 								console.log(plugin);
 								updateCreating(false);

@@ -16,8 +16,6 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 	const [click, setClick] = useState(noPosition);
 
-	console.log("Rendering a highlighted code viewer");
-
 	/**
 	 * Highlights comments passed to the code viewer.
 	 */

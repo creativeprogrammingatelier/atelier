@@ -1,10 +1,6 @@
-import React, {useState} from "react";
-import {Alert} from "react-bootstrap";
-import {ParentalProperties} from "../../helpers/ParentHelper";
+import React from "react";
+import {Feedback, FeedbackProperties} from "./Feedback";
 
-export function FeedbackError({children}: ParentalProperties) {
-	const [visible, setVisible] = useState(true);
-
-	// A component must always return an element or null
-	return visible ? <Alert dismissible variant="danger" className="my-2" onClose={() => setVisible(false)}>{children}</Alert> : null
+export function FeedbackError(properties: FeedbackProperties) {
+	return <Feedback {...properties} variant="danger"/>
 }

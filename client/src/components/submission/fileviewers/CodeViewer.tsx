@@ -6,6 +6,10 @@ import {useHistory} from "react-router-dom";
 import {Selection} from "../../../../../models/api/Snippet";
 import {FileViewer, FileViewerProperties} from "../FileOverview";
 import {FiCode} from "react-icons/all";
+import {Floater} from "../../general/Floater";
+import {FeedbackError} from "../../feedback/FeedbackError";
+import {FeedbackContent} from "../../feedback/Feedback";
+
 import { useFileComments, useFileBody, useCollectionCombined } from "../../../helpers/api/APIHooks";
 import { CommentThread } from "../../../../../models/api/CommentThread";
 import { CacheItem } from "../../../helpers/api/Cache";
@@ -14,53 +18,56 @@ import { useObservable } from "observable-hooks";
 import { map } from "rxjs/operators";
 
 export function CodeViewer({file, sendComment}: FileViewerProperties) {
-    const fileComments = useFileComments(file.references.submissionID, file.ID);
-    const combinedCommentsObservable = useCollectionCombined(fileComments.observable);
-    const snippetsObservable = useObservable(() => 
-        combinedCommentsObservable.pipe(map(item => ({ ...item, value: getSnippets(item.value) })))
-    , [combinedCommentsObservable]);
-    const fileBody = useFileBody(file.ID);
-    const history = useHistory();
+	const fileComments = useFileComments(file.references.submissionID, file.ID);
+	const combinedCommentsObservable = useCollectionCombined(fileComments.observable);
+	const snippetsObservable = useObservable(() =>
+			combinedCommentsObservable.pipe(map(item => ({ ...item, value: getSnippets(item.value) })))
+		, [combinedCommentsObservable]);
+	const fileBody = useFileBody(file.ID);
+	const [error, setError] = useState(false as FeedbackContent);
+	const history = useHistory();
 
-    const snippets = {
-        observable: snippetsObservable,
-        refresh: fileComments.refresh
-    }
+	const snippets = {
+		observable: snippetsObservable,
+		refresh: fileComments.refresh
+	}
 
-	const getSnippets = (threads: CommentThread[]) => {
+	const getSnippets = () => {
 		const snippets: SnippetHighlight[] = [];
 		for (const commentThread of threads) {
 			if (commentThread.snippet !== undefined) {
 				snippets.push({
-					onClick: () => {
-						console.log("clicked comment");
-						history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.ID}`);
-					},
+					onClick: () => history.push(`/submission/${file.references.submissionID}/${file.ID}/comments#${commentThread.ID}`),
 					...commentThread.snippet
 				});
 			}
         }
         return snippets;
     };
-    
+
 	const handleCommentSend = async(comment: string, restricted: boolean, selection: Selection) => {
 		return sendComment(comment, restricted, selection);
     };
 
-	return (
-		<div className="mb-6">
-            <Cached cache={snippets}>{snippets =>
-                <Cached cache={fileBody}>{body =>
-                    <CommentSelector<HighlightedCodeProperties>
-                        codeViewer={HighlightedCode}
-                        codeProperties={{code: body, snippets, options: {mode: file.type}}}
-                        mentions={{courseID: file.references.courseID}}
-                        sendHandler={handleCommentSend}
-                    />
-                }</Cached>
-            }</Cached>
-		</div>
-	);
+	return <div className="mb-6">
+        <Cached cache={snippets}>
+	        {snippets =>
+	            <Cached cache={fileBody}>
+		            {body =>
+		                <CommentSelector<HighlightedCodeProperties>
+		                    codeViewer={HighlightedCode}
+		                    codeProperties={{code: body, snippets, options: {mode: file.type}}}
+		                    mentions={{courseID: file.references.courseID}}
+		                    sendHandler={handleCommentSend}
+		                />
+		            }
+	            </Cached>
+	        }
+        </Cached>
+		<Floater right={0} left={0} bottom={44} className="mx-2 my-1">
+			<FeedbackError close={setError} timeout={4000}>{error}</FeedbackError>
+		</Floater>
+	</div>;
 }
 function acceptsType(type: string) {
 	return type.startsWith("text/");

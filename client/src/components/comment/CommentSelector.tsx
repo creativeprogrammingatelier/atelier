@@ -7,6 +7,7 @@ import {Editor} from "codemirror";
 import {Controlled as CodeMirror} from "react-codemirror2";
 import {CodeProperties, CodeSelection} from "../code/Code";
 import {Selection, noSelection} from "../../../../models/api/Snippet";
+import {Block} from "../general/Block";
 
 interface MentionProperties {
 	courseID: string
@@ -52,10 +53,12 @@ export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHa
 	};
 
 	return <Fragment>
-		{codeViewer({...codeProperties, ...{
-			handleClick,
-			handleSelect
-		}})}
+		<Block>
+			{codeViewer({...codeProperties, ...{
+					handleClick,
+					handleSelect
+				}})}
+		</Block>
 		{selecting ?
 			<Floater bottom={44} left={0} width="-webkit-fill-available" height="3rem" className="m-2">
 				<CommentCreator

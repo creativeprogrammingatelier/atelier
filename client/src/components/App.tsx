@@ -1,28 +1,30 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import {Login} from "./Login";
-import Logout from "./Logout";
-import Register from "./Register";
-import {AuthenticatedRoute} from "./AuthenticatedRoute";
-import {SubmissionOverview} from "./submission/SubmissionOverview";
-import {FileOverview} from "./submission/FileOverview";
-import {SearchOverview} from "./search/SearchOverview";
-import {CourseOverview} from "./course/CourseOverview";
-import {UserOverview} from "./user/UserOverview";
-import {Homepage} from "./Homepage";
 
-import "../styles/app.scss";
-import "../styles/base.scss";
-import {SubmissionShare} from "./submission/SubmissionShare";
-import {Bootstrap} from "./Bootstrap";
-import {CourseUserOverview} from "./user/CourseUserOverview";
-import {SystemSettings} from "./settings/system/SystemSettings";
-import {Activity} from "./Activity";
-import {CourseSettings} from "./settings/course/CourseSettings";
 import {CacheProvider} from "./general/loading/CacheProvider";
+import {MessagingProvider} from "./feedback/MessagingProvider";
+import {TimeProvider} from "./data/TimeProvider";
+import {AuthenticatedRoute} from "./AuthenticatedRoute";
+
+import Register from "./Register";
+import Logout from "./Logout";
+import {Login} from "./Login";
+
+import {Homepage} from "./Homepage";
+import {Activity} from "./Activity";
+import {Bootstrap} from "./Bootstrap";
+import {CourseOverview} from "./CourseOverview";
+import {SearchOverview} from "./search/SearchOverview";
+import {CourseSettings} from "./settings/course/CourseSettings";
+import {SystemSettings} from "./settings/system/SystemSettings";
 import {UserSettings} from "./settings/user/UserSettings";
-import { TimeProvider } from "./data/TimeProvider";
+import {FileOverview} from "./submission/FileOverview";
+import {SubmissionShare} from "./submission/SubmissionShare";
+import {SubmissionOverview} from "./submission/SubmissionOverview";
+import {UserOverview} from "./user/UserOverview";
+import {UserCourseOverview} from "./user/UserCourseOverview";
+
+import "../styles/base.scss";
 
 export function App() {
 	return (
@@ -31,14 +33,14 @@ export function App() {
 				<Switch>
 					<Route path='/register' render={(props) => <Register {...props} />}/>
 					<Route path='/login' render={() => <Login/>}/>
-					<PrivateRoute path='/logout' component={Logout}/>
+					<AuthenticatedRoute path='/logout' component={Logout}/>
 					<AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
 					<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
 					<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
 					<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
 					<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
-					<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={CourseUserOverview}/>
-					<AuthenticatedRoute path='/course/:courseId/user/:userId' component={CourseUserOverview}/>
+					<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={UserCourseOverview}/>
+					<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserCourseOverview}/>
 					<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
 					<AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings}/>
 					<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>

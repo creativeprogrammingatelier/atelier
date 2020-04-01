@@ -1,17 +1,26 @@
 import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
+import {FiPlus, FiX} from "react-icons/all";
+
+import {Course} from "../../../../models/api/Course";
+import {CommentThread} from "../../../../models/api/CommentThread";
+import {File} from "../../../../models/api/File";
+import {Submission} from "../../../../models/api/Submission";
+import {ThreadState} from "../../../../models/enums/threadStateEnum";
+
+import {getSubmission, getCourse, getFiles, getProjectComments, getRecentComments, createSubmissionCommentThread} from "../../../helpers/APIHelper";
+import {JsonFetchError} from "../../../helpers/FetchHelper";
+import {TimeHelper} from "../../../helpers/TimeHelper";
 
 import {Frame} from "../frame/Frame";
+import {Loading} from "../general/loading/Loading";
+import {DirectoryViewer} from "../directory/DirectoryViewer";
 import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
-import {DataList} from "../data/DataList";
-import {DirectoryViewer} from "../general/DirectoryViewer";
-import {TimeHelper} from "../../../helpers/TimeHelper";
 import {CommentCreator} from "../comment/CommentCreator";
-import {FiPlus, FiX} from "react-icons/all";
-import {ThreadState} from "../../../../models/enums/threadStateEnum";
-import { useSubmission, useCourse, useProjectComments, useRecentComments, useFiles } from "../../helpers/api/APIHooks";
-import { Cached } from "../general/loading/Cached";
+import {DataList} from "../data/DataList";
+import {FeedbackContent} from "../feedback/Feedback";
+import {FeedbackError} from "../feedback/FeedbackError";
 
 interface SubmissionOverviewProps {
 	match: {
@@ -26,22 +35,23 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
     const files = useFiles(submissionId);
     const projectComments = useProjectComments(submissionId);
     const recentComments = useRecentComments(submissionId);
-    
+
 	const [creatingComment, setCreatingComment] = useState(false);
+	const [error, setError] = useState(false as FeedbackContent);
 	const submissionPath = "/submission/" + submissionId;
 
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-        const res = await projectComments.create({
+        const comment = await projectComments.create({
             submissionID: submissionId,
             comment,
             visibility: restricted ? ThreadState.private : ThreadState.public
         });
         setCreatingComment(false);
-        return res;
+        return comment;
     };
 
 	return (
-        <Cached cache={submission} wrapper={children => <Frame title="Submission" sidebar search children={children} />}>{submission => 
+        <Cached cache={submission} wrapper={children => <Frame title="Submission" sidebar search children={children} />}>{submission =>
             <Frame title={submission.name} sidebar search={{course: submission.references.courseID, submission: submissionId}}>
 				<Jumbotron>
 					<h1>{submission.name}</h1>
@@ -63,15 +73,19 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 					optional={{
 						icon: creatingComment ? FiX : FiPlus,
 						click: () => setCreatingComment(!creatingComment),
-						component: creatingComment && <CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
-					}} >
-					<Cached cache={projectComments}>{
-                        thread => <CommentThreadComponent thread={thread} />   
-                    }</Cached>
+						component: (
+							creatingComment &&
+							<CommentCreator placeholder="Write a comment" allowRestricted mentions={{courseID: submission.references.courseID}} sendHandler={handleCommentSend}/>
+						) || <FeedbackError close={setError}>{error}</FeedbackError>
+					}}
+                >
+					<Cached cache={projectComments}>
+						{thread => <CommentThreadComponent thread={thread}/>}
+					</Cached>
 				</DataList>
                 <DataList header="Recent">
                     <Cached cache={recentComments}>{
-                        thread => <CommentThreadComponent thread={thread} />   
+                        thread => <CommentThreadComponent thread={thread} />
                     }</Cached>
                 </DataList>
 			</Frame>
