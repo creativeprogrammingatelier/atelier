@@ -16,13 +16,14 @@ export function SearchResults({results}: SearchResultProperties) {
 
 	return <Fragment>
 		{results.users.length > 0 && <SearchResultSection header="Users" query="">
-			{results.users.map(user => <DataItem text={user.name} transport={"/user/"+user.ID}/>)}
+			{results.users.map(user => <DataItem key={user.ID} text={user.name} transport={"/user/"+user.ID}/>)}
 		</SearchResultSection>}
 		{results.courses.length > 0 && <SearchResultSection header="Courses" query="">
-			{results.courses.map(course => <DataItem text={course.name} transport={"/course/"+course.ID}/>)}
+			{results.courses.map(course => <DataItem key={course.ID} text={course.name} transport={"/course/"+course.ID}/>)}
 		</SearchResultSection>}
 		{results.submissions.length > 0 && <SearchResultSection header="Submissions" query="">
 			{results.submissions.map(submission => <DataBlock
+				key={submission.ID}
 				title={submission.name}
 				text={`Submitted by ${submission.user.name}`}
 				transport={"/submission/"+submission.ID}
@@ -31,6 +32,7 @@ export function SearchResults({results}: SearchResultProperties) {
 		</SearchResultSection>}
 		{results.comments.length > 0 && <SearchResultSection header="Comments" query="">
 			{results.comments.map(comment => <DataBlock
+				key={comment.comment.ID}
 				title={`${comment.comment.user.name} on ${comment.submission.name} by ${comment.submission.user.name}`}
 				text={comment.comment.text}
 				transport={comment.comment.references.fileID === "" ?
@@ -43,6 +45,7 @@ export function SearchResults({results}: SearchResultProperties) {
 		</SearchResultSection>}
 		{results.files.length > 0 && <SearchResultSection header="Files" query="">
 			{results.files.map(file => <DataBlock
+				key={file.file.ID}
 				title={file.file.name}
 				text={`in ${file.submission.name} by ${file.submission.user.name}`}
 				transport={`/submission/${file.submission.ID}/${file.file.ID}`}
@@ -51,6 +54,7 @@ export function SearchResults({results}: SearchResultProperties) {
 		</SearchResultSection>}
 		{results.snippets.length > 0 && <SearchResultSection header="Snippets" query="">
 			{results.snippets.map(snippet => <DataBlock
+				key={snippet.snippet.ID}
 				title={`${snippet.file.name} in ${snippet.submission.name} by ${snippet.submission.user.name}`}
 				text={snippet.snippet.body}
 				transport={`/submission/${snippet.submission.ID}/${snippet.file.ID}`}
