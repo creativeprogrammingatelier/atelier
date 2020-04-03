@@ -23,7 +23,7 @@ export function SearchResults({results}: SearchResultProperties) {
 		</SearchResultSection>}
 		{results.submissions.length > 0 && <SearchResultSection header="Submissions" query="">
 			{results.submissions.map(submission => <DataBlock
-				key={submission.ID}
+                key={submission.ID}
 				title={submission.name}
 				text={`Submitted by ${submission.user.name}`}
 				transport={"/submission/"+submission.ID}
@@ -32,7 +32,7 @@ export function SearchResults({results}: SearchResultProperties) {
 		</SearchResultSection>}
 		{results.comments.length > 0 && <SearchResultSection header="Comments" query="">
 			{results.comments.map(comment => <DataBlock
-				key={comment.comment.ID}
+                key={comment.comment.ID}
 				title={`${comment.comment.user.name} on ${comment.submission.name} by ${comment.submission.user.name}`}
 				text={comment.comment.text}
 				transport={comment.comment.references.fileID === "" ?
@@ -45,7 +45,7 @@ export function SearchResults({results}: SearchResultProperties) {
 		</SearchResultSection>}
 		{results.files.length > 0 && <SearchResultSection header="Files" query="">
 			{results.files.map(file => <DataBlock
-				key={file.file.ID}
+                key={file.file.ID}
 				title={file.file.name}
 				text={`in ${file.submission.name} by ${file.submission.user.name}`}
 				transport={`/submission/${file.submission.ID}/${file.file.ID}`}
@@ -54,7 +54,7 @@ export function SearchResults({results}: SearchResultProperties) {
 		</SearchResultSection>}
 		{results.snippets.length > 0 && <SearchResultSection header="Snippets" query="">
 			{results.snippets.map(snippet => <DataBlock
-				key={snippet.snippet.ID}
+                key={snippet.snippet.ID}
 				title={`${snippet.file.name} in ${snippet.submission.name} by ${snippet.submission.user.name}`}
 				text={snippet.snippet.body}
 				transport={`/submission/${snippet.submission.ID}/${snippet.file.ID}`}

@@ -47,6 +47,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 				<Cached cache={mentions} timeout={30}>
 					{mention =>
 						<DataBlock
+                            key={mention.ID}
 							title={`Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle}`}
 							text={mention.comment.text}
 							time={new Date(mention.comment.created)}
@@ -81,6 +82,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					{
 						submission =>
 							<DataBlock
+                                key={submission.ID}
 								transport={`/submission/${submission.ID}`}
 								title={submission.name}
 								text={"Submitted by " + submission.user.name}

@@ -1,7 +1,8 @@
 import React from 'react';
-import {TabButton} from './TabButton';
 import {Nav} from 'react-bootstrap';
 import {IconType} from "react-icons";
+
+import {TabButton} from './TabButton';
 
 interface TabProperties {
 	id?: string,
@@ -14,7 +15,7 @@ interface TabBarProperties {
 	active: string
 }
 export function TabBar({active, tabs}: TabBarProperties) {
-	return <Nav fill justify variant="pills" className="fixed-bottom">
-		{tabs.map((tab) => <TabButton icon={tab.icon} text={tab.text} location={tab.location} active={tab.id === active}/>)}
+	return <Nav fill justify variant="pills" className="fixed-bottom position-sticky">
+		{tabs.map((tab) => <TabButton key={tab.id || tab.text} icon={tab.icon} text={tab.text} location={tab.location} active={tab.id === active}/>)}
 	</Nav>
 }

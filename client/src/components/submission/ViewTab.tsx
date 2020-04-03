@@ -8,9 +8,12 @@ import { useFileComments } from "../../helpers/api/APIHooks";
 
 interface ViewTabProperties {
 	file: File,
-	viewer: (properties: FileViewerProperties) => Children,
+	viewer: (properties: FileViewerProperties) => JSX.Element,
 }
-export function ViewTab({file, viewer}: ViewTabProperties) {
+
+// We have to handle this as a React element, so its name has to be PascalCase
+// tslint:disable-next-line: variable-name
+export function ViewTab({file, viewer: Viewer}: ViewTabProperties) {
     const fileComments = useFileComments(file.references.submissionID, file.ID);
 
 	const sendComment: FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => {
@@ -24,7 +27,7 @@ export function ViewTab({file, viewer}: ViewTabProperties) {
 	
 	return <div className="contentTab">
 		<div className="m-3">
-			{viewer({file, sendComment})}
+			<Viewer file={file} sendComment={sendComment} />
 		</div>
 	</div>
 }

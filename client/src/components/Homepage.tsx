@@ -30,6 +30,7 @@ export function Homepage() {
 				<Cached cache={courses} timeout={3600}>
 					{(course, state) =>
 						<PanelButton
+                            key={course.ID}
 							display={course.name}
 							location={`/course/${course.ID}`}
 							state={state}

@@ -1,19 +1,14 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom";
 import {Button} from "react-bootstrap";
 import {FiChevronDown, FiChevronUp, FiCode, FiEye, FiEyeOff, FiTrash} from "react-icons/all";
 
 import {CommentThread} from "../../../../models/api/CommentThread";
-import {File} from "../../../../models/api/File";
-import {Permission} from "../../../../models/api/Permission";
-import {User} from "../../../../models/api/User";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
-import {coursePermission, createComment, getCurrentUser, setCommentThreadVisibility} from "../../../helpers/APIHelper";
+import {setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
-import {ScrollHelper} from "../../helpers/ScrollHelper";
 
 import {Snippet} from "../code/Snippet";
 import { Block } from "../general/Block";
@@ -23,12 +18,45 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import { FeedbackSuccess } from "../feedback/FeedbackSuccess";
 import {Comment as CommentComponent} from "./Comment";
 import {CommentCreator} from "./CommentCreator";
-import {useCollectionCombined, useComments} from "../../helpers/api/APIHooks";
+import {useCollectionCombined, useComments, useCoursePermission, useCurrentUser} from "../../helpers/api/APIHooks";
 import {Cached} from "../general/loading/Cached";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
 	thread: CommentThread
+}
+
+interface ManageRestrictedButtonsProperties {
+    thread: CommentThread,
+    onDiscard: () => void, 
+    onToggle: () => void, 
+    visible: boolean
+}
+function ManageRestrictedButtons({ thread, onDiscard, onToggle, visible }: ManageRestrictedButtonsProperties) {
+    const permission = useCoursePermission(thread.references.courseID);
+    const user = useCurrentUser();
+
+    return (
+        <Cached cache={permission} wrapper={_ => <Fragment />}>
+            {permission =>
+                <Cached cache={user} wrapper={_ => <Fragment />}>
+                    {user => {
+                        if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions) 
+                            || user.ID === commentThreadOwner(thread)) {
+                            return (
+                                <Fragment>
+                                    <Button onClick={onDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
+                                    <Button onClick={onToggle}>{visible ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
+                                </Fragment>
+                            );
+                        } else {
+                            return <Fragment />;
+                        }
+                    }}
+                </Cached>
+            }
+        </Cached>
+    );
 }
 
 export function CommentThread({thread}: CommentThreadProperties) {
@@ -39,13 +67,16 @@ export function CommentThread({thread}: CommentThreadProperties) {
 
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
 	const [visible, setRestricted] = useState(thread.visibility === ThreadState.private);
-	const [manageRestrictedComments, setManageRestrictedComments] = useState(false);
 	const [success, setSuccess] = useState(false as FeedbackContent);
 	const [error, setError] = useState(false as FeedbackContent);
 
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
-		return comments.create(commentTrimmed);
+        return comments.create(commentTrimmed)
+            .catch((err: Error) => {
+                setError("Failed to create reply: " + err.message)
+                return false;
+            });
 	};
 	const handleDiscard = () => {
 		// TODO: Lol, maybe actually implement this
@@ -56,23 +87,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 			setRestricted(commentThread.visibility === ThreadState.private);
 		});
 		setSuccess(`Visibility updated, now: ${visible ? "public" : "private"}`);
-	};
-
-	useEffect(() => ScrollHelper.scrollToHash(), []);
-	useEffect(() => {
-		coursePermission(thread.references.courseID)
-			.then((permission : Permission) => {
-				if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions)) {
-					setManageRestrictedComments(true);
-				}
-			});
-		getCurrentUser()
-			.then((user : User) => {
-				if (user.ID === commentThreadOwner(thread)) {
-					setManageRestrictedComments(true);
-				}
-			});
-	}, []);
+    };
 
 	return <div className="mb-3">
 		<Block id={thread.ID} className={"commentThread" + (visible ? " restricted" : "")}>
@@ -80,20 +95,15 @@ export function CommentThread({thread}: CommentThreadProperties) {
             <Cached cache={commentsCombined}>
                 {comments => opened ?
                     <Fragment>
-                        {comments.map(comment => <CommentComponent comment={comment}/>)}
+                        {comments.map(comment => <CommentComponent key={comment.ID} comment={comment}/>)}
                         <CommentCreator transparent placeholder="Reply..." mentions={{courseID: thread.references.courseID}} sendHandler={handleCommentSend}/>
                     </Fragment>
                     :
-                    comments[0] !== undefined && <CommentComponent comment={comments[0]}/>
+                    comments[0] !== undefined && <CommentComponent key={comments[0].ID} comment={comments[0]}/>
                 }
             </Cached>
 			<ButtonBar align="right">
-				{manageRestrictedComments &&
-					<Fragment>
-						<Button onClick={handleDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
-						<Button onClick={handleVisibility}>{visible ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
-					</Fragment>
-				}
+				<ManageRestrictedButtons thread={thread} visible={visible} onToggle={handleVisibility} onDiscard={handleDiscard}/>
 				{thread.file && thread.snippet &&
 					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/view#${thread.snippet.start.line + 1}`}>
 						<Button>

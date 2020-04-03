@@ -119,10 +119,18 @@ export function useCourse(courseID: string): Refresh<Course> {
 }
 
 export function usePermission(): Refresh<Permission> {
-    const permission = useCacheItem<Permission>("currentUserPermission");
+    const permission = useCacheItem<Permission>("permission");
     return {
         observable: permission.observable,
         refresh: () => refreshItem(API.permission(), permission)
+    }
+}
+
+export function useCoursePermission(courseID: string): Refresh<Permission> {
+    const permission = useCacheItem<Permission>(`permission/course/${courseID}`);
+    return {
+        observable: permission.observable,
+        refresh: () => refreshItem(API.coursePermission(courseID), permission)
     }
 }
 
@@ -177,7 +185,7 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
     return promise.then(result => {
         threads.transaction(threads => {
             for (const thread of result) {
-                threads.add({ ...thread, comments: [] }, CacheState.Loaded);
+                threads.add({ ...thread, comments: [thread.comments[0]] }, CacheState.Loaded);
                 const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
                 comments.transaction(comments => {
                     comments.remove(comment => true);

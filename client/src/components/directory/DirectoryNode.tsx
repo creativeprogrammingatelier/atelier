@@ -18,7 +18,7 @@ export function DirectoryNode({node}: DirectoryNodeProperties) {
 		{node.children.length > 0 ?
 			<Fragment>
 				<DataTrigger text={node.name} trigger={{icon: opened ? FiChevronUp : FiChevronDown, click: () => setOpened(!opened)}}/>
-				{opened && node.children.map(child => <DirectoryNode node={child}/>)}
+				{opened && node.children.map(child => <DirectoryNode key={child.transport || child.name} node={child}/>)}
 			</Fragment>
 			:
 			(node.type && canDisplayType(node.type)) ?

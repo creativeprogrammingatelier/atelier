@@ -23,6 +23,7 @@ export function SubmissionTab({user, course}: SubmissionTabProperties) {
 					header="Submissions"
 					list={submissions.map(submission => {
 						return {
+                            key: submission.ID,
 							transport: `/submission/${submission.ID}`,
 							title: submission.name,
 							text: submission.name,

@@ -103,7 +103,7 @@ export class Cache {
     }
 
     static load(storageKey: string) {
-        const { items, collections } = JSON.parse(localStorage.getItem(storageKey) || "{ items: [], collections: [] }");
+        const { items, collections } = JSON.parse(localStorage.getItem(storageKey) || `{ "items": [], "collections": [] }`);
         return new Cache(items, collections);
     }
 
@@ -129,6 +129,8 @@ export class Cache {
         return {
             observable: this.items[key].asObservable(),
             updateItem: (update, state, date = Date.now()) => {
+                if (!this.items[key]) throw new CacheError("cleared", key);
+
                 const item: CacheItem<T> = this.items[key].value;
                 this.items[key].next({
                     createdAt: item.createdAt || date,
@@ -167,9 +169,13 @@ export class Cache {
                 }
             }),
             transaction: (update, state = CacheState.Loaded, date = Date.now()) => {
-                let collection = this.collections[key].collection;
+                if (!this.collections[key]) throw new CacheError("cleared", key);
+
+                let collection: CacheCollection<T> | undefined = this.collections[key].collection;
                 let changed: Array<CacheItem<T>> = [];
                 const addAll = (values: T[], state: CacheState) => {
+                    if (collection === undefined) throw new CacheError("cleared", key);
+
                     const items = [...collection.items];
                     for (const value of values) {
                         const index = items.findIndex(item => item.value.ID === value.ID);
@@ -189,6 +195,8 @@ export class Cache {
                     addAll,
                     add: (value, state) => addAll([value], state),
                     remove: (selector) => {
+                        if (collection === undefined) throw new CacheError("cleared", key);
+
                         const itemSelector = (item: CacheItem<T>) => selector(item.value)
                         changed = changed.filter(item => !itemSelector(item)).concat(collection.items.filter(itemSelector));
                         collection = {
@@ -197,6 +205,8 @@ export class Cache {
                         }
                     },
                     removeExpired: (expiration) => {
+                        if (collection === undefined) throw new CacheError("cleared", key);
+
                         const selector = (item: CacheItem<T>) => item.updatedAt + expiration < date;
                         changed = changed.filter(item => !selector(item)).concat(collection.items.filter(selector));
                         collection = {
@@ -205,26 +215,46 @@ export class Cache {
                         }
                     },
                     clear: () => {
+                        if (collection === undefined) throw new CacheError("cleared", key);
+
                         for (const { subscriber } of this.collections[key].subscribers) {
                             subscriber.complete();
                             subscriber.unsubscribe();
                         }
+                        collection = undefined;
                         delete this.collections[key];
                     }
                 });
-                this.collections[key].collection = {
-                    createdAt: collection.createdAt | date,
-                    updatedAt: date,
-                    state,
-                    items: collection.items
-                };
-                for (const { filter, subscriber } of this.collections[key].subscribers) {
-                    if (!filter || changed.some(item => filter(item.value)) || state !== collection.state) {
-                        subscriber.next(filterCollection(this.collections[key].collection, filter));
+
+                if (collection !== undefined) {
+                    this.collections[key].collection = {
+                        createdAt: collection.createdAt | date,
+                        updatedAt: date,
+                        state,
+                        items: collection.items
+                    };
+                    for (const { filter, subscriber } of this.collections[key].subscribers) {
+                        if (!filter || changed.some(item => filter(item.value)) || state !== collection.state) {
+                            subscriber.next(filterCollection(this.collections[key].collection, filter));
+                        }
                     }
                 }
+
                 this.exported.next(this.export());
             }
+        }
+    }
+}
+
+export class CacheError extends Error {
+    constructor(reason: "cleared" | "other", key: string) {
+        switch (reason) {
+            case "cleared":
+                super(`The cache with key ${key} was cleared. You cannot use it from the same interface.`);
+                break;
+            default:
+                super(`Something went wrong while using cache with key ${key}.`);
+                break;
         }
     }
 }

@@ -10,6 +10,7 @@ import {CheckboxInput} from "../../input/CheckboxInput";
 import {LabeledInput} from "../../input/LabeledInput";
 import {UserInfo} from "./UserInfo";
 import {UserSearch} from "./UserSearch";
+import { Permissions } from "../../general/Permissions";
 
 interface PermissionDisplay {
 	[key: string]: string
@@ -18,9 +19,7 @@ interface PermissionState {
 	[key: string]: boolean
 }
 interface UserSettingsPermissionsProperties {
-	viewPermissions: boolean,
-	managePermissions: boolean
-	courseID?: string,
+	courseID?: string
 }
 interface UserSettingsPermissionsSectionProperties {
 	header: string,
@@ -29,7 +28,7 @@ interface UserSettingsPermissionsSectionProperties {
 	setState: (permission: string, state: boolean) => void
 }
 
-export function UserSettingsPermissions({viewPermissions, managePermissions, courseID}: UserSettingsPermissionsProperties) {
+export function UserSettingsPermissions({courseID}: UserSettingsPermissionsProperties) {
 	const [user, setUser] = useState(undefined as User | undefined);
 	const [permissions, setPermissions] = useState({} as PermissionState);
 
@@ -69,8 +68,12 @@ export function UserSettingsPermissions({viewPermissions, managePermissions, cou
 			user &&
 			<Fragment>
 				<UserInfo user={user}/>
-				{viewPermissions && <UserSettingsPermissionsSection header="Viewing permissions" display={permissionsSectionView} state={permissions} setState={setPermission}/>}
-				{managePermissions && <UserSettingsPermissionsSection header="Managing permissions" display={permissionsSectionManage} state={permissions} setState={setPermission}/>}
+				<Permissions course={courseID} single={PermissionEnum.manageUserPermissionsView}>
+                    <UserSettingsPermissionsSection header="Viewing permissions" display={permissionsSectionView} state={permissions} setState={setPermission}/>
+                </Permissions>
+                <Permissions course={courseID} single={PermissionEnum.manageUserPermissionsManager}>
+				    <UserSettingsPermissionsSection header="Managing permissions" display={permissionsSectionManage} state={permissions} setState={setPermission}/>
+                </Permissions>
 				<Button onClick={handleUpdate}>Update permissions</Button>
 			</Fragment>
 		}

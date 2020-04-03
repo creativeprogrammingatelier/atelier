@@ -1,5 +1,4 @@
-
-import React, {useMemo, useState} from "react";
+import React, {useState, Fragment} from "react";
 
 import {useHistory} from "react-router-dom";
 import {FiCode} from "react-icons/all";
@@ -55,7 +54,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 		return sendComment(comment, restricted, selection);
 	};
 
-	return <div className="mb-6">
+	return <Fragment>
 		<Cached cache={snippets}>
 			{snippets =>
 				<Cached cache={fileBody}>
@@ -73,7 +72,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 		<Floater right={0} left={0} bottom={44} className="mx-2 my-1">
 			<FeedbackError close={setError} timeout={4000}>{error}</FeedbackError>
 		</Floater>
-	</div>;
+	</Fragment>;
 }
 function acceptsType(type: string) {
 	return type.startsWith("text/");
