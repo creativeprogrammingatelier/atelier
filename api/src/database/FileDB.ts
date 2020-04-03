@@ -106,7 +106,7 @@ export class FileDB {
 			courseid = UUIDHelper.toUUID(courseID),
 			currentuserid = UUIDHelper.toUUID(currentUserID),
 			searchFile = searchify(pathname)
-		return client.query(`
+		const s = `
 			SELECT f.*, s.*
 			FROM "FilesView" as f, "SubmissionsView" as s, viewableSubmissions($8, $3) as opts
 			WHERE
@@ -115,13 +115,14 @@ export class FileDB {
 			AND ($2::uuid IS NULL OR f.submissionID=$2)
 			AND ($3::uuid IS NULL OR f.courseID=$3)
 			AND ($5::text IS NULL OR f.type=$5)
-			AND ($4::text IS NULL OR f.pathname ILIKE right(f.pathname, -length(s.title)-1))
+			AND ($4::text IS NULL OR right(f.pathname, -length(s.title)-1) ILIKE $4)
 			AND f.submissionID = opts.submissionID
 			ORDER BY ${sorting === Sorting.alphabetical?`right(f.pathname, -length(s.title)-1)` : `s.date`}, f.type, f.fileID
 			LIMIT $6
 			OFFSET $7
-			`, [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid])
-		.then(extract).then(map(entry => ({
+			`,ls = [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid]
+		_insert(s,ls)
+		return client.query(s,ls).then(extract).then(map(entry => ({
 			file:fileToAPI(entry),
 			submission: submissionToAPI(entry)
 		}))).then(doIf(!includeNulls, entries => 

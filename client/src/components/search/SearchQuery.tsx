@@ -15,6 +15,8 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {Loading} from "../general/loading/Loading";
 import {Tag} from "../general/Tag";
 import {SearchProperties} from "./SearchOverview";
+import { Sorting } from "../../../../models/enums/SortingEnum";
+import { getEnum } from "../../../../models/enums/enumHelper";
 
 interface SearchQueryProperties {
 	state: SearchProperties,
@@ -25,6 +27,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 	const [course, setCourse] = useState(state.course as string | undefined);
 	const [user, setUser] = useState(state.user as string | undefined);
 	const [submission, setSubmission] = useState(state.submission as string | undefined);
+	const [sorting, setSorting] = useState(Sorting.datetime);
 	const [error, setError] = useState(false as FeedbackContent);
 
 	const [shift, setShift] = useState(false);
@@ -38,7 +41,8 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 				query,
 				courseID: course,
 				userID: user,
-				submissionID: submission
+				submissionID: submission,
+				sorting
 			});
 			setQuery("");
 			if (handleResponse !== undefined) {
@@ -100,21 +104,30 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 					</Tag>
 			}
 		</Form.Group>
-		<Form.Group>
-			<Loading<Course[]>
-						loader={getCourses}
-						component={courses =>
-							<Form.Control as="select" defaultValue={course} onChange={event => setCourse((event.target as HTMLInputElement).value)}>
-								<option key={"disabled"} disabled>Select a course</option>
-								<option key={""} value="">No course</option>
-								{courses.map(course => <option key={course.ID} value={course.ID}>{course.name}</option>
-								)}
+		<Form.Label> Course:
+			<Form.Group>
+				<Loading<Course[]>
+							loader={getCourses}
+							component={courses =>
+								<Form.Control as="select" defaultValue={course} onChange={event => setCourse((event.target as HTMLInputElement).value)}>
+									<option key={"disabled"} disabled>Select a course</option>
+									<option key={""} value="">No course</option>
+									{courses.map(course => <option key={course.ID} value={course.ID}>{course.name}</option>
+									)}
 
-							</Form.Control>
-			}
-					/>
-			
-		</Form.Group>
+								</Form.Control>
+							}
+						/>
+			</Form.Group>
+		</Form.Label>
+		<Form.Label>Ordering
+			<Form.Group>
+				<Form.Control as="select" defaultValue={Sorting.datetime} onChange={event => setSorting(getEnum(Sorting, (event.target as HTMLInputElement).value))}>
+					{Object.keys(Sorting).map(element => <option key={element} value={element}>{element}</option>)}
+				</Form.Control>
+			</Form.Group>
+		</Form.Label>
+
 		<Form.Group>
 			<InputGroup>
 				<Form.Control type="text" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} placeholder="Search" value={query} onChange={(event: React.FormEvent<HTMLInputElement>) => setQuery((event.target as HTMLInputElement).value)}/>
