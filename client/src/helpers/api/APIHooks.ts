@@ -96,7 +96,15 @@ function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: C
 }
 
 export function useCourses(): Refresh<Course> & Create<[{ name: string, state: CourseState }], Course> {
-    const courses = useCacheCollection<Course>("courses");
+    const courses = useCacheCollection<Course>("courses", { 
+        sort: (a, b) => 
+            // Sort by open first, then by name
+            a.state === CourseState.open && b.state !== CourseState.open ? -1 
+            : a.state !== CourseState.open && b.state === CourseState.open ? 1 
+            : a.name > b.name ? 1 
+            : a.name < b.name ? -1 
+            : 0
+    });
     return {
         observable: courses.observable,
         refresh: () => refreshCollection(API.getCourses(), courses),
@@ -110,7 +118,7 @@ export function useCourses(): Refresh<Course> & Create<[{ name: string, state: C
 }
 
 export function useCourse(courseID: string): Refresh<Course> {
-    const courses = useCacheCollection<Course>("courses", course => course?.ID === courseID);
+    const courses = useCacheCollection<Course>("courses", { subKey: courseID, filter: course => course?.ID === courseID });
     const course = useCollectionAsSingle(courses.observable);
     return { 
         observable: course,
@@ -135,7 +143,12 @@ export function useCoursePermission(courseID: string): Refresh<Permission> {
 }
 
 export function useCourseSubmissions(courseID: string): Refresh<Submission> & Create<[string, File[]], Submission> {
-    const submissions = useCacheCollection<Submission>(`submissions`, submission => submission?.references?.courseID === courseID);
+    const submissions = useCacheCollection<Submission>(`submissions`, { 
+        subKey: courseID, 
+        filter: submission => submission?.references?.courseID === courseID,
+        // Sort by date, newest first
+        sort: (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    });
     return {
         observable: submissions.observable,
         refresh: () => refreshCollection(API.getCourseSubmissions(courseID), submissions),
@@ -149,7 +162,10 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
 }
 
 export function useSubmission(submissionID: string): Refresh<Submission> {
-    const submissions = useCacheCollection<Submission>(`submissions`, submission => submission?.ID === submissionID);
+    const submissions = useCacheCollection<Submission>(`submissions`, { 
+        subKey: submissionID,
+        filter: submission => submission?.ID === submissionID 
+    });
     const submission = useCollectionAsSingle(submissions.observable);
     return { 
         observable: submission,
@@ -158,7 +174,9 @@ export function useSubmission(submissionID: string): Refresh<Submission> {
 }
 
 export function useMentions(): Refresh<Mention> {
-    const mentions = useCacheCollection<Mention>("mentions");
+    const mentions = useCacheCollection<Mention>("mentions", {
+        sort: (a, b) => new Date(b.comment.created).getTime() - new Date(a.comment.created).getTime()
+    });
     return {
         observable: mentions.observable,
         refresh: () => refreshCollection(API.getMentions(), mentions)
@@ -166,7 +184,11 @@ export function useMentions(): Refresh<Mention> {
 }
 
 export function useCourseMentions(courseID: string): Refresh<Mention> {
-    const mentions = useCacheCollection<Mention>("mentions", mention => mention?.references?.courseID === courseID);
+    const mentions = useCacheCollection<Mention>("mentions", {
+        subKey: courseID,
+        filter: mention => mention?.references?.courseID === courseID,
+        sort: (a, b) => new Date(b.comment.created).getTime() - new Date(a.comment.created).getTime()
+    });
     return {
         observable: mentions.observable,
         refresh: () => refreshCollection(API.getCourseMentions(courseID), mentions)
@@ -200,9 +222,10 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
 function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
-    threads.transaction(threads => threads.add({ ID: tempID, visibility: thread.visibility, comments: [], references: { submissionID: "", courseID: "" } } as CommentThread, CacheState.Loading));
+    const comment = { ID: "", user: {} as User, text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } };
+    threads.transaction(threads => threads.add({ ID: tempID, visibility: thread.visibility, comments: [comment], references: { submissionID: "", courseID: "" } } as CommentThread, CacheState.Loading));
     const tempComments = cache.getCollection<Comment>(`comments/${tempID}`);
-    tempComments.transaction(tempComments => tempComments.add({ ID: "", user: {} as User, text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } }, CacheState.Loading));
+    tempComments.transaction(tempComments => tempComments.add(comment, CacheState.Loading));
     return promise.then(thread => {
         console.log("Creation of", tempID, "succeeded:", thread);
         threads.transaction(threads => {
@@ -225,7 +248,9 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
 }
 
 export function useProjectComments(submissionID: string): Refresh<CommentThread> & Create<[CreateCommentThread], CommentThread> {
-    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`);
+    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`, {
+        sort: (a, b) => new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
+    });
     const cache = useRawCache();
     return {
         observable: threads.observable,
@@ -242,16 +267,33 @@ export function useProjectComments(submissionID: string): Refresh<CommentThread>
 
 export function useRecentComments(submissionID: string): Refresh<CommentThread> {
     const raw = useRawCache();
-    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`);
+    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, {
+        sort: (a, b) => new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
+    });
     return {
-        // TODO: sorting
         observable: threads.observable,
         refresh: () => refreshComments(API.getRecentComments(submissionID), threads, raw)
     }
 }
 
 export function useFileComments(submissionID: string, fileID: string): Refresh<CommentThread> & Create<[CreateCommentThread], CommentThread> {
-    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, thread => thread?.file?.ID === fileID);
+    const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, {
+        subKey: fileID,
+        filter: thread => thread?.file?.ID === fileID,
+        sort: (a, b) => {
+            const as = a.snippet, bs = b.snippet;
+            return (
+                as !== undefined && bs !== undefined 
+                // Sort comments with snippets by start position in the file
+                ? as.start.line - bs.start.line || as.start.character - bs.start.character
+                // Sort general file comments before comments with snippets
+                : as === undefined && bs !== undefined ? -1
+                : as !== undefined && bs === undefined ? 1
+                // Sort general file comments by reverse date
+                : new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
+            );
+        }
+    });
     const cache = useRawCache();
     return {
         observable: threads.observable,
@@ -267,7 +309,9 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
 }
 
 export function useComments(commentThreadID: string): Create<[string], Comment> {
-    const comments = useCacheCollection<Comment>(`comments/${commentThreadID}`);
+    const comments = useCacheCollection<Comment>(`comments/${commentThreadID}`, {
+        sort: (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+    });
     return {
         observable: comments.observable,
         create: (comment: string) => 
@@ -297,7 +341,10 @@ export function useFiles(submissionID: string): Refresh<APIFile[]> {
 }
 
 export function useFile(submissionID: string, fileID: string): Refresh<APIFile> {
-    const files = useCacheCollection<APIFile>(`file/submission/${submissionID}`, file => file?.ID === fileID);
+    const files = useCacheCollection<APIFile>(`file/submission/${submissionID}`, {
+        subKey: fileID,
+        filter: file => file?.ID === fileID
+    });
     const file = useCollectionAsSingle(files.observable);
     return {
         observable: file,

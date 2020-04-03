@@ -12,14 +12,18 @@ export interface CacheProperties {
     readonly state: CacheState
 }
 
+const emptyCacheProperties: CacheProperties = {
+    createdAt: 0,
+    updatedAt: 0,
+    state: CacheState.Uninitialized,
+}
+
 export interface CacheItem<T> extends CacheProperties {
     readonly value: T
 }
 
 export const emptyCacheItem = <T>(defaultValue?: T) => ({
-    createdAt: 0,
-    updatedAt: 0,
-    state: CacheState.Uninitialized,
+    ...emptyCacheProperties,
     value: defaultValue
 });
 
@@ -44,31 +48,47 @@ export interface CacheCollectionInterface<T> {
     }) => void, state?: CacheState, date?: number) => void
 }
 
+export interface GetCacheCollectionOptions<T> {
+    subKey?: string,
+    filter?: (value: T) => boolean,
+    sort?: (a: T, b: T) => number
+}
+
 export interface Store<T> { [key: string]: T }
 
 export interface ExportedCache {
     // tslint:disable-next-line: no-any
     items: Store<CacheItem<any>>,
     // tslint:disable-next-line: no-any
-    collections: Store<CacheCollection<any>>
+    collections: Store<CacheCollection<any>>,
+    subCollections: Store<Store<CacheProperties>>
 }
 
 interface SubscribableCollection<T> {
     collection: CacheCollection<T>,
+    properties: Store<CacheProperties>,
     subscribers: Array<{
-        filter?: (value: T) => boolean,
+        options: GetCacheCollectionOptions<T>,
         subscriber: Subscriber<CacheCollection<T>>,
     }>
 }
 
-function filterCollection<T>(collection: CacheCollection<T>, filter?: (value: T) => boolean) {
-    return {
-        ...collection,
-        items: 
-            filter !== undefined 
-            ? collection.items.filter(({value}) => filter(value)) 
-            : collection.items
+function getPropsForSubKey<T>(subCol: SubscribableCollection<T>, subKey?: string) {
+    if (subKey) {
+        return subCol.properties[subKey] || emptyCacheProperties;
+    } else {
+        return subCol.collection as CacheProperties;
     }
+}
+
+function returnCollection<T>(subCol: SubscribableCollection<T>, options: GetCacheCollectionOptions<T>) {
+    let items = subCol.collection.items;
+    // filter and sort need to be variables for TypeScript to recognize the null check
+    const { filter, sort } = options;
+    if (filter) items = items.filter(({value}) => filter(value));
+    if (sort) items = items.sort((a, b) => sort(a.value, b.value));
+    const props = getPropsForSubKey(subCol, options.subKey);
+    return { ...props, items };
 }
 
 export class Cache {
@@ -94,6 +114,7 @@ export class Cache {
             for (const key of Object.keys(collections)) {
                 this.collections[key] = {
                     collection: collections[key],
+                    properties: {},
                     subscribers: []
                 }
             }
@@ -114,7 +135,8 @@ export class Cache {
     private export(): ExportedCache {
         return {
             items: Object.assign({}, ...Object.keys(this.items).map(key => ({ [key]: this.items[key].value }))),
-            collections: Object.assign({}, ...Object.keys(this.collections).map(key => ({ [key]: this.collections[key].collection })))
+            collections: Object.assign({}, ...Object.keys(this.collections).map(key => ({ [key]: this.collections[key].collection }))),
+            subCollections: Object.assign({}, ...Object.keys(this.collections).map(key => ({ [key]: this.collections[key].properties })))
         }
     }
 
@@ -148,10 +170,11 @@ export class Cache {
         }
     }
 
-    getCollection<T extends { ID: string }>(key: string, filter?: (value: T) => boolean): CacheCollectionInterface<T> {
+    getCollection<T extends { ID: string }>(key: string, options: GetCacheCollectionOptions<T> = {}): CacheCollectionInterface<T> {
         if (!this.collections[key]) {
             this.collections[key] = {
                 subscribers: [],
+                properties: {},
                 collection: {
                     createdAt: 0,
                     updatedAt: 0,
@@ -162,8 +185,8 @@ export class Cache {
         }
         return {
             observable: new Observable(subscriber => {
-                const length = this.collections[key].subscribers.push({ filter, subscriber });
-                subscriber.next(filterCollection(this.collections[key].collection, filter));
+                const length = this.collections[key].subscribers.push({ options, subscriber });
+                subscriber.next(returnCollection(this.collections[key], options));
                 return () => {
                     this.collections[key].subscribers.splice(length - 1, 1);
                 }
@@ -227,15 +250,27 @@ export class Cache {
                 });
 
                 if (collection !== undefined) {
-                    this.collections[key].collection = {
-                        createdAt: collection.createdAt | date,
-                        updatedAt: date,
-                        state,
-                        items: collection.items
-                    };
-                    for (const { filter, subscriber } of this.collections[key].subscribers) {
-                        if (!filter || changed.some(item => filter(item.value)) || state !== collection.state) {
-                            subscriber.next(filterCollection(this.collections[key].collection, filter));
+                    if (options.subKey) {
+                        this.collections[key].collection = collection;
+                        const props = this.collections[key].properties[options.subKey];
+                        this.collections[key].properties[options.subKey] = {
+                            createdAt: props?.createdAt || date,
+                            updatedAt: date,
+                            state
+                        }
+                    } else {
+                        this.collections[key].collection = {
+                            createdAt: collection.createdAt || date,
+                            updatedAt: date,
+                            state,
+                            items: collection.items
+                        };
+                    }
+
+                    for (const { options: subOptions, subscriber } of this.collections[key].subscribers) {
+                        const filter = subOptions.filter;
+                        if (!filter || subOptions.subKey === options.subKey || changed.some(item => filter(item.value))) {
+                            subscriber.next(returnCollection(this.collections[key], subOptions));
                         }
                     }
                 }
