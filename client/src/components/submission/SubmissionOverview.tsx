@@ -75,7 +75,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 						<Button className="mb-2"><a href={`/api/submission/${submissionId}/archive`}>Download</a></Button>
 					</Jumbotron>
 					<DataList header="Files">
-						<Cached cache={files} wrapper={children => <DataList header="Files" children={children}/>}>
+						<Cached cache={files}>
 							{files => <DirectoryViewer filePaths={files.map(file => ({name: file.name, type: file.type, transport: submissionPath + "/" + file.ID + "/view"}))}/>}
 						</Cached>
 					</DataList>
