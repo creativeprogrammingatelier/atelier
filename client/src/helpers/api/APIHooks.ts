@@ -20,7 +20,8 @@ export interface APICache<T> {
 }
 
 export interface Refresh<T> extends APICache<T> {
-    refresh: () => Promise<boolean>
+    refresh: () => Promise<boolean>,
+    defaultTimeout: number
 }
 
 export interface Create<Arg extends Array<any>, T> extends APICache<T> {
@@ -108,6 +109,7 @@ export function useCourses(): Refresh<Course> & Create<[{ name: string, state: C
     return {
         observable: courses.observable,
         refresh: () => refreshCollection(API.getCourses(), courses),
+        defaultTimeout: 2 * 3600,
         create: ({ name, state }: { name: string, state: CourseState }) => 
             create(
                 API.createCourse({ name, state }), 
@@ -122,6 +124,7 @@ export function useCourse(courseID: string): Refresh<Course> {
     const course = useCollectionAsSingle(courses.observable);
     return { 
         observable: course,
+        defaultTimeout: 0,
         refresh: () => refreshCollection(API.getCourse(courseID), courses)
     };
 }
@@ -130,6 +133,7 @@ export function usePermission(): Refresh<Permission> {
     const permission = useCacheItem<Permission>("permission");
     return {
         observable: permission.observable,
+        defaultTimeout: 24 * 3600,
         refresh: () => refreshItem(API.permission(), permission)
     }
 }
@@ -138,6 +142,7 @@ export function useCoursePermission(courseID: string): Refresh<Permission> {
     const permission = useCacheItem<Permission>(`permission/course/${courseID}`);
     return {
         observable: permission.observable,
+        defaultTimeout: 24 * 3600,
         refresh: () => refreshItem(API.coursePermission(courseID), permission)
     }
 }
@@ -152,6 +157,7 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
     return {
         observable: submissions.observable,
         refresh: () => refreshCollection(API.getCourseSubmissions(courseID), submissions),
+        defaultTimeout: 60,
         create: (projectName: string, files: File[]) => 
             create(
                 API.createSubmission(courseID, projectName, files),
@@ -169,7 +175,8 @@ export function useSubmission(submissionID: string): Refresh<Submission> {
     const submission = useCollectionAsSingle(submissions.observable);
     return { 
         observable: submission,
-        refresh: () => refreshCollection(API.getSubmission(submissionID), submissions)
+        refresh: () => refreshCollection(API.getSubmission(submissionID), submissions),
+        defaultTimeout: 0
     };
 }
 
@@ -179,7 +186,8 @@ export function useMentions(): Refresh<Mention> {
     });
     return {
         observable: mentions.observable,
-        refresh: () => refreshCollection(API.getMentions(), mentions)
+        refresh: () => refreshCollection(API.getMentions(), mentions),
+        defaultTimeout: 30
     }
 }
 
@@ -191,7 +199,8 @@ export function useCourseMentions(courseID: string): Refresh<Mention> {
     });
     return {
         observable: mentions.observable,
-        refresh: () => refreshCollection(API.getCourseMentions(courseID), mentions)
+        refresh: () => refreshCollection(API.getCourseMentions(courseID), mentions),
+        defaultTimeout: 30
     }
 }
 
@@ -199,7 +208,8 @@ export function useCurrentUser(): Refresh<User> {
     const currentUser = useCacheItem<User>("currentUser");
     return {
         observable: currentUser.observable,
-        refresh: () => refreshItem(API.getCurrentUser(), currentUser)
+        refresh: () => refreshItem(API.getCurrentUser(), currentUser),
+        defaultTimeout: 3 * 24 * 3600
     }
 }
 
@@ -255,6 +265,7 @@ export function useProjectComments(submissionID: string): Refresh<CommentThread>
     return {
         observable: threads.observable,
         refresh: () => refreshComments(API.getProjectComments(submissionID), threads, cache),
+        defaultTimeout: 30,
         create: (thread: CreateCommentThread) => 
             createCommentThread(
                 thread,
@@ -272,6 +283,7 @@ export function useRecentComments(submissionID: string): Refresh<CommentThread> 
     });
     return {
         observable: threads.observable,
+        defaultTimeout: 30,
         refresh: () => refreshComments(API.getRecentComments(submissionID), threads, raw)
     }
 }
@@ -298,6 +310,7 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
     return {
         observable: threads.observable,
         refresh: () => refreshComments(API.getFileComments(fileID), threads, cache),
+        defaultTimeout: 30,
         create: (thread: CreateCommentThread) =>
             createCommentThread(
                 thread,
@@ -327,7 +340,8 @@ export function useFileBody(fileID: string): Refresh<string> {
     const fileBodies = useCacheItem<string>(`file/${fileID}/body`);
     return {
         observable: fileBodies.observable,
-        refresh: () => refreshItem(API.getFileContents(fileID), fileBodies)
+        refresh: () => refreshItem(API.getFileContents(fileID), fileBodies),
+        defaultTimeout: 0
     }
 }
 
@@ -336,7 +350,8 @@ export function useFiles(submissionID: string): Refresh<APIFile[]> {
     const fileList = useCollectionCombined(files.observable);
     return {
         observable: fileList,
-        refresh: () => refreshCollection(API.getFiles(submissionID), files)
+        refresh: () => refreshCollection(API.getFiles(submissionID), files),
+        defaultTimeout: 0
     }
 }
 
@@ -348,6 +363,7 @@ export function useFile(submissionID: string, fileID: string): Refresh<APIFile> 
     const file = useCollectionAsSingle(files.observable);
     return {
         observable: file,
-        refresh: () => refreshCollection(API.getFile(fileID), files)
+        refresh: () => refreshCollection(API.getFile(fileID), files),
+        defaultTimeout: 0
     }
 }
