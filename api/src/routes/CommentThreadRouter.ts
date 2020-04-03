@@ -20,10 +20,10 @@ import {
 	requireRegisteredFileID,
 	requireRegisteredSubmissionID
 } from "../helpers/PermissionHelper";
-import {filterCommentThread} from "../helpers/APIFilterHelper";
+import {filterCommentThread, removePermissionsCommentThread} from "../helpers/APIFilterHelper";
 import {createMentions} from '../helpers/MentionsHelper';
-import { readFileAsString, getFilePathOnDisk } from '../helpers/FilesystemHelper';
-import { getContextLines } from '../../../helpers/SnippetHelper';
+import {getFilePathOnDisk, readFileAsString} from '../helpers/FilesystemHelper';
+import {getContextLines} from '../../../helpers/SnippetHelper';
 import {commentThreadOwner} from "../../../helpers/CommentThreadHelper";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
@@ -44,8 +44,8 @@ commentThreadRouter.get("/:commentThreadID", capture(async(request, response) =>
 	// User should be registered in the course
 	await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 
-	const thread: CommentThread = await ThreadDB.addCommentSingle(ThreadDB.getThreadByID(commentThreadID));
-	response.status(200).send(thread);
+	const thread: CommentThread = (await ThreadDB.addCommentSingle(ThreadDB.getThreadByID(commentThreadID)));
+	response.status(200).send(removePermissionsCommentThread(thread));
 }));
 
 /**
@@ -63,8 +63,10 @@ commentThreadRouter.get("/file/:fileID", capture(async(request, response) => {
 	await requireRegisteredFileID(currentUserID, fileID);
 
 	// Retrieve comment threads, and filter out restricted comment threads if user does not have access
-	const commentThreads: CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
-	response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
+	let commentThreads: CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(fileID));
+	commentThreads = (await filterCommentThread(commentThreads, currentUserID))
+		.map(thread => removePermissionsCommentThread(thread));
+	response.status(200).send(commentThreads);
 }));
 
 /**
@@ -83,8 +85,10 @@ commentThreadRouter.get("/submission/:submissionID", capture(async(request, resp
 	await requireRegisteredSubmissionID(currentUserID, submissionID);
 
 	// Retrieve comment threads, and filter out restricted comment threads if user does not have access
-	const commentThreads: CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
-	response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
+	let commentThreads: CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsByFile(nullFileID));
+	commentThreads = (await filterCommentThread(commentThreads, currentUserID))
+		.map(thread => removePermissionsCommentThread(thread));
+	response.status(200).send(commentThreads);
 }));
 
 /**
@@ -103,8 +107,12 @@ commentThreadRouter.get("/submission/:submissionID/recent", capture(async(reques
 	await requireRegisteredSubmissionID(currentUserID, submissionID);
 
 	// Retrieve comment threads, and filter out restricted comment threads if user does not have access
-	const commentThreads: CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
-	response.status(200).send(await filterCommentThread(commentThreads, currentUserID));
+	let commentThreads: CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
+	// Recent comment threads should not include submission comments
+	commentThreads = commentThreads.filter((commentThread : CommentThread) => commentThread.snippet);
+	commentThreads = (await filterCommentThread(commentThreads, currentUserID))
+		.map(commentThread => removePermissionsCommentThread(commentThread));
+	response.status(200).send(commentThreads);
 }));
 
 /** ---------- PUT ---------- */
@@ -130,8 +138,10 @@ commentThreadRouter.put('/:commentThreadID', capture(async (request, response) =
 		commentThreadID,
 		visibilityState
 	});
-	response.status(200).send(commentThread);
+	response.status(200).send(removePermissionsCommentThread(commentThread));
 }));
+
+
 
 
 /** ---------- POST REQUESTS ---------- */
@@ -193,7 +203,6 @@ commentThreadRouter.post("/submission/:submissionID", capture(async(request, res
 	response.send(commentThread);
 }));
 
-
 /**
  * Create comment thread on a file.
  * - requirements:
@@ -235,4 +244,25 @@ commentThreadRouter.post("/file/:fileID", capture(async(request, response) => {
 	response.status(200).send(commentThread);
 }));
 
+/** ----------- DELETE REQUESTS ---------- */
+/**
+ * Delete a comment thread
+ * - requirements:
+ *  - user is the owner of the comment thread (first comment)
+ *  - user has permission to manage restricted comment threads
+ */
+commentThreadRouter.delete('/:commentThreadID', capture(async(request, response) => {
+	const commentThreadID: string = request.params.commentThreadID;
+
+	const oldCommentThread = await ThreadDB.getThreadByID(commentThreadID);
+	const courseID = oldCommentThread.references.courseID;
+	const currentUserID : string = await getCurrentUserID(request);
+	// Either user is owner of a comment thread or has permission to manage restricted comments
+	if (commentThreadOwner(oldCommentThread) !== currentUserID) {
+		await requirePermission(currentUserID, PermissionEnum.manageRestrictedComments, courseID);
+	}
+
+	const commentThread = await ThreadDB.deleteThread(commentThreadID);
+	response.status(200).send(commentThread);
+}));
 

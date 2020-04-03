@@ -12,6 +12,7 @@ import {requirePermission, requirePermissions} from "../helpers/PermissionHelper
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import { CourseUser } from "../../../models/api/CourseUser";
+import {removePermissionsCourseUser, removePermissionsUser} from "../helpers/APIFilterHelper";
 
 export const userRouter = express.Router();
 
@@ -29,7 +30,7 @@ userRouter.get('/all', capture(async(request : Request, response : Response) => 
 	// Require view all user profiles permission
 	await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
 
-	const users : User[] = await UserDB.getAllUsers();
+	const users : User[] = (await UserDB.getAllUsers());
 	response.status(200).send(users);
 }));
 
@@ -50,7 +51,7 @@ userRouter.get('/course/:courseID', capture(async(request: Request, response : R
 		PermissionEnum.manageUserPermissionsView
 	], courseID, true);
 
-	const users : CourseUser[] = await CourseRegistrationDB.getEntriesByCourse(courseID);
+	const users : CourseUser[] = (await CourseRegistrationDB.getEntriesByCourse(courseID));
 	response.status(200).send(users);
 }));
 
