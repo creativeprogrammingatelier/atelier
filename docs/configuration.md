@@ -42,7 +42,19 @@ This setting is especially useful if Atelier is used with programming languages 
         "type": "saml",
         "id": "samling",
         "name": "Samling",
-        "metadata": { "url": "https://capriza.github.io/samling/public/metadata.xml" }
+        "metadata": { "url": "https://capriza.github.io/samling/public/metadata.xml" },
+        "attributes": {
+            "name": {
+                "firstname": "urn:mace:dir:attribute-def:givenName",
+                "lastname": "urn:mace:dir:attribute-def:sn"
+            },
+            "email": "urn:mace:dir:attribute-def:mail", 
+            "role": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+            "roleMapping": {
+                "student": "user",
+                "employee": "staff"
+            }
+        }
     },
     {
         "type": "builtin",
@@ -70,6 +82,16 @@ To link Atelier to a SAML Identity Provider, you need to import the metadata fil
 - File: `"metadata": { "file": "config/idp_metadata.xml" }`
 
   If your IDP does not expose its metadata on the webserver, you can use a local copy of the metadata file to configure Atelier. The file will be read at the specified path, starting from the root of the application, when the server starts.
+
+Optionally, you can also specify which attributes from a SAML response will be used to register the user, by setting the `attributes` field. You can configure values for the following three user properties:
+
+- `name`: this can either be a string mapping to the name of the SAML attribute, or an object with a `firstname` and `lastname` property, mapping to SAML attributes for these. If this last option is used, the name of the user will be set to `firstname + " " + lastname`. Otherwise, the user's name will simply be set to the value of the referenced attribute.
+- `email`: a string mapping to the name of a SAML attribute containing the email address of the user.
+- `role`: a string mapping to the name of a SAML attribute from which the global role of the user in the Atelier system will be determined.
+
+All of these fields are optional. If they are not set, default values will be assigned to the users signing in. For the name and email, it will be derived from the SAML `NameID` field, the role will default to user. The user can then change their name and email in the user settings.
+
+If your SAML provider uses different role names than Atelier, you can add a `roleMapping` field to the `attributes` object. The keys of this object are the values provided in the SAML attribute, the value assigned to the key is the role in Atelier. If a value in the SAML attribute is not defined in the `roleMapping`, it will be assumed that no mapping is required and the given role is a valid role in Atelier.
 
 ### Built in
 
