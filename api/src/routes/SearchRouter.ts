@@ -27,6 +27,11 @@ import { map } from '../database/HelperDB';
 import {PermissionError, requirePermissions, requireRegistered} from '../helpers/PermissionHelper';
 import { PermissionEnum } from '../../../models/enums/PermissionEnum';
 import { Sorting } from '../../../models/enums/SortingEnum';
+import {
+    removePermissionsComment,
+    removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets,
+    removePermissionsSubmission
+} from "../helpers/APIFilterHelper";
 
 export const searchRouter = express.Router();
 
@@ -87,10 +92,10 @@ searchRouter.get('/', capture(async (request, response) => {
         const result = {
             users, 
             courses: [], 
-            submissions, 
+            submissions : submissions.map(submission => removePermissionsSubmission(submission)),
             files,
-            comments,
-            snippets
+            comments : removePermissionsSearchResultComments(comments),
+            snippets : removePermissionsSearchResultSnippets(snippets)
         } as SearchResult;
         console.log("course searched. query:", query, "Found", result);
         response.send(result);
@@ -99,7 +104,7 @@ searchRouter.get('/', capture(async (request, response) => {
         const users = await filterUser(query, common)
         const result = {
             users, 
-            courses, 
+            courses : courses.map(course => removePermissionsCoursePartial(course)),
             submissions: [], 
             files: [],
             comments: [],
@@ -116,7 +121,8 @@ searchRouter.get('/courses', capture(async (request, response) => {
     if (common.courseID) {
         throw new InvalidParamsError("when searching for a course, a courseID is not allowed")
     }
-    const courses = await CourseDB.searchCourse(query, common);
+    const courses = (await CourseDB.searchCourse(query, common))
+        .map(course => removePermissionsCoursePartial(course));
     response.send(courses);
 }));
 
@@ -138,7 +144,7 @@ searchRouter.get('/comments', capture(async (request, response) => {
     }
     await requireRegistered(common.currentUserID, common.courseID);
     const comments = await CommentDB.searchComments(query, common);
-    response.send(comments);
+    response.send(removePermissionsSearchResultComments(comments));
 }));
 
 /** Search for snippets */
@@ -149,7 +155,7 @@ searchRouter.get('/snippets', capture(async (request, response) => {
     }
     await requireRegistered(common.currentUserID, common.courseID);
     const snippets = await SnippetDB.searchSnippets(query, common);
-    response.send(snippets);
+    response.send(removePermissionsSearchResultSnippets(snippets));
 }));
 
 /** search for submissions */
@@ -159,7 +165,8 @@ searchRouter.get('/submissions', capture(async (request, response) => {
         throw new InvalidParamsError("courseID", "should be given, but wasn't")
     }
     await requireRegistered(common.currentUserID, common.courseID);
-    const submissions = await SubmissionDB.searchSubmissions(query, common);
+    const submissions = (await SubmissionDB.searchSubmissions(query, common))
+        .map(submission => removePermissionsSubmission(submission));
     response.send(submissions);
 }));
 

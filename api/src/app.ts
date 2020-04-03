@@ -96,8 +96,8 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
 	console.log('\x1b[31m', error);
     
     if (error instanceof AuthError) {
+        //response.status(401).send({error: error.reason, message: error.message});
         response.status(401).redirect('/login');
-        //response.status(401).send({ error: error.reason, message: error.message });
     } else if (error instanceof PermissionError){
         response.status(401).send({error : error.reason, message : error.message});
     } else if (error instanceof NotFoundDatabaseError) {

@@ -7,6 +7,10 @@ import {Submission} from "../../../models/api/Submission";
 import {ThreadState} from "../../../models/enums/ThreadStateEnum";
 import {User} from "../../../models/api/User";
 import {Snippet} from "../../../models/api/Snippet";
+import {Permission} from "../../../models/api/Permission";
+import {CourseUser} from "../../../models/api/CourseUser";
+import {Mention} from "../../../models/api/Mention";
+import {SearchResultComment, SearchResultSnippet} from "../../../models/api/SearchResult";
 
 /**
  * Filters comment thread API response. Comment threads are assumed in the same course.
@@ -88,17 +92,69 @@ export async function filterUser(users : User[], userID : string, permissions? :
     return users;
 }
 
-
-export async function filterSnippet(snippets : Snippet[], userID : string, permissions? : number) {
-    // TODO how to filter. Would require querying each submission to get author.
-    return snippets;
+export function removePermissions(permission: Permission) {
+    permission.permissions = 0;
+    return permission;
 }
 
-export async function filterComment(comments : Comment[], userID : string, permissions? : number) {
-    // TODO how to filter. Would requires querying all comment threads for visibility.
-    return comments;
+export function removePermissionsComment(comment: Comment) {
+    removePermissionsUser(comment.user);
+    return comment;
 }
 
+export function removePermissionsCommentThread(commentThread: CommentThread) {
+    commentThread.comments.forEach(comment => removePermissionsComment(comment));
+    return commentThread;
+}
+
+export function removePermissionsCoursePartial(coursePartial: CoursePartial) {
+    removePermissionsUser(coursePartial.creator);
+    return coursePartial;
+}
+
+export function removePermissionsSubmission(submission: Submission) {
+    removePermissionsUser(submission.user);
+    return submission;
+}
+
+export function removePermissionsMention(mention: Mention) {
+    if (mention.user) removePermissionsUser(mention.user);
+    return mention;
+}
+
+export function removePermissionsUser(user: User) {
+    removePermissions(user.permission);
+    return user;
+}
+
+export function removePermissionsCourseUser(user: CourseUser) {
+    removePermissions(user.permission);
+    return user;
+}
+
+export function removePermissionsSearchResultComments(comments: SearchResultComment[]) {
+    return comments.map(comment => {
+        removePermissionsComment(comment.comment);
+        removePermissionsSubmission(comment.submission);
+        return comment;
+    });
+}
+
+export function removePermissionsSearchResultSnippets(snippets: SearchResultSnippet[]) {
+    return snippets.map(snippet => {
+         removePermissionsSubmission(snippet.submission);
+         return snippet;
+    });
+}
+
+
+
+
+/**
+ * Checks whether a user is part of a comment thread
+ * @param userID, ID of the requesting user
+ * @param commentThread, commentThread to check
+ */
 function userPartOfCommentThread(userID : string, commentThread : CommentThread) {
     return commentThread.comments.some((comment : Comment) => comment.user.ID === userID);
 }

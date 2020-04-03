@@ -11,6 +11,7 @@ import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {requireRegisteredCommentThreadID} from "../helpers/PermissionHelper";
 import { createMentions } from '../helpers/MentionsHelper';
 import { transaction } from '../database/HelperDB';
+import {removePermissionsComment} from "../helpers/APIFilterHelper";
 
 export const commentRouter = express.Router();
 commentRouter.use(AuthMiddleware.requireAuth);
@@ -20,7 +21,8 @@ commentRouter.use(AuthMiddleware.requireAuth);
  */
 commentRouter.get("/user/:userID", capture(async (request, response) => {
     const userID = request.params.userID;
-    const comments = await CommentDB.filterComment({userID});
+    const comments = (await CommentDB.filterComment({userID}))
+        .map(comment => removePermissionsComment(comment));
     response.status(200).send(comments);
 }));
 
@@ -30,7 +32,8 @@ commentRouter.get("/user/:userID", capture(async (request, response) => {
 commentRouter.get("/course/:courseID/user/:userID", capture(async (request, response) => {
     const courseID = request.params.courseID;
     const userID = request.params.userID;
-    const comments = await CommentDB.filterComment({courseID, userID});
+    const comments = (await CommentDB.filterComment({courseID, userID}))
+        .map(comment => removePermissionsComment(comment));
     response.status(200).send(comments);
 }));
 

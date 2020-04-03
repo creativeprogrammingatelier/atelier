@@ -154,6 +154,9 @@ export function setCommentThreadVisibility(commentThreadID: string, visible: boo
 		putJson({ visibility : visible ? "public" : "private" })
 	);
 }
+export function deleteCommentThread(commentThreadID: string) {
+	return Fetch.fetchJson<CommentThread>(`/api/commentThread/${commentThreadID}`, {method : "DELETE"});
+}
 
 export function createFileCommentThread(fileID: string, thread: CreateCommentThread) {
 	return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread));
@@ -193,7 +196,7 @@ export function searchUsers(query: string, courseID?: string, limit = 20, offset
 	const courseSearch = courseID === undefined ? "" : `&courseID=${courseID}`;
 	return Fetch.fetchJson<User[]>(`/api/search/users?q=${query}${courseSearch}&limit=${limit}&offset=${offset}`);
 }
-//@deprecated searchUsers is more general.
+
 export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0) {
 	return Fetch.fetchJson<User[]>(`/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`);
 }

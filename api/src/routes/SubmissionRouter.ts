@@ -13,7 +13,7 @@ import {getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
-import {filterSubmission} from '../helpers/APIFilterHelper';
+import {filterSubmission, removePermissions, removePermissionsSubmission} from '../helpers/APIFilterHelper';
 import {PermissionEnum} from '../../../models/enums/PermissionEnum';
 import {requirePermission, requireRegistered} from '../helpers/PermissionHelper';
 import {transaction} from '../database/HelperDB';
@@ -35,8 +35,8 @@ submissionRouter.get('/course/:courseID', capture(async(request: Request, respon
     await requireRegistered(userID, courseID);
 
     let submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
-    submissions = await filterSubmission(submissions, userID);
-
+    submissions = (await filterSubmission(submissions, userID))
+        .map(submission => removePermissionsSubmission(submission));
     response.status(200).send(submissions);
 }));
 
@@ -95,7 +95,8 @@ submissionRouter.get('/user/:userID', capture(async(request: Request, response: 
     // Requires view all submission permission if you are not the user
     if (userID !== currentUserID) await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions);
 
-    const submissions : Submission[] = await SubmissionDB.getUserSubmissions(userID);
+    const submissions : Submission[] = (await SubmissionDB.getUserSubmissions(userID))
+        .map(submission => removePermissionsSubmission(submission));
     response.status(200).send(submissions);
 }));
 
@@ -111,7 +112,8 @@ submissionRouter.get('/course/:courseID/user/:userID', capture(async(request: Re
     await requireRegistered(currentUserID, courseID);
     if (userID !== currentUserID) await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 
-    const submissions : Submission[] = await SubmissionDB.getRecents({userID, courseID});
+    const submissions : Submission[] = (await SubmissionDB.getRecents({userID, courseID}))
+        .map(submission => removePermissionsSubmission(submission));
     response.status(200).send(submissions);
 }));
 
@@ -125,10 +127,9 @@ submissionRouter.get('/:submissionID', capture(async(request: Request, response:
     const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
 
     // Requires registration in the course
-    console.log("checkung submission erolled");
     await requireRegistered(currentUserID, submission.references.courseID);
 
-    response.status(200).send(submission);
+    response.status(200).send(removePermissionsSubmission(submission));
 }));
 
 /** Get the archive for a specific submission */

@@ -14,7 +14,12 @@ import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {transaction} from "../database/HelperDB";
 import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
-import {filterCourse} from "../helpers/APIFilterHelper";
+import {
+	filterCourse,
+	removePermissionsCoursePartial,
+	removePermissionsCourseUser,
+	removePermissionsUser
+} from "../helpers/APIFilterHelper";
 import {CourseUser} from "../../../models/api/CourseUser";
 import {CourseInviteDB} from "../database/CourseInviteDB";
 
@@ -35,8 +40,9 @@ courseRouter.get("/", capture(async(request: Request, response: Response) => {
 	const courses : CoursePartial[] = await CourseDB.getAllCourses();
 	const enrolled : string[] = (await CourseRegistrationDB.getEntriesByUser(userID))
 		.map((course : CourseUser) => course.courseID);
-	console.log(enrolled);
-	response.status(200).send(await filterCourse(courses, enrolled, userID));
+	const filtered = (await filterCourse(courses, enrolled, userID))
+		.map((coursePartial => removePermissionsCoursePartial(coursePartial)));
+	response.status(200).send(filtered);
 }));
 
 /**
@@ -53,8 +59,10 @@ courseRouter.get("/user/:userID", capture(async(request: Request, response: Resp
 
 	const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID))
 		.map((course: CourseUser) => course.courseID);
+	const courses = (await CourseDB.getAllCourses())
+		.filter(course => enrolledCourses.includes(course.ID))
+		.map(course => removePermissionsCoursePartial(course));
 
-	const courses = (await CourseDB.getAllCourses()).filter((course: CoursePartial) => enrolledCourses.includes(course.ID));
 	response.status(200).send(courses);
 }));
 
@@ -71,7 +79,7 @@ courseRouter.get("/:courseID", capture(async(request: Request, response: Respons
 	// User should be registered in the course
 	await requireRegistered(currentUserID, courseID);
 
-	response.status(200).send(course);
+	response.status(200).send(removePermissionsCoursePartial(course));
 }));
 
 /** ---------- POST REQUESTS ---------- */
@@ -107,7 +115,7 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
         return course;
     });
 
-    response.status(200).send(course);
+    response.status(200).send(removePermissionsCoursePartial(course));
 }));
 
 /** ---------- PUT REQUESTS ---------- */
@@ -132,7 +140,7 @@ courseRouter.put('/:courseID', capture(async(request : Request, response : Respo
 		state
 	});
 
-	response.status(200).send(course);
+	response.status(200).send(removePermissionsCoursePartial(course));
 }));
 
 /**
@@ -154,14 +162,14 @@ courseRouter.put('/:courseID/user/:userID/role/:role', capture(async(request : R
 
 	// User already registered in the course
 	if (courseRegistrations.length !== 0) {
-		response.status(200).send(courseRegistrations[0]);
+		response.status(200).send(removePermissionsCourseUser(courseRegistrations[0]));
 	} else {
 		const courseRegistration : CourseUser = await CourseRegistrationDB.addEntry({
 			courseID,
 			userID,
 			courseRole
 		});
-		response.status(200).send(courseRegistration);
+		response.status(200).send(removePermissionsCourseUser(courseRegistration));
 	}
 }));
 
@@ -181,7 +189,7 @@ courseRouter.delete('/:courseID/user/:userID', capture(async(request : Request, 
 		userID
 	});
 
-	response.status(200).send(result);
+	response.status(200).send(removePermissionsCourseUser(result));
 }));
 
 courseRouter.delete('/:courseID', capture(async(request : Request, response : Response) => {
@@ -193,5 +201,5 @@ courseRouter.delete('/:courseID', capture(async(request : Request, response : Re
 
 	const result : CoursePartial = await CourseDB.deleteCourseByID(courseID);
 
-	response.status(200).send(result);
+	response.status(200).send(removePermissionsCoursePartial(result));
 }));
