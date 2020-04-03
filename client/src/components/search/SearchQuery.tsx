@@ -16,7 +16,7 @@ import {Loading} from "../general/loading/Loading";
 import {Tag} from "../general/Tag";
 import {SearchProperties} from "./SearchOverview";
 import { Sorting } from "../../../../models/enums/SortingEnum";
-import { getEnum } from "../../../../models/enums/enumHelper";
+import { getEnum } from "../../../../models/enums/EnumHelper";
 
 interface SearchQueryProperties {
 	state: SearchProperties,
