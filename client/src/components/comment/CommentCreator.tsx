@@ -131,7 +131,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 						suggestionBase={suggestionBase}
 						round={round}
 						courseID={mentions.courseID}
-						onSelected={(user : User) => handleMentionSelected(user.name)}
+						onSelected={(user : string) => handleMentionSelected(user)}
 					/>
 				}
 			</InputGroup>
