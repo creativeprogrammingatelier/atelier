@@ -154,6 +154,7 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
         // Sort by date, newest first
         sort: (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     });
+    const getCurrentUser = useCurrentUserDirect();
     return {
         observable: submissions.observable,
         refresh: () => refreshCollection(API.getCourseSubmissions(courseID), submissions),
@@ -161,7 +162,7 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
         create: (projectName: string, files: File[]) => 
             create(
                 API.createSubmission(courseID, projectName, files),
-                { ID: "", name: projectName, date: new Date(Date.now()).toISOString(), user: {} as User, state: "new", files: [], references: { courseID } },
+                { ID: "", name: projectName, date: new Date(Date.now()).toISOString(), user: getCurrentUser(), state: "new", files: [], references: { courseID } },
                 submissions
             )
     }
@@ -213,6 +214,12 @@ export function useCurrentUser(): Refresh<User> {
     }
 }
 
+/** This is only for internal use in the cache */
+function useCurrentUserDirect(): () => User {
+    const currentUser = useCacheItem<User>("currentUser");
+    return () => currentUser.getCurrentValue().value;
+}
+
 function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
     return promise.then(result => {
         threads.transaction(threads => {
@@ -229,10 +236,10 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
     });
 }
 
-function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
+function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, getCurrentUser: () => User, cache: Cache) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
-    const comment = { ID: "", user: {} as User, text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } };
+    const comment = { ID: "", user: getCurrentUser(), text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } };
     threads.transaction(threads => threads.add({ ID: tempID, visibility: thread.visibility, comments: [comment], references: { submissionID: "", courseID: "" } } as CommentThread, CacheState.Loading));
     const tempComments = cache.getCollection<Comment>(`comments/${tempID}`);
     tempComments.transaction(tempComments => tempComments.add(comment, CacheState.Loading));
@@ -262,6 +269,7 @@ export function useProjectComments(submissionID: string): Refresh<CommentThread>
         sort: (a, b) => new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
     });
     const cache = useRawCache();
+    const getCurrentUser = useCurrentUserDirect();
     return {
         observable: threads.observable,
         refresh: () => refreshComments(API.getProjectComments(submissionID), threads, cache),
@@ -271,6 +279,7 @@ export function useProjectComments(submissionID: string): Refresh<CommentThread>
                 thread,
                 API.createSubmissionCommentThread(submissionID, thread),
                 threads,
+                getCurrentUser,
                 cache
             )
     }
@@ -307,6 +316,7 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
         }
     });
     const cache = useRawCache();
+    const getCurrentUser = useCurrentUserDirect();
     return {
         observable: threads.observable,
         refresh: () => refreshComments(API.getFileComments(fileID), threads, cache),
@@ -316,6 +326,7 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
                 thread,
                 API.createFileCommentThread(fileID, thread),
                 threads,
+                getCurrentUser,
                 cache
             )
     }
@@ -325,12 +336,13 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
     const comments = useCacheCollection<Comment>(`comments/${commentThreadID}`, {
         sort: (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
     });
+    const getCurrentUser = useCurrentUserDirect();
     return {
         observable: comments.observable,
         create: (comment: string) => 
             create(
                 API.createComment(commentThreadID, comment),
-                { ID: "", user: {} as User, text: comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } },
+                { ID: "", user: getCurrentUser(), text: comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } },
                 comments
             )
     }

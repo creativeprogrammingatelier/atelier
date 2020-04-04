@@ -29,6 +29,7 @@ export const emptyCacheItem = <T>(defaultValue?: T) => ({
 
 export interface CacheItemInterface<T> {
     observable: Observable<CacheItem<T>>,
+    getCurrentValue: () => CacheItem<T>,
     updateItem: (update: (t: T) => T, state: CacheState, date?: number) => void,
     clear: () => void
 }
@@ -39,6 +40,7 @@ export interface CacheCollection<T> extends CacheProperties {
 
 export interface CacheCollectionInterface<T> {
     observable: Observable<CacheCollection<T>>,
+    getCurrentValue: () => CacheCollection<T>,
     transaction: (update: (funcs: {
         addAll: (values: T[], state: CacheState) => void,
         add: (value: T, state: CacheState) => void,
@@ -150,6 +152,7 @@ export class Cache {
         }
         return {
             observable: this.items[key].asObservable(),
+            getCurrentValue: () => this.items[key].value as CacheItem<T>,
             updateItem: (update, state, date = Date.now()) => {
                 if (!this.items[key]) throw new CacheError("cleared", key);
 
@@ -191,6 +194,7 @@ export class Cache {
                     this.collections[key].subscribers.splice(length - 1, 1);
                 }
             }),
+            getCurrentValue: () => returnCollection(this.collections[key], options),
             transaction: (update, state = CacheState.Loaded, date = Date.now()) => {
                 if (!this.collections[key]) throw new CacheError("cleared", key);
 
