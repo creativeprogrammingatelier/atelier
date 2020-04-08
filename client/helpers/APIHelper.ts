@@ -20,6 +20,7 @@ import {GlobalRole} from "../../models/enums/GlobalRoleEnum";
 import {InviteRole} from "../../models/enums/InviteRoleEnum";
 import {CourseRole} from "../../models/enums/CourseRoleEnum";
 import {Sorting} from "../../models/enums/SortingEnum";
+import "../../helpers/Extensions";
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
 	method,
@@ -104,7 +105,7 @@ export function getSubmission(submissionID: string) {
 export function createSubmission(courseId: string, projectName: string, files: File[]) {
 	const form = new FormData();
 	form.append("project", projectName);
-	for (const file of files) {
+	for (const file of files.map(file => new File([file], file.webkitRelativePath || file.name, { type: file.type }))) {
 		form.append("files", file);
 	}
 
