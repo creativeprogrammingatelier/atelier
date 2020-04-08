@@ -15,12 +15,13 @@ import {FiUpload} from "react-icons/all";
 import {LoadingIcon} from "../general/loading/LoadingIcon";
 import { useCourseSubmissions } from "../../helpers/api/APIHooks";
 import { JsonFetchError } from "../../../helpers/FetchHelper";
+import { Submission } from "../../../../models/api/Submission";
 
 interface UploaderProperties {
 	/** The courseId to upload the submission to */
 	courseId: string
 	/** Callback to call when uploading is finished */
-	onUploadComplete: (submission: boolean) => void
+	onUploadComplete: (submission: Submission) => void
 }
 
 /** If the browser supports uploading directories, the component
@@ -66,7 +67,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 			updateSelectedFiles(Array.from(event.target.files));
 		}
 	}
-	function handleUploadComplete(result: boolean) {
+	function handleUploadComplete(result: Submission) {
 		updateUploading(false);
  		updateErrors(prev => ({...prev, upload: false}));
  		if (inputElement) {
