@@ -11,7 +11,7 @@ import { PermissionEnum } from '../../../models/enums/PermissionEnum';
 
 export const pluginRouter = express.Router()
 
-/** All enpoints require the manageUserRegistration permission */
+/** All enpoints require the managePlugins permission */
 pluginRouter.use(captureNext(async (request, response, next) => {
     const userID = await getCurrentUserID(request);
     await requirePermission(userID, PermissionEnum.managePlugins);
@@ -32,8 +32,11 @@ pluginRouter.get('/', capture(async (request, response) => {
 
 /** Create a new plugin */
 pluginRouter.post('/', capture(async (request, response) => {
-    const userName = request.body.user?.name;
-    const email = request.body.user?.email;
+    let userName: string = request.body.user?.name;
+    if (!userName?.endsWith("(Plugin)")) {
+        userName = userName + " (Plugin)";
+    }
+    const email: string = request.body.user?.email;
 
     const plugin: Plugin = await transaction(async client => {
         const user = await UserDB.createUser({
@@ -68,11 +71,16 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
     const userID = request.params.userID;
 
     const plugin: Plugin = await transaction(async client => {
+        let userName: string = request.body.user?.name;
+        if (userName !== undefined && !userName.endsWith("(Plugin)")) {
+            userName = userName + " (Plugin)";
+        }
+
         let user = undefined;
         if (request.body.user) {
             user = await UserDB.updateUser({
                 userID,
-                userName: request.body.user?.name,
+                userName,
                 email: request.body.user?.email,
                 client
             });
