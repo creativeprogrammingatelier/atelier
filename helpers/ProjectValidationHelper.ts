@@ -64,7 +64,7 @@ function containsNoCodeFiles<T>(files: Array<ProjectFile<T>>) {
 }
 
 function invalidProjectName<T>(projectName: string, files: Array<ProjectFile<T>>) {
-    return !files.some(f => f.pathInProject === `${projectName}/${projectName}.pde`);
+    return !files.some(f => f.pathInProject === `${projectName}/${projectName}.pde` || f.pathInProject === `${projectName}.pde`);
 }
 
 function projectTooLarge<T>(files: Array<ProjectFile<T>>) {
