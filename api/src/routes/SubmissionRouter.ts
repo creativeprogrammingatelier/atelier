@@ -41,49 +41,6 @@ submissionRouter.get('/course/:courseID', capture(async(request: Request, respon
 }));
 
 /**
- * Create a new submission containing the files submitted in the body of the request
- */
-submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capture(async (request, response) => {
-    const userID = await getCurrentUserID(request);
-    await requireRegistered(userID, request.params.courseID);
-    
-    const files = request.files as Express.Multer.File[];
-    const fileLocation = (request as FileUploadRequest).fileLocation!;
-    validateProjectServer(request.body["project"], files);
-
-    const { submission, dbFiles } = await transaction(async client => {
-        const submission = await SubmissionDB.addSubmission({ 
-            title : request.body["project"],
-            courseID: request.params.courseID, 
-            userID
-        }, client);
-        
-        const oldPath = path.join(UPLOADS_PATH, fileLocation);
-
-        const dbFiles = await Promise.all(
-            files.map(file => 
-                FileDB.addFile({
-                    pathname: file.path.replace(oldPath, "").replace(/\\/g, "/"),
-                    type: getProperType(file.mimetype, file.path),
-                    submissionID: submission.ID,
-                    client
-                }))
-        );
-        
-        await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
-        await archiveProject(submission.ID, request.body["project"]);
-
-        return { submission, dbFiles };
-    });
-                
-    response.send(submission);
-
-    await Promise.all(
-        dbFiles.map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
-    );
-}));
-
-/**
  * Get submissions of a user
  * - requirements:
  *  - view all submissions permission
@@ -145,4 +102,47 @@ submissionRouter.get('/:submissionID/archive', capture(async (request, response)
         .set("Content-Type", "application/zip")
         .set("Content-Disposition", `attachment; filename="${path.basename(zipFileName)}"`)
         .send(fileBody);
+}));
+
+/**
+ * Create a new submission containing the files submitted in the body of the request
+ */
+submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capture(async (request, response) => {
+    const userID = await getCurrentUserID(request);
+    await requireRegistered(userID, request.params.courseID);
+
+    const files = request.files as Express.Multer.File[];
+    const fileLocation = (request as FileUploadRequest).fileLocation!;
+    validateProjectServer(request.body["project"], files);
+
+    const { submission, dbFiles } = await transaction(async client => {
+        const submission = await SubmissionDB.addSubmission({
+            title : request.body["project"],
+            courseID: request.params.courseID,
+            userID
+        }, client);
+
+        const oldPath = path.join(UPLOADS_PATH, fileLocation);
+
+        const dbFiles = await Promise.all(
+            files.map(file =>
+                FileDB.addFile({
+                    pathname: file.path.replace(oldPath, "").replace(/\\/g, "/"),
+                    type: getProperType(file.mimetype, file.path),
+                    submissionID: submission.ID,
+                    client
+                }))
+        );
+
+        await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
+        await archiveProject(submission.ID, request.body["project"]);
+
+        return { submission, dbFiles };
+    });
+
+    response.send(submission);
+
+    await Promise.all(
+        dbFiles.map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
+    );
 }));

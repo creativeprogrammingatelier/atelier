@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Button, Form} from "react-bootstrap";
 
-import {CoursePartial} from "../../../../../models/api/Course";
+import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {CourseState} from "../../../../../models/enums/CourseStateEnum";
 
 import {updateCourse} from "../../../../helpers/APIHelper";
@@ -11,24 +11,22 @@ import {FeedbackError} from "../../feedback/FeedbackError";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface CourseSettingsGeneralProperties {
-	courseID: string,
-	handleResponse: (course: CoursePartial) => void
+	course: CoursePartial
 }
 
-export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettingsGeneralProperties) {
-	const [name, setName] = useState("");
-	const [state, setState] = useState(CourseState.open);
+export function CourseSettingsGeneral({course}: CourseSettingsGeneralProperties) {
+	const [name, setName] = useState(course.name);
+	const [state, setState] = useState(course.state as CourseState);
 	const [error, setError] = useState(false as FeedbackContent);
 
 	async function handleUpdate() {
 		try {
-			const course: CoursePartial = await updateCourse(courseID, {
+			const updatedCourse : CoursePartial = await updateCourse(course.ID, {
 				name,
 				state
 			});
-			setName(course.name);
-			setState(course.state as CourseState);
-			handleResponse(course);
+			setName(updatedCourse.name);
+			setState(updatedCourse.state as CourseState);
 		} catch (error) {
 			setError(`Failed to update course: ${error}`);
 		}
@@ -44,7 +42,7 @@ export function CourseSettingsGeneral({courseID, handleResponse}: CourseSettings
 			/>
 		</LabeledInput>
 		<LabeledInput label="Course state">
-			<Form.Control as="select" onChange={event => setState((event.target as HTMLInputElement).value as CourseState)}>
+			<Form.Control as="select" value={state} onChange={event => setState((event.target as HTMLInputElement).value as CourseState)}>
 				<option disabled selected>Select a state for this course</option>
 				<option value="open">Open</option>
 				<option value="hidden">Hidden</option>

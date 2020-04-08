@@ -33,14 +33,6 @@ permissionRouter.get('/', capture(async(request : Request, response : Response) 
     response.status(200).send(user.permission);
 }));
 
-/** DEBUGGING PATH
- * Get all permissions.
- */
-permissionRouter.get('/all',capture(async(request : Request, response : Response) => {
-    const allPermissions = await CourseRegistrationDB.getAllEntries();
-    response.status(200).send(allPermissions);
-}));
-
 /**
  * Get user permissions of a course
  */
@@ -133,3 +125,12 @@ permissionRouter.put('/user/:userID/', capture(async(request : Request, response
     const user : User = await UserDB.removePermissionsUser(userID, permissions[1]);
     response.status(200).send(user);
 }));
+
+
+/** USEFUL DEBUGGING PATH
+ * Get all permissions.
+ */
+// permissionRouter.get('/all',capture(async(request : Request, response : Response) => {
+//     const allPermissions = await CourseRegistrationDB.getAllEntries();
+//     response.status(200).send(allPermissions);
+// }));

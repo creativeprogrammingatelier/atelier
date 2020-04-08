@@ -38,9 +38,15 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
 				/>
 			</Jumbotron>
 			<Permissions single={PermissionEnum.manageCourses}>
-				<DataList header="Course Settings">
-					<CourseSettingsGeneral courseID={courseId} handleResponse={courseUpdate}/>
-				</DataList>
+				<Loading<Course>
+					loader={courseId => getCourse(courseId)}
+					params={[courseId]}
+					component={course =>
+						<DataList header="Course Settings">
+							<CourseSettingsGeneral course={course}/>
+						</DataList>
+					}
+				/>
 			</Permissions>
 			<Permissions single={PermissionEnum.manageUserRegistration}>
 				<DataList header="Course Invites">

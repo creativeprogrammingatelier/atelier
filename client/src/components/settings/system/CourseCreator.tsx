@@ -27,9 +27,6 @@ export function CourseCreator({handleResponse}: CourseCreatorProperties) {
                 state : CourseState.open
             });
             setCourseName("");
-            if (handleResponse !== undefined) {
-                // handleResponse(course);
-            }
         } catch (error) {
             setError(`Failed to create new course: ${error}`);
         }

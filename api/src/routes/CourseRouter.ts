@@ -114,7 +114,6 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 
         return course;
     });
-
     response.status(200).send(removePermissionsCoursePartial(course));
 }));
 
