@@ -25,7 +25,7 @@ export function userTest(){
 	 */
     describe("Users", () => {
 
-        it("Should be possible to get own user profile", async() => {
+        it("Should be possible to retrieve your own user profile", async() => {
             let response = await getOwnUser1();
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
@@ -35,12 +35,12 @@ export function userTest(){
             assert(instanceOfUser(response.body));
         });
 
-        it("Should not be possible to get other user profile without permissions", async() => {
+        it("Should not be possible to retrieve another user profile without permission", async() => {
             const response = await getOtherUser();
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to get other user profile with permission.", async() => {
+        it("Should be possible to get another user profile with ‘viewAllUserProfiles’ permission", async() => {
             await adminSetPermissions({"viewAllUserProfiles" : true});
 
             const response = await getOtherUser();
@@ -50,7 +50,7 @@ export function userTest(){
             await adminSetPermissions({"viewAllUserProfiles" : false});
         });
 
-        it("Should not be possible to get course users without permission to view all user profiles", async() => {
+        it("Should not be possible to get course users without permission", async() => {
             const response = await getUsersByCourse();
             expect(response).to.have.status(401);
         });
@@ -60,7 +60,7 @@ export function userTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to get all course users with permission to view all user profiles", async() => {
+        it("Should be possible to get all course users with 'viewAllUserProfiles' permission", async() => {
             await adminSetPermissions({"viewAllUserProfiles" : true});
 
             const response = await getUsersByCourse();
@@ -70,7 +70,7 @@ export function userTest(){
             await adminSetPermissions({"viewAllUserProfiles" : false});
         });
 
-        it("Should be possible to get all users with permission to view all user profiles", async() => {
+        it("Should be possible to get all users with 'viewAllUserProfiles' permission", async() => {
             await adminSetPermissions({"viewAllUserProfiles" : true});
 
             const response = await getUsers();

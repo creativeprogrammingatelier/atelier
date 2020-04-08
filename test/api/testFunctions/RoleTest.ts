@@ -25,7 +25,7 @@ export function roleTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to set global role with permission.", async () => {
+        it("Should be possible to set global role with 'manageUserRole' permission.", async () => {
             await adminSetPermissions({"manageUserRole": true});
 
             const roles = [GlobalRole.user, GlobalRole.plugin, GlobalRole.staff, GlobalRole.admin];
@@ -39,7 +39,7 @@ export function roleTest(){
             await adminSetPermissions({"manageUserRole": false});
         });
 
-        it("Should be possible to set course role with permission.", async () => {
+        it("Should be possible to set course role with 'manageUserRole' permission.", async () => {
             await adminRegisterCourse();
             await adminSetPermissions({"manageUserRole": true});
 

@@ -66,7 +66,7 @@ export function submissionTest(){
             }
         }
 
-        it("Should not be possible to view submissions if no permission.", async() => {
+        it("Should not be possible to view submissions without permission.", async() => {
             // User cannot get a submission without permission
             let response = await getSubmission();
             expect(response).to.have.status(401);
@@ -96,7 +96,7 @@ export function submissionTest(){
             await adminUnregisterCourse();
         });
 
-        it("Should be possible to view all submissions in a course with permission", async() => {
+        it("Should be possible to view all submissions in a course with 'viewAllSubmissions' permission", async() => {
             await adminRegisterCourse();
             await adminSetPermissions({"viewAllSubmissions" : true});
 

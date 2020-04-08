@@ -104,7 +104,7 @@ export function commentThreadTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to set visibility with permission", async() => {
+        it("Should be possible to set visibility with 'manageRestrictedComment' permission", async() => {
             await adminSetPermissions({"manageRestrictedComments" : true});
 
             // Change comment thread to private

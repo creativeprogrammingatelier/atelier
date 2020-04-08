@@ -35,7 +35,7 @@ function testSplit(a : Range[]) {
     // Check whether resulting segments are indeed disjoint
     for (const [indexA, rangeA] of  result.entries()) {
         for (const [indexB, rangeB] of result.entries()) {
-            if (indexA != indexB) {
+            if (indexA !== indexB) {
                 const disjoint = before(rangeA, rangeB) || before(rangeB, rangeA);
                 expect(disjoint, rangesToString(result)).to.equal(true);
             }

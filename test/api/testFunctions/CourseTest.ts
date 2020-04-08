@@ -109,7 +109,7 @@ export function courseTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to create a course with permission, and have user be enrolled.", async() => {
+        it("Should be possible to create a course with 'addCourse' permission, and have user be enrolled.", async() => {
             await adminSetPermissions({"addCourses" : true});
 
             // Create course
@@ -137,7 +137,7 @@ export function courseTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to set name / state of a course with permission.", async() => {
+        it("Should be possible to set name / state of a course with 'manageCourses' permission.", async() => {
             await adminSetPermissions({"manageCourses" : true});
 
             // Update course name / state
@@ -156,7 +156,7 @@ export function courseTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to enroll a user in a course with permission, and unregister.", async() => {
+        it("Should be possible to enroll a user in a course with 'manageUserRegistration' permission, and unregister.", async() => {
             await adminSetPermissions({"manageUserRegistration" : true});
 
             // Enroll user ins course
@@ -180,7 +180,7 @@ export function courseTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to delete a course with permission.", async() => {
+        it("Should be possible to delete a course with 'manageCourses' permission.", async() => {
             await adminSetPermissions({"manageCourses" : true});
 
             assert(createdCourseID !== undefined);

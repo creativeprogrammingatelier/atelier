@@ -111,7 +111,7 @@ export function permissionTest(){
             expect(response.body.permission.permissions).to.equal(DEFAULT_COURSE_PERMISSIONS);
         });
 
-        it("Should be possible to update view user permissions permission", async() => {
+        it("Should be possible to update view user permissions with 'manageUserPermissionsView' permission, but not manage permissions.", async() => {
             await adminSetPermissions({"manageUserPermissionsView" : true});
 
             const response = await setAllPermissions(false, true);
@@ -135,7 +135,7 @@ export function permissionTest(){
             await adminSetPermissions({"manageUserPermissionsView" : false});
         });
 
-        it("Should be possible to update manage user permissions globally with permission.", async() => {
+        it("Should be possible to update manage user permissions with 'manageUserPermissionsManager' permission, but not view permissions.", async() => {
             await adminSetPermissions({"manageUserPermissionsManager" : true});
 
             const response = await setAllPermissions(false, true);
