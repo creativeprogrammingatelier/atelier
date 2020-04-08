@@ -73,6 +73,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	const handleCommentSend = async(comment: string) => {
 		const commentTrimmed = comment.trim();
         return comments.create(commentTrimmed)
+            .then(comment => true)
             .catch((err: Error) => {
                 setError("Failed to create reply: " + err.message)
                 return false;

@@ -22,7 +22,13 @@ export function ViewTab({file, viewer: Viewer}: ViewTabProperties) {
 			comment,
 			snippet: selection,
 			visibility: restricted ? ThreadState.private : ThreadState.public
-		});
+        })
+        .then(thread => true)
+        .catch(err => {
+            // TODO: handle error
+            console.log(err);
+            return false;
+        });
 	};
 	
 	return <div className="contentTab">

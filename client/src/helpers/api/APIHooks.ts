@@ -24,8 +24,10 @@ export interface Refresh<T> extends APICache<T> {
     defaultTimeout: number
 }
 
-export interface Create<Arg extends Array<any>, T> extends APICache<T> {
-    create: (...args: Arg) => Promise<boolean>
+// The create function may take a generic list of arguments, of different types
+// tslint:disable-next-line: no-any
+export interface Create<Arg extends any[], T> extends APICache<T> {
+    create: (...args: Arg) => Promise<T>
 }
 
 export function useCollectionAsSingle<T>(observable: Observable<CacheCollection<T>>) {
@@ -85,7 +87,7 @@ function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: C
                 cache.remove(item => item.ID === tempID);
                 cache.add(result, CacheState.Loaded);
             });
-            return true;
+            return result;
         })
         .catch((err: Error) => {
             console.log("Creation of", tempID, "failed:", err);
@@ -254,7 +256,7 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
             comments.addAll(thread.comments, CacheState.Loaded)
         );
         tempComments.transaction(tempComments => tempComments.clear());
-        return true;
+        return thread;
     })
     .catch((err: Error) => {
         console.log("Creation of", tempID, "failed:", err);
