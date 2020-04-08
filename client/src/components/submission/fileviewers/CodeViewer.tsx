@@ -9,7 +9,7 @@ import {CommentThread} from "../../../../../models/api/CommentThread";
 import {File} from "../../../../../models/api/File";
 import {Selection} from "../../../../../models/api/Snippet";
 
-import {useFileComments, useFileBody, useCollectionCombined} from "../../../helpers/api/APIHooks";
+import {useFileComments, useFileBody, useCollectionCombined, Refresh} from "../../../helpers/api/APIHooks";
 
 import {HighlightedCode, HighlightedCodeProperties, SnippetHighlight} from "../../code/HighlightedCode";
 import {CommentSelector} from "../../comment/CommentSelector";
@@ -29,8 +29,9 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 	const fileBody = useFileBody(file.ID);
 	const history = useHistory();
 
-	const snippets = {
-		observable: snippetsObservable,
+	const snippets: Refresh<SnippetHighlight[]> = {
+        observable: snippetsObservable,
+        defaultTimeout: fileComments.defaultTimeout,
 		refresh: fileComments.refresh
 	};
 
