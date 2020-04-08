@@ -16,15 +16,16 @@ function jitter(time: number) {
     return time + (Math.random() * time * 0.2) - (time * 0.1);
 }
 
-export function Cached<T>({cache, timeout = 0, wrapper, onError = msg => {}, children}: CachedProperties<T>) {
+export function Cached<T>({cache, timeout, wrapper, onError = msg => {}, children}: CachedProperties<T>) {
     const cached = useObservableState(cache.observable)!;
 
     useEffect(() => {
         if ("refresh" in cache && cache.refresh) {
+            const actualTimeout = timeout !== undefined ? timeout : cache.defaultTimeout;
             if (cached.state === CacheState.Uninitialized) {
                 cache.refresh().catch((err: Error) => onError(err.message));
-            } else if (timeout !== 0) {
-                const expiration = Math.max(0, cached.updatedAt + timeout * 1000 - Date.now());
+            } else if (actualTimeout !== 0) {
+                const expiration = Math.max(0, cached.updatedAt + actualTimeout * 1000 - Date.now());
                 const handle = setTimeout(() => cache.refresh(), jitter(expiration));
                 return () => clearTimeout(handle);
             }

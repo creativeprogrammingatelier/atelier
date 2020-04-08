@@ -7,6 +7,7 @@ import { InvalidDatabaseResponseError } from "../../api/src/database/DatabaseErr
 import { userToAPI, DBUser } from "./User";
 import { User } from "../api/User";
 import { GlobalRole } from "../enums/GlobalRoleEnum";
+import { DBComment, DBAPIComment, commentToAPI } from "./Comment";
 
 
 export interface Mention extends DBTools {
@@ -47,7 +48,9 @@ export interface DBMention {
     snippetid : string,
     created : Date,
     edited : Date,
-    body : string,
+	body : string,
+	linestart: number,
+	type : string,
     
 	userid : string | undefined,
 	username : string | undefined,
@@ -80,8 +83,28 @@ export function convertMention(db : DBMention) : Mention{
 	}
 }
 export function mentionToAPI(db : DBMention) : APIMention{
-	checkAvailable(["mentionid","usergroup","userid","commentid","commentthreadid","submissionid","courseid"],db)
-
+	checkAvailable(["mentionid", "usergroup", //mention specific
+					"commentid","fileid", "commentthreadid", "snippetid", //comment specific
+					"submissionid","courseid", "created", "edited", 
+					"body", "type", "linestart",
+					"userid", "username", "email", "globalrole", "courserole", "permission", //mentioned user
+					"cmuuserid", "cmuusername", "cmuemail", "cmuglobalrole", "cmupermission", //comment creator
+					"submtitle",
+					"coursename"
+				],db)
+/*m.mentionID, m.userGroup, 
+                 cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 
+                 cv.submissionID, cv.courseID, cv.created, cv.edited, 
+                 cv.body, cv.type, cv.lineStart,
+                 cu.userID, cu.userName, cu.email, cu.globalRole, 
+                 cu.courseRole, cu.permission, 
+                 cmu.userID as cmuUserID, 
+                 cmu.userName as cmuUserName, cmu.email as cmuEmail, 
+                 cmu.globalRole as cmuGlobalRole,
+                 cmu.permission as cmuPermission, 
+                 subm.title as submTitle, 
+                 c.courseName
+*/
 	//can be null or undefined, this is way more readable
 	// tslint:disable-next-line: triple-equals
 	if ((db.usergroup == undefined) === (db.userid == undefined)){
@@ -102,32 +125,30 @@ export function mentionToAPI(db : DBMention) : APIMention{
 			}
 		}
 	}
+	const dbcommentObject : DBAPIComment = {
+		commentid: db.commentid,
+		userid: db.cmuuserid,
+		username:db.cmuusername,
+		email:db.cmuemail,
+		globalrole:db.cmuglobalrole,
+		permission:db.cmupermission,
+		body:db.body,
+		created:db.created,
+		edited:db.edited,
+		courseid: db.courseid,
+		submissionid: db.submissionid,
+		commentthreadid: db.commentthreadid,
+		fileid: db.fileid,
+		snippetid:db.snippetid,
+		type:db.type,
+		linestart:db.linestart,
+	}
+	const comment = commentToAPI(dbcommentObject)
 	return {
 		ID: UUIDHelper.fromUUID(db.mentionid),
 		mentionGroup: db.usergroup,
         user,
-        comment: {
-            ID: UUIDHelper.fromUUID(db.commentid),
-            user: {
-                ID: UUIDHelper.fromUUID(db.cmuuserid),
-                name: db.cmuusername,
-                email: db.cmuemail,
-                permission: {
-                    globalRole: getEnum(GlobalRole, db.cmuglobalrole),
-                    permissions: toDec(db.cmupermission)
-                }
-            },
-            text: db.body,
-            created: db.created.toISOString(),
-            edited: db.edited.toISOString(),
-            references: {
-                courseID: UUIDHelper.fromUUID(db.courseid),
-                submissionID: UUIDHelper.fromUUID(db.submissionid),
-                commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
-                fileID: UUIDHelper.fromUUID(db.fileid),
-                snippetID: UUIDHelper.fromUUID(db.snippetid)
-            }
-        },
+        comment,
         submissionTitle: db.submtitle,
         courseName: db.coursename,
 		references: {

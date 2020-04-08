@@ -2,9 +2,13 @@ import React, {useState, useEffect, Fragment} from "react";
 import {permission} from "../../../helpers/APIHelper";
 import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
 import {PermissionEnum, containsPermission} from "../../../../models/enums/PermissionEnum";
-import {User} from "../../../../models/api/User";
 import {searchUsers} from "../../../helpers/APIHelper";
 import {Tag} from "../general/Tag";
+import { useObservableState } from "observable-hooks";
+import { useCoursePermission, usePermission } from "../../helpers/api/APIHooks";
+import { map } from "rxjs/operators";
+import { Permission } from "../../../../models/api/Permission";
+import { CacheItem } from "../../helpers/api/Cache";
 
 interface MentionSuggestionsProperties {
 	/** Prefix for display */
@@ -19,31 +23,37 @@ interface MentionSuggestionsProperties {
 }
 
 export function MentionSuggestions({prefix, suggestionBase, round, courseID, onSelected}: MentionSuggestionsProperties) {
-	const [allowedGroups, setAllowedGroups] = useState([] as CourseRole[]);
 	const [suggestions, setSuggestions] = useState({options: [] as string[], base: suggestionBase});
 
 	const displayPrefix: string = prefix === undefined ? "" : prefix;
 
 	function filterSuggestions(suggestions: string[], base: string) {
 		return suggestions.filter(user => user.toLowerCase().includes(base.toLowerCase()));
-	}
+    }
+    
+    const permission = courseID ? useCoursePermission(courseID) : usePermission();
+    const allowedGroups = useObservableState(permission.observable.pipe(
+        map(permission => {
+            const groups: string[] = [];
+            const permissions = (permission as CacheItem<Permission>)?.value?.permissions;
+            if (permissions) {
+                if (containsPermission(PermissionEnum.mentionAllTeachers, permissions)) {
+                    groups.push(CourseRole.teacher);
+                }
+                if (containsPermission(PermissionEnum.mentionAllAssistants, permissions)) {
+                    groups.push(CourseRole.TA);
+                }
+                if (containsPermission(PermissionEnum.mentionAllStudents, permissions)) {
+                    groups.push(CourseRole.student);
+                }
+            }
+			return groups;
+        })
+    ), []);
 
-	useEffect(() => {
-		permission().then(permission => {
-			const groups = [];
-			if (containsPermission(PermissionEnum.mentionAllTeachers, permission.permissions)) {
-				groups.push(CourseRole.teacher);
-			}
-			if (containsPermission(PermissionEnum.mentionAllAssistants, permission.permissions)) {
-				groups.push(CourseRole.TA);
-			}
-			if (containsPermission(PermissionEnum.mentionAllStudents, permission.permissions)) {
-				groups.push(CourseRole.student);
-			}
-			console.log("Allowed groups to mention: ", groups);
-			setAllowedGroups(groups);
-		});
-	}, []);
+    useEffect(() => {
+        if (allowedGroups === []) permission.refresh();
+    }, []);
 
 	useEffect(() => {
 		if (suggestionBase === null || suggestionBase.trim() === "") {

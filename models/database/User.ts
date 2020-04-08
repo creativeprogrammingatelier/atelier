@@ -14,20 +14,18 @@ export interface User extends DBTools {
 	password?: string,
 
 }
-
-export interface DBUser {
-	userid: UUID,
-	samlid: string,
+export interface DBAPIUser {
+	userid: string,
 	username: string,
 	email: string,
 	globalrole: string,
 	permission: string,
+}
+export interface DBUser extends DBAPIUser {
+	samlid: string,
 	hash?: string,
 }
 
-export {APIUser}
-
-export type DBAPIUser = DBUser
 
 export function convertUser(db : DBUser) : User{
 	checkAvailable(["userid", "username", "email", "globalrole", "permission"], db)

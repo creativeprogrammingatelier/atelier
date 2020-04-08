@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { Cache } from '../../../helpers/api/Cache';
+import { Cache, GetCacheCollectionOptions } from '../../../helpers/api/Cache';
 import { debounceTime } from 'rxjs/operators';
 
 /** 
@@ -45,9 +45,9 @@ export function CacheProvider({ children }: { children: React.ReactNode }) {
 }
 
 /** Hook to get access to specific CacheCollection */
-export function useCacheCollection<T extends { ID: string }>(key: string, filter?: (value: T) => boolean) {
+export function useCacheCollection<T extends { ID: string }>(key: string, options?: GetCacheCollectionOptions<T>) {
     const cache = useContext(cacheContext);
-    return cache.getCollection<T>(key, filter);
+    return cache.getCollection<T>(key, options);
 }
 
 /** Hook to get access to a specific CacheItem */
