@@ -37,6 +37,12 @@ export interface Update<Arg extends any[], T> extends APICache<T> {
     update: (...args: Arg) => Promise<T>
 }
 
+// The delete function may take a generic list of arguments, of different types
+// tslint:disable-next-line: no-any
+export interface Delete<Arg extends any[], T> extends APICache<T> {
+    delete: (...args: Arg) => Promise<T>
+}
+
 export function useCollectionAsSingle<T>(observable: Observable<CacheCollection<T>>) {
     return useObservable(() => observable.pipe(
         map(collection => collection.items[0] || emptyCacheItem<T>())
@@ -128,6 +134,16 @@ function update<T extends { ID: string } & Res, Res>(promise: Promise<Res>, upda
         })
         .catch((err: Error) => {
             cache.transaction(cache => cache.add(oldItem.value, oldItem.state));
+            throw err;
+        });
+}
+
+function deleteItem<T extends { ID: string }>(promise: Promise<T>, selector: (item: T) => boolean, cache: CacheCollectionInterface<T>) {
+    const oldItems = cache.getCurrentValue().items.filter(({value}) => selector(value));
+    cache.transaction(cache => cache.remove(selector));
+    return promise
+        .catch((err: Error) => {
+            cache.transaction(cache => cache.addAll(oldItems.map(({value}) => value), CacheState.Loaded));
             throw err;
         });
 }
@@ -374,7 +390,7 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
     }
 }
 
-export function useCommentThread(submissionID: string, threadID: string, fileID?: string): Update<[ThreadState], CommentThread> {
+export function useCommentThread(submissionID: string, threadID: string, fileID?: string): Update<[ThreadState], CommentThread> & Delete<[], CommentThread> {
     const threads = 
         fileID !== undefined
         ? useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, { subKey: fileID, filter: thread => thread.ID === threadID })
@@ -387,11 +403,12 @@ export function useCommentThread(submissionID: string, threadID: string, fileID?
                 API.setCommentThreadVisibility(threadID, visibility),
                 { ID: threadID, visibility },
                 threads
-            )
+            ),
+        delete: () => deleteItem(API.deleteCommentThread(threadID), thread => thread.ID === threadID, threads)
     }
 }
 
-export function useComments(commentThreadID: string): Create<[string], Comment> {
+export function useComments(commentThreadID: string): Create<[string], Comment> & Update<[string, string], Comment> & Delete<[string], Comment> {
     const comments = useCacheCollection<Comment>(`comments/${commentThreadID}`, {
         sort: (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
     });
@@ -402,6 +419,18 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
             create(
                 API.createComment(commentThreadID, comment),
                 { ID: "", user: getCurrentUser(), text: comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } },
+                comments
+            ),
+        update: (commentID: string, comment: string) =>
+            update(
+                API.editComment(commentThreadID, commentID, comment),
+                { ID: commentID, text: comment },
+                comments
+            ),
+        delete: (commentID: string) => 
+            update(
+                API.deleteComment(commentThreadID, commentID), 
+                { ID: commentID, text: "[this comment was deleted]" }, 
                 comments
             )
     }

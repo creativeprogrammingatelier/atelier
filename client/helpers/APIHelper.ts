@@ -170,6 +170,12 @@ export function createSubmissionCommentThread(submissionID: string, thread: Crea
 export function createComment(commentThreadID: string, comment: string) {
 	return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson({comment}));
 }
+export function editComment(commentThreadID: string, commentID: string, comment: string) {
+    return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, putJson({comment}));
+}
+export function deleteComment(commentThreadID: string, commentID: string) {
+    return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, {method: "DELETE"});
+}
 
 // Mentions
 export function getMentions() {
