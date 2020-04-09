@@ -188,10 +188,13 @@ export class Cache {
         }
         return {
             observable: new Observable(subscriber => {
-                const length = this.collections[key].subscribers.push({ options, subscriber });
+                this.collections[key].subscribers.push({ options, subscriber });
+                console.log("Add subscription to", key, "with subKey", options.subKey, "; length:", this.collections[key].subscribers.length);
                 subscriber.next(returnCollection(this.collections[key], options));
                 return () => {
-                    this.collections[key].subscribers.splice(length - 1, 1);
+                    const i = this.collections[key].subscribers.findIndex(sub => sub.subscriber === subscriber);
+                    this.collections[key].subscribers.splice(i, 1);
+                    console.log("Remove subscription to", key, "; length:", this.collections[key].subscribers.length);
                 }
             }),
             getCurrentValue: () => returnCollection(this.collections[key], options),
