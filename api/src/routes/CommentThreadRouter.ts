@@ -126,7 +126,7 @@ commentThreadRouter.put('/:commentThreadID', capture(async (request, response) =
     const commentThreadID : string = request.params.commentThreadID;
     const visibilityState : ThreadState | undefined = request.body.visibility as ThreadState;
 
-    const oldCommentThread : CommentThread = await ThreadDB.getThreadByID(commentThreadID);
+    const oldCommentThread : CommentThread = await ThreadDB.addCommentSingle(ThreadDB.getThreadByID(commentThreadID));
     const courseID : string = oldCommentThread.references.courseID;
     const currentUserID : string = await getCurrentUserID(request);
     // Either use is owner of a comment thread or has permission to manage restricted comments
@@ -254,7 +254,7 @@ commentThreadRouter.post("/file/:fileID", capture(async(request, response) => {
 commentThreadRouter.delete('/:commentThreadID', capture(async(request, response) => {
 	const commentThreadID: string = request.params.commentThreadID;
 
-	const oldCommentThread = await ThreadDB.getThreadByID(commentThreadID);
+	const oldCommentThread = await ThreadDB.addCommentSingle(ThreadDB.getThreadByID(commentThreadID));
 	const courseID = oldCommentThread.references.courseID;
 	const currentUserID : string = await getCurrentUserID(request);
 	// Either user is owner of a comment thread or has permission to manage restricted comments
