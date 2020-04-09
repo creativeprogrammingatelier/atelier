@@ -32,7 +32,7 @@ export class UUIDHelper {
 		const hex = uuid.replace(/-/g, "");
 		const buffer = Buffer.from(hex, "hex");
 
-		return buffer.toString("base64").replace(/\//g, "_").replace(/+/g, "-").substr(0, 22);
+		return buffer.toString("base64").replace(/\//g, "_").replace(/\+/g, "-").substr(0, 22);
 	}
 }
 
