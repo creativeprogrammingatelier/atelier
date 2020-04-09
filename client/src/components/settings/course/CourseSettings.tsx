@@ -1,12 +1,9 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment} from "react";
 import {Jumbotron} from "react-bootstrap";
-import {Course, CoursePartial} from "../../../../../models/api/Course";
 import {CourseRole} from "../../../../../models/enums/CourseRoleEnum";
 import {PermissionEnum} from "../../../../../models/enums/PermissionEnum";
-import {getCourse} from "../../../../helpers/APIHelper";
 import {DataList} from "../../data/DataList";
 import {Frame} from "../../frame/Frame";
-import {Loading} from "../../general/loading/Loading";
 import {Permissions} from "../../general/Permissions";
 import {UserSettingsRoles} from "../user/UserSettingsRoles";
 import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
@@ -14,6 +11,8 @@ import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
 import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
+import { useCourse } from "../../../helpers/api/APIHooks";
+import { Cached } from "../../general/loading/Cached";
 
 interface CourseOverviewProps {
 	match: {
@@ -24,29 +23,19 @@ interface CourseOverviewProps {
 }
 
 export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProps) {
-	// Refresh course on course update
-	const [reloadCourse, setReloadCourse] = useState(0);
-	const courseUpdate = (course: CoursePartial) => setReloadCourse(x => x + 1);
+	const course = useCourse(courseId);
 
 	return (
 		<Frame title="Course" sidebar search={{course: courseId}}>
 			<Jumbotron>
-				<Loading<Course>
-					loader={(courseId, reloadCourse) => getCourse(courseId)}
-					params={[courseId, reloadCourse]}
-					component={course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
-				/>
+				<Cached cache={course}>
+                    {course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
+                </Cached>
 			</Jumbotron>
 			<Permissions single={PermissionEnum.manageCourses}>
-				<Loading<Course>
-					loader={courseId => getCourse(courseId)}
-					params={[courseId]}
-					component={course =>
-						<DataList header="Course Settings">
-							<CourseSettingsGeneral course={course}/>
-						</DataList>
-					}
-				/>
+                <DataList header="Course Settings">
+                    <CourseSettingsGeneral courseID={courseId}/>
+                </DataList>
 			</Permissions>
 			<Permissions single={PermissionEnum.manageUserRegistration}>
 				<DataList header="Course Invites">

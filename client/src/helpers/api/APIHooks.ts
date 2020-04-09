@@ -1,5 +1,5 @@
 import { Cache, CacheState, CacheCollection, CacheItem, CacheCollectionInterface, emptyCacheItem, CacheItemInterface } from './Cache';
-import { Course } from '../../../../models/api/Course';
+import { Course, CoursePartial } from '../../../../models/api/Course';
 import * as API from '../../../helpers/APIHelper';
 import { randomBytes } from 'crypto';
 import { User } from '../../../../models/api/User';
@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { useObservable } from 'observable-hooks';
 import { CourseState } from '../../../../models/enums/CourseStateEnum';
+import { ThreadState } from '../../../../models/enums/ThreadStateEnum';
 
 export interface APICache<T> {
     observable: Observable<CacheCollection<T> | CacheItem<T>>
@@ -28,6 +29,12 @@ export interface Refresh<T> extends APICache<T> {
 // tslint:disable-next-line: no-any
 export interface Create<Arg extends any[], T> extends APICache<T> {
     create: (...args: Arg) => Promise<T>
+}
+
+// The update function may take a generic list of arguments, of different types
+// tslint:disable-next-line: no-any
+export interface Update<Arg extends any[], T> extends APICache<T> {
+    update: (...args: Arg) => Promise<T>
 }
 
 export function useCollectionAsSingle<T>(observable: Observable<CacheCollection<T>>) {
@@ -98,6 +105,33 @@ function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: C
         });
 }
 
+function updateModel<T>(old: T, update: Partial<T>): T {
+    // The update object may have fields of any type
+    // tslint:disable-next-line: no-any
+    const updateMap = update as { [key: string]: any };
+    return Object.assign({},
+        old,
+        ...Object.keys(updateMap)
+            .filter(key => updateMap[key] !== undefined)
+            .map(key => ({ [key]: updateMap[key] }))
+    );
+}
+
+function update<T extends { ID: string } & Res, Res>(promise: Promise<Res>, update: Partial<T> & { ID: string }, cache: CacheCollectionInterface<T>) {
+    const [oldItem] = cache.getCurrentValue().items.filter(({value}) => update.ID === value.ID);
+    cache.transaction(cache => cache.add(updateModel(oldItem.value, update), CacheState.Loading));
+    return promise
+        .then(result => {
+            const newItem = updateModel(oldItem.value, result);
+            cache.transaction(cache => cache.add(newItem, CacheState.Loaded));
+            return newItem;
+        })
+        .catch((err: Error) => {
+            cache.transaction(cache => cache.add(oldItem.value, oldItem.state));
+            throw err;
+        });
+}
+
 export function useCourses(): Refresh<Course> & Create<[{ name: string, state: CourseState }], Course> {
     const courses = useCacheCollection<Course>("courses", { 
         sort: (a, b) => 
@@ -121,13 +155,19 @@ export function useCourses(): Refresh<Course> & Create<[{ name: string, state: C
     };
 }
 
-export function useCourse(courseID: string): Refresh<Course> {
+export function useCourse(courseID: string): Refresh<Course> & Update<[{name?: string, state?: CourseState}], Course> {
     const courses = useCacheCollection<Course>("courses", { subKey: courseID, filter: course => course?.ID === courseID });
     const course = useCollectionAsSingle(courses.observable);
     return { 
         observable: course,
         defaultTimeout: 0,
-        refresh: () => refreshCollection(API.getCourse(courseID), courses)
+        refresh: () => refreshCollection(API.getCourse(courseID), courses),
+        update: ({name, state}: {name?: string, state?: CourseState}) => 
+            update(
+                API.updateCourse(courseID, {name, state}),
+                { ID: courseID, name, state },
+                courses
+            )
     };
 }
 
@@ -330,6 +370,23 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
                 threads,
                 getCurrentUser,
                 cache
+            )
+    }
+}
+
+export function useCommentThread(submissionID: string, threadID: string, fileID?: string): Update<[boolean], CommentThread> {
+    const threads = 
+        fileID !== undefined
+        ? useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, { subKey: fileID, filter: thread => thread.ID === threadID })
+        : useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`, { filter: thread => thread.ID === threadID });
+    const thread = useCollectionAsSingle(threads.observable);
+    return {
+        observable: thread,
+        update: (visible: boolean) =>
+            update(
+                API.setCommentThreadVisibility(threadID, visible),
+                { ID: threadID, visibility: visible ? ThreadState.public : ThreadState.private },
+                threads
             )
     }
 }
