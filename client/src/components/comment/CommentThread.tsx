@@ -7,7 +7,6 @@ import {CommentThread} from "../../../../models/api/CommentThread";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 import {containsPermission, PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
-import {setCommentThreadVisibility} from "../../../helpers/APIHelper";
 import {commentThreadOwner} from "../../../../helpers/CommentThreadHelper";
 
 import {Snippet} from "../code/Snippet";
@@ -18,7 +17,7 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import { FeedbackSuccess } from "../feedback/FeedbackSuccess";
 import {Comment as CommentComponent} from "./Comment";
 import {CommentCreator} from "./CommentCreator";
-import {useCollectionCombined, useComments, useCoursePermission, useCurrentUser} from "../../helpers/api/APIHooks";
+import {useCollectionCombined, useComments, useCoursePermission, useCurrentUser, useCommentThread} from "../../helpers/api/APIHooks";
 import {Cached} from "../general/loading/Cached";
 
 interface CommentThreadProperties {
@@ -29,10 +28,9 @@ interface CommentThreadProperties {
 interface ManageRestrictedButtonsProperties {
     thread: CommentThread,
     onDiscard: () => void, 
-    onToggle: () => void, 
-    visible: boolean
+    onToggle: () => void
 }
-function ManageRestrictedButtons({ thread, onDiscard, onToggle, visible }: ManageRestrictedButtonsProperties) {
+function ManageRestrictedButtons({ thread, onDiscard, onToggle }: ManageRestrictedButtonsProperties) {
     const permission = useCoursePermission(thread.references.courseID);
     const user = useCurrentUser();
 
@@ -46,7 +44,7 @@ function ManageRestrictedButtons({ thread, onDiscard, onToggle, visible }: Manag
                             return (
                                 <Fragment>
                                     <Button onClick={onDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
-                                    <Button onClick={onToggle}>{visible ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
+                                    <Button onClick={onToggle}>{thread.visibility === ThreadState.private ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}</Button>
                                 </Fragment>
                             );
                         } else {
@@ -60,13 +58,13 @@ function ManageRestrictedButtons({ thread, onDiscard, onToggle, visible }: Manag
 }
 
 export function CommentThread({thread}: CommentThreadProperties) {
+    const threadCache = useCommentThread(thread.references.submissionID, thread.ID, thread.file?.ID);
     const comments = useComments(thread.ID);
     const commentsCombined = {
         observable: useCollectionCombined(comments.observable)
     };
 
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
-	const [visible, setRestricted] = useState(thread.visibility === ThreadState.private);
 	const [success, setSuccess] = useState(false as FeedbackContent);
 	const [error, setError] = useState(false as FeedbackContent);
 
@@ -84,14 +82,13 @@ export function CommentThread({thread}: CommentThreadProperties) {
 		console.log("Clicked to discard");
 	};
 	const handleVisibility = () => {
-		setCommentThreadVisibility(thread.ID, visible).then((commentThread : CommentThread) => {
-			setRestricted(commentThread.visibility === ThreadState.private);
-		});
-		setSuccess(`Visibility updated, now: ${visible ? "public" : "private"}`);
+        threadCache.update(thread.visibility === ThreadState.public ? ThreadState.private : ThreadState.public)
+            .then(thread => setSuccess(`Visibility updated, now: ${thread.visibility}`))
+            .catch((err: Error) => setError(`Changing visibility failed: ${err.message}`));
     };
 
 	return <div className="mb-3">
-		<Block id={thread.ID} className={"commentThread" + (visible ? " restricted" : "")}>
+		<Block id={thread.ID} className={"commentThread" + (thread.visibility === ThreadState.private ? " restricted" : "")}>
 			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
             <Cached cache={commentsCombined}>
                 {comments => opened ?
@@ -104,7 +101,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
                 }
             </Cached>
 			<ButtonBar align="right">
-				<ManageRestrictedButtons thread={thread} visible={visible} onToggle={handleVisibility} onDiscard={handleDiscard}/>
+				<ManageRestrictedButtons thread={thread} onToggle={handleVisibility} onDiscard={handleDiscard}/>
 				{thread.file && thread.snippet &&
 					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/view#${thread.snippet.start.line + 1}`}>
 						<Button>

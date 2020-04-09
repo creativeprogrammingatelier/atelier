@@ -21,6 +21,7 @@ import {InviteRole} from "../../models/enums/InviteRoleEnum";
 import {CourseRole} from "../../models/enums/CourseRoleEnum";
 import {Sorting} from "../../models/enums/SortingEnum";
 import "../../helpers/Extensions";
+import { ThreadState } from "../../models/enums/ThreadStateEnum";
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
 	method,
@@ -149,10 +150,10 @@ export function getProjectComments(submissionID: string) {
 export function getRecentComments(submissionID: string) {
 	return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
 }
-export function setCommentThreadVisibility(commentThreadID: string, visible: boolean) {
+export function setCommentThreadVisibility(commentThreadID: string, visibility: ThreadState) {
 	return Fetch.fetchJson<CommentThread>(
 		`/api/commentThread/${commentThreadID}`,
-		putJson({ visibility : visible ? "public" : "private" })
+		putJson({ visibility })
 	);
 }
 export function deleteCommentThread(commentThreadID: string) {

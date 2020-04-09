@@ -374,7 +374,7 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
     }
 }
 
-export function useCommentThread(submissionID: string, threadID: string, fileID?: string): Update<[boolean], CommentThread> {
+export function useCommentThread(submissionID: string, threadID: string, fileID?: string): Update<[ThreadState], CommentThread> {
     const threads = 
         fileID !== undefined
         ? useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, { subKey: fileID, filter: thread => thread.ID === threadID })
@@ -382,10 +382,10 @@ export function useCommentThread(submissionID: string, threadID: string, fileID?
     const thread = useCollectionAsSingle(threads.observable);
     return {
         observable: thread,
-        update: (visible: boolean) =>
+        update: (visibility: ThreadState) =>
             update(
-                API.setCommentThreadVisibility(threadID, visible),
-                { ID: threadID, visibility: visible ? ThreadState.public : ThreadState.private },
+                API.setCommentThreadVisibility(threadID, visibility),
+                { ID: threadID, visibility },
                 threads
             )
     }
