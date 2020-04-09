@@ -137,12 +137,13 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
         await archiveProject(submission.ID, request.body["project"]);
 
-        return { submission, dbFiles };
+        return { submission: { ...submission, files: dbFiles } as Submission, dbFiles };
     });
 
     response.send(submission);
 
     await Promise.all(
         dbFiles.map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
+            .concat(raiseWebhookEvent(request.params.courseID, WebhookEvent.Submission, submission))
     );
 }));
