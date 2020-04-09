@@ -78,8 +78,9 @@ export function CommentThread({thread}: CommentThreadProperties) {
             });
 	};
 	const handleDiscard = () => {
-		// TODO: Lol, maybe actually implement this
-		console.log("Clicked to discard");
+        threadCache.delete()
+            .then(thread => setSuccess("This thread of comments has been deleted."))
+            .catch((err: Error) => setError(`Thread could not be deleted: ${err.message}`));
 	};
 	const handleVisibility = () => {
         threadCache.update(thread.visibility === ThreadState.public ? ThreadState.private : ThreadState.public)
