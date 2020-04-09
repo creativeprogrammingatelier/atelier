@@ -108,7 +108,7 @@ courseRouter.post('/', capture(async(request : Request, response : Response) => 
 		await CourseRegistrationDB.addEntry({
 			courseID : course.ID,
 			userID : currentUserID,
-			courseRole : CourseRole.student,
+			courseRole : CourseRole.moduleCoordinator,
 			client
 		});
 
