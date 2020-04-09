@@ -1,4 +1,4 @@
-import React, {useState, Fragment} from "react";
+import React, {useState, Fragment, useEffect} from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 import {FiPlus, FiX} from "react-icons/all";
@@ -26,6 +26,9 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
     const submissions = useCourseSubmissions(courseId);
     const mentions = useCourseMentions(courseId);
 
+    // TODO: this is terrible and should not be needed
+    const [mentionCount, setMentionCount] = useState(0);
+
     const [uploading, setUploading] = useState(false);
 	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
 
@@ -43,8 +46,8 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
                     <Link to={`/course/${courseId}/settings`}><Button>Settings</Button></Link>
                 </Permissions>
 			</Jumbotron>
-			<DataList header="Mentions">
-				<Cached cache={mentions} timeout={30}>
+			<DataList header="Mentions" childCount={mentionCount}>
+				<Cached cache={mentions} timeout={30} updateCount={setMentionCount}>
 					{mention =>
 						<DataBlock
                             key={mention.ID}

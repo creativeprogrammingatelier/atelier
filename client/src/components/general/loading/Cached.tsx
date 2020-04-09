@@ -9,6 +9,7 @@ interface CachedProperties<T> {
     timeout?: number,
     wrapper?: (children: React.ReactNode) => React.ReactNode,
     onError?: (error: string) => void,
+    updateCount?: (count: number) => void,
     children: (item: T, state: CacheState) => React.ReactNode
 }
 
@@ -16,7 +17,7 @@ function jitter(time: number) {
     return time + (Math.random() * time * 0.2) - (time * 0.1);
 }
 
-export function Cached<T>({cache, timeout, wrapper, onError = msg => {}, children}: CachedProperties<T>) {
+export function Cached<T>({cache, timeout, wrapper, onError = msg => {}, updateCount = count => {}, children}: CachedProperties<T>) {
     const cached = useObservableState(cache.observable)!;
 
     useEffect(() => {
@@ -31,6 +32,18 @@ export function Cached<T>({cache, timeout, wrapper, onError = msg => {}, childre
             }
         }
     }, [timeout, cached.updatedAt]);
+
+    useEffect(() => {
+        if (cached.state === CacheState.Loaded) {
+            if ("value" in cached) {
+                updateCount(1);
+            } else {
+                updateCount(cached.items.length);
+            }
+        } else {
+            updateCount(1);
+        }
+    }, [cached])
 
     if (cached.state !== CacheState.Loaded) {
         if (wrapper) {
