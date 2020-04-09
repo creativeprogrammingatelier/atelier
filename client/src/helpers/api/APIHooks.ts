@@ -400,7 +400,7 @@ export function useCommentThread(submissionID: string, threadID: string, fileID?
         observable: thread,
         update: (visibility: ThreadState) =>
             update(
-                API.setCommentThreadVisibility(threadID, visibility),
+                API.setCommentThreadVisibility(threadID, visibility).then(thread => ({ ...thread, comments: undefined as unknown as Comment[] })),
                 { ID: threadID, visibility },
                 threads
             ),
