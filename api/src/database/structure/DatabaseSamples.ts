@@ -28,7 +28,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
           (${uuid1}, 'samling_user','Cas', 'user@Cas', 'user', ${permissionType}, ''),
           (${uuid2}, 'samling_teacher','Caas', 'teacher@Cas', 'user', ${permissionType}, ''),
           (${uuid3}, 'samling_TA','Caaas', 'TA@Cas', 'user', ${permissionType}, ''),
-          (${uuid4}, NULL, 'PMD', 'pmd@plugin', 'plugin', ${permissionType}, ''),
+          (${uuid4}, NULL, 'ZITA (Plugin)', 'pmd@plugin', 'plugin', ${permissionType}, ''),
           (${uuid6}, NULL, 'test user', 'test@test', 'user', ${permissionType}, '');
 
      INSERT INTO "Plugins" VALUES
