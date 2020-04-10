@@ -18,7 +18,7 @@ const uuid0 = `'00000000-0000-0000-0000-000000000000'`,
       uuid4 = `'00000000-0000-0000-0000-000000000004'`,
       uuid5 = `'00000000-0000-0000-0000-000000000005'`,
       uuid6 = `'00000000-0000-0000-0000-000000000006'`,
-      permissionType = `0::bit(${permissionBits})`
+      permissionType = `0::bit(${permissionBits})`;
 
 export function databaseSamples(client : pgDB = pool) : Promise<void> {
      const query = `
@@ -192,7 +192,7 @@ all @teachers in one go!'),
                (${uuid1}, ${uuid5}, NULL, 'teacher');
 
           
-     `
+     `;
      return client.query(query).then(() => {
           console.log("inserted values into db")
      }).catch(e=>{

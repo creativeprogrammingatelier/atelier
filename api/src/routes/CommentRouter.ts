@@ -4,7 +4,7 @@
 
 import express from 'express';
 import {CommentDB} from "../database/CommentDB";
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {Comment} from "../../../models/api/Comment";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
@@ -68,4 +68,26 @@ commentRouter.put('/:commentThreadID', capture(async (request, response) => {
         });
 
         response.status(200).send(comment);
+}));
+
+/** ---------- DELETE REQUESTS ---------- */
+/**
+ * Delete a comment from a comment thread
+ * - requirements:
+ *  - User is the author of the comment
+ */
+commentRouter.delete('/:commentThreadID/:commentID', capture(async(request, response) => {
+    const currentUserID = await getCurrentUserID(request);
+    const commentID = request.params.commentID;
+    //const commentThreadID = request.params.commentThreadID;
+
+    let comment = await CommentDB.getCommentByID(commentID);
+    if (comment.user.ID !== currentUserID) throw new AuthError("permission.notAllowed", "You are not the author of this comment");
+
+    comment = await CommentDB.updateComment({
+        commentID,
+        body : "[this comment was deleted]"
+    });
+
+    response.status(200).send(comment);
 }));
