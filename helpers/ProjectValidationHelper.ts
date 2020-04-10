@@ -92,7 +92,7 @@ function validateProjectInternal<T extends Fileish<T>>(projectName: string, file
 export function validateProjectServer(projectName: string, files: Express.Multer.File[]) {
     const filesInternal = files.map(f => ({
         original: f,
-        pathInProject: f.originalname,
+        pathInProject: f.path.split(path.sep).skipWhile(folder => folder !== projectName).join("/"),
         size: f.size
     }));
     const validation = validateProjectInternal(projectName, filesInternal);

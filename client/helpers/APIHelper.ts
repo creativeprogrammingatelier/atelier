@@ -123,15 +123,22 @@ export function createSubmission(courseId: string, projectName: string, files: F
     const fixFilePath = (file: File) => {
         // Chromium and EdgeHTML will set the formdata filename to webkitRelativePath,
         // but Safari uses the name, so we'll set the name to webkitRelativePath
-        const nf = new File([file], file.webkitRelativePath || file.name, { type: file.type, lastModified: file.lastModified });
-        // But Firefox will replace the / in the file path with : if we set it as the file
-        // name, so if that happens we use the original file (which works fine in Firefox)
-        // This may cause issues when there are files with : in their names, but at least 
-        // in Windows that's illegal and it seems pretty uncommon overall
-        if (nf.name.includes(":")) {
+        try {
+            const nf = new File([file], file.webkitRelativePath || file.name, { type: file.type, lastModified: file.lastModified });
+            // But Firefox will replace the / in the file path with : if we set it as the file
+            // name, so if that happens we use the original file (which works fine in Firefox)
+            // This may cause issues when there are files with : in their names, but at least 
+            // in Windows that's illegal and it seems pretty uncommon overall
+            if (nf.name.includes(":")) {
+                return file;
+            } else {
+                return nf;
+            }
+        } catch (err) {
+            // EdgeHTML, however, does not support the File constructor (yes, really), so it comes here 
+            // It works fine with the original file, for which webkitRelativePath is set correctly,
+            // but on upload the absolute file path on disk is used
             return file;
-        } else {
-            return nf;
         }
     }
 
