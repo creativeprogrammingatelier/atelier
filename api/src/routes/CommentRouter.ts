@@ -8,7 +8,7 @@ import {AuthError, getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {Comment} from "../../../models/api/Comment";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {requireRegisteredCommentThreadID} from "../helpers/PermissionHelper";
+import {PermissionError, requireRegisteredCommentThreadID} from "../helpers/PermissionHelper";
 import {createMentions} from '../helpers/MentionsHelper';
 import {transaction} from '../database/HelperDB';
 import {removePermissionsComment} from "../helpers/APIFilterHelper";
@@ -82,7 +82,9 @@ commentRouter.delete('/:commentThreadID/:commentID', capture(async (request, res
     //const commentThreadID = request.params.commentThreadID;
 
     let comment = await CommentDB.getCommentByID(commentID);
-    if (comment.user.ID !== currentUserID) throw new AuthError("permission.notAllowed", "You are not the author of this comment");
+    if (comment.user.ID !== currentUserID) {
+        throw new PermissionError("permission.notAllowed", "You should be the owner of the comment.");
+    }
 
     comment = await CommentDB.updateComment({
         commentID,
