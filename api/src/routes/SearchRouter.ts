@@ -81,7 +81,7 @@ async function filterUser(query : string, common : Common) {
 /** Generic search */
 searchRouter.get('/', capture(async (request, response) => {
     const { query, common } = await getSearchParams(request);
-    if (common.courseID) { // we are searching within a course
+    if (common.courseID) { // we are searching within a course?
         await requireRegistered(common.currentUserID, common.courseID);
         const users = await filterUser(query, common);
         const comments = await CommentDB.searchComments(query, common);
