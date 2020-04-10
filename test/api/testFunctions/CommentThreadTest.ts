@@ -90,6 +90,20 @@ export function commentThreadTest() {
             expect(response).to.have.status(401);
         }
 
+        async function setVisibility() {
+            // Change comment thread to private
+            let response = await setCommentThreadPrivate();
+            expect(response).to.have.status(200);
+            expect(instanceOfCommentThread(response.body));
+            expect(response.body.visibility === "private");
+
+            // Change comment thread to public
+            response = await setCommentThreadPublic();
+            expect(response).to.have.status(200);
+            expect(instanceOfCommentThread(response.body));
+            expect(response.body.visibility === "public");
+        }
+
         it("Should not be possible to view comment threads without permission.", async () => {
             await commentThreadsNoPermissions();
         });
@@ -106,29 +120,13 @@ export function commentThreadTest() {
             await adminSetPermissions({"viewAllCourses": false});
         });
 
-        it("Should not be possible to set visibility without permission.", async () => {
-            let response = await setCommentThreadPrivate();
-            expect(response).to.have.status(401);
-
-            response = await setCommentThreadPublic();
-            expect(response).to.have.status(401);
+        it("Should be possible to set visibility as owner without permission.", async () => {
+            await setVisibility();
         });
 
         it("Should be possible to set visibility with 'manageRestrictedComment' permission", async () => {
             await adminSetPermissions({"manageRestrictedComments": true});
-
-            // Change comment thread to private
-            let response = await setCommentThreadPrivate();
-            expect(response).to.have.status(200);
-            expect(instanceOfCommentThread(response.body));
-            expect(response.body.visibility === "private");
-
-            // Change comment thread to public
-            response = await setCommentThreadPublic();
-            expect(response).to.have.status(200);
-            expect(instanceOfCommentThread(response.body));
-            expect(response.body.visibility === "public");
-
+            await setVisibility();
             await adminSetPermissions({"manageRestrictedComments": false});
         });
     });
