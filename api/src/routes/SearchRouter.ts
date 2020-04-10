@@ -20,7 +20,7 @@ import { getCommonQueryParams, InvalidParamsError } from '../helpers/ParamsHelpe
 import { CourseRegistrationDB } from '../database/CourseRegistrationDB';
 import { CourseDB } from '../database/CourseDB';
 import { CourseUserToUser } from '../../../models/database/CourseUser';
-import { getCurrentUserID, AuthError } from '../helpers/AuthenticationHelper';
+import { getCurrentUserID } from '../helpers/AuthenticationHelper';
 import { SubmissionDB } from '../database/SubmissionDB';
 import { FileDB } from '../database/FileDB';
 import { map } from '../database/HelperDB';
@@ -28,7 +28,6 @@ import {PermissionError, requirePermissions, requireRegistered} from '../helpers
 import { PermissionEnum } from '../../../models/enums/PermissionEnum';
 import { Sorting } from '../../../models/enums/SortingEnum';
 import {
-    removePermissionsComment,
     removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets,
     removePermissionsSubmission
 } from "../helpers/APIFilterHelper";

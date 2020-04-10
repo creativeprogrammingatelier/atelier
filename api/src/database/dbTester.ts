@@ -1,11 +1,11 @@
-import {end, pgDB, one } from './HelperDB'
+import {end, one } from './HelperDB'
 import {UserDB as UH}	from './UserDB'
 import {CourseDB as CH}	from './CourseDB'
 import {CourseRoleDB as RPH}	from "./CourseRoleDB"
 import {CourseRegistrationDB as CRH}	from './CourseRegistrationDB'
 import {SubmissionDB as SH}	from './SubmissionDB'
 import {FileDB as FH}	from './FileDB'
-import {SnippetDB as SPH, SnippetDB} 	from './SnippetDB'
+import {SnippetDB as SPH} 	from './SnippetDB'
 import {ThreadDB as TH} 	from './ThreadDB'
 import {CommentDB as C} 	from './CommentDB'
 import {MentionsDB as M}	from './MentionsDB'
@@ -15,28 +15,37 @@ import {CourseRole} 			from '../../../models/enums/CourseRoleEnum'
 import {SubmissionStatus}	from '../../../models/enums/SubmissionStatusEnum'
 import {ThreadState}		from '../../../models/enums/ThreadStateEnum'
 
-import {Snippet, DBSnippet}			from '../../../models/database/Snippet'
+import {Snippet}			from '../../../models/database/Snippet'
 import { UUIDHelper } from '../helpers/UUIDHelper'
-import { deepEqual, notDeepEqual, equal, notEqual, AssertionError } from 'assert'
+import { deepEqual, equal, notEqual } from 'assert'
 import { Course } from '../../../models/database/Course'
 import util from 'util'
 import { Mention } from '../../../models/database/Mention'
-import { CourseInviteDB as CI, CourseInviteDB } from './CourseInviteDB'
+import { CourseInviteDB as CI } from './CourseInviteDB'
 import { PluginsDB as P } from './PluginsDB'
 import { getEnum } from '../../../models/enums/EnumHelper'
 import { GlobalRole } from '../../../models/enums/GlobalRoleEnum'
 import { User } from '../../../models/database/User'
 
+/**
+ * this is a large test file that mainly runs all functions in the database directory, to see if they work. 
+ * usually this means that a new entry is created, modified and then deleted within each test. 
+ * These functions log their output to a seperate logger, which will output the logs if a test fails for debugging purposes.
+ * Because of the fact that the tests do not operate independently from each other, these tests are not run using mocha's normal test suite,
+ * they are instead called as one big test, which will fail if any part fails.
+ * Because of this, mocha will complain the test is slow,  as it takes ~3 seconds
+ */
+
+
+//nice mocha checkmark for these tests
 const ok = "✓",
 	fail = "✖"
-
+//output all output instead of just the failed tests
 const all = false;
 
+//log functionality
 let stored = '';
 function log<T>(a : string, b ?:T) : void {
-		const reducer = (accumulated : string, next : string) : string => {
-			return accumulated+next+'\n'
-		}
 		const tbp = a + (b===undefined?'':JSON.stringify(b,null,4));
 		if (all) {
 			console.log(tbp);
@@ -48,7 +57,7 @@ function log<T>(a : string, b ?:T) : void {
 
 const uuid0 = UUIDHelper.fromUUID("00000000-0000-0000-0000-000000000000")
 const uuid1 = UUIDHelper.fromUUID("00000000-0000-0000-0000-000000000001")
-
+//function that can be used in a then
 function logger<T>(pre: string) {
 	return (s: T) => {log<T>(pre, s); return s}
 }
@@ -56,14 +65,13 @@ let errors = 0;
 function error(pre : string){
 	return (e : Error) => {log(pre, e); throw e}
 }
-
+//wrapper that logs result & error with an identifying string, and sends them through.
 function promise<T>(pr : Promise<T>, s : string) : Promise<T>{
 	return pr.then(logger(s)).catch(error(s))
 }
 async function DBusersTest() {
 	log("\n\nUSERSTEST\n\n")
 	const user : User = {userName:"C", email:"C@CAA", globalRole:GlobalRole.admin,password:"C", permission:1}
-	const t1 = new Date()
 	await promise(UH.getAllUsers(), 'getAllUsers')
 	await promise(UH.getAllStudents(), "getAllStudents")
 	await promise(UH.getUserByID(uuid0), 'getUserById')
@@ -87,7 +95,6 @@ async function DBcoursesTest() {
 	const course : Course= {courseName:"cname",creatorID:uuid0,state:CourseState.open}
 	const course2 = {courseName:"newname",creatorID:uuid0,state:CourseState.hidden}
 	const res = await promise(CH.getAllCourses(), 'getAllCourses')
-	const r1 = await promise(CRH.addPermissionsCourse(res, {userID:uuid0}), "addPermissions")
 	const {ID="no uuid"} = await promise(CH.addCourse(course), "addCourse")
 	await promise(CH.getCourseByID(ID), 'getCourseByID')
 	await promise(CH.searchCourse('pEaRls', {currentUserID:uuid0}), "searchCourse")
@@ -141,7 +148,6 @@ async function courseRegistrationDBTest(){
 	log("\n\nCOURSEREGISTRATIONTEST\n\n")
 	const newEntry = {userID:uuid0, courseID:uuid1, courseRole:CourseRole.teacher,permission:5}
 	equal(newEntry.permission, 5)
-	const r1 = await promise(CRH.getAllEntries(), 'getAllEntries')
 	await promise(CRH.getEntriesByCourse(uuid0), 'getEntriesByCourse')
 	await promise(CRH.filterCourseUser({}), 'filterCourseReg')
 	await promise(CRH.filterCourseUser({userID:uuid0}), 'filterCourseReg2')
@@ -197,7 +203,6 @@ async function DBsnippetTest(){
 	await promise(SPH.searchSnippets('//', {currentUserID:uuid0, courseID:uuid0}), "searchSnippets")
 	const snip = await promise(SPH.getSnippetByID(uuid0), 'getSnippetByID')
 	const snip2 : Snippet = {snippetID: snip.ID, body:snip.body+"AB"}
-	const res2 = await promise(SPH.updateSnippet(snip2), "updateSnippet")
 
 	const snip1 : Snippet = {lineStart:0, lineEnd:3, charStart:2, charEnd:0, body:"this is the body", contextAfter:'abc', contextBefore:'def'}
 	

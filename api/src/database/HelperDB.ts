@@ -18,7 +18,9 @@ export const pool = new pg.Pool({
 
 pool.on("connect", () => console.log("Connected to the database."));
 
-
+/**
+ * this is the length of the permissions field.
+ */
 export const permissionBits = 40
 /**
  * export some functions to aid other files in communicating with the database:
@@ -87,7 +89,10 @@ export function toBin(n : number | undefined, size = permissionBits) {
 	if (n === undefined) return undefined
 	return (n*1).toString(2).padStart(size, '0')
 }
-
+/**
+ * this function is the opposite of the toBin function. It takes the database output and converts it back to base 10.
+ * @param n the 'number' (binary string) received from the database
+ */
 export function toDec(n : string) : number {
 	let x = 0;
 	([...n]).forEach((digit : string) => {
@@ -137,6 +142,11 @@ export function keyInMap<T>(key : string, map : object) : key is keyof typeof ma
 	}
 	return true
 }
+/**
+ * creates a string that can be used to search the database for some substring.
+ * @param input the string to search for
+ * currently escapes special characters and allows the string to be a substring of the searched field, instead of a complete match.
+ */
 export function searchify(input : undefined) : undefined
 export function searchify(input : string) : string
 export function searchify(input : string | undefined) : string | undefined
@@ -144,7 +154,12 @@ export function searchify(input : string | undefined){
 	if (input === undefined) return undefined
 	return '%'+input.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/\_/g, '\\_')+'%'
 }
-
+/**
+ * a debug function that prints the query that would have otherwise be performed, 
+ * It substitutes the $1... parameters with the correct entry from the params array, and logs it to the console.
+ * @param query the query as it would have been passed to client.query()
+ * @param params the parameters added with this call
+ */
 // tslint:disable-next-line: no-any
 export function _insert(query : string, params : any[]){
 	for (let i =params.length;i>0;i--){

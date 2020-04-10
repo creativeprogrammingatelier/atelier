@@ -12,7 +12,12 @@ import { SearchResultComment } from "../../../models/api/SearchResult";
 
 export class CommentDB {
 	private static userselect = `name, email, globalRole`
-
+	/**
+	 * 
+	 * @param ids a list of comment thread IDs to retrieve the comments for
+	 * @param client optional client object for when performing a transaction.
+	 * @returns an object, with keys = ids, and values all comments made within that one comment thread.
+	 */
 	static async APIgetCommentsByThreads(ids : string[], client : pgDB = pool) {
 		//This mapping is a map of key=> comment[]. this is fine
 		// tslint:disable-next-line: no-any
@@ -108,7 +113,7 @@ export class CommentDB {
 	 * 
 	 * @param searchString string to search for
 	 * @param extras 
-	 * if a body is provided, this will overwrite the searchstring.
+	 * if a body is provided in extras, this will overwrite the searchstring.
 	 */
 	static async searchComments(searchString : string, extras : Comment) : Promise<SearchResultComment[]> {
 		checkAvailable(['currentUserID','courseID'], extras)

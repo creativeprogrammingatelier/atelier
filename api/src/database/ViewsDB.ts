@@ -1,43 +1,3 @@
-import {pool, end, toBin, permissionBits} from './HelperDB'
-import { PermissionEnum } from '../../../models/enums/PermissionEnum'
-
-
-//This script can only be run locally, 
-// to use this with a remote server, change the host. user and password will be required in all other instances of pool.
-// user: 'assistantassistant',
-// password: '0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel',
-
-// pool.query(`
-// 	CREATE OR REPLACE FUNCTION doit()
-// 	RETURNS TABLE (commentThreadID uuid, body text[]) AS $fun$
-// 	DECLARE
-// 		res "CommentThread";
-// 		ids uuid;
-// 		com text[];
-// 	BEGIN
-// 		SELECT * into res FROM "CommentThread";
-// 		SELECT commentThreadID into ids from res;
-// 		SELECT array_agg(body) into com
-// 			from "Comments"
-// 			where commentThreadID in ids
-// 			group by commentThreadID
-// 			order by date
-// 		RETURN res.*, com;
-// 	END
-// 	$fun$ LANGUAGE plpgsql;
-// `).then((res) =>console.log(res.rows)).catch(console.error)
-
-/*
-SELECT c.userID, array_agg(c) 
-     from "Comments" as c INNER JOIN "Users" as u ON  c.userid=u.userid
-     group by c.userID
-
-
-
-DROP USER IF EXISTS assistantassistant;
-CREATE ROLE assistantassistant;
- */
-
  /**
   * most exported functions in this file, contain the query string for some view of the database
   * By calling these functions, the respective query can be inserted into some string at the callee's end.
@@ -121,20 +81,6 @@ export function CourseUsersViewAll(courseRegistrationTable=`"CourseRegistration"
        WHERE u.userID = abp.userID
      `
 }
-
-
-
-/*
- * 
- WITH entries as (
- select * from "CourseRegistration"
- ), defaults as (
- select c.courseID, u.userID, 'unregistered' as courseRole, 0::bit(40) as permission from "Users" as u, "Courses" as c
- )
- select d.courseID, d.userID, COALESCE((SELECT e.courseRole from entries as e where e.courseID=d.courseID AND e.userID=d.userID), d.courseRole) FROM defaults as d
- * 
- * 
- */
 
 export function CoursesView(coursesTable=`"Courses"`, usersView=`"UsersView"`){
      return `SELECT c.*, u.userName, u.globalrole, u.email, u.userID, u.permission
