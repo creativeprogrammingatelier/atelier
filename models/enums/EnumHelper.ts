@@ -38,7 +38,9 @@ export function removeItem(enumer : any, item : string) : void {
 	}
 	delete enumer[item]
 }
-
+/**
+ * error class to differentiate errors thrown by this module
+ */
 export class EnumError extends Error {
 	constructor(message = "expected a value to be a member of an enum, but this was not the case"){
 		super(message)
