@@ -40,7 +40,7 @@ export function UserSearch({courseID, onSelected}: UserSearchProperties) {
 		{
 			users.length > 0 &&
 			<ul className="mentions m-0 w-100 px-1 pt-1 mb-1">
-				{users.map(user => <Tag large round theme="primary" click={() => handleSelected(user)}>{user.name}</Tag>)}
+				{users.map(user => <Tag key={user.ID} large round theme="primary" click={() => handleSelected(user)}>{user.name}</Tag>)}
 			</ul>
 		}
 	</LabeledInput>;

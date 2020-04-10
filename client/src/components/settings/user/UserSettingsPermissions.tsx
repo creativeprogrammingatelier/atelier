@@ -83,7 +83,7 @@ function UserSettingsPermissionsSection({header, display, state, setState}: User
 	return <LabeledInput label={header}>
 		<Area>
 			{Object.entries(display).map(([name, display]: [string, string]) =>
-				<CheckboxInput value={name} name={display} selected={state[name]} onChange={(state) => setState(name, state)}/>
+				<CheckboxInput key={name} value={name} name={display} selected={state[name]} onChange={(state) => setState(name, state)}/>
 			)}
 		</Area>
 	</LabeledInput>;

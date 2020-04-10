@@ -13,6 +13,7 @@ export function RadioInput({options, selected, onChange}: RadioInputProperties) 
 				<Form.Check
 					custom
 					type="radio"
+					key={value}
 					id={value}
 				>
 					<Form.Check.Input
