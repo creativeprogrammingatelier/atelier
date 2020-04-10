@@ -1,8 +1,8 @@
-import React, { useEffect, Fragment } from 'react';
-import { CacheState } from '../../../helpers/api/Cache';
-import { LoadingIcon } from './LoadingIcon';
-import { APICache, Refresh } from '../../../helpers/api/APIHooks';
-import { useObservableState } from 'observable-hooks';
+import React, {useEffect, Fragment} from 'react';
+import {CacheState} from '../../../helpers/api/Cache';
+import {LoadingIcon} from './LoadingIcon';
+import {APICache, Refresh} from '../../../helpers/api/APIHooks';
+import {useObservableState} from 'observable-hooks';
 
 interface CachedProperties<T> {
     cache: APICache<T> | Refresh<T>,
@@ -17,7 +17,11 @@ function jitter(time: number) {
     return time + (Math.random() * time * 0.2) - (time * 0.1);
 }
 
-export function Cached<T>({cache, timeout, wrapper, onError = msg => {}, updateCount = count => {}, children}: CachedProperties<T>) {
+export function Cached<T>({
+                              cache, timeout, wrapper, onError = msg => {
+    }, updateCount = count => {
+    }, children
+                          }: CachedProperties<T>) {
     const cached = useObservableState(cache.observable)!;
 
     useEffect(() => {
@@ -43,19 +47,19 @@ export function Cached<T>({cache, timeout, wrapper, onError = msg => {}, updateC
         } else {
             updateCount(1);
         }
-    }, [cached])
+    }, [cached]);
 
     if (cached.state !== CacheState.Loaded) {
         if (wrapper) {
-            return <Fragment children={wrapper(<LoadingIcon />)} />;
+            return <Fragment children={wrapper(<LoadingIcon/>)}/>;
         } else {
-            return <LoadingIcon />;
+            return <LoadingIcon/>;
         }
     } else {
-        if("value" in cached) {
-            return <Fragment children={children(cached.value, cached.state)} />;
+        if ("value" in cached) {
+            return <Fragment children={children(cached.value, cached.state)}/>;
         } else {
-            return <Fragment children={cached.items.map(item => children(item.value, item.state))} />;
+            return <Fragment children={cached.items.map(item => children(item.value, item.state))}/>;
         }
     }
 }

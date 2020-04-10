@@ -14,7 +14,7 @@ const LARGE_SNIPPET_LINES_ABOVE = 0;
 const LARGE_SNIPPET_LINES_BELOW = 0;
 
 /** Get the snippet body and context from the full file body */
-export function getContextLines(fileContent : string, lineStart : number, lineEnd : number) {
+export function getContextLines(fileContent: string, lineStart: number, lineEnd: number) {
     const lines = fileContent.split(/\r\n|\n/);
 
     const snippetLength = lineEnd - lineStart + 1;
@@ -41,5 +41,5 @@ export function getContextLines(fileContent : string, lineStart : number, lineEn
         .map((line, i) => i === 0 ? "\n" + line : line)
         .join('\n');
 
-    return { contextBefore, body, contextAfter };
+    return {contextBefore, body, contextAfter};
 }

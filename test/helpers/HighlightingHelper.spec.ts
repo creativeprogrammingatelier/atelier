@@ -1,17 +1,17 @@
 import 'mocha';
-import { expect } from 'chai';
+import {expect} from 'chai';
 import {before, Range, getRanges, rangesToString} from "../../client/src/helpers/HighlightingHelper";
 
 /**
  * Create a Range object
  */
-function r(a : number, b : number, c : number, d : number, e : number) {
+function r(a: number, b: number, c: number, d: number, e: number) {
     return {
-        startLine : a,
-        startChar : b,
-        endLine : c,
-        endChar : d,
-        overlap : e
+        startLine: a,
+        startChar: b,
+        endLine: c,
+        endChar: d,
+        overlap: e
     }
 }
 
@@ -19,21 +19,21 @@ function r(a : number, b : number, c : number, d : number, e : number) {
  * whether they are properly disjoint
  * at the end
  */
-function testSplit(a : Range[]) {
-    const result : Range[] = getRanges(a);
+function testSplit(a: Range[]) {
+    const result: Range[] = getRanges(a);
 
     // Just manually checking if overlaps are properly detected
     // Bit too much time to write a test for this, and its easy
     // for humans to see
-    const s1 = rangesToString(a).split('\n').join('\n\t')
-    console.log('\t'+s1);
-    console.log('\t'+"-");
-    const s2 = rangesToString(result).split('\n').join('\n\t')
-    console.log('\t'+s2);
+    const s1 = rangesToString(a).split('\n').join('\n\t');
+    console.log('\t' + s1);
+    console.log('\t' + "-");
+    const s2 = rangesToString(result).split('\n').join('\n\t');
+    console.log('\t' + s2);
     console.log("\t----- /// -----");
 
     // Check whether resulting segments are indeed disjoint
-    for (const [indexA, rangeA] of  result.entries()) {
+    for (const [indexA, rangeA] of result.entries()) {
         for (const [indexB, rangeB] of result.entries()) {
             if (indexA !== indexB) {
                 const disjoint = before(rangeA, rangeB) || before(rangeB, rangeA);
@@ -43,10 +43,10 @@ function testSplit(a : Range[]) {
     }
 }
 
-const ranges : Range[] = [];
+const ranges: Range[] = [];
 ranges.push(r(0, 0, 0, 3, 1)); // 0
 ranges.push(r(0, 2, 0, 5, 1)); // 1
-ranges.push(r(0 ,6, 0, 7, 1)); // 2
+ranges.push(r(0, 6, 0, 7, 1)); // 2
 ranges.push(r(0, 8, 0, 9, 1)); // 3
 ranges.push(r(1, 0, 1, 3, 1)); // 4
 ranges.push(r(1, 0, 1, 4, 1)); // 5
@@ -66,7 +66,7 @@ ranges.push(r(4, 6, 5, 1, 1)); // 18
 ranges.push(r(4, 7, 5, 2, 1)); // 19
 ranges.push(r(5, 4, 5, 7, 1)); // 20
 
-describe("Checks whether the split is indeed disjoint. Edges cases for overlap checked manually (text) and in the front end.", ()=>{
+describe("Checks whether the split is indeed disjoint. Edges cases for overlap checked manually (text) and in the front end.", () => {
     // Base cases
     testSplit(ranges.slice(0, 2));
     testSplit(ranges.slice(2, 4));

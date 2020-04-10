@@ -1,11 +1,11 @@
 import crypto from 'crypto';
-import { Plugin } from '../../models/database/Plugin';
-import { PluginsDB } from '../../api/src/database/PluginsDB';
+import {Plugin} from '../../models/database/Plugin';
+import {PluginsDB} from '../../api/src/database/PluginsDB';
 
-export const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", { modulusLength: 1024 });
+export const {publicKey, privateKey} = crypto.generateKeyPairSync("rsa", {modulusLength: 1024});
 export const plugin: Plugin = {
     pluginID: "test",
-    publicKey: publicKey.export({ format: "pem", type: "pkcs1" }) as string,
+    publicKey: publicKey.export({format: "pem", type: "pkcs1"}) as string,
     webhookSecret: "TestSecretForTheWebhook",
     webhookUrl: "http://example.com/hook"
 };
@@ -18,4 +18,4 @@ PluginsDB.filterPlugins = p => {
     } else {
         return filterPluginsOrig(p);
     }
-}
+};

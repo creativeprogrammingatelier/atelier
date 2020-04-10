@@ -5,14 +5,14 @@ import React, {useState} from 'react';
  * handleSearch: method to which search results ore forwarded.
  */
 interface SearchBarProperties {
-    handleSearch : (value : string) => void
+    handleSearch: (value: string) => void
 }
 
-export function SearchBar({handleSearch} : SearchBarProperties) {
+export function SearchBar({handleSearch}: SearchBarProperties) {
     const [search, setSearch] = useState("");
 
     // Handle changes in the input field of the search
-    function handleChange(event : any) {
+    function handleChange(event: any) {
         const {value} = event.target;
         setSearch(value);
     }

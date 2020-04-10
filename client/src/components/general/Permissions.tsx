@@ -1,8 +1,13 @@
-import React, { Fragment, useMemo } from 'react';
+import React, {Fragment, useMemo} from 'react';
 import {ParentalProperties} from "../../helpers/ParentHelper";
 import {Cached} from './loading/Cached';
 import {usePermission, useCoursePermission} from '../../helpers/api/APIHooks';
-import {PermissionEnum, containsPermissionAny, containsPermission, containsPermissionAll} from "../../../../models/enums/PermissionEnum";
+import {
+    PermissionEnum,
+    containsPermissionAny,
+    containsPermission,
+    containsPermissionAll
+} from "../../../../models/enums/PermissionEnum";
 
 interface GenericPermissionsProperties extends ParentalProperties {
     /** Optional error to display if the user doesn't have the required permissions */
@@ -26,26 +31,32 @@ interface AllPermissionsProperties extends GenericPermissionsProperties {
     all: PermissionEnum[]
 }
 
-type PermissionsProperties = 
+type PermissionsProperties =
     | SinglePermissionsProperties
     | AllPermissionsProperties
     | AnyPermissionsProperties
 
-interface SubPermissionsProperties { render: (permissions: number) => React.ReactNode }
-function GlobalPermissions({ render }: SubPermissionsProperties) {
+interface SubPermissionsProperties {
+    render: (permissions: number) => React.ReactNode
+}
+
+function GlobalPermissions({render}: SubPermissionsProperties) {
     const permission = usePermission();
     return (
-        <Cached cache={permission} wrapper={_ => <Fragment />}>
+        <Cached cache={permission} wrapper={_ => <Fragment/>}>
             {permissions => render(permissions.permissions)}
         </Cached>
     );
 }
 
-interface CoursePermissionsProperties extends SubPermissionsProperties { course: string }
-function CoursePermissions({ course, render }: CoursePermissionsProperties) {
+interface CoursePermissionsProperties extends SubPermissionsProperties {
+    course: string
+}
+
+function CoursePermissions({course, render}: CoursePermissionsProperties) {
     const permission = useCoursePermission(course);
     return (
-        <Cached cache={permission} wrapper={_ => <Fragment />}>
+        <Cached cache={permission} wrapper={_ => <Fragment/>}>
             {permissions => render(permissions.permissions)}
         </Cached>
     )
@@ -57,7 +68,7 @@ function CoursePermissions({ course, render }: CoursePermissionsProperties) {
  * respectively that single permission, any of the listed permissions or all of the listed
  * permissions.
  */
-export function Permissions({ course, children, error, ...props }: PermissionsProperties) {
+export function Permissions({course, children, error, ...props}: PermissionsProperties) {
     const permissionCheck = useMemo(() => {
         if ("single" in props) {
             return (permissions: number) => containsPermission(props.single, permissions);
@@ -70,17 +81,17 @@ export function Permissions({ course, children, error, ...props }: PermissionsPr
 
     const render = (permissions: number) => {
         if (permissionCheck(permissions)) {
-            return <Fragment children={children} />;
+            return <Fragment children={children}/>;
         } else if (error) {
-            return <Fragment children={error} />;
+            return <Fragment children={error}/>;
         } else {
-            return <Fragment />;
+            return <Fragment/>;
         }
-    }
+    };
 
     if (course === undefined) {
-        return <GlobalPermissions render={render} />;
+        return <GlobalPermissions render={render}/>;
     } else {
-        return <CoursePermissions course={course} render={render} />;
+        return <CoursePermissions course={course} render={render}/>;
     }
 }

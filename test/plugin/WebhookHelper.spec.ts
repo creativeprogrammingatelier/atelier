@@ -1,10 +1,10 @@
 import 'mocha';
-import { expect } from 'chai';
+import {expect} from 'chai';
 import crypto from 'crypto';
 
-import { plugin } from './Plugin';
-import { createWebhookRequest, getSubscribedPlugins } from '../../api/src/helpers/WebhookHelper';
-import { WebhookEvent } from '../../models/enums/WebhookEventEnum';
+import {plugin} from './Plugin';
+import {createWebhookRequest} from '../../api/src/helpers/WebhookHelper';
+import {WebhookEvent} from '../../models/enums/WebhookEventEnum';
 
 describe("WebhookHelper.createWebhookRequest", () => {
     const event = WebhookEvent.SubmissionFile;
@@ -13,7 +13,7 @@ describe("WebhookHelper.createWebhookRequest", () => {
         other: {
             thing: 4
         }
-    }
+    };
 
     it("should set the user agent", () => {
         const req = createWebhookRequest(plugin, event, body);
@@ -29,7 +29,7 @@ describe("WebhookHelper.createWebhookRequest", () => {
     });
 
     it("should set the correct event and payload", async () => {
-        const req = createWebhookRequest(plugin, event, body); 
+        const req = createWebhookRequest(plugin, event, body);
         const reqBody = await req.json();
 
         expect(reqBody.event).to.equal(event);

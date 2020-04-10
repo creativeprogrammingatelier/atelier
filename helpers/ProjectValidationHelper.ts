@@ -1,7 +1,7 @@
 import path from 'path';
 
 import './Extensions';
-import { CODEFILE_EXTENSIONS, MAX_FILE_SIZE, MAX_PROJECT_SIZE } from '../helpers/Constants';
+import {CODEFILE_EXTENSIONS, MAX_FILE_SIZE, MAX_PROJECT_SIZE} from './Constants';
 
 import './Extensions'
 
@@ -43,10 +43,10 @@ type Fileish<T> = ProjectFile<T> | Express.Multer.File | File;
 //////////
 /** Error that can be thrown if the project has validation errors */
 export class ProjectValidationError<T extends Fileish<T>> extends Error {
-    validation: ProjectValidation<T>
+    validation: ProjectValidation<T>;
 
     constructor(validation: ProjectValidation<T>, originalFiles: Array<ProjectFile<T>>) {
-        const message = "This project is not valid: " + [ 
+        const message = "This project is not valid: " + [
             validation.containsNoCodeFiles ? "it contains no code files" : undefined,
             validation.invalidProjectName ? "it has no file with the name of the project" : undefined,
             validation.projectTooLarge ? `it is larger than ${MAX_PROJECT_SIZE} bytes` : undefined,
@@ -90,7 +90,7 @@ function validateProjectInternal<T extends Fileish<T>>(projectName: string, file
 
 /** Execute all checks with files as they are modeled on the server, throwing an error if it is invalid */
 export function validateProjectServer(projectName: string, files: Express.Multer.File[]) {
-    const filesInternal = files.map(f => ({ 
+    const filesInternal = files.map(f => ({
         original: f,
         pathInProject: f.originalname,
         size: f.size
@@ -106,7 +106,7 @@ export function validateProjectServer(projectName: string, files: Express.Multer
 
 /** Execute all checks with files as they are modeled on the client, returning the validation result */
 export function validateProjectClient(projectName: string, files: File[]) {
-    const filesInternal = files.map(f => ({ 
+    const filesInternal = files.map(f => ({
         original: f,
         pathInProject: f.webkitRelativePath || `${projectName}/${f.name}`,
         size: f.size

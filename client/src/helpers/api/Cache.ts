@@ -1,4 +1,4 @@
-import { Observable, Subscriber, BehaviorSubject } from 'rxjs';
+import {Observable, Subscriber, BehaviorSubject} from 'rxjs';
 
 export enum CacheState {
     Uninitialized,
@@ -16,7 +16,7 @@ const emptyCacheProperties: CacheProperties = {
     createdAt: 0,
     updatedAt: 0,
     state: CacheState.Uninitialized,
-}
+};
 
 export interface CacheItem<T> extends CacheProperties {
     readonly value: T
@@ -56,7 +56,9 @@ export interface GetCacheCollectionOptions<T> {
     sort?: (a: T, b: T) => number
 }
 
-export interface Store<T> { [key: string]: T }
+export interface Store<T> {
+    [key: string]: T
+}
 
 export interface ExportedCache {
     // tslint:disable-next-line: no-any
@@ -86,32 +88,32 @@ function getPropsForSubKey<T>(subCol: SubscribableCollection<T>, subKey?: string
 function returnCollection<T>(subCol: SubscribableCollection<T>, options: GetCacheCollectionOptions<T>) {
     let items = subCol.collection.items;
     // filter and sort need to be variables for TypeScript to recognize the null check
-    const { filter, sort } = options;
+    const {filter, sort} = options;
     if (filter) items = items.filter(({value}) => filter(value));
     if (sort) items = items.sort((a, b) => sort(a.value, b.value));
     const props = getPropsForSubKey(subCol, options.subKey);
-    return { ...props, items };
+    return {...props, items};
 }
 
 export class Cache {
     // The cache has to store any type of data
     // tslint:disable-next-line: no-any
-    private items: Store<BehaviorSubject<CacheItem<any>>>
+    private items: Store<BehaviorSubject<CacheItem<any>>>;
     // tslint:disable-next-line: no-any
-    private collections: Store<SubscribableCollection<any>>
-    private exported: BehaviorSubject<ExportedCache>
+    private collections: Store<SubscribableCollection<any>>;
+    private exported: BehaviorSubject<ExportedCache>;
 
     // tslint:disable-next-line: no-any
     constructor(items?: Store<CacheItem<any>>, collections?: Store<CacheCollection<any>>) {
         this.items = {};
         this.collections = {};
-        
+
         if (items) {
             for (const key of Object.keys(items)) {
                 this.items[key] = new BehaviorSubject(items[key]);
             }
         }
-        
+
         if (collections) {
             for (const key of Object.keys(collections)) {
                 this.collections[key] = {
@@ -126,7 +128,7 @@ export class Cache {
     }
 
     static load(storageKey: string) {
-        const { items, collections } = JSON.parse(localStorage.getItem(storageKey) || `{ "items": [], "collections": [] }`);
+        const {items, collections} = JSON.parse(localStorage.getItem(storageKey) || `{ "items": [], "collections": [] }`);
         return new Cache(items, collections);
     }
 
@@ -136,9 +138,9 @@ export class Cache {
 
     private export(): ExportedCache {
         return {
-            items: Object.assign({}, ...Object.keys(this.items).map(key => ({ [key]: this.items[key].value }))),
-            collections: Object.assign({}, ...Object.keys(this.collections).map(key => ({ [key]: this.collections[key].collection }))),
-            subCollections: Object.assign({}, ...Object.keys(this.collections).map(key => ({ [key]: this.collections[key].properties })))
+            items: Object.assign({}, ...Object.keys(this.items).map(key => ({[key]: this.items[key].value}))),
+            collections: Object.assign({}, ...Object.keys(this.collections).map(key => ({[key]: this.collections[key].collection}))),
+            subCollections: Object.assign({}, ...Object.keys(this.collections).map(key => ({[key]: this.collections[key].properties})))
         }
     }
 
@@ -188,7 +190,7 @@ export class Cache {
         }
         return {
             observable: new Observable(subscriber => {
-                this.collections[key].subscribers.push({ options, subscriber });
+                this.collections[key].subscribers.push({options, subscriber});
                 console.log("Add subscription to", key, "with subKey", options.subKey, "; length:", this.collections[key].subscribers.length);
                 subscriber.next(returnCollection(this.collections[key], options));
                 return () => {
@@ -210,24 +212,24 @@ export class Cache {
                     for (const value of values) {
                         const index = items.findIndex(item => item.value.ID === value.ID);
                         if (index === -1) {
-                            const item = { createdAt: date, updatedAt: date, state, value };
+                            const item = {createdAt: date, updatedAt: date, state, value};
                             items.push(item);
                             changed.push(item);
                         } else {
-                            const item = { createdAt: items[index].createdAt, updatedAt: date, state, value }
+                            const item = {createdAt: items[index].createdAt, updatedAt: date, state, value};
                             items[index] = item;
                             changed.push(item);
                         }
                     }
-                    collection = { ...collection, items };
-                }
+                    collection = {...collection, items};
+                };
                 update({
                     addAll,
                     add: (value, state) => addAll([value], state),
                     remove: (selector) => {
                         if (collection === undefined) throw new CacheError("cleared", key);
 
-                        const itemSelector = (item: CacheItem<T>) => selector(item.value)
+                        const itemSelector = (item: CacheItem<T>) => selector(item.value);
                         changed = changed.filter(item => !itemSelector(item)).concat(collection.items.filter(itemSelector));
                         collection = {
                             ...collection,
@@ -247,7 +249,7 @@ export class Cache {
                     clear: () => {
                         if (collection === undefined) throw new CacheError("cleared", key);
 
-                        for (const { subscriber } of this.collections[key].subscribers) {
+                        for (const {subscriber} of this.collections[key].subscribers) {
                             subscriber.complete();
                             subscriber.unsubscribe();
                         }
@@ -274,7 +276,7 @@ export class Cache {
                         };
                     }
 
-                    for (const { options: subOptions, subscriber } of this.collections[key].subscribers) {
+                    for (const {options: subOptions, subscriber} of this.collections[key].subscribers) {
                         const filter = subOptions.filter;
                         if (!filter || subOptions.subKey === options.subKey || changed.some(item => filter(item.value))) {
                             subscriber.next(returnCollection(this.collections[key], subOptions));

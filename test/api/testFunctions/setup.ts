@@ -1,28 +1,28 @@
-import { UserDB } from "../../../api/src/database/UserDB";
-import { issueToken } from "../../../api/src/helpers/AuthenticationHelper";
-import { 
-	setAPITestUserValues, 
-	adminSetPermissions,
-	adminCoursesToUnregister,
-	adminUnregisterCourse,
-	adminSetRoleCourse,
-	adminSetRoleGlobal,
+import {UserDB} from "../../../api/src/database/UserDB";
+import {issueToken} from "../../../api/src/helpers/AuthenticationHelper";
+import {
+    setAPITestUserValues,
+    adminSetPermissions,
+    adminCoursesToUnregister,
+    adminUnregisterCourse,
+    adminSetRoleCourse,
+    adminSetRoleGlobal,
     getOwnUser1,
-	getCourses, 
+    getCourses,
     DEFAULT_GLOBAL_PERMISSIONS
 } from "../APIRequestHelper";
-import { CoursePartial } from "../../../models/api/Course";
-import { assert } from "console";
-import { instanceOfCoursePartial, instanceOfUser } from "../../InstanceOf";
-import { expect } from "chai";
-import { User } from "../../../models/api/User";
+import {CoursePartial} from "../../../models/api/Course";
+import {assert} from "console";
+import {instanceOfCoursePartial, instanceOfUser} from "../../InstanceOf";
+import {expect} from "chai";
+import {User} from "../../../models/api/User";
 
-export function setup(){
-    
-	/**
-	 * Set user to set user, and receive a token for the API
-	 * Unregister user from default course, and remove permissions.
-	 */
+export function setup() {
+
+    /**
+     * Set user to set user, and receive a token for the API
+     * Unregister user from default course, and remove permissions.
+     */
     before(async () => {
         // Get test user and set token
         const USER_ID = (await UserDB.filterUser({userName: 'test user', limit: 1}))[0].ID;
@@ -35,7 +35,7 @@ export function setup(){
      * If a single test fails, permissions are not set back automatically in the test.
      * Thus they are reset before each test so that future tests do not fail.
      */
-    beforeEach(async() => {
+    beforeEach(async () => {
         await removeAllPermissions();
         await removeAllRegistrations();
         await setDefaultRoles();
@@ -43,31 +43,31 @@ export function setup(){
 
     async function removeAllPermissions() {
         await adminSetPermissions({
-            "manageUserPermissionsView" : false,
-            "manageUserPermissionsManager" : false,
-            "manageUserRole" : false,
-            "viewAllUserProfiles" : false,
-            "manageUserRegistration" : false,
-            "viewAllCourses" : false,
-            "addCourses" : false,
-            "manageCourses" : false,
-            "addAssignments" : false,
-            "manageAssignments" : false,
-            "viewAllSubmissions" : false,
-            "viewRestrictedComments" : false,
-            "addRestrictedComments" : false,
-            "manageRestrictedComments" : false,
-            "mentionAllStudents" : false,
-            "mentionAllAssistants" : false,
-            "mentionAllTeachers" : false,
-            "mentionNoLimit" : false
+            "manageUserPermissionsView": false,
+            "manageUserPermissionsManager": false,
+            "manageUserRole": false,
+            "viewAllUserProfiles": false,
+            "manageUserRegistration": false,
+            "viewAllCourses": false,
+            "addCourses": false,
+            "manageCourses": false,
+            "addAssignments": false,
+            "manageAssignments": false,
+            "viewAllSubmissions": false,
+            "viewRestrictedComments": false,
+            "addRestrictedComments": false,
+            "manageRestrictedComments": false,
+            "mentionAllStudents": false,
+            "mentionAllAssistants": false,
+            "mentionAllTeachers": false,
+            "mentionNoLimit": false
         });
     }
 
     async function removeAllRegistrations() {
         const response = await adminCoursesToUnregister();
         for (let i = 0; i < response.body.length; i++) {
-            const course : CoursePartial = response.body[i];
+            const course: CoursePartial = response.body[i];
             assert(instanceOfCoursePartial(course));
             await adminUnregisterCourse(course.ID);
         }

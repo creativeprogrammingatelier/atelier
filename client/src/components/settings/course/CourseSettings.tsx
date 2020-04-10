@@ -11,57 +11,57 @@ import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
 import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
-import { useCourse } from "../../../helpers/api/APIHooks";
-import { Cached } from "../../general/loading/Cached";
+import {useCourse} from "../../../helpers/api/APIHooks";
+import {Cached} from "../../general/loading/Cached";
 
 interface CourseOverviewProps {
-	match: {
-		params: {
-			courseId: string
-		}
-	}
+    match: {
+        params: {
+            courseId: string
+        }
+    }
 }
 
 export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProps) {
-	const course = useCourse(courseId);
+    const course = useCourse(courseId);
 
-	return (
-		<Frame title="Course" sidebar search={{course: courseId}}>
-			<Jumbotron>
-				<Cached cache={course}>
+    return (
+        <Frame title="Course" sidebar search={{course: courseId}}>
+            <Jumbotron>
+                <Cached cache={course}>
                     {course => <Fragment><h1>{course.name}</h1><p>Created by {course.creator.name}</p></Fragment>}
                 </Cached>
-			</Jumbotron>
-			<Permissions single={PermissionEnum.manageCourses}>
+            </Jumbotron>
+            <Permissions single={PermissionEnum.manageCourses}>
                 <DataList header="Course Settings">
                     <CourseSettingsGeneral courseID={courseId}/>
                 </DataList>
-			</Permissions>
-			<Permissions single={PermissionEnum.manageUserRegistration}>
-				<DataList header="Course Invites">
-					<CourseSettingsInvites courseID={courseId}/>
-				</DataList>
-			</Permissions>
-			<Permissions single={PermissionEnum.manageUserRegistration}>
-				<DataList header="Enroll a User">
-					<CourseSettingsEnrollment courseID={courseId}/>
-				</DataList>
-			</Permissions>
-			<Permissions single={PermissionEnum.manageUserRegistration}>
-				<DataList header="Disenroll a User">
-					<CourseSettingsDisenrollment courseID={courseId}/>
-				</DataList>
-			</Permissions>
-			<Permissions single={PermissionEnum.manageUserRole}>
-				<DataList header="User Roles">
-					<UserSettingsRoles<typeof CourseRole> roles={CourseRole} courseID={courseId}/>
-				</DataList>
-			</Permissions>
-			<Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
-				<DataList header="User Permissions">
-					<UserSettingsPermissions courseID={courseId}/>
-				</DataList>
-			</Permissions>
-		</Frame>
-	);
+            </Permissions>
+            <Permissions single={PermissionEnum.manageUserRegistration}>
+                <DataList header="Course Invites">
+                    <CourseSettingsInvites courseID={courseId}/>
+                </DataList>
+            </Permissions>
+            <Permissions single={PermissionEnum.manageUserRegistration}>
+                <DataList header="Enroll a User">
+                    <CourseSettingsEnrollment courseID={courseId}/>
+                </DataList>
+            </Permissions>
+            <Permissions single={PermissionEnum.manageUserRegistration}>
+                <DataList header="Disenroll a User">
+                    <CourseSettingsDisenrollment courseID={courseId}/>
+                </DataList>
+            </Permissions>
+            <Permissions single={PermissionEnum.manageUserRole}>
+                <DataList header="User Roles">
+                    <UserSettingsRoles<typeof CourseRole> roles={CourseRole} courseID={courseId}/>
+                </DataList>
+            </Permissions>
+            <Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]}>
+                <DataList header="User Permissions">
+                    <UserSettingsPermissions courseID={courseId}/>
+                </DataList>
+            </Permissions>
+        </Frame>
+    );
 }

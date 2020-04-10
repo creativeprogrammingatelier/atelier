@@ -6,25 +6,25 @@ import {FiChevronDown, FiChevronUp} from "react-icons/all";
 import {canDisplayType} from "../submission/FileOverview";
 
 interface DirectoryNodeProperties {
-	node: Node
+    node: Node
 }
+
 export function DirectoryNode({node}: DirectoryNodeProperties) {
-	const [opened, setOpened] = useState(true);
+    const [opened, setOpened] = useState(true);
 
-	// console.log("Rendering node");
-	// console.log(node);
-
-	return <div className={"directoryNode" + (node instanceof TopLevelNode ? " directoryTopLevel" : "")}>
-		{node.children.length > 0 ?
-			<Fragment>
-				<DataTrigger text={node.name} trigger={{icon: opened ? FiChevronUp : FiChevronDown, click: () => setOpened(!opened)}}/>
-				{opened && node.children.map(child => <DirectoryNode key={child.transport || child.name} node={child}/>)}
-			</Fragment>
-			:
-			(node.type && canDisplayType(node.type)) ?
-				<DataItem text={node.name} transport={node.transport}/>
-				:
-				<DataItem text={node.name} className="directoryNodeDisabled"/>
-		}
-	</div>;
+    return <div className={"directoryNode" + (node instanceof TopLevelNode ? " directoryTopLevel" : "")}>
+        {node.children.length > 0 ?
+            <Fragment>
+                <DataTrigger text={node.name}
+                             trigger={{icon: opened ? FiChevronUp : FiChevronDown, click: () => setOpened(!opened)}}/>
+                {opened && node.children.map(child => <DirectoryNode key={child.transport || child.name}
+                                                                     node={child}/>)}
+            </Fragment>
+            :
+            (node.type && canDisplayType(node.type)) ?
+                <DataItem text={node.name} transport={node.transport}/>
+                :
+                <DataItem text={node.name} className="directoryNodeDisabled"/>
+        }
+    </div>;
 }

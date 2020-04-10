@@ -1,9 +1,5 @@
 // TODO: This file is not an enum, so it's probably in the wrong place
 
-import { CourseRole } from "./CourseRoleEnum";
-interface EnumType {
-	[id : string] : string
-}
 /**
  * A function to make sure a value is contained in an enum, this returns the correct enum value
  * If the given enum is of type <string>=<sameString>, this function can be used multiple times without issue.
@@ -16,7 +12,7 @@ export function getEnum<T>(enumer : T, item : string) {
 	if (checkEnum(enumer, item)){
 		return enumer[item];
 	} else {
-		const items = '{'+Object.keys(enumer).join(', ')+'}'
+		const items = '{'+Object.keys(enumer).join(', ')+'}';
 		throw new EnumError("item `"+item+"` was expected to be part of the enum "+items+", but wasn't")
 	}
 }

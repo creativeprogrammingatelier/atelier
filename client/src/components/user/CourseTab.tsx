@@ -7,24 +7,25 @@ import {Panel} from "../general/Panel";
 import {User} from "../../../../models/api/User";
 
 interface CourseTabProperties {
-	user: User
+    user: User
 }
+
 export function CourseTab({user}: CourseTabProperties) {
-	return <div className="contentTab">
-		<DataList header="Courses">
-			<Loading<Course[]>
-				loader={getUserCourses}
-				params={[user.ID]}
-				component={courses =>
-					<div>
-						{courses.map((course: Course) => <Panel
+    return <div className="contentTab">
+        <DataList header="Courses">
+            <Loading<Course[]>
+                loader={getUserCourses}
+                params={[user.ID]}
+                component={courses =>
+                    <div>
+                        {courses.map((course: Course) => <Panel
                             key={course.ID}
-							display={course.name}
-							location={`/course/${course.ID}/user/${user.ID}`}
-						/>)}
-					</div>
-				}
-			/>
-		</DataList>
-	</div>
+                            display={course.name}
+                            location={`/course/${course.ID}/user/${user.ID}`}
+                        />)}
+                    </div>
+                }
+            />
+        </DataList>
+    </div>
 }

@@ -1,23 +1,23 @@
 import 'mocha';
-import { expect } from 'chai';
-import { repeatIt, randomNumberArray, randomBool, TEST_COUNT } from '../QuickCheck';
+import {expect} from 'chai';
+import {repeatIt, randomNumberArray, randomBool, TEST_COUNT} from '../QuickCheck';
 
 import '../../helpers/Extensions';
 
 describe("Array.skipWhile", () => {
     repeatIt("should give no results if predicate is false", () => {
         const array = randomNumberArray(TEST_COUNT);
-        expect(array.skipWhile(x => false)).to.deep.equal(array);
+        expect(array.skipWhile(() => false)).to.deep.equal(array);
     });
 
     repeatIt("should give an empty array if predicate is true", () => {
         const array = randomNumberArray(TEST_COUNT);
-        expect(array.skipWhile(x => true)).to.deep.equal([]);
+        expect(array.skipWhile(() => true)).to.deep.equal([]);
     });
 
     repeatIt("should give a slice of the array", () => {
         const array = randomNumberArray(TEST_COUNT);
-        const skipped = array.skipWhile(x => randomBool());
+        const skipped = array.skipWhile(() => randomBool());
         expect(skipped).to.deep.equal(array.slice(array.length - skipped.length));
     });
 

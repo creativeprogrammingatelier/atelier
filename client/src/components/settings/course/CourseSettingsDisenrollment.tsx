@@ -7,10 +7,10 @@ import {Button, Form} from "react-bootstrap";
 import {UserInfo} from "../user/UserInfo";
 
 interface CourseSettingsDisenrollmentProperties {
-    courseID : string
+    courseID: string
 }
 
-export function CourseSettingsDisenrollment({courseID} : CourseSettingsDisenrollmentProperties) {
+export function CourseSettingsDisenrollment({courseID}: CourseSettingsDisenrollmentProperties) {
     const [user, setUser] = useState(undefined as User | undefined);
 
     function disenrollUser() {
@@ -18,7 +18,7 @@ export function CourseSettingsDisenrollment({courseID} : CourseSettingsDisenroll
             console.log("Disenrolling user");
             console.log(user);
             courseDisenrollUser(courseID, user.ID)
-                .then((user : CourseUser) => {
+                .then((user: CourseUser) => {
                     console.log("User disenrolled");
                     // TODO: Visual user feedback
                 });
@@ -27,11 +27,11 @@ export function CourseSettingsDisenrollment({courseID} : CourseSettingsDisenroll
     }
 
     return <Form>
-        <UserSearch onSelected={setUser} />
+        <UserSearch onSelected={setUser}/>
         {
             user &&
             <Fragment>
-                <UserInfo user={user} />
+                <UserInfo user={user}/>
                 <Button onClick={disenrollUser}>Disenroll User</Button>
             </Fragment>
         }

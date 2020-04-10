@@ -1,5 +1,3 @@
-import { toBin } from "../../api/src/database/HelperDB";
-
 export enum PermissionEnum {
     'admin',
     'manageUserPermissionsView',
@@ -78,8 +76,8 @@ export const managePermissions = [
         name: 'manageUserRole'
     },
     {
-        display : 'Manage plugins',
-        name : 'managePlugins'
+        display: 'Manage plugins',
+        name: 'managePlugins'
     },
     {
         display: 'Manage user registration',
@@ -126,17 +124,17 @@ export const managePermissions = [
     }
 ];
 
-export const permissionsSectionView: {[key: string]: string} = {
+export const permissionsSectionView: { [key: string]: string } = {
     viewAllUserProfiles: "View all user profiles",
     viewAllCourses: "View all courses",
     viewAllSubmissions: "View all submissions",
     viewRestrictedComments: "View restricted comments"
 };
-export const permissionsSectionManage: {[key: string]: string} = {
+export const permissionsSectionManage: { [key: string]: string } = {
     manageUserPermissionsView: "Manage user permissions view",
     manageUserPermissionsManager: "Manage user permissions manager",
     manageUserRole: "Manage user role",
-    managePlugins : "Manage plugins",
+    managePlugins: "Manage plugins",
     manageUserRegistration: "Manage user registration",
     addCourses: "Add courses",
     manageCourses: "Manage courses",
@@ -151,9 +149,10 @@ export const permissionsSectionManage: {[key: string]: string} = {
 };
 
 const permissionBits = 40;
-const nativeSupportBigInt = typeof BigInt === "function"
+const nativeSupportBigInt = typeof BigInt === "function";
+
 /**
- * containspermission implementtion using javascripts native bigInteger. 
+ * containspermission implementtion using javascripts native bigInteger.
  */
 function _containsPermissionWith(permission: PermissionEnum, permissions: number) {
     const permissionsBigInt = BigInt(permissions);
@@ -162,11 +161,11 @@ function _containsPermissionWith(permission: PermissionEnum, permissions: number
 }
 
 /**
- * containsPermission implementation using a custom bigInteger, for platforms that do not support it. 
+ * containsPermission implementation using a custom bigInteger, for platforms that do not support it.
  */
 function _containsPermissionWithout(permission: PermissionEnum, permissions: number) {
     const permissionsBigInt = toBig(permissions);
-    const permissionBit = toBig(2**permission);
+    const permissionBit = toBig(2 ** permission);
     return fromBig(bigAnd(permissionBit, permissionsBigInt)) > 0;
 }
 
@@ -177,45 +176,46 @@ function _containsPermissionWithout(permission: PermissionEnum, permissions: num
  * @param permission, permission to check
  * @param permissions, permissions of the user
  */
-export const containsPermission = nativeSupportBigInt ? _containsPermissionWith : _containsPermissionWithout
+export const containsPermission = nativeSupportBigInt ? _containsPermissionWith : _containsPermissionWithout;
 
 export function containsPermissionAny(permission: PermissionEnum[], permissions: number) {
     return permission.some((element) => containsPermission(element, permissions));
 }
+
 export function containsPermissionAll(permission: PermissionEnum[], permissions: number) {
     return permission.every((element) => containsPermission(element, permissions));
 }
 
 /**
- * These functions are immitating a biginteger, 
+ * These functions are immitating a biginteger,
  * We cannot use js' native bigInt() since it is not yet available on all large browsers.
  * these all expect eachothers output as inputs.
  */
 
 //result[0] is lsb
-const toBig = (n : number) : number[] => {
+const toBig = (n: number): number[] => {
     const res = [];
-    for (let i =0; i<permissionBits; i++){
-        res.push(n%2)
-        n=Math.floor(n/2)
+    for (let i = 0; i < permissionBits; i++) {
+        res.push(n % 2);
+        n = Math.floor(n / 2)
     }
     return res
-}
-const fromBig = (n : number[]) : number =>{
-    let res =0;
-    for (let i =0; i<permissionBits; i++){
-        res += n[i] * 2**i
+};
+const fromBig = (n: number[]): number => {
+    let res = 0;
+    for (let i = 0; i < permissionBits; i++) {
+        res += n[i] * 2 ** i
     }
     return res
-}
+};
 
 // assumed length === permissionBits
-const bigAnd = (n1 : number[], n2 : number[]) : number[] =>{
-    const res : number[] = []
-    for (let i=0;i<permissionBits;i++){
+const bigAnd = (n1: number[], n2: number[]): number[] => {
+    const res: number[] = [];
+    for (let i = 0; i < permissionBits; i++) {
         res.push(n1[i] & n2[i])
     }
     return res
-}
+};
 
 

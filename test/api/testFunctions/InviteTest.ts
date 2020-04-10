@@ -1,22 +1,32 @@
-import { getInvitesByUserAndCourse, getInviteStudent, getInviteTA, getInviteTeacher, deleteInviteStudent, deleteInviteTA, deleteInviteTeacher, setPermissionsGlobal, adminSetPermissions } from "../APIRequestHelper";
-import { expect } from "chai";
-import { assert } from "console";
-import { instanceOfInvite } from "../../InstanceOf";
+import {
+    getInvitesByUserAndCourse,
+    getInviteStudent,
+    getInviteTA,
+    getInviteTeacher,
+    deleteInviteStudent,
+    deleteInviteTA,
+    deleteInviteTeacher,
+    setPermissionsGlobal,
+    adminSetPermissions
+} from "../APIRequestHelper";
+import {expect} from "chai";
+import {assert} from "console";
+import {instanceOfInvite} from "../../InstanceOf";
 
-export function inviteTest(){
-	/**
-	 * GET requests:
-	 * /api/invite/course/:courseID/all
-	 * - response should be {student : Invite, TA : Invite, teacher : Invite}
-	 * - invites should be undefined if no permission to manage user registration
-	 * - invites should not be undefined if created
-	 * /api/invite/course/:courseID/role/:role
-	 * - response should be Invite
-	 * - requires permission to manage user registration
-	 * /api/invite/:inviteID
-	 * - user should be enrolled after request
-	 * - response should redirect to the course
-	 */
+export function inviteTest() {
+    /**
+     * GET requests:
+     * /api/invite/course/:courseID/all
+     * - response should be {student : Invite, TA : Invite, teacher : Invite}
+     * - invites should be undefined if no permission to manage user registration
+     * - invites should not be undefined if created
+     * /api/invite/course/:courseID/role/:role
+     * - response should be Invite
+     * - requires permission to manage user registration
+     * /api/invite/:inviteID
+     * - user should be enrolled after request
+     * - response should redirect to the course
+     */
     describe("Invites", async () => {
         async function checkInviteEmpty() {
             const response = await getInvitesByUserAndCourse();
@@ -26,12 +36,12 @@ export function inviteTest(){
             expect(response.body.teacher).to.equal(undefined);
         }
 
-        it("Should not be possible to request all invite links without permission", async() => {
+        it("Should not be possible to request all invite links without permission", async () => {
             const response = await getInvitesByUserAndCourse();
             expect(response).to.have.status(401);
         });
 
-        it("Should not be possible to request a specific invite link without permission", async() => {
+        it("Should not be possible to request a specific invite link without permission", async () => {
             // User cannot create a student invite link without permission
             let response = await getInviteStudent();
             expect(response).to.have.status(401);
@@ -45,36 +55,36 @@ export function inviteTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should have no links at the start.", async() => {
+        it("Should have no links at the start.", async () => {
             await deleteInviteStudent();
             await deleteInviteTA();
             await deleteInviteTeacher();
 
-            await setPermissionsGlobal({"manageUserRegistration" : true});
+            await setPermissionsGlobal({"manageUserRegistration": true});
             await checkInviteEmpty();
-            await setPermissionsGlobal({"manageUserRegistration" : false});
+            await setPermissionsGlobal({"manageUserRegistration": false});
         });
 
-        it("Should be possible to create and receive links.", async() => {
-            await adminSetPermissions({"manageUserRegistration" : true});
+        it("Should be possible to create and receive links.", async () => {
+            await adminSetPermissions({"manageUserRegistration": true});
 
             // User can create a student invite link with permission
             let response = await getInviteStudent();
             expect(response).to.have.status(200);
             assert(instanceOfInvite(response.body));
-            const studentInviteID : string = response.body.inviteID;
+            const studentInviteID: string = response.body.inviteID;
 
             // User can create a TA invite link with permission
             response = await getInviteTA();
             expect(response).to.have.status(200);
             assert(instanceOfInvite(response.body));
-            const taInviteID : string = response.body.inviteID;
+            const taInviteID: string = response.body.inviteID;
 
             // User can create a teacher invite link with permission
             response = await getInviteTeacher();
             expect(response).to.have.status(200);
             assert(instanceOfInvite(response.body));
-            const teacherInviteID : string = response.body.inviteID;
+            const teacherInviteID: string = response.body.inviteID;
 
             // Check that invite links exist now
             response = await getInvitesByUserAndCourse();
@@ -83,18 +93,18 @@ export function inviteTest(){
             expect(response.body.TA).to.equal(taInviteID);
             expect(response.body.teacher).to.equal(teacherInviteID);
 
-            await adminSetPermissions({"manageUserRegistration" : false});
+            await adminSetPermissions({"manageUserRegistration": false});
         });
 
-        it("Should be possible to delete links.", async() => {
-            await adminSetPermissions({"manageUserRegistration" : true});
+        it("Should be possible to delete links.", async () => {
+            await adminSetPermissions({"manageUserRegistration": true});
 
             let response = await getInvitesByUserAndCourse();
             expect(response).to.have.status(200);
 
-            const studentInviteID : string = response.body.student;
-            const taInviteID : string = response.body.TA;
-            const teacherInviteID : string = response.body.teacher;
+            const studentInviteID: string = response.body.student;
+            const taInviteID: string = response.body.TA;
+            const teacherInviteID: string = response.body.teacher;
 
             // User can delete a student invite link
             response = await deleteInviteStudent();
@@ -116,7 +126,7 @@ export function inviteTest(){
 
             await checkInviteEmpty();
 
-            await adminSetPermissions({"manageUserRegistration" : false});
+            await adminSetPermissions({"manageUserRegistration": false});
         });
     });
 }

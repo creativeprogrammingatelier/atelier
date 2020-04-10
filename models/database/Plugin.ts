@@ -1,6 +1,5 @@
 import { UUIDHelper } from "../../api/src/helpers/UUIDHelper";
 import { DBTools } from "../../api/src/database/HelperDB";
-import { User } from "./User";
 
 export interface Plugin {
 	pluginID : string,

@@ -9,6 +9,7 @@ interface TabButtonProperties {
     location: string,
     active?: boolean
 }
+
 export function TabButton({icon, text, location, active}: TabButtonProperties) {
     return (
         <Nav.Item>

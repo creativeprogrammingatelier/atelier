@@ -1,35 +1,45 @@
-import { adminSetPermissions, getCommentThread, getCommentThreadByFile, getCommentThreadBySubmission, getCommentThreadBySubmissionRecent, adminRegisterCourse, adminUnregisterCourse, setCommentThreadPrivate, setCommentThreadPublic } from "../APIRequestHelper";
-import { ThreadState } from "../../../models/enums/ThreadStateEnum";
-import { expect } from "chai";
-import { assert } from "console";
-import { instanceOfCommentThread } from "../../InstanceOf";
-import { CommentThread } from "../../../models/api/CommentThread";
+import {
+    adminSetPermissions,
+    getCommentThread,
+    getCommentThreadByFile,
+    getCommentThreadBySubmission,
+    getCommentThreadBySubmissionRecent,
+    adminRegisterCourse,
+    adminUnregisterCourse,
+    setCommentThreadPrivate,
+    setCommentThreadPublic
+} from "../APIRequestHelper";
+import {ThreadState} from "../../../models/enums/ThreadStateEnum";
+import {expect} from "chai";
+import {assert} from "console";
+import {instanceOfCommentThread} from "../../InstanceOf";
+import {CommentThread} from "../../../models/api/CommentThread";
 
-export function commentThreadTest(){
-	/**
-	 * GET requests:
-	 * /api/commentThread/:commentThread
-	 * - response should be CommentThread
-	 * - user should be enrolled in the course or have permission to view all courses.
-	 * /api/commentThread/file/:fileID
-	 * - response should be CommentThread[]
-	 * - user should be enrolled in the course of have permission to view all courses.
-	 * - user should have permission to view private comment threads
-	 * /api/commentThread/submission/:submissionID
-	 * - response should be CommentThread[]
-	 * - user should be enrolled in the course of have permission to view all courses.
-	 * - user should have permission to view private comment threads
-	 * /api/commentThread/submission/:submissionID/recent
-	 * - response should be CommentThread[]
-	 * - user should be enrolled in teh course of have permission to view all courses.
-	 * - user should have permission to view private comment threads
-	 *
-	 * PUT requests:
-	 * /api/commentThread/:commentThread
-	 * - response should be a comment thread
-	 * - user should be able to update visibility
-	 * - user should have permission to manage the comment thread
-	 */
+export function commentThreadTest() {
+    /**
+     * GET requests:
+     * /api/commentThread/:commentThread
+     * - response should be CommentThread
+     * - user should be enrolled in the course or have permission to view all courses.
+     * /api/commentThread/file/:fileID
+     * - response should be CommentThread[]
+     * - user should be enrolled in the course of have permission to view all courses.
+     * - user should have permission to view private comment threads
+     * /api/commentThread/submission/:submissionID
+     * - response should be CommentThread[]
+     * - user should be enrolled in the course of have permission to view all courses.
+     * - user should have permission to view private comment threads
+     * /api/commentThread/submission/:submissionID/recent
+     * - response should be CommentThread[]
+     * - user should be enrolled in teh course of have permission to view all courses.
+     * - user should have permission to view private comment threads
+     *
+     * PUT requests:
+     * /api/commentThread/:commentThread
+     * - response should be a comment thread
+     * - user should be able to update visibility
+     * - user should have permission to manage the comment thread
+     */
     describe("Comment threads", () => {
         async function commentThreadsPermissions(threadStates = [ThreadState.public, ThreadState.private]) {
             // User can access a specific comment thread with permission
@@ -96,7 +106,7 @@ export function commentThreadTest(){
             await adminSetPermissions({"viewAllCourses": false});
         });
 
-        it("Should not be possible to set visibility without permission.", async() => {
+        it("Should not be possible to set visibility without permission.", async () => {
             let response = await setCommentThreadPrivate();
             expect(response).to.have.status(401);
 
@@ -104,8 +114,8 @@ export function commentThreadTest(){
             expect(response).to.have.status(401);
         });
 
-        it("Should be possible to set visibility with 'manageRestrictedComment' permission", async() => {
-            await adminSetPermissions({"manageRestrictedComments" : true});
+        it("Should be possible to set visibility with 'manageRestrictedComment' permission", async () => {
+            await adminSetPermissions({"manageRestrictedComments": true});
 
             // Change comment thread to private
             let response = await setCommentThreadPrivate();
@@ -119,7 +129,7 @@ export function commentThreadTest(){
             expect(instanceOfCommentThread(response.body));
             expect(response.body.visibility === "public");
 
-            await adminSetPermissions({"manageRestrictedComments" : false});
+            await adminSetPermissions({"manageRestrictedComments": false});
         });
     });
 }

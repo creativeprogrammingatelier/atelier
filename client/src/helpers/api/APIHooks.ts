@@ -1,20 +1,28 @@
-import { Cache, CacheState, CacheCollection, CacheItem, CacheCollectionInterface, emptyCacheItem, CacheItemInterface } from './Cache';
-import { Course, CoursePartial } from '../../../../models/api/Course';
+import {
+    Cache,
+    CacheState,
+    CacheCollection,
+    CacheItem,
+    CacheCollectionInterface,
+    emptyCacheItem,
+    CacheItemInterface
+} from './Cache';
+import {Course} from '../../../../models/api/Course';
 import * as API from '../../../helpers/APIHelper';
-import { randomBytes } from 'crypto';
-import { User } from '../../../../models/api/User';
-import { Permission } from '../../../../models/api/Permission';
-import { useCacheItem, useCacheCollection, useRawCache } from '../../components/general/loading/CacheProvider';
-import { Submission } from '../../../../models/api/Submission';
-import { Mention } from '../../../../models/api/Mention';
-import { CommentThread, CreateCommentThread } from '../../../../models/api/CommentThread';
-import { Comment } from '../../../../models/api/Comment';
-import { File as APIFile } from '../../../../models/api/File';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { useObservable } from 'observable-hooks';
-import { CourseState } from '../../../../models/enums/CourseStateEnum';
-import { ThreadState } from '../../../../models/enums/ThreadStateEnum';
+import {randomBytes} from 'crypto';
+import {User} from '../../../../models/api/User';
+import {Permission} from '../../../../models/api/Permission';
+import {useCacheItem, useCacheCollection, useRawCache} from '../../components/general/loading/CacheProvider';
+import {Submission} from '../../../../models/api/Submission';
+import {Mention} from '../../../../models/api/Mention';
+import {CommentThread, CreateCommentThread} from '../../../../models/api/CommentThread';
+import {Comment} from '../../../../models/api/Comment';
+import {File as APIFile} from '../../../../models/api/File';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {useObservable} from 'observable-hooks';
+import {CourseState} from '../../../../models/enums/CourseStateEnum';
+import {ThreadState} from '../../../../models/enums/ThreadStateEnum';
 
 export interface APICache<T> {
     observable: Observable<CacheCollection<T> | CacheItem<T>>
@@ -53,13 +61,13 @@ export function useCollectionCombined<T>(observable: Observable<CacheCollection<
     return useObservable(() => observable.pipe(
         map(collection => {
             if ("items" in collection) {
-                const { items, ...props } = collection;
+                const {items, ...props} = collection;
                 return {
                     ...props,
                     value: items.map(item => item.value)
                 }
             } else {
-                const { value, ...props } = collection;
+                const {value, ...props} = collection;
                 return {
                     ...props,
                     value: [value]
@@ -84,7 +92,7 @@ function refreshCollection<T extends { ID: string }>(promise: Promise<T | T[]>, 
 
 function refreshItem<T>(promise: Promise<T>, cache: CacheItemInterface<T>) {
     return promise.then(result => {
-        cache.updateItem(old => result, CacheState.Loaded);
+        cache.updateItem(() => result, CacheState.Loaded);
         return true;
     });
 }
@@ -92,7 +100,7 @@ function refreshItem<T>(promise: Promise<T>, cache: CacheItemInterface<T>) {
 function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheCollectionInterface<T>) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
-    cache.transaction(cache => cache.add({ ...item, ID: tempID }, CacheState.Loading));
+    cache.transaction(cache => cache.add({...item, ID: tempID}, CacheState.Loading));
     return promise
         .then(result => {
             console.log("Creation of", tempID, "succeeded:", result);
@@ -119,7 +127,7 @@ function updateModel<T>(old: T, update: Partial<T>): T {
         old,
         ...Object.keys(updateMap)
             .filter(key => updateMap[key] !== undefined)
-            .map(key => ({ [key]: updateMap[key] }))
+            .map(key => ({[key]: updateMap[key]}))
     );
 }
 
@@ -149,39 +157,42 @@ function deleteItem<T extends { ID: string }>(promise: Promise<T>, selector: (it
 }
 
 export function useCourses(): Refresh<Course> & Create<[{ name: string, state: CourseState }], Course> {
-    const courses = useCacheCollection<Course>("courses", { 
-        sort: (a, b) => 
+    const courses = useCacheCollection<Course>("courses", {
+        sort: (a, b) =>
             // Sort by open first, then by name
-            a.state === CourseState.open && b.state !== CourseState.open ? -1 
-            : a.state !== CourseState.open && b.state === CourseState.open ? 1 
-            : a.name > b.name ? 1 
-            : a.name < b.name ? -1 
-            : 0
+            a.state === CourseState.open && b.state !== CourseState.open ? -1
+                : a.state !== CourseState.open && b.state === CourseState.open ? 1
+                : a.name > b.name ? 1
+                    : a.name < b.name ? -1
+                        : 0
     });
     return {
         observable: courses.observable,
         refresh: () => refreshCollection(API.getCourses(), courses),
         defaultTimeout: 2 * 3600,
-        create: ({ name, state }: { name: string, state: CourseState }) => 
+        create: ({name, state}: { name: string, state: CourseState }) =>
             create(
-                API.createCourse({ name, state }), 
-                { ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission }, 
+                API.createCourse({name, state}),
+                {ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission},
                 courses
             )
     };
 }
 
-export function useCourse(courseID: string): Refresh<Course> & Update<[{name?: string, state?: CourseState}], Course> {
-    const courses = useCacheCollection<Course>("courses", { subKey: courseID, filter: course => course?.ID === courseID });
+export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: string, state?: CourseState }], Course> {
+    const courses = useCacheCollection<Course>("courses", {
+        subKey: courseID,
+        filter: course => course?.ID === courseID
+    });
     const course = useCollectionAsSingle(courses.observable);
-    return { 
+    return {
         observable: course,
         defaultTimeout: 0,
         refresh: () => refreshCollection(API.getCourse(courseID), courses),
-        update: ({name, state}: {name?: string, state?: CourseState}) => 
+        update: ({name, state}: { name?: string, state?: CourseState }) =>
             update(
                 API.updateCourse(courseID, {name, state}),
-                { ID: courseID, name, state },
+                {ID: courseID, name, state},
                 courses
             )
     };
@@ -206,8 +217,8 @@ export function useCoursePermission(courseID: string): Refresh<Permission> {
 }
 
 export function useCourseSubmissions(courseID: string): Refresh<Submission> & Create<[string, File[]], Submission> {
-    const submissions = useCacheCollection<Submission>(`submissions`, { 
-        subKey: courseID, 
+    const submissions = useCacheCollection<Submission>(`submissions`, {
+        subKey: courseID,
         filter: submission => submission?.references?.courseID === courseID,
         // Sort by date, newest first
         sort: (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -217,22 +228,30 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
         observable: submissions.observable,
         refresh: () => refreshCollection(API.getCourseSubmissions(courseID), submissions),
         defaultTimeout: 60,
-        create: (projectName: string, files: File[]) => 
+        create: (projectName: string, files: File[]) =>
             create(
                 API.createSubmission(courseID, projectName, files),
-                { ID: "", name: projectName, date: new Date(Date.now()).toISOString(), user: getCurrentUser(), state: "new", files: [], references: { courseID } },
+                {
+                    ID: "",
+                    name: projectName,
+                    date: new Date(Date.now()).toISOString(),
+                    user: getCurrentUser(),
+                    state: "new",
+                    files: [],
+                    references: {courseID}
+                },
                 submissions
             )
     }
 }
 
 export function useSubmission(submissionID: string): Refresh<Submission> {
-    const submissions = useCacheCollection<Submission>(`submissions`, { 
+    const submissions = useCacheCollection<Submission>(`submissions`, {
         subKey: submissionID,
-        filter: submission => submission?.ID === submissionID 
+        filter: submission => submission?.ID === submissionID
     });
     const submission = useCollectionAsSingle(submissions.observable);
-    return { 
+    return {
         observable: submission,
         refresh: () => refreshCollection(API.getSubmission(submissionID), submissions),
         defaultTimeout: 0
@@ -282,10 +301,10 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
     return promise.then(result => {
         threads.transaction(threads => {
             for (const thread of result) {
-                threads.add({ ...thread, comments: [thread.comments[0]] }, CacheState.Loaded);
+                threads.add({...thread, comments: [thread.comments[0]]}, CacheState.Loaded);
                 const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
                 comments.transaction(comments => {
-                    comments.remove(comment => true);
+                    comments.remove(() => true);
                     comments.addAll(thread.comments, CacheState.Loaded);
                 });
             }
@@ -297,8 +316,20 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
 function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, getCurrentUser: () => User, cache: Cache) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
-    const comment = { ID: "", user: getCurrentUser(), text: thread.comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } };
-    threads.transaction(threads => threads.add({ ID: tempID, visibility: thread.visibility, comments: [comment], references: { submissionID: "", courseID: "" } } as CommentThread, CacheState.Loading));
+    const comment = {
+        ID: "",
+        user: getCurrentUser(),
+        text: thread.comment,
+        created: new Date(Date.now()).toISOString(),
+        edited: new Date(Date.now()).toISOString(),
+        references: {submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: ""}
+    };
+    threads.transaction(threads => threads.add({
+        ID: tempID,
+        visibility: thread.visibility,
+        comments: [comment],
+        references: {submissionID: "", courseID: ""}
+    } as CommentThread, CacheState.Loading));
     const tempComments = cache.getCollection<Comment>(`comments/${tempID}`);
     tempComments.transaction(tempComments => tempComments.add(comment, CacheState.Loading));
     return promise.then(thread => {
@@ -314,12 +345,12 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
         tempComments.transaction(tempComments => tempComments.clear());
         return thread;
     })
-    .catch((err: Error) => {
-        console.log("Creation of", tempID, "failed:", err);
-        threads.transaction(threads => threads.remove(item => item.ID === tempID));
-        tempComments.transaction(tempComments => tempComments.clear());
-        throw err;
-    });
+        .catch((err: Error) => {
+            console.log("Creation of", tempID, "failed:", err);
+            threads.transaction(threads => threads.remove(item => item.ID === tempID));
+            tempComments.transaction(tempComments => tempComments.clear());
+            throw err;
+        });
 }
 
 export function useProjectComments(submissionID: string): Refresh<CommentThread> & Create<[CreateCommentThread], CommentThread> {
@@ -332,7 +363,7 @@ export function useProjectComments(submissionID: string): Refresh<CommentThread>
         observable: threads.observable,
         refresh: () => refreshComments(API.getProjectComments(submissionID), threads, cache),
         defaultTimeout: 30,
-        create: (thread: CreateCommentThread) => 
+        create: (thread: CreateCommentThread) =>
             createCommentThread(
                 thread,
                 API.createSubmissionCommentThread(submissionID, thread),
@@ -362,14 +393,14 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
         sort: (a, b) => {
             const as = a.snippet, bs = b.snippet;
             return (
-                as !== undefined && bs !== undefined 
-                // Sort comments with snippets by start position in the file
-                ? as.start.line - bs.start.line || as.start.character - bs.start.character
-                // Sort general file comments before comments with snippets
-                : as === undefined && bs !== undefined ? -1
-                : as !== undefined && bs === undefined ? 1
-                // Sort general file comments by reverse date
-                : new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
+                as !== undefined && bs !== undefined
+                    // Sort comments with snippets by start position in the file
+                    ? as.start.line - bs.start.line || as.start.character - bs.start.character
+                    // Sort general file comments before comments with snippets
+                    : as === undefined && bs !== undefined ? -1
+                    : as !== undefined && bs === undefined ? 1
+                        // Sort general file comments by reverse date
+                        : new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
             );
         }
     });
@@ -391,17 +422,23 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
 }
 
 export function useCommentThread(submissionID: string, threadID: string, fileID?: string): Update<[ThreadState], CommentThread> & Delete<[], CommentThread> {
-    const threads = 
+    const threads =
         fileID !== undefined
-        ? useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, { subKey: fileID, filter: thread => thread.ID === threadID })
-        : useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`, { filter: thread => thread.ID === threadID });
+            ? useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, {
+                subKey: fileID,
+                filter: thread => thread.ID === threadID
+            })
+            : useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`, {filter: thread => thread.ID === threadID});
     const thread = useCollectionAsSingle(threads.observable);
     return {
         observable: thread,
         update: (visibility: ThreadState) =>
             update(
-                API.setCommentThreadVisibility(threadID, visibility).then(thread => ({ ...thread, comments: undefined as unknown as Comment[] })),
-                { ID: threadID, visibility },
+                API.setCommentThreadVisibility(threadID, visibility).then(thread => ({
+                    ...thread,
+                    comments: undefined as unknown as Comment[]
+                })),
+                {ID: threadID, visibility},
                 threads
             ),
         delete: () => deleteItem(API.deleteCommentThread(threadID), thread => thread.ID === threadID, threads)
@@ -415,22 +452,29 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
     const getCurrentUser = useCurrentUserDirect();
     return {
         observable: comments.observable,
-        create: (comment: string) => 
+        create: (comment: string) =>
             create(
                 API.createComment(commentThreadID, comment),
-                { ID: "", user: getCurrentUser(), text: comment, created: new Date(Date.now()).toISOString(), edited: new Date(Date.now()).toISOString(), references: { submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: "" } },
+                {
+                    ID: "",
+                    user: getCurrentUser(),
+                    text: comment,
+                    created: new Date(Date.now()).toISOString(),
+                    edited: new Date(Date.now()).toISOString(),
+                    references: {submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: ""}
+                },
                 comments
             ),
         update: (commentID: string, comment: string) =>
             update(
                 API.editComment(commentThreadID, commentID, comment),
-                { ID: commentID, text: comment },
+                {ID: commentID, text: comment},
                 comments
             ),
-        delete: (commentID: string) => 
+        delete: (commentID: string) =>
             update(
-                API.deleteComment(commentThreadID, commentID), 
-                { ID: commentID, text: "[this comment was deleted]" }, 
+                API.deleteComment(commentThreadID, commentID),
+                {ID: commentID, text: "[this comment was deleted]"},
                 comments
             )
     }

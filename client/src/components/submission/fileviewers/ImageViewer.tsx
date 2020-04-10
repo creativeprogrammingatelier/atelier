@@ -12,38 +12,40 @@ import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
 import {FileViewer, FileViewerProperties} from "../FileOverview";
 
 export function ImageViewer({file, sendComment}: FileViewerProperties) {
-	const [success, setSuccess] = useState(false as FeedbackContent);
-	const [error, setError] = useState(false as FeedbackContent);
+    const [success, setSuccess] = useState(false as FeedbackContent);
+    const [error, setError] = useState(false as FeedbackContent);
 
-	const handleCommentSend = async(comment: string, restricted: boolean) => {
-		return sendComment(comment, restricted).then(state => {
-			setSuccess(`Started new comment thread`);
-			return state;
-		}).catch(state => {
-			setError(`Could not create comment`);
-			return state;
-		});
-	};
+    const handleCommentSend = async (comment: string, restricted: boolean) => {
+        return sendComment(comment, restricted).then(state => {
+            setSuccess(`Started new comment thread`);
+            return state;
+        }).catch(state => {
+            setError(`Could not create comment`);
+            return state;
+        });
+    };
 
-	return <Fragment>
-		<CommentCreator sendHandler={handleCommentSend}/>
-		<FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
-		<FeedbackError close={setError}>{error}</FeedbackError>
-		<img src={getFileUrl(file.ID)} alt={file.name} className="w-100 mt-3"/>
-	</Fragment>;
+    return <Fragment>
+        <CommentCreator sendHandler={handleCommentSend}/>
+        <FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
+        <FeedbackError close={setError}>{error}</FeedbackError>
+        <img src={getFileUrl(file.ID)} alt={file.name} className="w-100 mt-3"/>
+    </Fragment>;
 }
+
 function acceptsType(type: string) {
-	return type.startsWith("image/");
+    return type.startsWith("image/");
 }
+
 function acceptsFile(file: File) {
-	return acceptsType(file.type);
+    return acceptsType(file.type);
 }
 
 const fileViewer: FileViewer = {
-	name: "Image",
-	icon: FiImage,
-	viewer: ImageViewer,
-	acceptsType,
-	acceptsFile
+    name: "Image",
+    icon: FiImage,
+    viewer: ImageViewer,
+    acceptsType,
+    acceptsFile
 };
 export {fileViewer as FileViewerImage};

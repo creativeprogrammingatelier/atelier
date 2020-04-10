@@ -1,15 +1,14 @@
-import { Course, CoursePartial } from "../models/api/Course";
-import { Comment } from "../models/api/Comment";
-import { CommentThread } from "../models/api/CommentThread";
-import { File } from "../models/api/File";
-import { Permission } from "../models/api/Permission";
-import { Snippet } from "../models/api/Snippet";
-import { Submission } from "../models/api/Submission";
-import { User } from "../models/api/User";
-import { CourseUser } from "../models/api/CourseUser";
+import {Course, CoursePartial} from "../models/api/Course";
+import {Comment} from "../models/api/Comment";
+import {CommentThread} from "../models/api/CommentThread";
+import {File} from "../models/api/File";
+import {Permission} from "../models/api/Permission";
+import {Snippet} from "../models/api/Snippet";
+import {Submission} from "../models/api/Submission";
+import {User} from "../models/api/User";
+import {CourseUser} from "../models/api/CourseUser";
 import {CourseInvite} from "../models/api/Invite";
-import {CourseRole} from "../models/enums/CourseRoleEnum";
-import { SearchResult, SearchResultSnippet, SearchResultComment, SearchResultFile } from "../models/api/SearchResult";
+import {SearchResult, SearchResultSnippet, SearchResultComment, SearchResultFile} from "../models/api/SearchResult";
 
 /**
  * Interface type checking, because this is not built in...
@@ -17,7 +16,7 @@ import { SearchResult, SearchResultSnippet, SearchResultComment, SearchResultFil
  */
 
 // tslint:disable-next-line:no-any
-export function instanceOfCourseUser(object : any): object is CourseUser {
+export function instanceOfCourseUser(object: any): object is CourseUser {
     return ('userID' in object
         && typeof object.userID === 'string'
         && 'courseID' in object
@@ -135,7 +134,7 @@ export function instanceOfUser(object: any): object is User {
 }
 
 // tslint:disable-next-line:no-any
-export function instanceOfCoursePartial(object: any) : object is CoursePartial {
+export function instanceOfCoursePartial(object: any): object is CoursePartial {
     return ('ID' in object
         && typeof object.ID === 'string'
         && 'name' in object
@@ -146,15 +145,16 @@ export function instanceOfCoursePartial(object: any) : object is CoursePartial {
         && instanceOfUser(object.creator)
     )
 }
+
 // tslint:disable-next-line: no-any
-export function instanceofCourse(object : any) : object is Course {
+export function instanceofCourse(object: any): object is Course {
     return 'currentUserPermission' in object
-    && instanceOfPermission(object.currentUserPermission)
-    && instanceOfCoursePartial(object)
+        && instanceOfPermission(object.currentUserPermission)
+        && instanceOfCoursePartial(object)
 }
 
 // tslint:disable-next-line:no-any
-export function instanceOfCourseRegistration(object : any) : object is CourseUser {
+export function instanceOfCourseRegistration(object: any): object is CourseUser {
     return ('courseID' in object
         && typeof object.courseID === 'string'
         && 'userID' in object
@@ -169,7 +169,7 @@ export function instanceOfCourseRegistration(object : any) : object is CourseUse
 }
 
 // tslint:disable-next-line:no-any
-export function instanceOfInvite(object : any) : object is CourseInvite {
+export function instanceOfInvite(object: any): object is CourseInvite {
     return ('inviteID' in object
         && typeof object.inviteID === 'string'
         && 'creatorID' in object
@@ -184,14 +184,15 @@ export function instanceOfInvite(object : any) : object is CourseInvite {
 }
 
 // tslint:disable-next-line: no-any
-export function instanceOfSearchComment(object : any) : object is SearchResultComment{
+export function instanceOfSearchComment(object: any): object is SearchResultComment {
     return 'comment' in object
         && instanceOfComment(object.comment)
         && 'submission' in object
         && instanceOfSubmission(object.submission)
 }
+
 // tslint:disable-next-line: no-any
-export function instanceOfSearchFile(object : any) : object is SearchResultFile{
+export function instanceOfSearchFile(object: any): object is SearchResultFile {
     return 'file' in object
         && instanceOfFile(object.file)
         && 'submission' in object
@@ -199,7 +200,7 @@ export function instanceOfSearchFile(object : any) : object is SearchResultFile{
 }
 
 // tslint:disable-next-line: no-any
-export function instanceOfSearchSnippet(object : any) : object is SearchResultSnippet{
+export function instanceOfSearchSnippet(object: any): object is SearchResultSnippet {
     return 'snippet' in object
         && instanceOfSnippet(object.snippet)
         && 'file' in object
@@ -207,8 +208,9 @@ export function instanceOfSearchSnippet(object : any) : object is SearchResultSn
         && 'submission' in object
         && instanceOfSubmission(object.submission)
 }
+
 // tslint:disable-next-line:no-any
-export function instanceOfSearch(object: any) : object is SearchResult {
+export function instanceOfSearch(object: any): object is SearchResult {
     return 'courses' in object
         && object.courses.every(instanceofCourse)
         && 'users' in object
