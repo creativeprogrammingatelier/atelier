@@ -6,14 +6,14 @@ const FILE = "FILE::";
 
 interface LoginConfiguration {
     /** A unique internal identifier to use for this login method */
-    id: string, 
+    id: string,
     /** A name to be displayed to the user */
-    name: string, 
+    name: string,
 }
 
 /** Use an external SAML Identity Provider to login */
 export interface SamlLoginConfiguration extends LoginConfiguration {
-    type: "saml", 
+    type: "saml",
     /** The location for the metadata file of the Identity Provider */
     metadata: { url: string } | { file: string },
     /** The names of the attribute fields that contain user information */
@@ -43,7 +43,7 @@ export interface Configuration {
     port: number,
     /** Should files of which Atelier doesn't recognize the type be displayed as text */
     openUnknownFiles: boolean,
-    /** 
+    /**
      * List of authentication providers.
      * If multiple are given, the user is given the choice between them.
      * If only one is specified, the user will automatically be redirected.
@@ -88,7 +88,7 @@ function prop<T extends string | number | boolean>(name: string, value: T | unde
             return defaultValue;
         }
     } else {
-        if (typeof value === "string"  && value.startsWith(ENV)) {
+        if (typeof value === "string" && value.startsWith(ENV)) {
             return prop(name, process.env[value.substring(ENV.length)] as T, defaultValue);
         } else if (typeof value === "string" && value.startsWith(FILE)) {
             return prop(name, fs.readFileSync(value.substring(FILE.length), 'utf8') as T, defaultValue);
@@ -108,43 +108,43 @@ export const config: Configuration = {
     hostname: prop("hostname", json.hostname, env === "production" ? "0.0.0.0" : "127.0.0.1"),
     port: prop("port", json.port, 5000),
     openUnknownFiles: prop("openUnknownFiles", json.openUnknownFiles, false),
-    loginProviders: 
-        json.loginProviders 
-        // tslint:disable-next-line: no-any - It's fine, this is turning JSON into typed structure
-        ? json.loginProviders.map((provider: any, i: number) => {
-            const base = {
-                type: prop(`loginProvider[${i}].type`, provider.type),
-                id: prop(`loginProvider[${i}].id`, provider.id),
-                name: prop(`loginProvider[${i}].name`, provider.name)
-            }
-            switch (base.type) {
-                case "saml":
-                    if (provider.metadata === undefined || !("url" in provider.metadata || "file" in provider.metadata)) {
-                        throw new ConfigurationError(`loginProviders[${i}].metadata is required and should specify a url or file.`);
-                    }
-                    return {
-                        ...base,
-                        metadata: 
-                            "url" in provider.metadata 
-                            ? { url: prop(`loginProvider[${i}].metadata.url`, provider.metadata.url) }
-                            : { file: prop(`loginProvider[${i}].metadata.file`, provider.metadata.file) },
-                        attributes: provider.attributes
-                    }
-                case "builtin": 
-                    return {
-                        ...base,
-                        register: prop(`loginProvider[${i}].register`, provider.register, true)
-                    }
-                default: 
-                    throw new ConfigurationError(`Invalid login provider type "${base.type}"`);
-            }
-        })
-        : [{
-            type: "builtin",
-            id: "atelier",
-            name: "Atelier",
-            register: true
-        }],
+    loginProviders:
+        json.loginProviders
+            // tslint:disable-next-line: no-any - It's fine, this is turning JSON into typed structure
+            ? json.loginProviders.map((provider: any, i: number) => {
+                const base = {
+                    type: prop(`loginProvider[${i}].type`, provider.type),
+                    id: prop(`loginProvider[${i}].id`, provider.id),
+                    name: prop(`loginProvider[${i}].name`, provider.name)
+                };
+                switch (base.type) {
+                    case "saml":
+                        if (provider.metadata === undefined || !("url" in provider.metadata || "file" in provider.metadata)) {
+                            throw new ConfigurationError(`loginProviders[${i}].metadata is required and should specify a url or file.`);
+                        }
+                        return {
+                            ...base,
+                            metadata:
+                                "url" in provider.metadata
+                                    ? {url: prop(`loginProvider[${i}].metadata.url`, provider.metadata.url)}
+                                    : {file: prop(`loginProvider[${i}].metadata.file`, provider.metadata.file)},
+                            attributes: provider.attributes
+                        };
+                    case "builtin":
+                        return {
+                            ...base,
+                            register: prop(`loginProvider[${i}].register`, provider.register, true)
+                        };
+                    default:
+                        throw new ConfigurationError(`Invalid login provider type "${base.type}"`);
+                }
+            })
+            : [{
+                type: "builtin",
+                id: "atelier",
+                name: "Atelier",
+                register: true
+            }],
     database: {
         host: prop("database.host", json.database.host, "localhost"),
         port: prop("database.port", json.database.port, 5432),

@@ -1,15 +1,15 @@
 import express from 'express';
-import { capture, captureNext } from '../helpers/ErrorHelper';
-import { UserDB } from '../database/UserDB';
-import { GlobalRole } from '../../../models/enums/GlobalRoleEnum';
-import { PluginsDB } from '../database/PluginsDB';
-import { transaction, one, map } from '../database/HelperDB';
-import { Plugin } from '../../../models/api/Plugin';
-import { requirePermission } from '../helpers/PermissionHelper';
-import { getCurrentUserID } from '../helpers/AuthenticationHelper';
-import { PermissionEnum } from '../../../models/enums/PermissionEnum';
+import {capture, captureNext} from '../helpers/ErrorHelper';
+import {UserDB} from '../database/UserDB';
+import {GlobalRole} from '../../../models/enums/GlobalRoleEnum';
+import {PluginsDB} from '../database/PluginsDB';
+import {transaction, one, map} from '../database/HelperDB';
+import {Plugin} from '../../../models/api/Plugin';
+import {requirePermission} from '../helpers/PermissionHelper';
+import {getCurrentUserID} from '../helpers/AuthenticationHelper';
+import {PermissionEnum} from '../../../models/enums/PermissionEnum';
 
-export const pluginRouter = express.Router()
+export const pluginRouter = express.Router();
 
 /** All enpoints require the managePlugins permission */
 pluginRouter.use(captureNext(async (request, response, next) => {
@@ -25,7 +25,7 @@ pluginRouter.get('/', capture(async (request, response) => {
         barePlugins.map(async plugin => {
             const withHooks = await PluginsDB.addHooks(plugin);
             const user = await UserDB.getUserByID(plugin.pluginID);
-            return { ...withHooks, user };
+            return {...withHooks, user};
         }));
     response.send(plugins);
 }));
@@ -41,7 +41,7 @@ pluginRouter.post('/', capture(async (request, response) => {
     const plugin: Plugin = await transaction(async client => {
         const user = await UserDB.createUser({
             userName,
-            email, 
+            email,
             globalRole: GlobalRole.plugin,
             password: UserDB.invalidPassword(),
             client
@@ -57,10 +57,10 @@ pluginRouter.post('/', capture(async (request, response) => {
 
         const hooks = await Promise.all(
             (request.body.hooks as string[])
-                .map(hook => PluginsDB.addHook({ pluginID: plugin.pluginID, hook, client }))
+                .map(hook => PluginsDB.addHook({pluginID: plugin.pluginID, hook, client}))
         );
 
-        return { ...plugin, hooks: hooks.map(ph => ph.hook), user };
+        return {...plugin, hooks: hooks.map(ph => ph.hook), user};
     });
 
     response.send(plugin);
@@ -85,7 +85,7 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
                 client
             });
         } else {
-            user = await UserDB.getUserByID(userID, { client });
+            user = await UserDB.getUserByID(userID, {client});
         }
 
         let plugin = undefined;
@@ -98,21 +98,21 @@ pluginRouter.put('/:userID', capture(async (request, response) => {
                 client
             });
         } else {
-            plugin = await PluginsDB.filterPlugins({ pluginID: userID, client }).then(one);
+            plugin = await PluginsDB.filterPlugins({pluginID: userID, client}).then(one);
         }
 
-        let hooks = await PluginsDB.filterHooks({ pluginID: userID, client }).then(map(ph => ph.hook));
+        let hooks = await PluginsDB.filterHooks({pluginID: userID, client}).then(map(ph => ph.hook));
         if (request.body.hooks) {
             const add = (request.body.hooks as string[]).filter(h => !hooks.some(ph => ph === h));
             const remove = hooks.filter(h => !request.body.hooks.includes(h));
 
-            await Promise.all(add.map(hook => PluginsDB.addHook({ pluginID: userID, hook, client })));
-            await Promise.all(remove.map(hook => PluginsDB.deleteHook({ pluginID: userID, hook, client })));
+            await Promise.all(add.map(hook => PluginsDB.addHook({pluginID: userID, hook, client})));
+            await Promise.all(remove.map(hook => PluginsDB.deleteHook({pluginID: userID, hook, client})));
 
             hooks = request.body.hooks;
         }
 
-        return { ...plugin, hooks, user };
+        return {...plugin, hooks, user};
     });
 
     response.send(plugin);

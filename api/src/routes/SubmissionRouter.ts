@@ -13,13 +13,13 @@ import {getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
-import {filterSubmission, removePermissions, removePermissionsSubmission} from '../helpers/APIFilterHelper';
+import {filterSubmission, removePermissionsSubmission} from '../helpers/APIFilterHelper';
 import {PermissionEnum} from '../../../models/enums/PermissionEnum';
 import {requirePermission, requireRegistered} from '../helpers/PermissionHelper';
 import {transaction} from '../database/HelperDB';
 import {WebhookEvent} from '../../../models/enums/WebhookEventEnum';
 import {UPLOADS_PATH} from '../lib/constants';
-import { getProperType } from '../helpers/FileHelper';
+import {getProperType} from '../helpers/FileHelper';
 
 export const submissionRouter = express.Router();
 submissionRouter.use(AuthMiddleware.requireAuth);
@@ -27,14 +27,14 @@ submissionRouter.use(AuthMiddleware.requireAuth);
 /**
  * Get submissions of a course
  */
-submissionRouter.get('/course/:courseID', capture(async(request: Request, response: Response) => {
-    const userID : string = await getCurrentUserID(request);
-    const courseID : string = request.params.courseID;
+submissionRouter.get('/course/:courseID', capture(async (request: Request, response: Response) => {
+    const userID: string = await getCurrentUserID(request);
+    const courseID: string = request.params.courseID;
 
     // Requires registration in the course
     await requireRegistered(userID, courseID);
 
-    let submissions : Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+    let submissions: Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
     submissions = (await filterSubmission(submissions, userID))
         .map(submission => removePermissionsSubmission(submission));
     response.status(200).send(submissions);
@@ -45,14 +45,14 @@ submissionRouter.get('/course/:courseID', capture(async(request: Request, respon
  * - requirements:
  *  - view all submissions permission
  */
-submissionRouter.get('/user/:userID', capture(async(request: Request, response: Response) => {
-    const userID : string = request.params.userID;
-    const currentUserID : string = await getCurrentUserID(request);
+submissionRouter.get('/user/:userID', capture(async (request: Request, response: Response) => {
+    const userID: string = request.params.userID;
+    const currentUserID: string = await getCurrentUserID(request);
 
     // Requires view all submission permission if you are not the user
     if (userID !== currentUserID) await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions);
 
-    const submissions : Submission[] = (await SubmissionDB.getUserSubmissions(userID))
+    const submissions: Submission[] = (await SubmissionDB.getUserSubmissions(userID))
         .map(submission => removePermissionsSubmission(submission));
     response.status(200).send(submissions);
 }));
@@ -60,16 +60,16 @@ submissionRouter.get('/user/:userID', capture(async(request: Request, response: 
 /**
  * Get submissions of a user within a course
  */
-submissionRouter.get('/course/:courseID/user/:userID', capture(async(request: Request, response: Response) => {
+submissionRouter.get('/course/:courseID/user/:userID', capture(async (request: Request, response: Response) => {
     const courseID = request.params.courseID;
     const userID = request.params.userID;
-    const currentUserID : string = await getCurrentUserID(request);
+    const currentUserID: string = await getCurrentUserID(request);
 
     // Requires enrolled in the course & view all permissions if you are not the user
     await requireRegistered(currentUserID, courseID);
     if (userID !== currentUserID) await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 
-    const submissions : Submission[] = (await SubmissionDB.getRecents({userID, courseID}))
+    const submissions: Submission[] = (await SubmissionDB.getRecents({userID, courseID}))
         .map(submission => removePermissionsSubmission(submission));
     response.status(200).send(submissions);
 }));
@@ -77,11 +77,11 @@ submissionRouter.get('/course/:courseID/user/:userID', capture(async(request: Re
 /**
  * Get a specific submission
  */
-submissionRouter.get('/:submissionID', capture(async(request: Request, response: Response) => {
-    const submissionID : string = request.params.submissionID;
-    const currentUserID : string = await getCurrentUserID(request);
+submissionRouter.get('/:submissionID', capture(async (request: Request, response: Response) => {
+    const submissionID: string = request.params.submissionID;
+    const currentUserID: string = await getCurrentUserID(request);
 
-    const submission : Submission = await SubmissionDB.getSubmissionById(submissionID);
+    const submission: Submission = await SubmissionDB.getSubmissionById(submissionID);
 
     // Requires registration in the course
     await requireRegistered(currentUserID, submission.references.courseID);
@@ -96,7 +96,7 @@ submissionRouter.get('/:submissionID/archive', capture(async (request, response)
     await requireRegistered(currentUserID, submission.references.courseID);
 
     const zipFileName = path.join(UPLOADS_PATH, submission.ID, submission.name + ".zip");
-    const fileBody : Buffer = await readFile(zipFileName);
+    const fileBody: Buffer = await readFile(zipFileName);
 
     response.status(200)
         .set("Content-Type", "application/zip")
@@ -115,9 +115,9 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
     const fileLocation = (request as FileUploadRequest).fileLocation!;
     validateProjectServer(request.body["project"], files);
 
-    const { submission, dbFiles } = await transaction(async client => {
+    const {submission, dbFiles} = await transaction(async client => {
         const submission = await SubmissionDB.addSubmission({
-            title : request.body["project"],
+            title: request.body["project"],
             courseID: request.params.courseID,
             userID
         }, client);
@@ -137,7 +137,7 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         await renamePath(oldPath, path.join(UPLOADS_PATH, submission.ID));
         await archiveProject(submission.ID, request.body["project"]);
 
-        return { submission: { ...submission, files: dbFiles } as Submission, dbFiles };
+        return {submission: {...submission, files: dbFiles} as Submission, dbFiles};
     });
 
     response.send(submission);

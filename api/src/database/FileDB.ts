@@ -1,74 +1,74 @@
-import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify, _insert } from "./HelperDB";
-import {File, DBFile, convertFile, fileToAPI, APIFile, filterNullFiles, isNotNullFile} from '../../../models/database/File';
-import { UUIDHelper } from "../helpers/UUIDHelper";
-import { filesView } from "./ViewsDB";
-import { SearchResultFile } from "../../../models/api/SearchResult";
-import { submissionToAPI } from "../../../models/database/Submission";
-import { Sorting } from "../../../models/enums/SortingEnum";
+import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify} from "./HelperDB";
+import {File, DBFile, fileToAPI, APIFile, filterNullFiles, isNotNullFile} from '../../../models/database/File';
+import {UUIDHelper} from "../helpers/UUIDHelper";
+import {filesView} from "./ViewsDB";
+import {SearchResultFile} from "../../../models/api/SearchResult";
+import {submissionToAPI} from "../../../models/database/Submission";
+import {Sorting} from "../../../models/enums/SortingEnum";
 
 /**
  * fileID, submissionID, pathname, type
  * @Author Rens Leendertz
  */
 export class FileDB {
-	static async getFilesBySubmissionIDS(ids : string[], params : DBTools = {}){
-		const {
-			client =pool
-		} = params
-		//this object is used as a map.
-		// tslint:disable-next-line: no-any
-		const mapping : any = {}
-		ids.forEach(id => {
-			mapping[id] = []
-		});
-		const uuids = ids.map(UUIDHelper.toUUID)
-		const files = await client.query(`
+    static async getFilesBySubmissionIDS(ids: string[], params: DBTools = {}) {
+        const {
+            client = pool
+        } = params;
+        //this object is used as a map.
+        // tslint:disable-next-line: no-any
+        const mapping: any = {};
+        ids.forEach(id => {
+            mapping[id] = []
+        });
+        const uuids = ids.map(UUIDHelper.toUUID);
+        const files = await client.query(`
 			SELECT * 
 			FROM "FilesView"
 			WHERE submissionID = ANY($1)
 		`, [uuids]).then(extract).then(map(fileToAPI));
-		files.forEach(file => {
-			if (file.references.submissionID in mapping){
-				(mapping[file.references.submissionID] as APIFile[]).push(file)
-			} else {
-				throw new Error("concurrent modification exception")
-			}
-		});
-		return mapping;
-	}
+        files.forEach(file => {
+            if (file.references.submissionID in mapping) {
+                (mapping[file.references.submissionID] as APIFile[]).push(file)
+            } else {
+                throw new Error("concurrent modification exception")
+            }
+        });
+        return mapping;
+    }
 
 
-	static async getAllFiles(params : DBTools = {}){
-		return FileDB.getFilteredFiles(params)
-	}
+    static async getAllFiles(params: DBTools = {}) {
+        return FileDB.getFilteredFiles(params)
+    }
 
-	static async getFileByID(fileID : string, params : DBTools = {}){
-		return FileDB.getFilteredFiles({...params, fileID}).then(one)
-	}
-	
-	static async getFilesBySubmission(submissionID : string, params : DBTools = {}) {
-		return FileDB.getFilteredFiles({...params, submissionID})
-	}
+    static async getFileByID(fileID: string, params: DBTools = {}) {
+        return FileDB.getFilteredFiles({...params, fileID}).then(one)
+    }
 
-	static async getFilteredFiles(file : File){
-		const {
-			fileID = undefined,
-			submissionID = undefined,
-			courseID = undefined,
-			pathname = undefined,
-			type = undefined,
+    static async getFilesBySubmission(submissionID: string, params: DBTools = {}) {
+        return FileDB.getFilteredFiles({...params, submissionID})
+    }
 
-			limit = undefined,
-			offset = undefined,
-			client = pool,
+    static async getFilteredFiles(file: File) {
+        const {
+            fileID = undefined,
+            submissionID = undefined,
+            courseID = undefined,
+            pathname = undefined,
+            type = undefined,
 
-			includeNulls = false, //exclude normally
-		} = file;
-		const fileid = UUIDHelper.toUUID(fileID),
-			submissionid = UUIDHelper.toUUID(submissionID),
-			courseid = UUIDHelper.toUUID(courseID)
+            limit = undefined,
+            offset = undefined,
+            client = pool,
 
-		return client.query(`
+            includeNulls = false, //exclude normally
+        } = file;
+        const fileid = UUIDHelper.toUUID(fileID),
+            submissionid = UUIDHelper.toUUID(submissionID),
+            courseid = UUIDHelper.toUUID(courseID);
+
+        return client.query(`
 			SELECT * FROM "FilesView" 
 			WHERE
 				($1::uuid IS NULL OR fileID=$1)
@@ -80,33 +80,33 @@ export class FileDB {
 			LIMIT $6
 			OFFSET $7
 			`, [fileid, submissionid, courseid, pathname, type, limit, offset])
-		.then(extract).then(map(fileToAPI)).then(filterNullFiles).then(doIf(!includeNulls, filterNullFiles))
-	}
+            .then(extract).then(map(fileToAPI)).then(filterNullFiles).then(doIf(!includeNulls, filterNullFiles))
+    }
 
 
-	static async searchFiles(searchString : string, extras : File) : Promise<SearchResultFile[]>{
-		checkAvailable(['currentUserID','courseID'], extras)
-		const {
-			fileID = undefined,
-			submissionID = undefined,
-			courseID = undefined,
-			pathname = searchString,
-			type = undefined,
+    static async searchFiles(searchString: string, extras: File): Promise<SearchResultFile[]> {
+        checkAvailable(['currentUserID', 'courseID'], extras);
+        const {
+            fileID = undefined,
+            submissionID = undefined,
+            courseID = undefined,
+            pathname = searchString,
+            type = undefined,
 
-			limit = undefined,
-			offset = undefined,
-			sorting = Sorting.datetime,
-			client = pool,
-			currentUserID = undefined,
+            limit = undefined,
+            offset = undefined,
+            sorting = Sorting.datetime,
+            client = pool,
+            currentUserID = undefined,
 
-			includeNulls = false, //exclude normally
-		} = extras;
-		const fileid = UUIDHelper.toUUID(fileID),
-			submissionid = UUIDHelper.toUUID(submissionID),
-			courseid = UUIDHelper.toUUID(courseID),
-			currentuserid = UUIDHelper.toUUID(currentUserID),
-			searchFile = searchify(pathname)
-		return client.query(`
+            includeNulls = false, //exclude normally
+        } = extras;
+        const fileid = UUIDHelper.toUUID(fileID),
+            submissionid = UUIDHelper.toUUID(submissionID),
+            courseid = UUIDHelper.toUUID(courseID),
+            currentuserid = UUIDHelper.toUUID(currentUserID),
+            searchFile = searchify(pathname);
+        return client.query(`
 			SELECT f.*, s.*
 			FROM "FilesView" as f, "SubmissionsView" as s, viewableSubmissions($8, $3) as opts
 			WHERE
@@ -117,54 +117,54 @@ export class FileDB {
 			AND ($5::text IS NULL OR f.type=$5)
 			AND ($4::text IS NULL OR right(f.pathname, -length(s.title)-1) ILIKE $4)
 			AND f.submissionID = opts.submissionID
-			ORDER BY ${sorting === Sorting.alphabetical?`right(f.pathname, -length(s.title)-1)` : `s.date`}, f.type, f.fileID
+			ORDER BY ${sorting === Sorting.alphabetical ? `right(f.pathname, -length(s.title)-1)` : `s.date`}, f.type, f.fileID
 			LIMIT $6
 			OFFSET $7
 			`, [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid])
-			.then(extract).then(map(entry => ({
-			file:fileToAPI(entry),
-			submission: submissionToAPI(entry)
-		}))).then(doIf(!includeNulls, entries => 
-			entries.filter(entry=>isNotNullFile(entry.file))
-		))
-	}
+            .then(extract).then(map(entry => ({
+                file: fileToAPI(entry),
+                submission: submissionToAPI(entry)
+            }))).then(doIf(!includeNulls, entries =>
+                entries.filter(entry => isNotNullFile(entry.file))
+            ))
+    }
 
-	static async getNullFileID(submissionID : string, params : DBTools = {}){
-		const submissionid = UUIDHelper.toUUID(submissionID);
-		const {client =pool} = params
-		return client.query<{fileid:string},[string]>(`
+    static async getNullFileID(submissionID: string, params: DBTools = {}) {
+        const submissionid = UUIDHelper.toUUID(submissionID);
+        const {client = pool} = params;
+        return client.query<{ fileid: string }, [string]>(`
 		SELECT fileID
 		FROM "Files"
 		WHERE submissionID = $1
 		  AND type = 'undefined/undefined'
-		`, [submissionid]).then(extract).then(one).then(res => UUIDHelper.fromUUID(res.fileid))	
-	}
+		`, [submissionid]).then(extract).then(one).then(res => UUIDHelper.fromUUID(res.fileid))
+    }
 
-	/**
-	 * @deprecated is now handled by a database trigger
-	 * @param submissionID 
-	 * @param params 
-	 */
-	static async createNullFile(submissionID : string, params : DBTools = {}){
-		const submissionid = UUIDHelper.toUUID(submissionID);
-		const {client =pool} = params
-		return client.query(`
+    /**
+     * @deprecated is now handled by a database trigger
+     * @param submissionID
+     * @param params
+     */
+    static async createNullFile(submissionID: string, params: DBTools = {}) {
+        const submissionid = UUIDHelper.toUUID(submissionID);
+        const {client = pool} = params;
+        return client.query(`
 		INSERT INTO "Files"
 		VALUES (DEFAULT, $1, '', 'undefined/undefined') 
 		RETURNING fileID
-		`, [submissionid]).then(extract).then(one).then((res : DBFile)=>UUIDHelper.fromUUID(res.fileid))
-	}
+		`, [submissionid]).then(extract).then(one).then((res: DBFile) => UUIDHelper.fromUUID(res.fileid))
+    }
 
-	static async addFile(file : File) {
-		checkAvailable(['submissionID','pathname','type'],file)
-		const {
-			submissionID,
-			pathname,
-			type,
-			client =pool
-		} = file;
-		const submissionid = UUIDHelper.toUUID(submissionID);
-		return client.query(`
+    static async addFile(file: File) {
+        checkAvailable(['submissionID', 'pathname', 'type'], file);
+        const {
+            submissionID,
+            pathname,
+            type,
+            client = pool
+        } = file;
+        const submissionid = UUIDHelper.toUUID(submissionID);
+        return client.query(`
 		WITH insert as (
 			INSERT INTO "Files" 
 			VALUES (
@@ -177,19 +177,19 @@ export class FileDB {
 		)
 		${filesView('insert')}
 			`, [submissionid, pathname, type])
-		.then(extract).then(map(fileToAPI)).then(one)
-	}
-	
-	static async updateFile(file : File) {
-		checkAvailable(['fileID'],file)
-		const {
-			fileID,
-			pathname = undefined,
-			type = undefined,
-			client = pool
-		} = file;
-		const fileid = UUIDHelper.toUUID(fileID)
-		return client.query(`
+            .then(extract).then(map(fileToAPI)).then(one)
+    }
+
+    static async updateFile(file: File) {
+        checkAvailable(['fileID'], file);
+        const {
+            fileID,
+            pathname = undefined,
+            type = undefined,
+            client = pool
+        } = file;
+        const fileid = UUIDHelper.toUUID(fileID);
+        return client.query(`
 		WITH update AS (
 			UPDATE "Files" SET
 			pathname = COALESCE($2, pathname),
@@ -199,19 +199,19 @@ export class FileDB {
 		)
 		${filesView('update')}
 		`, [fileid, pathname, type])
-		.then(extract).then(map(fileToAPI)).then(one)
-	}
-	
-	static async deleteFile(fileID : string, client : pgDB = pool){
-		const fileid = UUIDHelper.toUUID(fileID);
-		return client.query(`
+            .then(extract).then(map(fileToAPI)).then(one)
+    }
+
+    static async deleteFile(fileID: string, client: pgDB = pool) {
+        const fileid = UUIDHelper.toUUID(fileID);
+        return client.query(`
 		WITH delete AS (
 			DELETE FROM "Files" 
 			WHERE fileID=$1 
 			RETURNING *
 		)
 		${filesView('delete')}
-		`,[fileid])
-		.then(extract).then(map(fileToAPI)).then(one)
-	}
+		`, [fileid])
+            .then(extract).then(map(fileToAPI)).then(one)
+    }
 }

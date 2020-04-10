@@ -1,9 +1,9 @@
 import express from 'express';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { capture } from '../helpers/ErrorHelper';
-import { getCurrentUserID } from '../helpers/AuthenticationHelper';
-import { MentionsDB } from '../database/MentionsDB';
-import { getCommonQueryParams } from '../helpers/ParamsHelper';
+import {AuthMiddleware} from '../middleware/AuthMiddleware';
+import {capture} from '../helpers/ErrorHelper';
+import {getCurrentUserID} from '../helpers/AuthenticationHelper';
+import {MentionsDB} from '../database/MentionsDB';
+import {getCommonQueryParams} from '../helpers/ParamsHelper';
 import {removePermissionsMention} from "../helpers/APIFilterHelper";
 
 export const mentionsRouter = express.Router();

@@ -9,8 +9,8 @@ import {capture} from "../helpers/ErrorHelper";
 import {Comment} from "../../../models/api/Comment";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {requireRegisteredCommentThreadID} from "../helpers/PermissionHelper";
-import { createMentions } from '../helpers/MentionsHelper';
-import { transaction } from '../database/HelperDB';
+import {createMentions} from '../helpers/MentionsHelper';
+import {transaction} from '../database/HelperDB';
 import {removePermissionsComment} from "../helpers/APIFilterHelper";
 
 export const commentRouter = express.Router();
@@ -47,27 +47,27 @@ commentRouter.get("/course/:courseID/user/:userID", capture(async (request, resp
  *  - user is registered in the course of the commentThread
  */
 commentRouter.put('/:commentThreadID', capture(async (request, response) => {
-        const commentThreadID = request.params.commentThreadID;
-        const currentUserID : string = await getCurrentUserID(request);
-        const commentBody = request.body.comment;
+    const commentThreadID = request.params.commentThreadID;
+    const currentUserID: string = await getCurrentUserID(request);
+    const commentBody = request.body.comment;
 
-        // User should be registered
-        await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
+    // User should be registered
+    await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 
-        const comment = await transaction(async client => {
-            const comment : Comment = await CommentDB.addComment({
-                commentThreadID,
-                userID : currentUserID,
-                body : commentBody,
-                client
-            });
-            
-            await createMentions(commentBody, comment.ID, comment.references.courseID, currentUserID, client);
-            
-            return comment;
+    const comment = await transaction(async client => {
+        const comment: Comment = await CommentDB.addComment({
+            commentThreadID,
+            userID: currentUserID,
+            body: commentBody,
+            client
         });
 
-        response.status(200).send(comment);
+        await createMentions(commentBody, comment.ID, comment.references.courseID, currentUserID, client);
+
+        return comment;
+    });
+
+    response.status(200).send(comment);
 }));
 
 /** ---------- DELETE REQUESTS ---------- */
@@ -76,7 +76,7 @@ commentRouter.put('/:commentThreadID', capture(async (request, response) => {
  * - requirements:
  *  - User is the author of the comment
  */
-commentRouter.delete('/:commentThreadID/:commentID', capture(async(request, response) => {
+commentRouter.delete('/:commentThreadID/:commentID', capture(async (request, response) => {
     const currentUserID = await getCurrentUserID(request);
     const commentID = request.params.commentID;
     //const commentThreadID = request.params.commentThreadID;
@@ -86,7 +86,7 @@ commentRouter.delete('/:commentThreadID/:commentID', capture(async(request, resp
 
     comment = await CommentDB.updateComment({
         commentID,
-        body : "[this comment was deleted]"
+        body: "[this comment was deleted]"
     });
 
     response.status(200).send(comment);

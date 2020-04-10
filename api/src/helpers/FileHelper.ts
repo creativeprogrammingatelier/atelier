@@ -1,5 +1,5 @@
 import path from 'path';
-import { config } from './ConfigurationHelper';
+import {config} from './ConfigurationHelper';
 
 /** Determine the correct file type based on supplied MIME type and the file extension */
 export function getProperType(mimeType: string, filePath: string) {

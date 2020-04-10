@@ -1,10 +1,11 @@
-import { Request } from 'express';
-import { getEnum, EnumError } from '../../../models/enums/EnumHelper';
-import { Sorting } from '../../../models/enums/SortingEnum';
+import {Request} from 'express';
+import {getEnum, EnumError} from '../../../models/enums/EnumHelper';
+import {Sorting} from '../../../models/enums/SortingEnum';
 
 
 export class InvalidParamsError extends Error {
     reason: string;
+
     constructor(param: string, message?: string) {
         let fullMessage = `Invalid value for parameter "${param}"`;
         if (message !== undefined) {
@@ -24,16 +25,16 @@ export function getCommonQueryParams(request: Request, maxLimit = 50) {
     if (isNaN(offset)) throw new InvalidParamsError("offset", "it is not a number");
     //this parameter is currently only looked at by the 'search-' methods in the database.
     //in the future, it might be nice to allow it in other methods too.
-    let sorting : Sorting;
-    try{ 
-        sorting = request.query.sort? getEnum(Sorting, request.query.sort) : Sorting.datetime
+    let sorting: Sorting;
+    try {
+        sorting = request.query.sort ? getEnum(Sorting, request.query.sort) : Sorting.datetime
     } catch (e) {
-        if (e instanceof EnumError){
+        if (e instanceof EnumError) {
             throw new InvalidParamsError("sort", e.message)
         } else {
             throw e;
         }
     }
 
-    return { limit, offset, sorting};
+    return {limit, offset, sorting};
 }

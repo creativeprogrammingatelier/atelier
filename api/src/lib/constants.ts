@@ -6,14 +6,14 @@ import crypto from 'crypto';
 const keyFilePath = path.join(__dirname, "../../keys/jwtRS256.key");
 let authKey = undefined;
 if (!fs.existsSync(keyFilePath)) {
-    fs.mkdirSync(path.dirname(keyFilePath), { recursive: true });
+    fs.mkdirSync(path.dirname(keyFilePath), {recursive: true});
     console.log("Generating keys for signing JWT tokens.");
-    const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+    const {publicKey, privateKey} = crypto.generateKeyPairSync("rsa", {
         modulusLength: 4096
     });
-    authKey = privateKey.export({ format: "pem", type: "pkcs1" });
+    authKey = privateKey.export({format: "pem", type: "pkcs1"});
     fs.writeFileSync(keyFilePath, authKey);
-    fs.writeFileSync(keyFilePath + ".pub", publicKey.export({ format: "pem", type: "pkcs1" }));
+    fs.writeFileSync(keyFilePath + ".pub", publicKey.export({format: "pem", type: "pkcs1"}));
 } else {
     authKey = fs.readFileSync(keyFilePath, "utf8");
 }

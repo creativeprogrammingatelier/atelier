@@ -1,6 +1,6 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, {Request, Response, NextFunction} from 'express';
 import fetch from 'node-fetch';
-import { ServiceProvider, IdentityProvider, setSchemaValidator } from 'samlify';
+import {ServiceProvider, IdentityProvider, setSchemaValidator} from 'samlify';
 import * as validator from '@authenio/samlify-node-xmllint';
 // If the above import complains about missing types, create this file:
 //  node_modules/@authenio/samlify-node-xmllint/build/index.d.ts
@@ -8,14 +8,14 @@ import * as validator from '@authenio/samlify-node-xmllint';
 //  export declare const validate: (xml: string) => Promise<unknown>;
 // Required until https://github.com/authenio/samlify-node-xmllint/pull/1 is merged and published
 
-import { capture } from '../../helpers/ErrorHelper';
-import { config, SamlLoginConfiguration } from '../../helpers/ConfigurationHelper';
-import { readFileAsString } from '../../helpers/FilesystemHelper';
-import { AuthError, setTokenCookie, clearTokenCookie, getCurrentUserID } from '../../helpers/AuthenticationHelper';
-import { UserDB } from '../../database/UserDB';
-import { NotFoundDatabaseError } from '../../database/DatabaseErrors';
-import { GlobalRole } from '../../../../models/enums/GlobalRoleEnum';
-import { checkEnum, getEnum } from '../../../../models/enums/EnumHelper';
+import {capture} from '../../helpers/ErrorHelper';
+import {config, SamlLoginConfiguration} from '../../helpers/ConfigurationHelper';
+import {readFileAsString} from '../../helpers/FilesystemHelper';
+import {AuthError, setTokenCookie} from '../../helpers/AuthenticationHelper';
+import {UserDB} from '../../database/UserDB';
+import {NotFoundDatabaseError} from '../../database/DatabaseErrors';
+import {GlobalRole} from '../../../../models/enums/GlobalRoleEnum';
+import {checkEnum, getEnum} from '../../../../models/enums/EnumHelper';
 
 setSchemaValidator(validator);
 
@@ -23,9 +23,9 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     // Construct the SAML IDP from its metadata
     const idp = IdentityProvider({
         metadata:
-            "url" in samlConfig.metadata 
-            ? await fetch(samlConfig.metadata.url).then(res => res.text())
-            : await readFileAsString(samlConfig.metadata.file)
+            "url" in samlConfig.metadata
+                ? await fetch(samlConfig.metadata.url).then(res => res.text())
+                : await readFileAsString(samlConfig.metadata.file)
     });
 
     // Create the SAML SP metadata for our application
@@ -36,7 +36,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
             "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
         ],
         assertionConsumerService: [
-            { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/login` }
+            {Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/login`}
         ],
         // TODO: Figure out how Single logout works
         // singleLogoutService: [
@@ -58,13 +58,13 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 
     /** Request login, redirects to the Identity Provider */
     samlRouter.get('/login', capture(async (request, response) => {
-        const { context } = sp.createLoginRequest(idp, 'redirect');
+        const {context} = sp.createLoginRequest(idp, 'redirect');
         response.redirect(context);
     }));
 
     /** Post back the SAML response to finish logging in */
     samlRouter.post('/login', capture(async (request, response) => {
-        const { extract: result } = await sp.parseLoginResponse(idp, 'post', request);
+        const {extract: result} = await sp.parseLoginResponse(idp, 'post', request);
         const extID = extIDPrefix + result.nameID;
         // TODO: remove temporary logging
         console.log("SAML response extract: ", result);
@@ -105,7 +105,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                     if (samlConfig.attributes.roleMapping !== undefined) {
                         samlRole = samlConfig.attributes.roleMapping[role] || role;
                     }
-                    if (checkEnum(GlobalRole, samlRole)){
+                    if (checkEnum(GlobalRole, samlRole)) {
                         role = getEnum(GlobalRole, samlRole)
                     }
                 }

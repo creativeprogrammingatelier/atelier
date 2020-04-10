@@ -1,8 +1,8 @@
-import fetch, { Request } from 'node-fetch';
+import fetch, {Request} from 'node-fetch';
 import crypto from 'crypto';
-import { PluginsDB } from '../database/PluginsDB';
-import { Plugin } from '../../../models/database/Plugin';
-import { WebhookEvent } from '../../../models/enums/WebhookEventEnum';
+import {PluginsDB} from '../database/PluginsDB';
+import {Plugin} from '../../../models/database/Plugin';
+import {WebhookEvent} from '../../../models/enums/WebhookEventEnum';
 
 interface WebhookRequest<T> {
     event: WebhookEvent,
@@ -22,13 +22,13 @@ export function createWebhookRequest<T>(plugin: Plugin, event: WebhookEvent, bod
     const request: WebhookRequest<T> = {
         event,
         payload: body
-    }
+    };
     const payload = JSON.stringify(request);
     const signature = crypto.createHmac("sha1", plugin.webhookSecret).update(payload).digest("base64");
     return new Request(plugin.webhookUrl, {
         method: "POST",
         body: payload,
-        headers: { 
+        headers: {
             "Content-Type": "application/json",
             "User-Agent": "Atelier",
             "X-Atelier-Signature": signature

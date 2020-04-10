@@ -6,7 +6,6 @@ import {Comment} from "../../../models/api/Comment";
 import {Submission} from "../../../models/api/Submission";
 import {ThreadState} from "../../../models/enums/ThreadStateEnum";
 import {User} from "../../../models/api/User";
-import {Snippet} from "../../../models/api/Snippet";
 import {Permission} from "../../../models/api/Permission";
 import {CourseUser} from "../../../models/api/CourseUser";
 import {Mention} from "../../../models/api/Mention";
@@ -20,14 +19,14 @@ import {SearchResultComment, SearchResultSnippet} from "../../../models/api/Sear
  * @param userID, ID of the requesting user
  * @param permissions, permissions of the user. If not set course permissions are taken from the first comment thread.
  */
-export async function filterCommentThread(commentThreads : CommentThread[], userID : string, permissions? : number) {
+export async function filterCommentThread(commentThreads: CommentThread[], userID: string, permissions?: number) {
     if (commentThreads.length === 0) return commentThreads;
     if (permissions === undefined) {
-        const courseID : string = commentThreads[0].references.courseID;
+        const courseID: string = commentThreads[0].references.courseID;
         permissions = await getCoursePermissions(userID, courseID);
     }
     if (!containsPermission(PermissionEnum.viewRestrictedComments, permissions)) {
-        return commentThreads.filter((commentThread : CommentThread) =>
+        return commentThreads.filter((commentThread: CommentThread) =>
             commentThread.visibility === ThreadState.public ||
             userPartOfCommentThread(userID, commentThread)
         );
@@ -44,12 +43,12 @@ export async function filterCommentThread(commentThreads : CommentThread[], user
  * @param userID, ID of the requesting user
  * @param permissions, permissions of the user. If not set global permissions of the user are used.
  */
-export async function filterCourse(courses : CoursePartial[], enrolled : string[], userID : string, permissions? : number) {
+export async function filterCourse(courses: CoursePartial[], enrolled: string[], userID: string, permissions?: number) {
     if (permissions === undefined) {
         permissions = await getGlobalPermissions(userID);
     }
     if (!containsPermission(PermissionEnum.viewAllCourses, permissions)) {
-        return courses.filter((course : CoursePartial) => enrolled.includes(course.ID));
+        return courses.filter((course: CoursePartial) => enrolled.includes(course.ID));
     }
     return courses;
 }
@@ -62,14 +61,14 @@ export async function filterCourse(courses : CoursePartial[], enrolled : string[
  * @param userID, ID of the requesting user
  * @param permissions, permissions of the user. If not set course permissions of the user are taken.
  */
-export async function filterSubmission(submissions : Submission[], userID : string, permissions? : number) {
+export async function filterSubmission(submissions: Submission[], userID: string, permissions?: number) {
     if (submissions.length === 0) return submissions;
     if (permissions === undefined) {
         const courseID: string = submissions[0].references.courseID;
         permissions = await getCoursePermissions(userID, courseID);
     }
     if (!containsPermission(PermissionEnum.viewAllSubmissions, permissions)) {
-        return submissions.filter((submission : Submission) => submission.user.ID === userID);
+        return submissions.filter((submission: Submission) => submission.user.ID === userID);
     }
     return submissions;
 }
@@ -82,12 +81,12 @@ export async function filterSubmission(submissions : Submission[], userID : stri
  * @param userID, ID of the requesting user
  * @param permissions, permissions of the user. If not set global permissions of the user are taken.
  */
-export async function filterUser(users : User[], userID : string, permissions? : number) {
+export async function filterUser(users: User[], userID: string, permissions?: number) {
     if (permissions === undefined) {
         permissions = await getGlobalPermissions(userID);
     }
     if (!containsPermission(PermissionEnum.viewAllUserProfiles, permissions)) {
-        return users.filter((user : User) => user.ID === userID);
+        return users.filter((user: User) => user.ID === userID);
     }
     return users;
 }
@@ -142,12 +141,10 @@ export function removePermissionsSearchResultComments(comments: SearchResultComm
 
 export function removePermissionsSearchResultSnippets(snippets: SearchResultSnippet[]) {
     return snippets.map(snippet => {
-         removePermissionsSubmission(snippet.submission);
-         return snippet;
+        removePermissionsSubmission(snippet.submission);
+        return snippet;
     });
 }
-
-
 
 
 /**
@@ -155,6 +152,6 @@ export function removePermissionsSearchResultSnippets(snippets: SearchResultSnip
  * @param userID, ID of the requesting user
  * @param commentThread, commentThread to check
  */
-function userPartOfCommentThread(userID : string, commentThread : CommentThread) {
-    return commentThread.comments.some((comment : Comment) => comment.user.ID === userID);
+function userPartOfCommentThread(userID: string, commentThread: CommentThread) {
+    return commentThread.comments.some((comment: Comment) => comment.user.ID === userID);
 }

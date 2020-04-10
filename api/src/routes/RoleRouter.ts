@@ -22,19 +22,19 @@ roleRouter.use(AuthMiddleware.requireAuth);
  * - requirements:
  *  - manage user role permission
  */
-roleRouter.put('/course/:courseID/user/:userID/:role', capture(async(request : Request, response : Response) => {
-    const currentUserID : string = await getCurrentUserID(request);
-    const courseID : string = request.params.courseID;
-    const userID : string = request.params.userID;
-    const role : string = request.params.role;
+roleRouter.put('/course/:courseID/user/:userID/:role', capture(async (request: Request, response: Response) => {
+    const currentUserID: string = await getCurrentUserID(request);
+    const courseID: string = request.params.courseID;
+    const userID: string = request.params.userID;
+    const role: string = request.params.role;
 
     // Require manage user role permission
     await requirePermission(currentUserID, PermissionEnum.manageUserRole, courseID);
 
-    const courseUser : CourseUser = await CourseRegistrationDB.updateRole({
+    const courseUser: CourseUser = await CourseRegistrationDB.updateRole({
         userID,
         courseID,
-        courseRole : getEnum(CourseRole, role)
+        courseRole: getEnum(CourseRole, role)
     });
     response.status(200).send(courseUser);
 }));
@@ -44,15 +44,15 @@ roleRouter.put('/course/:courseID/user/:userID/:role', capture(async(request : R
  * - requirements:
  *  - manage user role permission
  */
-roleRouter.put('/user/:userID/:role', capture(async(request : Request, response : Response) => {
-    const currentUserID : string = await getCurrentUserID(request);
-    const userID : string = request.params.userID;
-    const globalRole : GlobalRole = request.params.role as GlobalRole;
+roleRouter.put('/user/:userID/:role', capture(async (request: Request, response: Response) => {
+    const currentUserID: string = await getCurrentUserID(request);
+    const userID: string = request.params.userID;
+    const globalRole: GlobalRole = request.params.role as GlobalRole;
 
     // require manage user role permission
     await requirePermission(currentUserID, PermissionEnum.manageUserRole);
 
-    const user : User = await UserDB.updateUser({
+    const user: User = await UserDB.updateUser({
         userID,
         globalRole
     });

@@ -1,14 +1,14 @@
- /**
-  * most exported functions in this file, contain the query string for some view of the database
-  * By calling these functions, the respective query can be inserted into some string at the callee's end.
-  * parameters given to these functions replace tables `FROM` which data is pulled.
-  * this can be used to allow the data from an insert or update to be utilized in the respective view
-  * All these queries have a `WHERE` clause specified, so to add more checks can be done by appending `AND <condition>`
-  * but is generally not best practice, as it requires to know what names are used in the query.
-  * 
-  */
-export function usersView(userTable = `"Users"`){
-     return `
+/**
+ * most exported functions in this file, contain the query string for some view of the database
+ * By calling these functions, the respective query can be inserted into some string at the callee's end.
+ * parameters given to these functions replace tables `FROM` which data is pulled.
+ * this can be used to allow the data from an insert or update to be utilized in the respective view
+ * All these queries have a `WHERE` clause specified, so to add more checks can be done by appending `AND <condition>`
+ * but is generally not best practice, as it requires to know what names are used in the query.
+ *
+ */
+export function usersView(userTable = `"Users"`) {
+    return `
      SELECT userID, 
           userName, 
           email,
@@ -21,8 +21,8 @@ export function usersView(userTable = `"Users"`){
      WHERE 1=1`
 }
 
-export function CourseUsersView(courseRegistrationTable = `"CourseRegistration"`){
-     return `
+export function CourseUsersView(courseRegistrationTable = `"CourseRegistration"`) {
+    return `
      SELECT 
           c.courseID, u.userID, e.courseRole,
           u.userName, u.email, u.globalRole,
@@ -37,9 +37,10 @@ export function CourseUsersView(courseRegistrationTable = `"CourseRegistration"`
           AND e.courseRole = crp.courseRoleID
      `
 }
+
 /** NOTE: this is almost the same as CourseUsersView, but now non-existent rows are added with nulls in the right locations */
-export function CourseUsersViewAll(courseRegistrationTable=`"CourseRegistration"`){
-     return `
+export function CourseUsersViewAll(courseRegistrationTable = `"CourseRegistration"`) {
+    return `
      WITH allButPermissions AS (
           SELECT 
              c.courseID, 
@@ -82,35 +83,35 @@ export function CourseUsersViewAll(courseRegistrationTable=`"CourseRegistration"
      `
 }
 
-export function CoursesView(coursesTable=`"Courses"`, usersView=`"UsersView"`){
-     return `SELECT c.*, u.userName, u.globalrole, u.email, u.userID, u.permission
+export function CoursesView(coursesTable = `"Courses"`, usersView = `"UsersView"`) {
+    return `SELECT c.*, u.userName, u.globalrole, u.email, u.userID, u.permission
      FROM ${coursesTable} as c, ${usersView} as u
      WHERE c.creator = u.userID
      `
 }
 
-export function submissionsView(submissionsTable=`"Submissions"`, usersView=`"UsersView"`){
-     return `
+export function submissionsView(submissionsTable = `"Submissions"`, usersView = `"UsersView"`) {
+    return `
      SELECT s.*, u.userName, u.globalrole, u.email, u.permission
      FROM ${submissionsTable} as s, ${usersView} as u
      WHERE s.userID = u.userID`
 }
 
-export function filesView(filesTable=`"Files"`){
-     return `SELECT f.*, sr.courseID
+export function filesView(filesTable = `"Files"`) {
+    return `SELECT f.*, sr.courseID
      FROM ${filesTable} as f, "SubmissionsRefs" as sr
      WHERE f.submissionID = sr.submissionID`
 }
 
-export function snippetsView(snippetsTable=`"Snippets"`, filesView=`"FilesView"`){
-     return `SELECT s.*, fv.*, ctr.commentThreadID
+export function snippetsView(snippetsTable = `"Snippets"`, filesView = `"FilesView"`) {
+    return `SELECT s.*, fv.*, ctr.commentThreadID
      FROM ${snippetsTable} as s, "CommentThreadRefs" as ctr, ${filesView} as fv
      WHERE ctr.snippetID = s.snippetID
        AND fv.fileID = ctr.fileID`
 }
 
-export function commentsView(commentsTable=`"Comments"`, usersView=`"UsersView"`){
-     return `SELECT c.*, 
+export function commentsView(commentsTable = `"Comments"`, usersView = `"UsersView"`) {
+    return `SELECT c.*, 
           u.userName, u.globalrole, u.email, u.permission, 
           ctr.submissionID, ctr.courseID, ctr.fileID, ctr.snippetID,
           fv.type, sv.lineStart --null checks
@@ -121,8 +122,8 @@ export function commentsView(commentsTable=`"Comments"`, usersView=`"UsersView"`
        AND sv.snippetID = ctr.snippetID`
 }
 
-export function commentThreadView(commentThreadTable=`"CommentThread"`){
-     return `SELECT 
+export function commentThreadView(commentThreadTable = `"CommentThread"`) {
+    return `SELECT 
           sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
           ct.visibilityState,
           sv.body, sv.contextBefore, sv.contextAfter, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
@@ -133,8 +134,8 @@ export function commentThreadView(commentThreadTable=`"CommentThread"`){
        AND fv.fileID = ct.fileID`
 }
 
-export function MentionsView(mentionsTable=`"Mentions"`){
-     return `
+export function MentionsView(mentionsTable = `"Mentions"`) {
+    return `
           SELECT m.mentionID, m.userGroup, 
                  cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 
                  cv.submissionID, cv.courseID, cv.created, cv.edited, 
