@@ -87,6 +87,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 					webhookUrl,
 					webhookSecret,
 					publicKey,
+					hooks,
 					user: {
 						...plugin.user,
 						name: pluginName,
