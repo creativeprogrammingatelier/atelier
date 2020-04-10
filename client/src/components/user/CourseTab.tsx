@@ -18,6 +18,7 @@ export function CourseTab({user}: CourseTabProperties) {
 				component={courses =>
 					<div>
 						{courses.map((course: Course) => <Panel
+                            key={course.ID}
 							display={course.name}
 							location={`/course/${course.ID}/user/${user.ID}`}
 						/>)}

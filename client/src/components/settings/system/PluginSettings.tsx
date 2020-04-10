@@ -16,12 +16,12 @@ export function PluginSettings() {
 			component={plugins => {
 				return <Fragment>
 					{plugins.map(plugin =>
-						<Block transparent className="mb-3 px-2">
+						<Block key={plugin.pluginID} transparent className="mb-3 px-2">
 							<PluginInput plugin={plugin}/>
 						</Block>
 					)}
 					{creating ?
-						<PluginInput newPlugin={{
+						<PluginInput key="new-plugin" newPlugin={{
 							create: plugin => {
 								// TODO: Show new plugin?
 								// Probably can be fixed with the new use cache stuff

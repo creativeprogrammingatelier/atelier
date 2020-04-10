@@ -158,6 +158,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 			{Object.values(WebhookEvent).map(event =>
 				<CheckboxInput
 					name={event}
+ 					key={event}
 					value={event}
 					selected={hooks.includes(event)}
 					disabled={!editing}
