@@ -1,12 +1,12 @@
 # database
 
-There are a set of classes with functions that handle all database connections. These can be found in [/api/src/database].
+There are a set of classes with functions that handle all database connections. These can be found in [the database folder](/api/src/database).
 Every file exports a class that contains methods to query one table. These methods will almost always return a model, containing the data retrieved from the database.
 These functions handle things like conversion between data types and object transformation to adhere to the required model.
 
 ### views
 
-To allow for somewhat complex return types from the database, a number of `TableNameView` views are set up. (found in ViewDB[/api/src/database/ViewDB.ts]). they contain more data than just the table itself, allowing to create the API models with just one query.
+To allow for somewhat complex return types from the database, a number of `TableNameView` views are set up. (found in [ViewDB](/api/src/database/ViewDB.ts)). they contain more data than just the table itself, allowing to create the API models with just one query.
 These are handy because any filtering that applies to a table below can be performed in one query, and results of inserts/update/delete can be retrieved in the same call.
 (e.g. all commentThreads with 'draw' in the snippet body)
 

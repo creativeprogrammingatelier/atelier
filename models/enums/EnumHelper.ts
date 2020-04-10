@@ -1,9 +1,5 @@
 // TODO: This file is not an enum, so it's probably in the wrong place
 
-import { CourseRole } from "./CourseRoleEnum";
-interface EnumType {
-	[id : string] : string
-}
 /**
  * A function to make sure a value is contained in an enum, this returns the correct enum value
  * If the given enum is of type <string>=<sameString>, this function can be used multiple times without issue.
@@ -42,7 +38,9 @@ export function removeItem(enumer : any, item : string) : void {
 	}
 	delete enumer[item]
 }
-
+/**
+ * error class to differentiate errors thrown by this module
+ */
 export class EnumError extends Error {
 	constructor(message = "expected a value to be a member of an enum, but this was not the case"){
 		super(message)
