@@ -47,7 +47,7 @@ export function databaseSamples(client : pgDB = pool) : Promise<void> {
      
      INSERT INTO "PluginHooks" VALUES
           ((SELECT pluginID FROM "Plugins" LIMIT 1),
-          'submission.file'
+          'submission'
           );
 	
      INSERT INTO "Courses" VALUES 
