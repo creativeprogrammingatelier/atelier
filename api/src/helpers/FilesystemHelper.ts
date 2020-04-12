@@ -19,11 +19,17 @@ export type FileUploadRequest = Request & { fileLocation?: string };
  * @param fileName full path of the original file
  */
 function getFolderForFile(reqFileLocation: string, projectName: string, fileName?: string) {
-    return path.join(
-        UPLOADS_PATH,
-        reqFileLocation,
-        fileName && path.dirname(fileName) !== "." ? path.dirname(fileName) : projectName
-    );
+    let folderInProject;
+    if (fileName && path.dirname(fileName) !== ".") {
+        folderInProject = path.join(
+            ...path.dirname(fileName)
+            .split(/\/|\\/)
+            .skipWhile(folder => folder !== projectName)
+        );
+    } else {
+        folderInProject = projectName;
+    }
+    return path.join(UPLOADS_PATH, reqFileLocation, folderInProject);
 }
 
 /** Get the path on disk for a File from the database */
