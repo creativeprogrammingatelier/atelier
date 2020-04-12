@@ -42,7 +42,16 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
                             <p>Created by {course.creator.name}</p>
                         </Fragment>
                 }</Cached>
-                <Permissions single={PermissionEnum.manageCourses}>
+                <Permissions
+                    any={[
+                        PermissionEnum.manageCourses,
+                        PermissionEnum.manageUserRegistration,
+                        PermissionEnum.manageUserRole,
+                        PermissionEnum.manageUserPermissionsView,
+                        PermissionEnum.manageUserPermissionsManager
+                    ]}
+                    course={courseId}
+                >
                     <Link to={`/course/${courseId}/settings`}><Button>Settings</Button></Link>
                 </Permissions>
             </Jumbotron>
