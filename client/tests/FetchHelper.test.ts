@@ -3,7 +3,6 @@ import chai, { expect } from 'chai';
 import chaiSpies from 'chai-spies';
 import chaiAsPromised from 'chai-as-promised';
 import { Response } from 'node-fetch';
-import { LocalStorage } from 'node-localstorage';
 
 import { Fetch, FetchError, JsonFetchError } from '../src/helpers/api/FetchHelper';
 
@@ -12,8 +11,6 @@ chai.use(chaiAsPromised);
 
 // tslint:disable-next-line: no-any
 const g = global as any;
-g.localStorage = new LocalStorage('./localStorage');
-
 // tslint:disable-next-line: no-any
 const fetchSpy = (body: any, status: number) => 
     chai.spy(
