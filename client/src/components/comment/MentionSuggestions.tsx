@@ -3,7 +3,7 @@ import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
 import {PermissionEnum, containsPermission} from "../../../../models/enums/PermissionEnum";
 import {searchUsers} from "../../helpers/api/APIHelper";
 import {Tag} from "../general/Tag";
-import {useObservableState} from "observable-hooks";
+import {useObservableState, useObservable} from "observable-hooks";
 import {useCoursePermission, usePermission} from "../../helpers/api/APIHooks";
 import {map} from "rxjs/operators";
 import {Permission} from "../../../../models/api/Permission";
@@ -31,7 +31,7 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
     }
 
     const permission = courseID ? useCoursePermission(courseID) : usePermission();
-    const allowedGroups = useObservableState(permission.observable.pipe(
+    const allowedGroupsObservable = useObservable(() => permission.observable.pipe(
         map(permission => {
             const groups: string[] = [];
             const permissions = (permission as CacheItem<Permission>)?.value?.permissions;
@@ -48,7 +48,8 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
             }
             return groups;
         })
-    ), []);
+    ), [permission.observable]);
+    const allowedGroups = useObservableState(allowedGroupsObservable, []);
 
     useEffect(() => {
         if (allowedGroups === []) permission.refresh();
