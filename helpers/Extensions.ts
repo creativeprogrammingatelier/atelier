@@ -17,6 +17,12 @@ declare global {
     }
 
     interface Array<T> {
+        /**
+         * Iterate over the array, skipping elements until one matches the predicate. When an 
+         * item matches the predicate, that item and the rest of the array are returned. If
+         * there are no matching elements, the result is an empty array.
+         * @param predicate function that decides if the element should be skipped
+         */
         skipWhile(predicate: (elem: T) => boolean): T[]
     }
 }

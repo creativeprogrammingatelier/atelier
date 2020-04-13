@@ -1,3 +1,5 @@
+/** API Hooks for using data from the API in React */
+
 import {
     Cache,
     CacheState,
@@ -24,39 +26,68 @@ import {useObservable} from 'observable-hooks';
 import {CourseState} from '../../../../models/enums/CourseStateEnum';
 import {ThreadState} from '../../../../models/enums/ThreadStateEnum';
 
+// Interfaces for API Hooks
+///////////////////////////
+/** A cached API enpoint */
 export interface APICache<T> {
+    /** Observable for the collection or item */
     observable: Observable<CacheCollection<T> | CacheItem<T>>
 }
 
+/** A refreshable cache can be refreshed with a request to the API */
 export interface Refresh<T> extends APICache<T> {
+    /** 
+     * Refresh the data in the cache, returning true if the request 
+     * is successful or rejecting the promise if not 
+     */
     refresh: () => Promise<boolean>,
+    /** The default time to wait before refreshing this type of data */
     defaultTimeout: number
 }
 
+/** You can create new items in this type of cache */
 // The create function may take a generic list of arguments, of different types
 // tslint:disable-next-line: no-any
 export interface Create<Arg extends any[], T> extends APICache<T> {
+    /** 
+     * Takes a generic set of arguments, returning the created 
+     * item, or rejecting the promise if the API request fails
+     */
     create: (...args: Arg) => Promise<T>
 }
 
+/** You can update the items stored in this type of cache */
 // The update function may take a generic list of arguments, of different types
 // tslint:disable-next-line: no-any
 export interface Update<Arg extends any[], T> extends APICache<T> {
+    /** 
+     * Takes a generic set of arguments, returning the updated
+     * item, or rejecting the promise if the API request fails
+     */
     update: (...args: Arg) => Promise<T>
 }
 
+/** Items in this type of cache can be deleted */
 // The delete function may take a generic list of arguments, of different types
 // tslint:disable-next-line: no-any
 export interface Delete<Arg extends any[], T> extends APICache<T> {
+    /** 
+     * Takes a generic set of arguments, returning the deleted
+     * item, or rejecting the promise if the API request fails
+     */
     delete: (...args: Arg) => Promise<T>
 }
 
+// Generic helper functions
+///////////////////////////
+/** Helper function to get a single item from a CacheCollection */
 export function useCollectionAsSingle<T>(observable: Observable<CacheCollection<T>>) {
     return useObservable(() => observable.pipe(
         map(collection => collection.items[0] || emptyCacheItem<T>())
     ), [observable]);
 }
 
+/** Helper function to use a `CacheCollection<T>` as a `CacheItem<T[]>` */
 export function useCollectionCombined<T>(observable: Observable<CacheCollection<T> | CacheItem<T>>): Observable<CacheItem<T[]>> {
     return useObservable(() => observable.pipe(
         map(collection => {
@@ -77,48 +108,67 @@ export function useCollectionCombined<T>(observable: Observable<CacheCollection<
     ), [observable])
 }
 
-function refreshCollection<T extends { ID: string }>(promise: Promise<T | T[]>, cache: CacheCollectionInterface<T>) {
-    return promise.then(result => {
-        cache.transaction(cache => {
-            if (result instanceof Array) {
-                cache.addAll(result, CacheState.Loaded);
-            } else {
-                cache.add(result, CacheState.Loaded);
-            }
-        }, result instanceof Array ? CacheState.Loaded : CacheState.Uninitialized);
-        return true;
-    });
+/**
+ * Generic refresh function for a CacheCollection
+ * @param promise the promise that will return the new data
+ * @param cache the cache to store the data in
+ * @returns promise of true if the request was successful, a rejected promise if not
+ */
+async function refreshCollection<T extends { ID: string }>(promise: Promise<T | T[]>, cache: CacheCollectionInterface<T>) {
+    const result = await promise;
+    cache.transaction(cache => {
+        if (result instanceof Array) {
+            cache.addAll(result, CacheState.Loaded);
+        }
+        else {
+            cache.add(result, CacheState.Loaded);
+        }
+    }, result instanceof Array ? CacheState.Loaded : CacheState.Uninitialized);
+    return true;
 }
 
-function refreshItem<T>(promise: Promise<T>, cache: CacheItemInterface<T>) {
-    return promise.then(result => {
-        cache.updateItem(() => result, CacheState.Loaded);
-        return true;
-    });
+/**
+ * Generic refresh function for a CacheItem
+ * @param promise the promise that will return the new item
+ * @param cache the cache to store the data in
+ * @returns promise of true if the request was successful, a rejected promise if not
+ */
+async function refreshItem<T>(promise: Promise<T>, cache: CacheItemInterface<T>) {
+    const result = await promise;
+    cache.updateItem(() => result, CacheState.Loaded);
+    return true;
 }
 
-function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheCollectionInterface<T>) {
+/**
+ * Generic create function to create a new item in a collection
+ * @param promise the promise that will return the created item
+ * @param item the temporary item to store in the cache
+ * @param cache the cache to store the data in
+ * @returns promise of the new item, or a rejected promise if unsuccessful
+ */
+async function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheCollectionInterface<T>) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
     cache.transaction(cache => cache.add({...item, ID: tempID}, CacheState.Loading));
-    return promise
-        .then(result => {
-            console.log("Creation of", tempID, "succeeded:", result);
-            cache.transaction(cache => {
-                cache.remove(item => item.ID === tempID);
-                cache.add(result, CacheState.Loaded);
-            });
-            return result;
-        })
-        .catch((err: Error) => {
-            console.log("Creation of", tempID, "failed:", err);
-            cache.transaction(cache => {
-                cache.remove(item => item.ID === tempID);
-            });
-            throw err;
+    try {
+        const result = await promise;
+        console.log("Creation of", tempID, "succeeded:", result);
+        cache.transaction(cache => {
+            cache.remove(item => item.ID === tempID);
+            cache.add(result, CacheState.Loaded);
         });
+        return result;
+    }
+    catch (err) {
+        console.log("Creation of", tempID, "failed:", err);
+        cache.transaction(cache => {
+            cache.remove(item => item.ID === tempID);
+        });
+        throw err;
+    }
 }
 
+/** Create a new object with new values for some fields, while keeping other fields the same */
 function updateModel<T>(old: T, update: Partial<T>): T {
     // The update object may have fields of any type
     // tslint:disable-next-line: no-any
@@ -131,31 +181,47 @@ function updateModel<T>(old: T, update: Partial<T>): T {
     );
 }
 
-function update<T extends { ID: string } & Res, Res>(promise: Promise<Res>, update: Partial<T> & { ID: string }, cache: CacheCollectionInterface<T>) {
+/**
+ * Generic update function to update an item in a collection
+ * @param promise the promise that will return the updated item
+ * @param update item with values in updated fields, or undefined for fields that should stay the same
+ * @param cache the cache to store the data in
+ */
+async function update<T extends { ID: string } & Res, Res>(promise: Promise<Res>, update: Partial<T> & { ID: string }, cache: CacheCollectionInterface<T>) {
     const [oldItem] = cache.getCurrentValue().items.filter(({value}) => update.ID === value.ID);
     cache.transaction(cache => cache.add(updateModel(oldItem.value, update), CacheState.Loading));
-    return promise
-        .then(result => {
-            const newItem = updateModel(oldItem.value, result);
-            cache.transaction(cache => cache.add(newItem, CacheState.Loaded));
-            return newItem;
-        })
-        .catch((err: Error) => {
-            cache.transaction(cache => cache.add(oldItem.value, oldItem.state));
-            throw err;
-        });
+    try {
+        const result = await promise;
+        const newItem = updateModel(oldItem.value, result);
+        cache.transaction(cache => cache.add(newItem, CacheState.Loaded));
+        return newItem;
+    }
+    catch (err) {
+        cache.transaction(cache => cache.add(oldItem.value, oldItem.state));
+        throw err;
+    }
 }
 
-function deleteItem<T extends { ID: string }>(promise: Promise<T>, selector: (item: T) => boolean, cache: CacheCollectionInterface<T>) {
+/**
+ * Generic delete function to remove items from a collection
+ * @param promise the promise that will return the deleted item
+ * @param selector selector for items to delete
+ * @param cache the cache to delete the items from
+ */
+async function deleteItem<T extends { ID: string }>(promise: Promise<T>, selector: (item: T) => boolean, cache: CacheCollectionInterface<T>) {
     const oldItems = cache.getCurrentValue().items.filter(({value}) => selector(value));
     cache.transaction(cache => cache.remove(selector));
-    return promise
-        .catch((err: Error) => {
-            cache.transaction(cache => cache.addAll(oldItems.map(({value}) => value), CacheState.Loaded));
-            throw err;
-        });
+    try {
+        return promise;
+    }
+    catch (err) {
+        cache.transaction(cache => cache.addAll(oldItems.map(({ value }) => value), CacheState.Loaded));
+        throw err;
+    }
 }
 
+// API Hooks
+////////////
 export function useCourses(): Refresh<Course> & Create<[{ name: string, state: CourseState }], Course> {
     const courses = useCacheCollection<Course>("courses", {
         sort: (a, b) =>
@@ -297,6 +363,7 @@ function useCurrentUserDirect(): () => User {
     return () => currentUser.getCurrentValue().value;
 }
 
+/** Helper function for refreshing comments and threads */
 function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
     return promise.then(result => {
         threads.transaction(threads => {
@@ -313,6 +380,7 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
     });
 }
 
+/** Helper function for creating a new comment thread */
 function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, getCurrentUser: () => User, cache: Cache) {
     const tempID = randomBytes(32).toString('hex');
     console.log("Creating", tempID);
