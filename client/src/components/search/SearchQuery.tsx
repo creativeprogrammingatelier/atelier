@@ -39,7 +39,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
         setError(false);
         try {
             const results = await search({
-                query,
+                q: query,
                 courseID: course,
                 userID: user,
                 submissionID: submission,

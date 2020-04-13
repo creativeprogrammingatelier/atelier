@@ -33,94 +33,72 @@ const jsonBody = <T>(method: string, body: T) => ({
 const postJson = <T>(body: T) => jsonBody("POST", body);
 const putJson = <T>(body: T) => jsonBody("PUT", body);
 
-/**
- * function that takes an object specifying key:value pairs, and creating something that can be added to the end of an url.
- * @param params an object specifying parameters to send to the backend
- */
-const addParams = (params: { [key: string]: string | number | boolean }) => {
+/** Convert a key-value object into a string of query parameters */
+function queryParams(params: { [key: string]: string | number | boolean | undefined }) {
     if (!params) return '';
-    const keys = Object.keys(params);
-    const items: string[] = [];
-    keys.forEach(key => {
-        items.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
-    });
+    const items = Object.keys(params)
+        .filter(key => params[key] !== undefined)
+        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]!));
     if (items.length > 0) {
-        return '?' + items.join('&')
+        return '?' + items.join('&');
     } else {
-        return ''
+        return '';
     }
 };
 
 // Courses
-export function getCourse(courseID: string) {
-    return Fetch.fetchJson<Course>(`/api/course/${courseID}`);
-}
+export const getCourse = (courseID: string) =>
+    Fetch.fetchJson<Course>(`/api/course/${courseID}`);
 
-export function getCourses() {
-    return Fetch.fetchJson<Course[]>("/api/course/");
-}
+export const getCourses = () =>
+    Fetch.fetchJson<Course[]>("/api/course/");
 
-export function getUserCourses(userId: string) {
-    return Fetch.fetchJson<Course[]>(`/api/course/user/${userId}`);
-}
+export const getUserCourses = (userId: string) =>
+    Fetch.fetchJson<Course[]>(`/api/course/user/${userId}`);
 
-export function createCourse(course: { name: string, state: string }) {
-    return Fetch.fetchJson<Course>("/api/course", postJson(course));
-}
+export const createCourse = (course: { name: string, state: string }) =>
+    Fetch.fetchJson<Course>("/api/course", postJson(course));
 
-export function updateCourse(courseID: string, update: { name?: string, state?: CourseState }) {
-    return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update));
-}
+export const updateCourse = (courseID: string, update: { name?: string, state?: CourseState }) =>
+    Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update));
 
-export function courseEnrollUser(courseID: string, userID: string, role: CourseRole) {
-    return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}/role/${role}`, putJson({}));
-}
+export const courseEnrollUser = (courseID: string, userID: string, role: CourseRole) =>
+    Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}/role/${role}`, putJson({}));
 
-export function courseDisenrollUser(courseID: string, userID: string) {
-    return Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, {"method": "DELETE"});
-}
+export const courseDisenrollUser = (courseID: string, userID: string) =>
+    Fetch.fetchJson<CourseUser>(`/api/course/${courseID}/user/${userID}`, {"method": "DELETE"});
 
-export function deleteCourse(courseID: string) {
-    return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, {"method": "DELETE"});
-}
+export const deleteCourse = (courseID: string) =>
+    Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, {"method": "DELETE"});
 
 // Users
-export function getCurrentUser() {
-    return Fetch.fetchJson<User>("/api/user/");
-}
+export const getCurrentUser = () =>
+    Fetch.fetchJson<User>("/api/user/");
 
-export function getUser(userId: string) {
-    return Fetch.fetchJson<User>(`/api/user/${userId}`);
-}
+export const getUser = (userId: string) =>
+    Fetch.fetchJson<User>(`/api/user/${userId}`);
 
-export function getAllUsers() {
-    return Fetch.fetchJson<User[]>(`/api/user/all`);
-}
+export const getAllUsers = () =>
+    Fetch.fetchJson<User[]>(`/api/user/all`);
 
-export function setUser(body: { name?: string, email?: string }) {
-    return Fetch.fetchJson<User>(`/api/user/`, putJson(body));
-}
+export const setUser = (body: { name?: string, email?: string }) =>
+    Fetch.fetchJson<User>(`/api/user/`, putJson(body));
 
-export function getUsersByCourse(courseID: string) {
-    return Fetch.fetchJson<CourseUser[]>(`/api/user/course/${courseID}`);
-}
+export const getUsersByCourse = (courseID: string) =>
+    Fetch.fetchJson<CourseUser[]>(`/api/user/course/${courseID}`);
 
 // Submissions
-export function getCourseSubmissions(courseId: string) {
-    return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}`);
-}
+export const getCourseSubmissions = (courseId: string) =>
+    Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}`);
 
-export function getCourseUserSubmissions(courseId: string, userId: string) {
-    return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}/user/${userId}`);
-}
+export const getCourseUserSubmissions = (courseId: string, userId: string) =>
+    Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}/user/${userId}`);
 
-export function getUserSubmissions(userId: string) {
-    return Fetch.fetchJson<Submission[]>(`/api/submission/user/${userId}`);
-}
+export const getUserSubmissions = (userId: string) =>
+    Fetch.fetchJson<Submission[]>(`/api/submission/user/${userId}`);
 
-export function getSubmission(submissionID: string) {
-    return Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);
-}
+export const getSubmission = (submissionID: string) =>
+    Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);
 
 export function createSubmission(courseId: string, projectName: string, files: File[]) {
     const fixFilePath = (file: File) => {
@@ -160,87 +138,70 @@ export function createSubmission(courseId: string, projectName: string, files: F
 }
 
 // Files
-export function getFiles(submissionID: string) {
-    return Fetch.fetchJson<APIFile[]>(`/api/file/submission/${submissionID}`);
-}
+export const getFiles = (submissionID: string) =>
+    Fetch.fetchJson<APIFile[]>(`/api/file/submission/${submissionID}`);
 
-export function getFile(fileId: string) {
-    return Fetch.fetchJson<APIFile>(`/api/file/${fileId}`);
-}
+export const getFile = (fileId: string) =>
+    Fetch.fetchJson<APIFile>(`/api/file/${fileId}`);
 
-export function getFileContents(fileId: string) {
-    return Fetch.fetchString(getFileUrl(fileId));
-}
+export const getFileContents = (fileId: string) =>
+    Fetch.fetchString(getFileUrl(fileId));
 
-export function getFileUrl(fileID: string) {
-    return `/api/file/${fileID}/body`;
-}
+export const getFileUrl = (fileID: string) =>
+    `/api/file/${fileID}/body`;
 
 // Comments
-export function getUserComments(userId: string) {
-    return Fetch.fetchJson<Comment[]>(`/api/comment/user/${userId}`);
-}
+export const getUserComments = (userId: string) =>
+    Fetch.fetchJson<Comment[]>(`/api/comment/user/${userId}`);
 
-export function getCourseUserComments(courseId: string, userId: string) {
-    return Fetch.fetchJson<Comment[]>(`/api/comment/course/${courseId}/user/${userId}`);
-}
+export const getCourseUserComments = (courseId: string, userId: string) =>
+    Fetch.fetchJson<Comment[]>(`/api/comment/course/${courseId}/user/${userId}`);
 
 // CommentThreads
-export function getFileComments(fileID: string) {
-    return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/file/${fileID}`);
-}
+export const getFileComments = (fileID: string) =>
+    Fetch.fetchJson<CommentThread[]>(`/api/commentThread/file/${fileID}`);
 
-export function getProjectComments(submissionID: string) {
-    return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}`);
-}
+export const getProjectComments = (submissionID: string) =>
+    Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}`);
 
-export function getRecentComments(submissionID: string) {
-    return Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
-}
+export const getRecentComments = (submissionID: string) =>
+    Fetch.fetchJson<CommentThread[]>(`/api/commentThread/submission/${submissionID}/recent`);
 
-export function setCommentThreadVisibility(commentThreadID: string, visibility: ThreadState) {
-    return Fetch.fetchJson<CommentThread>(
+export const setCommentThreadVisibility = (commentThreadID: string, visibility: ThreadState) =>
+    Fetch.fetchJson<CommentThread>(
         `/api/commentThread/${commentThreadID}`,
         putJson({visibility})
     );
-}
 
-export function deleteCommentThread(commentThreadID: string) {
-    return Fetch.fetchJson<CommentThread>(`/api/commentThread/${commentThreadID}`, {method: "DELETE"});
-}
+export const deleteCommentThread = (commentThreadID: string) =>
+    Fetch.fetchJson<CommentThread>(`/api/commentThread/${commentThreadID}`, {method: "DELETE"});
 
-export function createFileCommentThread(fileID: string, thread: CreateCommentThread) {
-    return Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread));
-}
+export const createFileCommentThread = (fileID: string, thread: CreateCommentThread) =>
+    Fetch.fetchJson<CommentThread>(`/api/commentThread/file/${fileID}`, postJson(thread));
 
-export function createSubmissionCommentThread(submissionID: string, thread: CreateCommentThread) {
-    return Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread));
-}
+export const createSubmissionCommentThread = (submissionID: string, thread: CreateCommentThread) =>
+    Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread));
 
-export function createComment(commentThreadID: string, comment: string) {
-    return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson({comment}));
-}
+export const createComment = (commentThreadID: string, comment: string) =>
+    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson({comment}));
 
-export function editComment(commentThreadID: string, commentID: string, comment: string) {
-    return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, putJson({comment}));
-}
+export const editComment = (commentThreadID: string, commentID: string, comment: string) =>
+    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, putJson({comment}));
 
-export function deleteComment(commentThreadID: string, commentID: string) {
-    return Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, {method: "DELETE"});
-}
+export const deleteComment = (commentThreadID: string, commentID: string) =>
+    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, {method: "DELETE"});
 
 // Mentions
-export function getMentions() {
-    return Fetch.fetchJson<Mention[]>("/api/mentions");
-}
+export const getMentions = () =>
+    Fetch.fetchJson<Mention[]>("/api/mentions");
 
-export function getCourseMentions(courseID: string) {
-    return Fetch.fetchJson<Mention[]>(`/api/mentions/course/${courseID}`);
-}
+export const getCourseMentions = (courseID: string) =>
+    Fetch.fetchJson<Mention[]>(`/api/mentions/course/${courseID}`);
 
 // Search
 interface SearchParameters {
-    query: string,
+    [key: string]: string | number | Sorting | undefined,
+    q: string,
     limit?: number,
     offset?: number,
     sorting?: Sorting,
@@ -249,78 +210,56 @@ interface SearchParameters {
     submissionID?: string
 }
 
-export function search({query, limit = 20, offset = 0, sorting = Sorting.datetime, courseID, userID, submissionID}: SearchParameters) {
-    const path = `/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}${sorting ? `&sort=${sorting}` : ``}${courseID ? `&courseID=${courseID}` : ``}${userID ? `&userID=${userID}` : ""}${submissionID ? `&submissionID=${submissionID}` : ""}`;
-    return Fetch.fetchJson<SearchResult>(path);
-}
+export const search = (params: SearchParameters) =>
+    Fetch.fetchJson<SearchResult>("/api/search" + queryParams(params));
 
 // If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
-export function searchUsers(query: string, courseID?: string, limit = 20, offset = 0) {
-    const courseSearch = courseID === undefined ? "" : `&courseID=${courseID}`;
-    return Fetch.fetchJson<User[]>(`/api/search/users?q=${query}${courseSearch}&limit=${limit}&offset=${offset}`);
-}
-
-export function searchUsersInCourse(query: string, courseID: string, limit = 20, offset = 0) {
-    return Fetch.fetchJson<User[]>(`/api/search/users?q=${query}&courseID=${courseID}&limit=${limit}&offset=${offset}`);
-}
+export const searchUsers = (query: string, courseID?: string, limit = 20, offset = 0) =>
+    Fetch.fetchJson<User[]>("/api/search/users" + queryParams({ q: query, courseID, limit, offset }));
 
 // Auth
-export function getLoginProviders() {
-    return Fetch.fetchJson<LoginProvider[]>("/api/auth/providers");
-}
+export const getLoginProviders = () =>
+    Fetch.fetchJson<LoginProvider[]>("/api/auth/providers");
 
 // Permission
-export function coursePermission(courseID: string) {
-    return Fetch.fetchJson<Permission>(`/api/permission/course/${courseID}`);
-}
+export const coursePermission = (courseID: string) =>
+    Fetch.fetchJson<Permission>(`/api/permission/course/${courseID}`);
 
-export function permission() {
-    return Fetch.fetchJson<Permission>(`/api/permission`);
-}
+export const permission = () =>
+    Fetch.fetchJson<Permission>(`/api/permission`);
 
-export function setPermissionCourse(courseID: string, userID: string, permissions: Permissions) {
-    return Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson({permissions}));
-}
+export const setPermissionCourse = (courseID: string, userID: string, permissions: Permissions) =>
+    Fetch.fetchJson<CourseUser>(`/api/permission/course/${courseID}/user/${userID}`, putJson({permissions}));
 
-export function setPermissionGlobal(userID: string, permissions: Permissions) {
-    return Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, putJson({permissions}));
-}
+export const setPermissionGlobal = (userID: string, permissions: Permissions) =>
+    Fetch.fetchJson<CourseUser>(`/api/permission/user/${userID}`, putJson({permissions}));
 
 // Invites
-export function getInvites(courseID: string) {
-    return Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`);
-}
+export const getInvites = (courseID: string) =>
+    Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`);
 
-export function getInvite(courseID: string, role: InviteRole) {
-    return Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`);
-}
+export const getInvite = (courseID: string, role: InviteRole) =>
+    Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`);
 
-export function deleteInvite(courseID: string, role: InviteRole) {
-    return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {method: "DELETE"});
-}
+export const deleteInvite = (courseID: string, role: InviteRole) =>
+    Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {method: "DELETE"});
 
 // Role
-export function updateGlobalRole(userID: string, role: GlobalRole) {
-    return Fetch.fetchJson<User>(`/api/role/user/${userID}/${role}`, putJson({}));
-}
+export const updateGlobalRole = (userID: string, role: GlobalRole) =>
+    Fetch.fetchJson<User>(`/api/role/user/${userID}/${role}`, putJson({}));
 
-export function updateCourseRole(userID: string, courseID: string, role: CourseRole) {
-    return Fetch.fetchJson<CourseUser>(`/api/role/course/${courseID}/user/${userID}/${role}`, putJson({}));
-}
+export const updateCourseRole = (userID: string, courseID: string, role: CourseRole) =>
+    Fetch.fetchJson<CourseUser>(`/api/role/course/${courseID}/user/${userID}/${role}`, putJson({}));
 
 // Plugins
-export function getPlugins() {
-    return Fetch.fetchJson<Plugin[]>("/api/plugin");
-}
+export const getPlugins = () =>
+    Fetch.fetchJson<Plugin[]>("/api/plugin");
 
-export function createPlugin(plugin: Partial<Plugin>) {
-    return Fetch.fetchJson<Plugin>("/api/plugin", postJson(plugin));
-}
+export const createPlugin = (plugin: Partial<Plugin>) =>
+    Fetch.fetchJson<Plugin>("/api/plugin", postJson(plugin));
 
-export function updatePlugin(plugin: Partial<Plugin> & { pluginID: string }) {
-    return Fetch.fetchJson<Plugin>(`/api/plugin/${plugin.pluginID}`, putJson(plugin));
-}
+export const updatePlugin = (plugin: Partial<Plugin> & { pluginID: string }) =>
+    Fetch.fetchJson<Plugin>(`/api/plugin/${plugin.pluginID}`, putJson(plugin));
 
-export function deletePlugin(pluginID: string) {
-    return Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, {method: "DELETE"});
-}
+export const deletePlugin = (pluginID: string) =>
+    Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, {method: "DELETE"});
