@@ -5,8 +5,7 @@ import chaiAsPromised from 'chai-as-promised';
 import { Response } from 'node-fetch';
 import { LocalStorage } from 'node-localstorage';
 
-import { Fetch, FetchError, JsonFetchError } from './../helpers/FetchHelper';
-import AuthHelper from '../helpers/AuthHelper';
+import { Fetch, FetchError, JsonFetchError } from '../src/helpers/api/FetchHelper';
 
 chai.use(chaiSpies);
 chai.use(chaiAsPromised);

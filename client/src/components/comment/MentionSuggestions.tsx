@@ -1,7 +1,7 @@
 import React, {useState, useEffect, Fragment} from "react";
 import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
 import {PermissionEnum, containsPermission} from "../../../../models/enums/PermissionEnum";
-import {searchUsers} from "../../../helpers/APIHelper";
+import {searchUsers} from "../../helpers/api/APIHelper";
 import {Tag} from "../general/Tag";
 import {useObservableState} from "observable-hooks";
 import {useCoursePermission, usePermission} from "../../helpers/api/APIHooks";

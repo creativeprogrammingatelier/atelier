@@ -1,6 +1,6 @@
 import React, {useState, Fragment} from "react";
 import {User} from "../../../../../models/api/User";
-import {courseDisenrollUser} from "../../../../helpers/APIHelper";
+import {courseDisenrollUser} from "../../../helpers/api/APIHelper";
 import {CourseUser} from "../../../../../models/api/CourseUser";
 import {UserSearch} from "../user/UserSearch";
 import {Button, Form} from "react-bootstrap";

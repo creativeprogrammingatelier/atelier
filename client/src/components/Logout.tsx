@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Redirect} from 'react-router-dom';
-import AuthHelper from '../../helpers/AuthHelper';
+import {AuthHelper} from '../helpers/AuthHelper';
 
 class Logout extends React.Component {
     state: { loggedOut: boolean };

@@ -1,27 +1,29 @@
 /** Contains functions to access all API endpoints */
 
+import "../../../../helpers/Extensions";
 import {Fetch} from "./FetchHelper";
-import {CommentThread, CreateCommentThread} from "../../models/api/CommentThread";
-import {Course, CoursePartial} from "../../models/api/Course";
-import {Submission} from "../../models/api/Submission";
-import {User} from "../../models/api/User";
-import {Comment} from "../../models/api/Comment";
-import {File as APIFile} from "../../models/api/File";
-import {LoginProvider} from "../../models/api/LoginProvider";
-import {Permission} from "../../models/api/Permission";
-import {Permissions} from "../../models/api/Permission";
-import {SearchResult} from "../../models/api/SearchResult";
-import {Mention} from "../../models/api/Mention";
-import {CourseInvite, Invite} from "../../models/api/Invite";
-import {CourseUser} from "../../models/api/CourseUser";
-import {CourseState} from "../../models/enums/CourseStateEnum";
-import {Plugin} from "../../models/api/Plugin";
-import {GlobalRole} from "../../models/enums/GlobalRoleEnum";
-import {InviteRole} from "../../models/enums/InviteRoleEnum";
-import {CourseRole} from "../../models/enums/CourseRoleEnum";
-import {Sorting} from "../../models/enums/SortingEnum";
-import "../../helpers/Extensions";
-import {ThreadState} from "../../models/enums/ThreadStateEnum";
+
+import {CommentThread, CreateCommentThread} from "../../../../models/api/CommentThread";
+import {Course, CoursePartial} from "../../../../models/api/Course";
+import {Submission} from "../../../../models/api/Submission";
+import {User} from "../../../../models/api/User";
+import {Comment} from "../../../../models/api/Comment";
+import {File as APIFile} from "../../../../models/api/File";
+import {LoginProvider} from "../../../../models/api/LoginProvider";
+import {Permission} from "../../../../models/api/Permission";
+import {Permissions} from "../../../../models/api/Permission";
+import {SearchResult} from "../../../../models/api/SearchResult";
+import {Mention} from "../../../../models/api/Mention";
+import {CourseInvite, Invite} from "../../../../models/api/Invite";
+import {CourseUser} from "../../../../models/api/CourseUser";
+import {CourseState} from "../../../../models/enums/CourseStateEnum";
+import {Plugin} from "../../../../models/api/Plugin";
+import {GlobalRole} from "../../../../models/enums/GlobalRoleEnum";
+import {InviteRole} from "../../../../models/enums/InviteRoleEnum";
+import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
+import {Sorting} from "../../../../models/enums/SortingEnum";
+import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
+
 // Helpers
 const jsonBody = <T>(method: string, body: T) => ({
     method,
@@ -30,6 +32,7 @@ const jsonBody = <T>(method: string, body: T) => ({
 });
 const postJson = <T>(body: T) => jsonBody("POST", body);
 const putJson = <T>(body: T) => jsonBody("PUT", body);
+
 /**
  * function that takes an object specifying key:value pairs, and creating something that can be added to the end of an url.
  * @param params an object specifying parameters to send to the backend

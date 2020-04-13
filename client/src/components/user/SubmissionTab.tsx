@@ -2,9 +2,9 @@ import React from "react";
 import {User} from "../../../../models/api/User";
 import {Loading} from "../general/loading/Loading";
 import {Submission} from "../../../../models/api/Submission";
-import {getCourseUserSubmissions, getUserSubmissions} from "../../../helpers/APIHelper";
+import {getCourseUserSubmissions, getUserSubmissions} from "../../helpers/api/APIHelper";
 import {DataBlockList} from "../data/DataBlockList";
-import {TimeHelper} from "../../../helpers/TimeHelper";
+import {TimeHelper} from "../../helpers/TimeHelper";
 import {Course} from "../../../../models/api/Course";
 
 interface SubmissionTabProperties {

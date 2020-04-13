@@ -4,7 +4,7 @@ import {DataList} from "../data/DataList";
 import {DataItem} from "../data/DataItem";
 import {ParentalProperties} from "../../helpers/ParentHelper";
 import {DataBlock} from "../data/DataBlock";
-import {TimeHelper} from "../../../helpers/TimeHelper";
+import {TimeHelper} from "../../helpers/TimeHelper";
 
 interface SearchResultProperties {
     results: SearchResult

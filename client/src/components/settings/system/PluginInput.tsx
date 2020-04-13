@@ -5,7 +5,7 @@ import {Plugin} from "../../../../../models/api/Plugin";
 import {User} from "../../../../../models/api/User";
 import {WebhookEvent} from "../../../../../models/enums/WebhookEventEnum";
 
-import {createPlugin, deletePlugin, updatePlugin} from "../../../../helpers/APIHelper";
+import {createPlugin, deletePlugin, updatePlugin} from "../../../helpers/api/APIHelper";
 
 import {FeedbackError} from "../../feedback/FeedbackError";
 import {FeedbackContent} from "../../feedback/Feedback";

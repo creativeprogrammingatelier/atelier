@@ -1,7 +1,7 @@
 import React from "react";
 import {Toast, ToastBody, ToastHeader} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {TimeHelper} from "../../../helpers/TimeHelper";
+import {TimeHelper} from "../../helpers/TimeHelper";
 import {Tag, TagProperties} from "../general/Tag";
 import {useTime} from "./TimeProvider";
 

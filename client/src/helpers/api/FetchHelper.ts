@@ -1,4 +1,4 @@
-import {ServerError} from "../../models/api/ServerError";
+import {ServerError} from "../../../../models/api/ServerError";
 
 export class Fetch {
     /**

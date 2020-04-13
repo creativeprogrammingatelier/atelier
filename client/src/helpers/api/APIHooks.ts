@@ -8,7 +8,7 @@ import {
     CacheItemInterface
 } from './Cache';
 import {Course} from '../../../../models/api/Course';
-import * as API from '../../../helpers/APIHelper';
+import * as API from '../../helpers/api/APIHelper';
 import {randomBytes} from 'crypto';
 import {User} from '../../../../models/api/User';
 import {Permission} from '../../../../models/api/Permission';

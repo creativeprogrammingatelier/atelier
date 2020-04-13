@@ -4,7 +4,7 @@ import {Invite} from "../../../../../models/api/Invite";
 import {Permission} from "../../../../../models/api/Permission";
 import {InviteRole} from "../../../../../models/enums/InviteRoleEnum";
 
-import {coursePermission, getInvites} from "../../../../helpers/APIHelper";
+import {coursePermission, getInvites} from "../../../helpers/api/APIHelper";
 
 import {Loading} from "../../general/loading/Loading";
 import {CourseInvite} from "./CourseInvite";

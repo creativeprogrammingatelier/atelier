@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Loading} from "../../general/loading/Loading";
-import {getPlugins} from "../../../../helpers/APIHelper";
+import {getPlugins} from "../../../helpers/api/APIHelper";
 import {Plugin} from "../../../../../models/api/Plugin";
 import {useState, Fragment} from "react";
 import {Block} from "../../general/Block";

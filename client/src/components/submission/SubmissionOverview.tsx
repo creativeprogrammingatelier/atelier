@@ -7,7 +7,7 @@ import {Submission} from "../../../../models/api/Submission";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
 import {useSubmission, useFiles, useProjectComments, useRecentComments, useCourse} from "../../helpers/api/APIHooks";
-import {TimeHelper} from "../../../helpers/TimeHelper";
+import {TimeHelper} from "../../helpers/TimeHelper";
 
 import {Cached} from "../general/loading/Cached";
 import {CommentCreator} from "../comment/CommentCreator";

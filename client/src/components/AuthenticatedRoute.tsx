@@ -2,7 +2,7 @@ import React from 'react';
 import {Redirect, Route} from 'react-router-dom';
 import {RouteComponentProps} from 'react-router';
 
-import AuthHelper from '../../helpers/AuthHelper';
+import {AuthHelper} from '../helpers/AuthHelper';
 
 interface LocationProperties {
     pathname: string
