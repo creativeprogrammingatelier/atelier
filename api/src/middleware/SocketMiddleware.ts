@@ -1,9 +1,9 @@
 import {Request} from 'express';
 import {Socket} from 'socket.io';
+import {Comment} from '../../../models/api/Comment';
 
-type Comment = any
-
-export default class SocketMiddleware {
+/** This class is not used anywhere, but left here for future reference */
+export class SocketMiddleware {
 
     static sendCommentUpdate(request: Request, fileId: string, comment: Comment): void {
         const io: Socket = request.app.settings['socket-io'];

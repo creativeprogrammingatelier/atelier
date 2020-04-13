@@ -65,6 +65,7 @@ export async function getCurrentUserID(request: Request) {
     }
 }
 
+/** Set cookie headers for a newly generated token */
 export async function setTokenCookie(response: Response, userID: string) {
     const options: CookieOptions = {
         secure: config.env === "production",
@@ -77,6 +78,7 @@ export async function setTokenCookie(response: Response, userID: string) {
         .cookie("atelierToken", issueToken(userID), {...options, httpOnly: true, path: "/"});
 }
 
+/** Set headers to remove the token cookies */
 export function clearTokenCookie(response: Response) {
     return response.clearCookie("atelierTokenExp").clearCookie("atelierToken");
 }
