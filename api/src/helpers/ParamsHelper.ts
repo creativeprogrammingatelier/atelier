@@ -27,7 +27,7 @@ export function getCommonQueryParams(request: Request, maxLimit = 50) {
     //in the future, it might be nice to allow it in other methods too.
     let sorting: Sorting;
     try {
-        sorting = request.query.sort ? getEnum(Sorting, request.query.sort) : Sorting.datetime
+        sorting = request.query.sort ? getEnum(Sorting, request.query.sort as string) : Sorting.datetime
     } catch (e) {
         if (e instanceof EnumError) {
             throw new InvalidParamsError("sort", e.message)
