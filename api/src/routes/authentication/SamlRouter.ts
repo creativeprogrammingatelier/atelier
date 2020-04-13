@@ -2,12 +2,6 @@ import express, {Request, Response, NextFunction} from 'express';
 import fetch from 'node-fetch';
 import {ServiceProvider, IdentityProvider, setSchemaValidator} from 'samlify';
 import * as validator from '@authenio/samlify-node-xmllint';
-// If the above import complains about missing types, create this file:
-//  node_modules/@authenio/samlify-node-xmllint/build/index.d.ts
-// with these contents:
-//  export declare const validate: (xml: string) => Promise<unknown>;
-// Required until https://github.com/authenio/samlify-node-xmllint/pull/1 is merged and published
-
 import {capture} from '../../helpers/ErrorHelper';
 import {config, SamlLoginConfiguration} from '../../helpers/ConfigurationHelper';
 import {readFileAsString} from '../../helpers/FilesystemHelper';
