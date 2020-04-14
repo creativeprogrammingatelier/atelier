@@ -1,6 +1,6 @@
 /**
  * The main faile of express.js app
- * @author Andrew Heath
+ * @author Andrew Heath, Arthur Rump, Jarik Karsten, Cas Sievers, Rens Leendertz, Alexander Haas
  */
 
 import {config} from './helpers/ConfigurationHelper';
@@ -26,43 +26,46 @@ import {commentRouter} from './routes/CommentRouter';
 import {permissionRouter} from './routes/PermissionRouter';
 import {roleRouter} from './routes/RoleRouter';
 import {mentionsRouter} from './routes/MentionsRouter';
+import {inviteRouter} from "./routes/InviteRouter";
+import {inviteLinkRouter} from "./routes/InviteLinkRouter";
 
+import {AuthMiddleware} from './middleware/AuthMiddleware';
 import {NotFoundDatabaseError} from './database/DatabaseErrors';
 import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/DatabaseErrorHelper';
 import {AuthError} from './helpers/AuthenticationHelper';
-import {AuthMiddleware} from './middleware/AuthMiddleware';
 import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
 import {InvalidParamsError} from './helpers/ParamsHelper';
-import {inviteRouter} from "./routes/InviteRouter";
-import {inviteLinkRouter} from "./routes/InviteLinkRouter";
 import {PermissionError} from "./helpers/PermissionHelper";
 
 export const app = express();
-// app.listen(5000, () => console.log('Listening on port 5000!'))
 
-//since I can't find a way to remove this logger after 'use'ing it, it is now only added when running as main (so not as debug with mocha)
+// Set up server and start lisening on configured port and hostname
+const server = http.createServer(app);
+server.listen(config.port, config.hostname);
+
+// Set up Socket.io
+const socket = socketio(server);
+app.set('socket-io', socket);
+socket.on('connect', (socket: Socket) => {
+    // send each client their socket id
+    socket.emit('id', socket.id); 
+});
+
+// Add morgan request logger if this file is ran as the main program
 if (require.main === module) {
     app.use(logger('dev'));
-} else {
-    // console.log=console.warn=console.error=()=>{};
 }
+
+// Use express json and url parsing
 app.use(express.json());
 app.use(express.urlencoded({
     extended: false
 }));
 
-//Socket io
-const server = http.createServer(app);
-server.listen(config.port, config.hostname);
-const socket = socketio(server);
-app.set('socket-io', socket);
-
-socket.on('connect', (socket: Socket) => {
-    socket.emit('id', socket.id); // send each client their socket id
-});
-
+// Use the cookieParser middleware to parse cookies
 app.use(cookieParser());
 
+// Refresh token cookies when they are provided and getting old
 app.use(AuthMiddleware.refreshCookieToken);
 
 // Serve static files from the client directory

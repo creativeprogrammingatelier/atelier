@@ -9,15 +9,28 @@ interface WebhookRequest<T> {
     payload: T
 }
 
+/** 
+ * Get all the plugins in a course that are subscribed to the event. You
+ * most likely don't need to call this, use `raiseWebhookEvent` instead.
+ */
 export function getSubscribedPlugins(courseID: string, event: WebhookEvent) {
     return PluginsDB.getRelevantPlugins(courseID, event);
 }
 
+/** 
+ * Raise a webhook event on a course with a certain payload. This will fetch 
+ * all subscribed plugins from the database and post the webhook requests to
+ * the plugin URL.
+ */
 export async function raiseWebhookEvent<T>(courseID: string, event: WebhookEvent, body: T) {
     const plugins = await getSubscribedPlugins(courseID, event);
     return Promise.all(plugins.map(plugin => postWebhook(plugin, event, body)));
 }
 
+/**
+ * Create the request that can be sent to a plugin. You most likely don't
+ * need to call this, use `raiseWebhookEvent` instead.
+ */
 export function createWebhookRequest<T>(plugin: Plugin, event: WebhookEvent, body: T) {
     const request: WebhookRequest<T> = {
         event,
@@ -36,6 +49,7 @@ export function createWebhookRequest<T>(plugin: Plugin, event: WebhookEvent, bod
     });
 }
 
+/** Post a webhook event to the plugin */
 async function postWebhook<T>(plugin: Plugin, event: WebhookEvent, body: T) {
     try {
         const res = await fetch(createWebhookRequest(plugin, event, body));

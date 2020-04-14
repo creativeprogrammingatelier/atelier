@@ -4,7 +4,7 @@ import {GlobalRole} from "../../../../../models/enums/GlobalRoleEnum";
 import {CourseRole} from "../../../../../models/enums/CourseRoleEnum";
 import {User} from "../../../../../models/api/User";
 import {UserSearch} from "./UserSearch";
-import {updateCourseRole, updateGlobalRole} from "../../../../helpers/APIHelper";
+import {updateCourseRole, updateGlobalRole} from "../../../helpers/api/APIHelper";
 import {CourseUser} from "../../../../../models/api/CourseUser";
 import {UserInfo} from "./UserInfo";
 import {UserRoles} from "./UserRoles";

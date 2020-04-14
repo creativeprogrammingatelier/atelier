@@ -1,11 +1,13 @@
 import {Observable, Subscriber, BehaviorSubject} from 'rxjs';
 
+/** The state of any item in the cache */
 export enum CacheState {
     Uninitialized,
     Loading,
     Loaded
 }
 
+/** Common properties for all items in the cache */
 export interface CacheProperties {
     readonly createdAt: number,
     readonly updatedAt: number,
@@ -18,48 +20,85 @@ const emptyCacheProperties: CacheProperties = {
     state: CacheState.Uninitialized,
 };
 
+/** A single item in the cache */
 export interface CacheItem<T> extends CacheProperties {
     readonly value: T
 }
 
+/** Value returned if the requested item is not in the cache */
 export const emptyCacheItem = <T>(defaultValue?: T) => ({
     ...emptyCacheProperties,
     value: defaultValue
 });
 
+/** Interface for working with a CacheItem */
 export interface CacheItemInterface<T> {
+    /** Get the observable for this item, subscribe for notifications when the value changes */
     observable: Observable<CacheItem<T>>,
+    /** 
+     * Get the current item of the value. Warning: this is mainly provided for internal use. 
+     * You most likely want to subscribe to the observable and get changes as they are made. 
+     * Use with caution, only if you are really sure you are not interested in changes.
+     */
     getCurrentValue: () => CacheItem<T>,
+    /** Update the item using an updater function, also setting the new state */
     updateItem: (update: (t: T) => T, state: CacheState, date?: number) => void,
+    /** Delete the item from the cache */
     clear: () => void
 }
 
+/** A collection of items of the same type in the cache */
 export interface CacheCollection<T> extends CacheProperties {
     readonly items: Array<CacheItem<T>>
 }
 
+/** Interface for working with a CacheCollection */
 export interface CacheCollectionInterface<T> {
+    /** Get the observable for this collection, subscribe for notifications when the items change */
     observable: Observable<CacheCollection<T>>,
+    /** 
+     * Get the current stored collection. Warning: this is mainly provided for internal use. 
+     * You most likely want to subscribe to the observable and get changes as they are made. 
+     * Use with caution, only if you are really sure you are not interested in changes. 
+     */
     getCurrentValue: () => CacheCollection<T>,
+    /** Start a transaction for changing the items in this collection */
     transaction: (update: (funcs: {
+        /** 
+         * Add all values to the collection, with the given state. If an item 
+         * with the same ID already exists, it is replaced with the new item. 
+         */
         addAll: (values: T[], state: CacheState) => void,
+        /** 
+         * Add a single value to to the cache, or replace it if an item with
+         * the same ID already exists.
+         */
         add: (value: T, state: CacheState) => void,
+        /** Remove all selected items from the cache */
         remove: (selector: (value: T) => boolean) => void,
+        /** Remove all items that have not been updated for the expiration time */
         removeExpired: (expiration: number) => void,
+        /** Delete the entire collection from the cache */
         clear: () => void
     }) => void, state?: CacheState, date?: number) => void
 }
 
+/** Options for requesting a collection from the cache */
 export interface GetCacheCollectionOptions<T> {
+    /** Provide a unique subKey, if you want to treat the response as a separate collection. Often used in combination with filter. */
     subKey?: string,
+    /** Filter the items in the collection to only the ones you're interested in */
     filter?: (value: T) => boolean,
+    /** Sort the items in the collection, according to the given sort function */
     sort?: (a: T, b: T) => number
 }
 
+/** A generic key-value store */
 export interface Store<T> {
     [key: string]: T
 }
 
+/** Exported version of the cache for persistent storage */
 export interface ExportedCache {
     // tslint:disable-next-line: no-any
     items: Store<CacheItem<any>>,
@@ -68,6 +107,7 @@ export interface ExportedCache {
     subCollections: Store<Store<CacheProperties>>
 }
 
+/** Wrapper for storing collections and keeping track of its subscribers */
 interface SubscribableCollection<T> {
     collection: CacheCollection<T>,
     properties: Store<CacheProperties>,
@@ -77,6 +117,7 @@ interface SubscribableCollection<T> {
     }>
 }
 
+/** Get the properties of a collection for a given subKey */
 function getPropsForSubKey<T>(subCol: SubscribableCollection<T>, subKey?: string) {
     if (subKey) {
         return subCol.properties[subKey] || emptyCacheProperties;
@@ -85,6 +126,7 @@ function getPropsForSubKey<T>(subCol: SubscribableCollection<T>, subKey?: string
     }
 }
 
+/** Filter and sort a collection according to the given options */
 function returnCollection<T>(subCol: SubscribableCollection<T>, options: GetCacheCollectionOptions<T>) {
     let items = subCol.collection.items;
     // filter and sort need to be variables for TypeScript to recognize the null check
@@ -95,6 +137,7 @@ function returnCollection<T>(subCol: SubscribableCollection<T>, options: GetCach
     return {...props, items};
 }
 
+/** A generic observable cache of items and collections */
 export class Cache {
     // The cache has to store any type of data
     // tslint:disable-next-line: no-any
@@ -103,6 +146,8 @@ export class Cache {
     private collections: Store<SubscribableCollection<any>>;
     private exported: BehaviorSubject<ExportedCache>;
 
+    /** Create a new cache, optionally poviding existing data */
+    // TODO: properly handle collection properties
     // tslint:disable-next-line: no-any
     constructor(items?: Store<CacheItem<any>>, collections?: Store<CacheCollection<any>>) {
         this.items = {};
@@ -127,15 +172,18 @@ export class Cache {
         this.exported = new BehaviorSubject(this.export());
     }
 
+    /** Create a new cache with the data from a key in localStorage */
     static load(storageKey: string) {
         const {items, collections} = JSON.parse(localStorage.getItem(storageKey) || `{ "items": [], "collections": [] }`);
         return new Cache(items, collections);
     }
 
+    /** Save an exported cache to a key in localStorage */
     static save(storageKey: string, exported: ExportedCache) {
         localStorage.setItem(storageKey, JSON.stringify(exported));
     }
 
+    /** Export the cache structure into an ExportedCache object */
     private export(): ExportedCache {
         return {
             items: Object.assign({}, ...Object.keys(this.items).map(key => ({[key]: this.items[key].value}))),
@@ -144,10 +192,12 @@ export class Cache {
         }
     }
 
+    /** Get an observable for the exported cache, which is updated on any change in the cache */
     getExport(): Observable<ExportedCache> {
         return this.exported.asObservable();
     }
 
+    /** Get the interface for a single item in the cache */
     getItem<T>(key: string, defaultValue?: T): CacheItemInterface<T> {
         if (!this.items[key]) {
             this.items[key] = new BehaviorSubject(emptyCacheItem(defaultValue));
@@ -175,6 +225,7 @@ export class Cache {
         }
     }
 
+    /** Get the interface for a collection of items in the cache */
     getCollection<T extends { ID: string }>(key: string, options: GetCacheCollectionOptions<T> = {}): CacheCollectionInterface<T> {
         if (!this.collections[key]) {
             this.collections[key] = {
@@ -290,6 +341,7 @@ export class Cache {
     }
 }
 
+/** Thrown when something went wrong while using the cache */
 export class CacheError extends Error {
     constructor(reason: "cleared" | "other", key: string) {
         switch (reason) {
@@ -297,7 +349,7 @@ export class CacheError extends Error {
                 super(`The cache with key ${key} was cleared. You cannot use it from the same interface.`);
                 break;
             default:
-                super(`Something went wrong while using cache with key ${key}.`);
+                super(`Something went wrong while using cache with key ${key}. Reason: ${reason}.`);
                 break;
         }
     }

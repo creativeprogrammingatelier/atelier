@@ -4,8 +4,8 @@ import {Comment} from "../../../../models/api/Comment";
 import {Course} from "../../../../models/api/Course";
 import {User} from "../../../../models/api/User";
 
-import {getCourseUserComments, getUserComments} from "../../../helpers/APIHelper";
-import {TimeHelper} from "../../../helpers/TimeHelper";
+import {getCourseUserComments, getUserComments} from "../../helpers/api/APIHelper";
+import {TimeHelper} from "../../helpers/TimeHelper";
 
 import {DataBlockList} from "../data/DataBlockList";
 import {Loading} from "../general/loading/Loading";

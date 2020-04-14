@@ -3,7 +3,7 @@ import {FiImage} from "react-icons/all";
 
 import {File} from "../../../../../models/api/File";
 
-import {getFileUrl} from "../../../../helpers/APIHelper";
+import {getFileUrl} from "../../../helpers/api/APIHelper";
 
 import {CommentCreator} from "../../comment/CommentCreator";
 import {FeedbackError} from "../../feedback/FeedbackError";

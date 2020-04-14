@@ -8,7 +8,7 @@ import {SearchResult} from "../../../../models/api/SearchResult";
 import {Submission} from "../../../../models/api/Submission";
 import {User} from "../../../../models/api/User";
 
-import {getCourses, getSubmission, getUser, search} from "../../../helpers/APIHelper";
+import {getCourses, getSubmission, getUser, search} from "../../helpers/api/APIHelper";
 
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
@@ -39,7 +39,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
         setError(false);
         try {
             const results = await search({
-                query,
+                q: query,
                 courseID: course,
                 userID: user,
                 submissionID: submission,

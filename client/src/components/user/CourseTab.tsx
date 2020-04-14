@@ -2,7 +2,7 @@ import React from "react";
 import {DataList} from "../data/DataList";
 import {Loading} from "../general/loading/Loading";
 import {Course} from "../../../../models/api/Course";
-import {getUserCourses} from "../../../helpers/APIHelper";
+import {getUserCourses} from "../../helpers/api/APIHelper";
 import {Panel} from "../general/Panel";
 import {User} from "../../../../models/api/User";
 

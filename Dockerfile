@@ -16,9 +16,6 @@ COPY package.json ./
 RUN npm install
 RUN rm package.json
 
-# Workaround for https://github.com/authenio/samlify-node-xmllint/pull/1
-RUN echo "export declare const validate: (xml: string) => Promise<unknown>;" > node_modules/@authenio/samlify-node-xmllint/build/index.d.ts
-
 # Copy in the full application
 COPY . .
 

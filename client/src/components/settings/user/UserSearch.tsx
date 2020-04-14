@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {useState} from "react";
 import {Form} from "react-bootstrap";
 import {User} from "../../../../../models/api/User";
-import {searchUsers} from "../../../../helpers/APIHelper";
+import {searchUsers} from "../../../helpers/api/APIHelper";
 import {Tag} from "../../general/Tag";
 import {LabeledInput} from "../../input/LabeledInput";
 

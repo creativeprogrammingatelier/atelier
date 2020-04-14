@@ -5,7 +5,7 @@ import {FiPlus, FiX} from "react-icons/all";
 import {CourseInvite as CourseInviteModel} from "../../../../../models/api/Invite";
 import {InviteRole} from "../../../../../models/enums/InviteRoleEnum";
 
-import {deleteInvite, getInvite} from "../../../../helpers/APIHelper";
+import {deleteInvite, getInvite} from "../../../helpers/api/APIHelper";
 
 import {LabeledInput} from "../../input/LabeledInput";
 

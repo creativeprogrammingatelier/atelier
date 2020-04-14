@@ -14,7 +14,7 @@ import {RadioInput} from "../input/RadioInput";
 import {FiUpload} from "react-icons/all";
 import {LoadingIcon} from "../general/loading/LoadingIcon";
 import {useCourseSubmissions} from "../../helpers/api/APIHooks";
-import {JsonFetchError} from "../../../helpers/FetchHelper";
+import {JsonFetchError} from "../../helpers/api/FetchHelper";
 import {Submission} from "../../../../models/api/Submission";
 
 interface UploaderProperties {

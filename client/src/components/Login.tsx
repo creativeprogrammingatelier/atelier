@@ -1,11 +1,11 @@
 import React, {Component} from "react";
-import AuthHelper from "../../helpers/AuthHelper";
+import {AuthHelper} from "../helpers/AuthHelper";
 import {Redirect} from 'react-router-dom';
 import "../styles/login.scss";
 import {User} from "../../../models/api/User";
 import {Button, Jumbotron} from "react-bootstrap";
 import {Loading} from "./general/loading/Loading";
-import {getLoginProviders} from "../../helpers/APIHelper";
+import {getLoginProviders} from "../helpers/api/APIHelper";
 import {LoginProvider} from "../../../models/api/LoginProvider";
 import {Logo} from "./frame/Logo";
 
@@ -71,17 +71,17 @@ class LoginLegacy extends Component {
         });
     };
 
-    onSubmit = (event: { preventDefault: () => void; }) => {
-        event.preventDefault();
-        AuthHelper.login(this.state.email, this.state.password, () => {
-                this.props.onLogin(this.state.email);
-                this.setState({
-                    redirectToReferrer: true
-                });
-            }, () => alert("Login Failed, Please register if you have not already")
-        );
+    // onSubmit = (event: { preventDefault: () => void; }) => {
+    //     event.preventDefault();
+    //     AuthHelper.login(this.state.email, this.state.password, () => {
+    //             this.props.onLogin(this.state.email);
+    //             this.setState({
+    //                 redirectToReferrer: true
+    //             });
+    //         }, () => alert("Login Failed, Please register if you have not already")
+    //     );
 
-    };
+    // };
 
     render() {
         if (this.state.redirectToReferrer) {

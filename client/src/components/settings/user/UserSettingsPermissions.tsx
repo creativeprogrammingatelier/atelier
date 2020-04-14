@@ -9,7 +9,7 @@ import {
     permissionsSectionView,
     permissionsSectionManage
 } from "../../../../../models/enums/PermissionEnum";
-import {setPermissionCourse, setPermissionGlobal} from "../../../../helpers/APIHelper";
+import {setPermissionCourse, setPermissionGlobal} from "../../../helpers/api/APIHelper";
 import {Area} from "../../general/Area";
 import {CheckboxInput} from "../../input/CheckboxInput";
 import {LabeledInput} from "../../input/LabeledInput";

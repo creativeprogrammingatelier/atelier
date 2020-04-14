@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Loading} from "../../general/loading/Loading";
-import {getCurrentUser, setUser} from "../../../../helpers/APIHelper";
+import {getCurrentUser, setUser} from "../../../helpers/api/APIHelper";
 import {User} from "../../../../../models/api/User";
 import {useState} from "react";
 import {Button, Form} from "react-bootstrap";

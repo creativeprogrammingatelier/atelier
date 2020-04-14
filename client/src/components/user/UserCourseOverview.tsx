@@ -2,7 +2,7 @@ import React, {useState, useEffect, Fragment} from "react";
 import {Frame} from "../frame/Frame";
 import {Loading} from "../general/loading/Loading";
 import {User} from "../../../../models/api/User";
-import {getUser, getCourse} from "../../../helpers/APIHelper";
+import {getUser, getCourse} from "../../helpers/api/APIHelper";
 import {Jumbotron} from "react-bootstrap";
 import {CommentTab} from "./CommentTab";
 import {SubmissionTab} from "./SubmissionTab";

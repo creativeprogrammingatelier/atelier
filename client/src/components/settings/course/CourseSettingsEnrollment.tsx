@@ -5,7 +5,7 @@ import {CourseRole} from "../../../../../models/enums/CourseRoleEnum";
 import {CourseUser} from "../../../../../models/api/CourseUser";
 import {User} from "../../../../../models/api/User";
 
-import {courseEnrollUser} from "../../../../helpers/APIHelper";
+import {courseEnrollUser} from "../../../helpers/api/APIHelper";
 
 import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
 import {FeedbackContent} from "../../feedback/Feedback";

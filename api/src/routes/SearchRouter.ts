@@ -50,7 +50,7 @@ interface Common {
 /** Get the parameters for a search query, throws an error if invalid */
 async function getSearchParams(request: Request): Promise<{ query: string, common: Common }> {
     //special characters encoded in urls are parsed back to normal by express
-    const query: string | undefined = request.query.q;
+    const query = request.query.q as string | undefined;
     if (!query?.trim()) throw new InvalidParamsError("q", "it should not be empty");
 
     const common = getCommonQueryParams(request);

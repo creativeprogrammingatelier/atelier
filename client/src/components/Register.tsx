@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import AuthHelper from '../../helpers/AuthHelper';
+import {AuthHelper} from '../helpers/AuthHelper';
 import {Redirect, Link} from 'react-router-dom';
 import {User} from '../../../models/api/User';
 import {Form} from 'react-bootstrap';
@@ -35,12 +35,13 @@ class Register extends Component {
         if (!this.validateForm()) {
             return;
         }
-        AuthHelper.register(this.state.email, this.state.password, this.state.role, () => {
-            this.setState({
-                redirectToReferrer: true
-            });
-            this.props.onLogin(this.state.email);
-        }, () => alert('Registeration has failed, Do you already have an account ? '));
+        // TODO: Built-in authentication is not supported at the moment
+        // AuthHelper.register(this.state.email, this.state.password, this.state.role, () => {
+        //     this.setState({
+        //         redirectToReferrer: true
+        //     });
+        //     this.props.onLogin(this.state.email);
+        // }, () => alert('Registeration has failed, Do you already have an account ? '));
     };
 
     handleChange = (event: { target: { value: string; name: string; }; }) => {
