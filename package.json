@@ -3,18 +3,22 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
-		"backend": "npm run compile && npm run start",
 		"compile": "tsc -p .",
-		"start": "node ./build/api/src/app.js",
-		"prepare": "npm run compile",
-		"test": "mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
-		"test-nyc": "nyc --reporter=html mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
-		"dev-watch": "npx webpack --watch ---config webpack.development.config.js ./client/src",
-		"prod-build": "npx webpack ---config webpack.production.config.js ./client/src",
-		"test-front": "mocha client/tests/**/*.test.* --require ts-node/register --recursive --exit",
-		"database-rebuild": "node build/api/src/database/structure/DatabaseStructure",
+        "prepare": "npm run compile",
+        "compile-frontend": "npx webpack ---config webpack.production.config.js ./client/src",
+        
+        "start": "node ./build/api/src/app.js",
+        "watch-backend": "tsc -p . -w",
+        "watch-frontend": "npx webpack --watch ---config webpack.development.config.js ./client/src",
+        
+        "test": "npm run test-backend && npm run test-frontend",
+		"test-backend": "mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
+        "test-backend-nyc": "nyc --reporter=html mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
+        "test-frontend": "mocha client/tests/**/*.test.* --require ts-node/register --recursive --exit",
+        
+		"database-build": "node build/api/src/database/structure/DatabaseStructure",
 		"database-samples": "node build/api/src/database/structure/DatabaseSamples",
-		"database-reset": "node build/api/src/database/structure/DatabaseStructure -i"
+		"database-dev": "node build/api/src/database/structure/DatabaseStructure -i"
 	},
 	"dependencies": {
 		"@authenio/samlify-node-xmllint": "^2.0.0",

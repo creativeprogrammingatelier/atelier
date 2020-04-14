@@ -21,7 +21,7 @@ COPY . .
 
 # Build the application
 RUN npm run compile
-RUN npm run prod-build
+RUN npm run compile-frontend
 
 # ----- Release -----
 FROM base AS release
