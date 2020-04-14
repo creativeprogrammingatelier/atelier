@@ -9,13 +9,13 @@ import {capture} from '../helpers/ErrorHelper';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
 import {archiveProject, FileUploadRequest, uploadMiddleware, renamePath, readFile} from '../helpers/FilesystemHelper';
 import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
-import {getCurrentUserID} from '../helpers/AuthenticationHelper';
+import {AuthError, getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
 import {filterSubmission, removePermissionsSubmission} from '../helpers/APIFilterHelper';
 import {PermissionEnum} from '../../../models/enums/PermissionEnum';
-import {requirePermission, requireRegistered} from '../helpers/PermissionHelper';
+import {PermissionError, requirePermission, requireRegistered} from '../helpers/PermissionHelper';
 import {transaction} from '../database/HelperDB';
 import {WebhookEvent} from '../../../models/enums/WebhookEventEnum';
 import {UPLOADS_PATH} from '../lib/constants';
@@ -146,4 +146,21 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
         dbFiles.map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
             .concat(raiseWebhookEvent(request.params.courseID, WebhookEvent.Submission, submission))
     );
+}));
+
+/**
+ * Delete a submission. Currently this can only be done by the admin.
+ */
+submissionRouter.delete('/:submissionID', capture(async(request, response) => {
+    const submissionID = request.params.submissionID;
+    let submission = await SubmissionDB.getSubmissionById(submissionID);
+    const currentUserID = await getCurrentUserID(request);
+
+    // TODO add permission manageSubmissions to also allow admins to delete submissions for example
+    if (submission.user.ID !== currentUserID) {
+        throw new PermissionError("permission.notOwner", "You are not the owner of this submissions.");
+    }
+
+    submission = await SubmissionDB.deleteSubmission(submissionID);
+    response.status(200).send(submission);
 }));
