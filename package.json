@@ -4,18 +4,15 @@
 	"private": true,
 	"scripts": {
 		"compile": "tsc -p .",
-        "prepare": "npm run compile",
-        "compile-frontend": "npx webpack ---config webpack.production.config.js ./client/src",
-        
-        "start": "node ./build/api/src/app.js",
-        "watch-backend": "tsc -p . -w",
-        "watch-frontend": "npx webpack --watch ---config webpack.development.config.js ./client/src",
-        
-        "test": "npm run test-backend && npm run test-frontend",
+		"prepare": "npm run compile",
+		"compile-frontend": "npx webpack ---config webpack.production.config.js ./client/src",
+		"start": "node ./build/api/src/app.js",
+		"watch-backend": "tsc -p . -w",
+		"watch-frontend": "npx webpack --watch ---config webpack.development.config.js ./client/src",
+		"test": "npm run test-backend && npm run test-frontend",
 		"test-backend": "mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
-        "test-backend-nyc": "nyc --reporter=html mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
-        "test-frontend": "mocha client/tests/**/*.test.* --require ts-node/register --recursive --exit",
-        
+		"test-backend-nyc": "nyc --reporter=html mocha test/**/*.spec.ts --require ts-node/register --recursive --exit",
+		"test-frontend": "mocha client/tests/**/*.test.* --require ts-node/register --recursive --exit",
 		"database-build": "node build/api/src/database/structure/DatabaseStructure",
 		"database-samples": "node build/api/src/database/structure/DatabaseSamples",
 		"database-dev": "node build/api/src/database/structure/DatabaseStructure -i"
