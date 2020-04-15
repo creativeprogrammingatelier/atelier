@@ -1,6 +1,6 @@
-<div style="text-align: center">
-    <img src="./logo.png" alt="Atelier" style="max-height: 220px; max-width: 80%; display: block; margin-left: auto; margin-right: auto" />
-</div>
+<h1 align="center">
+    <img src="./logo.png" alt="Atelier" height="200" align="center" />
+</h1>
 
 Atelier is an online environment to assist with programming tutorials. It facilitates interactions between students and teaching assistants to help them with their programming projects, allowing students to easily share and discuss their code with teaching assistants. Atelier is part of a [research project](https://www.utwente.nl/en/eemcs/fmt/research/projects/atelier/) of the FMT group at the University of Twente.
 
@@ -24,7 +24,7 @@ An example configuration file can be found at [*config/example.json*](/config/ex
 {
     "baseUrl": "https://atelier.example.com",
     "port": "ENV::EXPOSED_PORT",
-    "loginProviders": [ ... ],
+    "loginProviders": [ ],
     "database": {
         "host": "database-container-name",
         "user": "FILE::/run/secrets/database_user",
