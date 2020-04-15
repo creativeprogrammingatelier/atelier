@@ -8,7 +8,7 @@ export function UserSettings() {
     return <Frame title="Settings" sidebar search>
         <Jumbotron>
             <h1>My Account</h1>
-            <p>Personalize your Atelyay experience here</p>
+            <p>Personalize your Atelier experience here</p>
         </Jumbotron>
         <DataList header="User Details">
             <UserSettingsGeneral/>
