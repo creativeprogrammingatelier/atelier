@@ -1,6 +1,6 @@
-import {pool, end, permissionBits, pgDB} from '../HelperDB'
-import { isPostgresError } from '../../helpers/DatabaseErrorHelper';
+import {isPostgresError} from "../../helpers/DatabaseErrorHelper";
 
+import {pool, end, permissionBits, pgDB} from "../HelperDB";
 
 /**
  * most exported functions in this file, contain the query string for some view of the database
@@ -12,16 +12,16 @@ import { isPostgresError } from '../../helpers/DatabaseErrorHelper';
  *
  */
 const uuid0 = `'00000000-0000-0000-0000-000000000000'`,
-      uuid1 = `'00000000-0000-0000-0000-000000000001'`,
-      uuid2 = `'00000000-0000-0000-0000-000000000002'`,
-      uuid3 = `'00000000-0000-0000-0000-000000000003'`,
-      uuid4 = `'00000000-0000-0000-0000-000000000004'`,
-      uuid5 = `'00000000-0000-0000-0000-000000000005'`,
-      uuid6 = `'00000000-0000-0000-0000-000000000006'`,
-      permissionType = `0::bit(${permissionBits})`;
+	uuid1 = `'00000000-0000-0000-0000-000000000001'`,
+	uuid2 = `'00000000-0000-0000-0000-000000000002'`,
+	uuid3 = `'00000000-0000-0000-0000-000000000003'`,
+	uuid4 = `'00000000-0000-0000-0000-000000000004'`,
+	uuid5 = `'00000000-0000-0000-0000-000000000005'`,
+	uuid6 = `'00000000-0000-0000-0000-000000000006'`,
+	permissionType = `0::bit(${permissionBits})`;
 
-export function databaseSamples(client : pgDB = pool) : Promise<void> {
-     const query = `
+export function databaseSamples(client: pgDB = pool): Promise<void> {
+	const query = `
      INSERT INTO "Users" VALUES
           (${uuid5}, NULL, 'normal', 'Cas@Caaas', 'admin', ${permissionType}, '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),
           (${uuid0}, 'samling_admin','Cs', 'admin@Cas', 'admin', ${permissionType}, ''),
@@ -193,18 +193,18 @@ all @teachers in one go!'),
 
           
      `;
-     return client.query(query).then(() => {
-          console.log("inserted values into db")
-     }).catch(e=>{
-          if (isPostgresError(e) && e.position!==undefined){
-			console.log(query.substring(Number(e.position)-20, Number(e.position)+20))
+	return client.query(query).then(() => {
+		console.log("inserted values into db");
+	}).catch(e => {
+		if (isPostgresError(e) && e.position !== undefined) {
+			console.log(query.substring(Number(e.position) - 20, Number(e.position) + 20));
 		}
-		throw e
-     });
+		throw e;
+	});
 }
 // pool.query("SELECT * from Users").then(res => console.log(res, res.rows, res.rows[0])).then(pool.end())
-if (require.main === module){
-	databaseSamples().then(end)
+if (require.main === module) {
+	databaseSamples().then(end);
 } else {
 	// makeDB(()=>{console.log("made the database")}, console.error)
 }

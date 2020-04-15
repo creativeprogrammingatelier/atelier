@@ -1,42 +1,42 @@
+import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
+
+import {isPostgresError} from "../../helpers/DatabaseErrorHelper";
+
 import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
-import { isPostgresError } from '../../helpers/DatabaseErrorHelper'
-import { databaseSamples } from "./DatabaseSamples";
-import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
+import {databaseSamples} from "./DatabaseSamples";
 
-if (require.main === module){
+if (require.main === module) {
 	//args without node & path name
 	const args = process.argv.splice(2);
 	//check if the 'insert' option is specified
-	const insertToo = args.find((el) => el==='-i');
+	const insertToo = args.find((el) => el === "-i");
 	//create the database
-	(async () =>{
+	(async() => {
 		const client = await getClient();
 		try {
-		await client.query("BEGIN");
-		await makeDB(client);
-		//if inserting too, then do insert as well
-		if (insertToo){
-			await databaseSamples(client)
-		}
-		await client.query("COMMIT")
-		}catch (e) {
+			await client.query("BEGIN");
+			await makeDB(client);
+			//if inserting too, then do insert as well
+			if (insertToo) {
+				await databaseSamples(client);
+			}
+			await client.query("COMMIT");
+		} catch (e) {
 			await client.query("ROLLBACK");
-			throw e
+			throw e;
 		} finally {
-			
-			await client.release();
-			end()
-		}
 
-			
-	})()
+			await client.release();
+			end();
+		}
+	})();
 } else {
 	// makeDB(()=>{console.log("made the database")}, console.error)
 }
 
-async function makeDB(client : pgDB = pool){
-	 const query = makeDBString();
+async function makeDB(client: pgDB = pool) {
+	const query = makeDBString();
 	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
 	//  console.log(singles)
 	//  for (const item of singles){
@@ -50,18 +50,17 @@ async function makeDB(client : pgDB = pool){
 	// 		});
 	//  };
 	//  return;
-	 return client.query(query
-	 ).then(()=>
-		 console.log('database creation successful')
-	).catch((e : Error) =>{
-		if (isPostgresError(e) && e.position!==undefined){
-			console.log(query.substring(Number(e.position)-60, Number(e.position)+60))
+	return client.query(query
+	).then(() =>
+		console.log("database creation successful")
+	).catch((e: Error) => {
+		if (isPostgresError(e) && e.position !== undefined) {
+			console.log(query.substring(Number(e.position) - 60, Number(e.position) + 60));
 		}
-		throw e
+		throw e;
 	});
 }
-
-function makeDBString(){
+function makeDBString() {
 	return `
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
@@ -294,7 +293,7 @@ CREATE OR REPLACE FUNCTION _viewableSubmissions (userID uuid, courseID uuid)
 		AND c.courseID = $2;
 	
 	-- if a user can see all, return all
-	IF ((b'${toBin(2**PermissionEnum.viewAllSubmissions)}' & course_user.permission) > 0::bit(${permissionBits})) THEN
+	IF ((b'${toBin(2 ** PermissionEnum.viewAllSubmissions)}' & course_user.permission) > 0::bit(${permissionBits})) THEN
 		RETURN QUERY (
 			SELECT s.submissionID 
 			FROM "SubmissionsView" as s

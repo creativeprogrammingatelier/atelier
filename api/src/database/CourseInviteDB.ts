@@ -6,23 +6,23 @@ import {pool, extract, map, checkAvailable, one, pgDB} from "./HelperDB";
  * inviteID, userID, courseID, type, joinRole
  */
 export class CourseInviteDB {
-    static async filterInvite(invite: CourseInvite) {
-        const {
-            inviteID = undefined,
-            creatorID = undefined,
-            courseID = undefined,
-            type = undefined,
-            joinRole = undefined,
-
-            limit = undefined,
-            offset = undefined,
-            client = pool
-        } = invite;
-        const
-            inviteid = UUIDHelper.toUUID(inviteID),
-            creatorid = UUIDHelper.toUUID(creatorID),
-            courseid = UUIDHelper.toUUID(courseID);
-        return client.query(`
+	static async filterInvite(invite: CourseInvite) {
+		const {
+			inviteID = undefined,
+			creatorID = undefined,
+			courseID = undefined,
+			type = undefined,
+			joinRole = undefined,
+			
+			limit = undefined,
+			offset = undefined,
+			client = pool
+		} = invite;
+		const
+			inviteid = UUIDHelper.toUUID(inviteID),
+			creatorid = UUIDHelper.toUUID(creatorID),
+			courseid = UUIDHelper.toUUID(courseID);
+		return client.query(`
 			SELECT * 
 			FROM "CourseInvites"
 			WHERE
@@ -34,37 +34,34 @@ export class CourseInviteDB {
 			LIMIT $6
 			OFFSET $7
 		`, [inviteid, creatorid, courseid, type, joinRole, limit, offset])
-            .then(extract).then(map(convertCourseInvite))
-    }
-
-    static async addInvite(invite: CourseInvite) {
-        checkAvailable(['creatorID', 'courseID', 'type', 'joinRole'], invite);
-        const {
-            creatorID,
-            courseID,
-            type,
-            joinRole,
-            client = pool,
-        } = invite;
-        const
-            creatorid = UUIDHelper.toUUID(creatorID),
-            courseid = UUIDHelper.toUUID(courseID);
-        return client.query(`
+			.then(extract).then(map(convertCourseInvite));
+	}
+	static async addInvite(invite: CourseInvite) {
+		checkAvailable(["creatorID", "courseID", "type", "joinRole"], invite);
+		const {
+			creatorID,
+			courseID,
+			type,
+			joinRole,
+			client = pool
+		} = invite;
+		const
+			creatorid = UUIDHelper.toUUID(creatorID),
+			courseid = UUIDHelper.toUUID(courseID);
+		return client.query(`
 		INSERT INTO "CourseInvites" 
 		VALUES (DEFAULT, $1,$2, $3, $4)
 		RETURNING *
 		`, [creatorid, courseid, type, joinRole])
-            .then(extract).then(map(convertCourseInvite)).then(one)
-    }
-
-    static async deleteInvite(inviteID: string, client: pgDB = pool) {
-        const inviteid = UUIDHelper.toUUID(inviteID);
-        return client.query(`
+			.then(extract).then(map(convertCourseInvite)).then(one);
+	}
+	static async deleteInvite(inviteID: string, client: pgDB = pool) {
+		const inviteid = UUIDHelper.toUUID(inviteID);
+		return client.query(`
 		DELETE FROM "CourseInvites"
 		WHERE inviteID = $1
 		RETURNING *
 		`, [inviteid])
-            .then(extract).then(map(convertCourseInvite)).then(one)
-    }
-
+			.then(extract).then(map(convertCourseInvite)).then(one);
+	}
 }
