@@ -7,15 +7,15 @@ import {SubmissionDB} from '../database/SubmissionDB';
 import {Submission} from '../../../models/api/Submission';
 import {capture} from '../helpers/ErrorHelper';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
-import {archiveProject, FileUploadRequest, uploadMiddleware, renamePath, readFile} from '../helpers/FilesystemHelper';
+import {archiveProject, deleteFolder, FileUploadRequest, readFile, renamePath, uploadMiddleware} from '../helpers/FilesystemHelper';
 import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
-import {AuthError, getCurrentUserID} from '../helpers/AuthenticationHelper';
+import {getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
 import path from 'path';
 import {raiseWebhookEvent} from '../helpers/WebhookHelper';
 import {filterSubmission, removePermissionsSubmission} from '../helpers/APIFilterHelper';
 import {PermissionEnum} from '../../../models/enums/PermissionEnum';
-import {PermissionError, requirePermission, requireRegistered} from '../helpers/PermissionHelper';
+import {requirePermission, requireRegistered} from '../helpers/PermissionHelper';
 import {transaction} from '../database/HelperDB';
 import {WebhookEvent} from '../../../models/enums/WebhookEventEnum';
 import {UPLOADS_PATH} from '../lib/constants';
@@ -154,13 +154,16 @@ submissionRouter.post('/course/:courseID', uploadMiddleware.array('files'), capt
 submissionRouter.delete('/:submissionID', capture(async(request, response) => {
     const submissionID = request.params.submissionID;
     let submission = await SubmissionDB.getSubmissionById(submissionID);
+    const courseID = submission.references.courseID;
     const currentUserID = await getCurrentUserID(request);
 
-    // TODO add permission manageSubmissions to also allow admins to delete submissions for example
-    if (submission.user.ID !== currentUserID) {
-        throw new PermissionError("permission.notOwner", "You are not the owner of this submissions.");
+   if (submission.user.ID !== currentUserID) {
+        await requirePermission(currentUserID, PermissionEnum.manageSubmissions, courseID);
     }
 
-    submission = await SubmissionDB.deleteSubmission(submissionID);
-    response.status(200).send(submission);
+    transaction(async client => {
+        submission = await SubmissionDB.deleteSubmission(submissionID, client);
+        await deleteFolder(path.join(UPLOADS_PATH, submissionID));
+        response.status(200).send(submission);
+    });
 }));

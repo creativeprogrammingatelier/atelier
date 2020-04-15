@@ -200,6 +200,9 @@ export class Cache {
     /** Get the interface for a single item in the cache */
     getItem<T>(key: string, defaultValue?: T): CacheItemInterface<T> {
         if (!this.items[key]) {
+            // Subjects are multicast for Observables, they can manage multiple subscribers
+            // A BehaviorSubject remembers the last item we gave it, and returns it immediately
+            // when a new subscriber comes along
             this.items[key] = new BehaviorSubject(emptyCacheItem(defaultValue));
         }
         return {
@@ -241,10 +244,14 @@ export class Cache {
         }
         return {
             observable: new Observable(subscriber => {
+                // Create a new Observable for every call to getCollection, because the options may be different,
+                // so they should receive different values. Keep track of all subscriptions and their options.
                 this.collections[key].subscribers.push({options, subscriber});
                 console.log("Add subscription to", key, "with subKey", options.subKey, "; length:", this.collections[key].subscribers.length);
+                // The subscriber immediately receives the current cached value
                 subscriber.next(returnCollection(this.collections[key], options));
                 return () => {
+                    // When they unsubscribe, we manually remove the subscriber from our list
                     const i = this.collections[key].subscribers.findIndex(sub => sub.subscriber === subscriber);
                     this.collections[key].subscribers.splice(i, 1);
                     console.log("Remove subscription to", key, "; length:", this.collections[key].subscribers.length);

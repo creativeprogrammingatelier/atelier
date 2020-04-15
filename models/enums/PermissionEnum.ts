@@ -22,7 +22,7 @@ export enum PermissionEnum {
     '20-reserved',
     '21-reserved',
     'viewAllSubmissions',
-    '23-reserved',
+    'manageSubmissions',
     '24-reserved',
     '25-reserved',
     'viewRestrictedComments',
@@ -42,7 +42,7 @@ export enum PermissionEnum {
 }
 
 export const viewPermissionBits = 71305280;
-export const managePermissionBits = 64827568286;
+export const managePermissionBits = 64835956894;
 
 export const viewPermissions = [
     {
@@ -99,6 +99,10 @@ export const managePermissions = [
         name: 'manageAssignments'
     },
     {
+        display: 'Manage Submissions',
+        name: 'manageSubmissions'
+    },
+    {
         display: 'Add restricted comments',
         name: 'addRestrictedComments'
     },
@@ -140,6 +144,7 @@ export const permissionsSectionManage: { [key: string]: string } = {
     manageCourses: "Manage courses",
     addAssignments: "Add assignments (Unused)",
     manageAssignments: "Manage Assignments (Unused)",
+    manageSubmissions: "Manage Submissions",
     addRestrictedComments: "Add restricted comments",
     manageRestrictedComments: "Manage restricted comments",
     mentionAllStudents: "Mention all students",

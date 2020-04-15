@@ -107,6 +107,12 @@ export const deleteFile = (filePath: fs.PathLike): Promise<void> =>
         fs.unlink(filePath, err => err ? reject(err) : resolve())
     );
 
+/** Asynchronously delete a folder recursively */
+export const deleteFolder = (folderPath: fs.PathLike): Promise<void> =>
+    new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) =>
+        fs.rmdir(folderPath, { recursive: true }, err => err ? reject(err) : resolve())
+    );
+
 /** Read a file as a string with UTF-8 encoding */
 export const readFileAsString = (filePath: fs.PathLike) =>
     new Promise((resolve: (data: string) => void, reject: (err: NodeJS.ErrnoException) => void) =>
