@@ -136,3 +136,15 @@ export async function getCurrentRole(userID: string, courseID: string) {
     const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
     return courseUser.permission.courseRole;
 }
+
+/**
+ * Take a list of permissions and returns the resulting permission number.
+ * Possible future use:
+ *  - In database use this instead of hardcoded permission number to make it more
+ *    clear what permissions certain roles have.
+ */
+export function getPermissionNumber(permissions : PermissionEnum[]) {
+    let result = 0;
+    permissions.forEach(permission => result += 2 ** permission);
+    return result;
+}
