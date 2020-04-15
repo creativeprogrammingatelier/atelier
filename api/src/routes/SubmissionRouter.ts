@@ -7,7 +7,7 @@ import {SubmissionDB} from '../database/SubmissionDB';
 import {Submission} from '../../../models/api/Submission';
 import {capture} from '../helpers/ErrorHelper';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
-import {archiveProject, FileUploadRequest, uploadMiddleware, renamePath, readFile} from '../helpers/FilesystemHelper';
+import {archiveProject, FileUploadRequest, uploadMiddleware, renamePath, readFile, deleteFolder} from '../helpers/FilesystemHelper';
 import {validateProjectServer} from '../../../helpers/ProjectValidationHelper';
 import {AuthError, getCurrentUserID} from '../helpers/AuthenticationHelper';
 import {FileDB} from '../database/FileDB';
@@ -161,6 +161,9 @@ submissionRouter.delete('/:submissionID', capture(async(request, response) => {
         throw new PermissionError("permission.notOwner", "You are not the owner of this submissions.");
     }
 
-    submission = await SubmissionDB.deleteSubmission(submissionID);
-    response.status(200).send(submission);
+    transaction(async client => {
+        submission = await SubmissionDB.deleteSubmission(submissionID, client);
+        await deleteFolder(path.join(UPLOADS_PATH, submissionID));
+        response.status(200).send(submission);
+    });
 }));
