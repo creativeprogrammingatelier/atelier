@@ -1,15 +1,15 @@
-import React, {useState} from "react";
-import {Link} from "react-router-dom";
+import React, {Fragment, useState} from "react";
+import {Link, useHistory} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
-import {FiPlus, FiX} from "react-icons/all";
+import {FiPlus, FiTrash, FiX} from "react-icons/all";
 
 import {Submission} from "../../../../models/api/Submission";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
-import {useSubmission, useFiles, useProjectComments, useRecentComments, useCourse} from "../../helpers/api/APIHooks";
+import {deleteSubmission} from "../../helpers/api/APIHelper";
+import {useSubmission, useFiles, useProjectComments, useRecentComments, useCourse, useCourseSubmissions, useCurrentUser} from "../../helpers/api/APIHooks";
 import {TimeHelper} from "../../helpers/TimeHelper";
 
-import {Cached} from "../general/loading/Cached";
 import {CommentCreator} from "../comment/CommentCreator";
 import {CommentThread as CommentThreadComponent} from "../comment/CommentThread";
 import {DataList} from "../data/DataList";
@@ -17,6 +17,9 @@ import {DirectoryViewer} from "../directory/DirectoryViewer";
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import {Frame} from "../frame/Frame";
+import {Cached} from "../general/loading/Cached";
+import {ButtonMultistate} from "../input/button/ButtonMultistate";
+import {ButtonBar} from "../input/button/ButtonBar";
 
 interface SubmissionOverviewProps {
     match: {
@@ -49,10 +52,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 
     const submissionPath = "/submission/" + submissionId;
 
+    const history = useHistory();
     const submission = useSubmission(submissionId);
     const files = useFiles(submissionId);
     const projectComments = useProjectComments(submissionId);
     const recentComments = useRecentComments(submissionId);
+    const user = useCurrentUser();
 
     const handleCommentSend = async (comment: string, restricted: boolean) => {
         const createdComment = await projectComments.create({
@@ -66,6 +71,14 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
         setCreatingComment(false);
         return createdComment;
     };
+    const handleDelete = (courseID: string, submissionID: string) => {
+        deleteSubmission(submissionID).then(() => {
+            useCourseSubmissions(courseID).refresh().then(() => {
+                history.push(`/course/${courseID}`);
+            });
+        });
+    };
+
     return (
         <Cached cache={submission} wrapper={children => <Frame title="Submission" sidebar search>{children}</Frame>}>
             {submission =>
@@ -109,6 +122,17 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
                             {thread => <CommentThreadComponent key={thread.ID} thread={thread}/>}
                         </Cached>
                     </DataList>
+                    <Cached cache={user}>
+                        {user => user.ID === submission.user.ID &&
+                            <DataList header="Delete submission">
+                                <FeedbackError>Deleting a submissions is permanent, and can not be undone.</FeedbackError>
+                                <ButtonMultistate variant="danger" states={[
+                                    <Fragment>Delete <FiTrash/></Fragment>,
+                                    <Fragment>Confirm <FiTrash/></Fragment>
+                                ]} finish={() => handleDelete(submission.references.courseID, submission.ID)}/>
+                            </DataList>
+                        }
+                    </Cached>
                 </Frame>
             }
         </Cached>
