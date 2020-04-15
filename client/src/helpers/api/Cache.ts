@@ -111,6 +111,7 @@ export interface ExportedCache {
 interface SubscribableCollection<T> {
     collection: CacheCollection<T>,
     properties: Store<CacheProperties>,
+    lock: LockQueue,
     subscribers: Array<{
         options: GetCacheCollectionOptions<T>,
         subscriber: Subscriber<CacheCollection<T>>,
@@ -135,6 +136,34 @@ function returnCollection<T>(subCol: SubscribableCollection<T>, options: GetCach
     if (sort) items = items.sort((a, b) => sort(a.value, b.value));
     const props = getPropsForSubKey(subCol, options.subKey);
     return {...props, items};
+}
+
+/** A lock that uses a queue of functions that are waiting for the lock to release */
+class LockQueue {
+    private locked = false;
+    private waitingList = [] as Array<() => void>
+
+    /** Execute the next function in the queue, or unlock the lock */
+    private next() {
+        if (this.waitingList.length > 0) {
+            const f = this.waitingList.shift();
+            if (f !== undefined) f();
+            this.next();
+        } else {
+            this.locked = false;
+        }
+    }
+
+    /** Execute the code in the function with the lock acquired */
+    withLock(f: () => void) {
+        if (!this.locked) {
+            this.locked = true;
+            f();
+            this.next();
+        } else {
+            this.waitingList.push(f);
+        }
+    }
 }
 
 /** A generic observable cache of items and collections */
@@ -163,6 +192,7 @@ export class Cache {
             for (const key of Object.keys(collections)) {
                 this.collections[key] = {
                     collection: collections[key],
+                    lock: new LockQueue(),
                     properties: {},
                     subscribers: []
                 }
@@ -234,6 +264,7 @@ export class Cache {
             this.collections[key] = {
                 subscribers: [],
                 properties: {},
+                lock: new LockQueue(),
                 collection: {
                     createdAt: 0,
                     updatedAt: 0,
@@ -242,105 +273,113 @@ export class Cache {
                 }
             }
         }
+        const lock = this.collections[key].lock;
         return {
             observable: new Observable(subscriber => {
-                // Create a new Observable for every call to getCollection, because the options may be different,
-                // so they should receive different values. Keep track of all subscriptions and their options.
-                this.collections[key].subscribers.push({options, subscriber});
-                console.log("Add subscription to", key, "with subKey", options.subKey, "; length:", this.collections[key].subscribers.length);
-                // The subscriber immediately receives the current cached value
-                subscriber.next(returnCollection(this.collections[key], options));
+                lock.withLock(() => {
+                    // Create a new Observable for every call to getCollection, because the options may be different,
+                    // so they should receive different values. Keep track of all subscriptions and their options.
+                    this.collections[key].subscribers.push({options, subscriber});
+                    console.log("Add subscription to", key, "with subKey", options.subKey, "; length:", this.collections[key].subscribers.length);
+                    // The subscriber immediately receives the current cached value
+                    subscriber.next(returnCollection(this.collections[key], options));
+                });
                 return () => {
                     // When they unsubscribe, we manually remove the subscriber from our list
                     const i = this.collections[key].subscribers.findIndex(sub => sub.subscriber === subscriber);
-                    this.collections[key].subscribers.splice(i, 1);
-                    console.log("Remove subscription to", key, "; length:", this.collections[key].subscribers.length);
+                    if (i !== -1) {
+                        this.collections[key].subscribers.splice(i, 1);
+                        console.log("Remove subscription to", key, "; length:", this.collections[key].subscribers.length);
+                    }
                 }
             }),
             getCurrentValue: () => returnCollection(this.collections[key], options),
             transaction: (update, state = CacheState.Loaded, date = Date.now()) => {
                 if (!this.collections[key]) throw new CacheError("cleared", key);
 
-                let collection: CacheCollection<T> | undefined = this.collections[key].collection;
-                let changed: Array<CacheItem<T>> = [];
-                const addAll = (values: T[], state: CacheState) => {
-                    if (collection === undefined) throw new CacheError("cleared", key);
+                lock.withLock(() => {
+                    let collection: CacheCollection<T> | undefined = this.collections[key].collection;
+                    let changed: Array<CacheItem<T>> = [];
+                    const addAll = (values: T[], state: CacheState) => {
+                        if (collection === undefined) throw new CacheError("cleared", key);
 
-                    const items = [...collection.items];
-                    for (const value of values) {
-                        const index = items.findIndex(item => item.value.ID === value.ID);
-                        if (index === -1) {
-                            const item = {createdAt: date, updatedAt: date, state, value};
-                            items.push(item);
-                            changed.push(item);
+                        const items = [...collection.items];
+                        for (const value of values) {
+                            const index = items.findIndex(item => item.value.ID === value.ID);
+                            if (index === -1) {
+                                const item = {createdAt: date, updatedAt: date, state, value};
+                                items.push(item);
+                                changed.push(item);
+                            } else {
+                                const item = {createdAt: items[index].createdAt, updatedAt: date, state, value};
+                                items[index] = item;
+                                changed.push(item);
+                            }
+                        }
+                        collection = {...collection, items};
+                    };
+
+                    update({
+                        addAll,
+                        add: (value, state) => addAll([value], state),
+                        remove: (selector) => {
+                            if (collection === undefined) throw new CacheError("cleared", key);
+
+                            const itemSelector = (item: CacheItem<T>) => selector(item.value);
+                            changed = changed.filter(item => !itemSelector(item)).concat(collection.items.filter(itemSelector));
+                            collection = {
+                                ...collection,
+                                items: collection.items.filter(item => !itemSelector(item))
+                            }
+                        },
+                        removeExpired: (expiration) => {
+                            if (collection === undefined) throw new CacheError("cleared", key);
+
+                            const selector = (item: CacheItem<T>) => item.updatedAt + expiration < date;
+                            changed = changed.filter(item => !selector(item)).concat(collection.items.filter(selector));
+                            collection = {
+                                ...collection,
+                                items: collection.items.filter(item => !selector(item))
+                            }
+                        },
+                        clear: () => {
+                            if (collection === undefined) throw new CacheError("cleared", key);
+
+                            for (const {subscriber} of this.collections[key].subscribers) {
+                                subscriber.complete();
+                                subscriber.unsubscribe();
+                            }
+                            collection = undefined;
+                            delete this.collections[key];
+                        }
+                    });
+
+                    if (collection !== undefined) {
+                        if (options.subKey) {
+                            this.collections[key].collection = collection;
+                            const props = this.collections[key].properties[options.subKey];
+                            this.collections[key].properties[options.subKey] = {
+                                createdAt: props?.createdAt || date,
+                                updatedAt: date,
+                                state
+                            }
                         } else {
-                            const item = {createdAt: items[index].createdAt, updatedAt: date, state, value};
-                            items[index] = item;
-                            changed.push(item);
+                            this.collections[key].collection = {
+                                createdAt: collection.createdAt || date,
+                                updatedAt: date,
+                                state,
+                                items: collection.items
+                            };
                         }
-                    }
-                    collection = {...collection, items};
-                };
-                update({
-                    addAll,
-                    add: (value, state) => addAll([value], state),
-                    remove: (selector) => {
-                        if (collection === undefined) throw new CacheError("cleared", key);
 
-                        const itemSelector = (item: CacheItem<T>) => selector(item.value);
-                        changed = changed.filter(item => !itemSelector(item)).concat(collection.items.filter(itemSelector));
-                        collection = {
-                            ...collection,
-                            items: collection.items.filter(item => !itemSelector(item))
+                        for (const {options: subOptions, subscriber} of this.collections[key].subscribers) {
+                            const filter = subOptions.filter;
+                            if (!filter || subOptions.subKey === options.subKey || changed.some(item => filter(item.value))) {
+                                subscriber.next(returnCollection(this.collections[key], subOptions));
+                            }
                         }
-                    },
-                    removeExpired: (expiration) => {
-                        if (collection === undefined) throw new CacheError("cleared", key);
-
-                        const selector = (item: CacheItem<T>) => item.updatedAt + expiration < date;
-                        changed = changed.filter(item => !selector(item)).concat(collection.items.filter(selector));
-                        collection = {
-                            ...collection,
-                            items: collection.items.filter(item => !selector(item))
-                        }
-                    },
-                    clear: () => {
-                        if (collection === undefined) throw new CacheError("cleared", key);
-
-                        for (const {subscriber} of this.collections[key].subscribers) {
-                            subscriber.complete();
-                            subscriber.unsubscribe();
-                        }
-                        collection = undefined;
-                        delete this.collections[key];
                     }
                 });
-
-                if (collection !== undefined) {
-                    if (options.subKey) {
-                        this.collections[key].collection = collection;
-                        const props = this.collections[key].properties[options.subKey];
-                        this.collections[key].properties[options.subKey] = {
-                            createdAt: props?.createdAt || date,
-                            updatedAt: date,
-                            state
-                        }
-                    } else {
-                        this.collections[key].collection = {
-                            createdAt: collection.createdAt || date,
-                            updatedAt: date,
-                            state,
-                            items: collection.items
-                        };
-                    }
-
-                    for (const {options: subOptions, subscriber} of this.collections[key].subscribers) {
-                        const filter = subOptions.filter;
-                        if (!filter || subOptions.subKey === options.subKey || changed.some(item => filter(item.value))) {
-                            subscriber.next(returnCollection(this.collections[key], subOptions));
-                        }
-                    }
-                }
 
                 this.exported.next(this.export());
             }
