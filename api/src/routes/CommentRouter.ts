@@ -88,7 +88,7 @@ commentRouter.delete('/:commentThreadID/:commentID', capture(async (request, res
 
     comment = await CommentDB.updateComment({
         commentID,
-        body: "[this comment was deleted]"
+        body: "This comment was deleted"
     });
 
     response.status(200).send(comment);

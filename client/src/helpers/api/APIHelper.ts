@@ -121,7 +121,7 @@ export function createSubmission(courseId: string, projectName: string, files: F
             // but on upload the absolute file path on disk is used
             return file;
         }
-    }
+    };
 
     const form = new FormData();
     form.append("project", projectName);
@@ -136,6 +136,9 @@ export function createSubmission(courseId: string, projectName: string, files: F
         // and it breaks if you set it manually, as the boundaries will not be added
     });
 }
+
+export const deleteSubmission = (submissionID: string) =>
+    Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`, {"method": "DELETE"});
 
 // Files
 export const getFiles = (submissionID: string) =>
@@ -156,6 +159,15 @@ export const getUserComments = (userId: string) =>
 
 export const getCourseUserComments = (courseId: string, userId: string) =>
     Fetch.fetchJson<Comment[]>(`/api/comment/course/${courseId}/user/${userId}`);
+
+export const createComment = (commentThreadID: string, comment: string) =>
+    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson({comment}));
+
+export const editComment = (commentThreadID: string, commentID: string, comment: string) =>
+    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, putJson({comment}));
+
+export const deleteComment = (commentThreadID: string, commentID: string) =>
+    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, {method: "DELETE"});
 
 // CommentThreads
 export const getFileComments = (fileID: string) =>
@@ -181,15 +193,6 @@ export const createFileCommentThread = (fileID: string, thread: CreateCommentThr
 
 export const createSubmissionCommentThread = (submissionID: string, thread: CreateCommentThread) =>
     Fetch.fetchJson<CommentThread>(`/api/commentThread/submission/${submissionID}`, postJson(thread));
-
-export const createComment = (commentThreadID: string, comment: string) =>
-    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}`, putJson({comment}));
-
-export const editComment = (commentThreadID: string, commentID: string, comment: string) =>
-    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, putJson({comment}));
-
-export const deleteComment = (commentThreadID: string, commentID: string) =>
-    Fetch.fetchJson<Comment>(`/api/comment/${commentThreadID}/${commentID}`, {method: "DELETE"});
 
 // Mentions
 export const getMentions = () =>

@@ -542,7 +542,7 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
         delete: (commentID: string) =>
             update(
                 API.deleteComment(commentThreadID, commentID),
-                {ID: commentID, text: "[this comment was deleted]"},
+                {ID: commentID, text: "This comment was deleted"},
                 comments
             )
     }
