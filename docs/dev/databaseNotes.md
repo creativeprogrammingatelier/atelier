@@ -36,11 +36,11 @@ NB: the permissions actually come back as a string of 40 binary digits, which ar
 To perform transactions, you have to pass in the optional **client** argument to the functions that are part of the transaction. When this is passed, instead of starting a new connection, it uses that existing client to perform the query. The easiest way to perform a transaction then involves the **transaction** function in HelperDB.ts. It receives a callback function: the function that contains all transaction query. This callback receives as its first (and only) argument, the client you need to pass to all database calls. the transaction function will take care of the transactional stuff such as BEGIN, COMMIT and ROLLBACK. (ROLLBACK will be run if the callback throws an error.)
 
 ### table creation
-To create the structure and standard entries required by the system, one can use `npm run database-rebuild`
+To create the structure and standard entries required by the system, one can use `npm run database-build`
 This will drop any pre-existing tables and views, and create them from scratch.
 These tables will almost all be empty, except for the global- and localRole tables, which will be filled with the standard roles and permissions.
-When running in a development environment, one can opt to use `npm run database-reset` instead, which inserts dummy data into all tables besides creating them. This allows for quick rebuilding whenever needed.
+When running in a development environment, one can opt to use `npm run database-dev` instead, which inserts dummy data into all tables besides creating them. This allows for quick rebuilding whenever needed.
 The insertion of dummy data can also be done later with `npm run database-samples`.
 
 ### tests
-The tests that are run with `npm run test[-nyc]` require the database to be filled with at least the sample data to work properly, and may fail when that data is not present.
+The tests that are run with `npm run test-backend[-nyc]` require the database to be filled with at least the sample data to work properly, and may fail when that data is not present.

@@ -5,23 +5,36 @@ import {APICache, Refresh} from '../../../helpers/api/APIHooks';
 import {useObservableState} from 'observable-hooks';
 
 interface CachedProperties<T> {
+    /** Interface to the cached data and optional refresh */
     cache: APICache<T> | Refresh<T>,
+    /** The amount of time to wait until the data is expired and should be refreshed */
     timeout?: number,
+    /** Wrapper to display around the loading indicator */
     wrapper?: (children: React.ReactNode) => React.ReactNode,
+    /** Callback to call when an error occurs while refreshing data */
     onError?: (error: string) => void,
+    /** 
+     * Callback to call when the amount of items in the result changes. 
+     * This was created to work around DataList not knowing the amount of children,
+     * but that should be done in a better way. This is kinda hacky and requires
+     * upper level state mangagement.
+     */
     updateCount?: (count: number) => void,
+    /** 
+     * Function that takes an item in the cache and renders it. 
+     * If the cache is an item, this function is called once. If
+     * the cache is a collection, this function is called for every
+     * item in the collection.
+     */
     children: (item: T, state: CacheState) => React.ReactNode
 }
 
+/** Helper function to spread request delays proportional to the timeout time */
 function jitter(time: number) {
     return time + (Math.random() * time * 0.2) - (time * 0.1);
 }
 
-export function Cached<T>({
-                              cache, timeout, wrapper, onError = msg => {
-    }, updateCount = count => {
-    }, children
-                          }: CachedProperties<T>) {
+export function Cached<T>({ cache, timeout, wrapper, onError = msg => {}, updateCount = count => {}, children }: CachedProperties<T>) {
     const cached = useObservableState(cache.observable)!;
 
     useEffect(() => {
