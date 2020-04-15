@@ -13,6 +13,7 @@ import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
 import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
 import {useCourse} from "../../../helpers/api/APIHooks";
 import {Cached} from "../../general/loading/Cached";
+import {CourseSettingsDelete} from "./CourseSettingsDelete";
 
 interface CourseOverviewProps {
     match: {
@@ -60,6 +61,11 @@ export function CourseSettings({match: {params: {courseId}}}: CourseOverviewProp
             <Permissions any={[PermissionEnum.manageUserPermissionsView, PermissionEnum.manageUserPermissionsManager]} course={courseId}>
                 <DataList header="User Permissions">
                     <UserSettingsPermissions courseID={courseId}/>
+                </DataList>
+            </Permissions>
+            <Permissions single={PermissionEnum.manageCourses} course={courseId}>
+                <DataList header="Delete Course">
+                    <CourseSettingsDelete courseID={courseId}/>
                 </DataList>
             </Permissions>
         </Frame>
