@@ -16,7 +16,7 @@ module.exports = {
 		path: __dirname + "/build/client",
     },
     plugins: [
-        new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "Atelier",
             template: 'client/index.html',
