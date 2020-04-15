@@ -126,7 +126,7 @@ CREATE TABLE "Courses" (
 
 CREATE TABLE "CourseRegistration" (
 	courseID       uuid NOT NULL REFERENCES "Courses"(courseID) ON DELETE CASCADE,
-	userID         uuid NOT NULL REFERENCES "Users"(userID),
+	userID         uuid NOT NULL REFERENCES "Users"(userID) ON DELETE CASCADE,
 	courseRole     text NOT NULL REFERENCES "CourseRolePermissions"(courseRoleID) DEFAULT 'unregistered',
 	permission     bit(${permissionBits}) NOT NULL,
 	PRIMARY KEY (courseID, userID)
