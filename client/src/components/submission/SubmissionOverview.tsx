@@ -6,7 +6,6 @@ import {FiPlus, FiTrash, FiX} from "react-icons/all";
 import {Submission} from "../../../../models/api/Submission";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
-import {deleteSubmission} from "../../helpers/api/APIHelper";
 import {useSubmission, useFiles, useProjectComments, useRecentComments, useCourse, useCourseSubmissions, useCurrentUser} from "../../helpers/api/APIHooks";
 import {TimeHelper} from "../../helpers/TimeHelper";
 
@@ -19,7 +18,6 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {Frame} from "../frame/Frame";
 import {Cached} from "../general/loading/Cached";
 import {ButtonMultistate} from "../input/button/ButtonMultistate";
-import {ButtonBar} from "../input/button/ButtonBar";
 
 interface SubmissionOverviewProps {
     match: {
@@ -71,12 +69,8 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
         setCreatingComment(false);
         return createdComment;
     };
-    const handleDelete = (courseID: string, submissionID: string) => {
-        deleteSubmission(submissionID).then(() => {
-            useCourseSubmissions(courseID).refresh().then(() => {
-                history.push(`/course/${courseID}`);
-            });
-        });
+    const handleDelete = (courseID: string) => {
+        submission.delete().then(() => history.push(`/course/${courseID}`));
     };
 
     return (
@@ -129,7 +123,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
                                 <ButtonMultistate variant="danger" states={[
                                     <Fragment>Delete <FiTrash/></Fragment>,
                                     <Fragment>Confirm <FiTrash/></Fragment>
-                                ]} finish={() => handleDelete(submission.references.courseID, submission.ID)}/>
+                                ]} finish={() => handleDelete(submission.references.courseID)}/>
                             </DataList>
                         }
                     </Cached>

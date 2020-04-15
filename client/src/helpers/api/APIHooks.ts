@@ -227,10 +227,10 @@ export function useCourses(): Refresh<Course> & Create<[{ name: string, state: C
         sort: (a, b) =>
             // Sort by open first, then by name
             a.state === CourseState.open && b.state !== CourseState.open ? -1
-                : a.state !== CourseState.open && b.state === CourseState.open ? 1
-                : a.name > b.name ? 1
-                    : a.name < b.name ? -1
-                        : 0
+            : a.state !== CourseState.open && b.state === CourseState.open ? 1
+            : a.name > b.name ? 1
+            : a.name < b.name ? -1
+            : 0
     });
     return {
         observable: courses.observable,
@@ -245,7 +245,7 @@ export function useCourses(): Refresh<Course> & Create<[{ name: string, state: C
     };
 }
 
-export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: string, state?: CourseState }], Course> {
+export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: string, state?: CourseState }], Course> & Delete<[], Course> {
     const courses = useCacheCollection<Course>("courses", {
         subKey: courseID,
         filter: course => course?.ID === courseID
@@ -259,6 +259,12 @@ export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: 
             update(
                 API.updateCourse(courseID, {name, state}),
                 {ID: courseID, name, state},
+                courses
+            ),
+        delete: () => 
+            deleteItem(
+                API.deleteCourse(courseID).then(cp => ({ ...cp, currentUserPermission: {} as Permission })),
+                course => course.ID === courseID,
                 courses
             )
     };
@@ -311,7 +317,7 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
     }
 }
 
-export function useSubmission(submissionID: string): Refresh<Submission> {
+export function useSubmission(submissionID: string): Refresh<Submission> & Delete<[], Submission> {
     const submissions = useCacheCollection<Submission>(`submissions`, {
         subKey: submissionID,
         filter: submission => submission?.ID === submissionID
@@ -320,7 +326,13 @@ export function useSubmission(submissionID: string): Refresh<Submission> {
     return {
         observable: submission,
         refresh: () => refreshCollection(API.getSubmission(submissionID), submissions),
-        defaultTimeout: 0
+        defaultTimeout: 0,
+        delete: () =>
+            deleteItem(
+                API.deleteSubmission(submissionID),
+                submission => submission.ID === submissionID,
+                submissions
+            )
     };
 }
 
@@ -462,13 +474,13 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
             const as = a.snippet, bs = b.snippet;
             return (
                 as !== undefined && bs !== undefined
-                    // Sort comments with snippets by start position in the file
-                    ? as.start.line - bs.start.line || as.start.character - bs.start.character
-                    // Sort general file comments before comments with snippets
-                    : as === undefined && bs !== undefined ? -1
-                    : as !== undefined && bs === undefined ? 1
-                        // Sort general file comments by reverse date
-                        : new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
+                // Sort comments with snippets by start position in the file
+                ? as.start.line - bs.start.line || as.start.character - bs.start.character
+                // Sort general file comments before comments with snippets
+                : as === undefined && bs !== undefined ? -1
+                : as !== undefined && bs === undefined ? 1
+                // Sort general file comments by reverse date
+                : new Date(b.comments[0].created).getTime() - new Date(a.comments[0].created).getTime()
             );
         }
     });
