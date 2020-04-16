@@ -1,13 +1,13 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {CoursePartial} from "../../../models/api/Course";
-import {User} from "../../../models/api/User";
+import {CoursePartial} from "../../../../models/api/Course";
+import {User} from "../../../../models/api/User";
 
-import {UserDB} from "../../../api/src/database/UserDB";
-import {issueToken} from "../../../api/src/helpers/AuthenticationHelper";
+import {UserDB} from "../../../../api/src/database/UserDB";
+import {issueToken} from "../../../../api/src/helpers/AuthenticationHelper";
 
-import {instanceOfCoursePartial, instanceOfUser} from "../../InstanceOf";
+import {instanceOfCoursePartial, instanceOfUser} from "../../../InstanceOf";
 import {
 	setAPITestUserValues,
 	adminSetPermissions,

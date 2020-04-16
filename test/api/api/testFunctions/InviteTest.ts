@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {instanceOfInvite} from "../../InstanceOf";
+import {instanceOfInvite} from "../../../InstanceOf";
 import {
 	getInvitesByUserAndCourse,
 	getInviteStudent,

@@ -1,9 +1,9 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {Submission} from "../../../models/api/Submission";
+import {Submission} from "../../../../models/api/Submission";
 
-import {instanceOfSubmission} from "../../InstanceOf";
+import {instanceOfSubmission} from "../../../InstanceOf";
 import {
 	getSubmission,
 	getSubmissionsByCourse,

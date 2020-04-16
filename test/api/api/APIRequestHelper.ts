@@ -1,13 +1,13 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 
-import {Permissions} from "../../models/api/Permission";
-import {CourseState} from "../../models/enums/CourseStateEnum";
-import {CourseRole} from "../../models/enums/CourseRoleEnum";
-import {GlobalRole} from "../../models/enums/GlobalRoleEnum";
+import {Permissions} from "../../../models/api/Permission";
+import {CourseState} from "../../../models/enums/CourseStateEnum";
+import {CourseRole} from "../../../models/enums/CourseRoleEnum";
+import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
 
-import {issueToken} from "../../api/src/helpers/AuthenticationHelper";
-import {app} from "../../api/src/app";
+import {issueToken} from "../../../api/src/helpers/AuthenticationHelper";
+import {app} from "../../../api/src/app";
 
 chai.use(chaiHttp);
 
