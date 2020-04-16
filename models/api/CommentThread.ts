@@ -11,13 +11,13 @@ export interface CommentThread {
 	comments: Comment[],
 	references: {
 		courseID: string,
-		submissionID : string,
+		submissionID: string,
 	}
 }
 
 export interface CreateCommentThread {
 	comment: string,
-    snippet?: Selection,
+	snippet?: Selection,
 	visibility?: ThreadState,
 	submissionID: string
 }

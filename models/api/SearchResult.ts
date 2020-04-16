@@ -1,9 +1,9 @@
-import {User} from "./User";
-import {Course} from "./Course";
-import {Submission} from "./Submission";
 import {Comment} from "./Comment";
+import {Course} from "./Course";
 import {File} from "./File";
 import {Snippet} from "./Snippet";
+import {Submission} from "./Submission";
+import {User} from "./User";
 
 export interface SearchResultComment {
 	comment: Comment,

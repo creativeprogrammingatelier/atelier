@@ -8,6 +8,6 @@ export interface CoursePartial {
 	creator: User,
 }
 
-export interface Course extends CoursePartial{
+export interface Course extends CoursePartial {
 	currentUserPermission: Permission
 }
