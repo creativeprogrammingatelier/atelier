@@ -1,45 +1,45 @@
-/**
- * The main faile of express.js app
- * @author Andrew Heath, Arthur Rump, Jarik Karsten, Cas Sievers, Rens Leendertz, Alexander Haas
- */
-
-import {config} from './helpers/ConfigurationHelper';
-
+import cookieParser from 'cookie-parser';
 import express, {Request, Response, NextFunction} from 'express';
 import http from 'http';
-import socketio, {Socket} from 'socket.io';
-import path from 'path';
-import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import path from 'path';
+import socketio, {Socket} from 'socket.io';
+
+import {AuthError} from './helpers/AuthenticationHelper';
+import {config} from './helpers/ConfigurationHelper';
+import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/DatabaseErrorHelper';
+import {InvalidParamsError} from './helpers/ParamsHelper';
+import {PermissionError} from "./helpers/PermissionHelper";
+import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
+
+import {NotFoundDatabaseError} from './database/DatabaseErrors';
+import {AuthMiddleware} from './middleware/AuthMiddleware';
 
 // API routes
 import {authRouter} from './routes/authentication/AuthRouter';
-import {pluginRouter} from './routes/PluginRouter';
+import {commentRouter} from './routes/CommentRouter';
+import {commentThreadRouter} from './routes/CommentThreadRouter'
 import {courseRouter} from './routes/CourseRouter';
 import {fileRouter} from './routes/FileRouter';
 import {indexRouter} from './routes/IndexRouter';
-import {searchRouter} from './routes/SearchRouter';
-import {submissionRouter} from './routes/SubmissionRouter';
-import {userRouter} from './routes/UserRouter';
-import {commentThreadRouter} from './routes/CommentThreadRouter'
-import {commentRouter} from './routes/CommentRouter';
-import {permissionRouter} from './routes/PermissionRouter';
-import {roleRouter} from './routes/RoleRouter';
-import {mentionsRouter} from './routes/MentionsRouter';
 import {inviteRouter} from "./routes/InviteRouter";
 import {inviteLinkRouter} from "./routes/InviteLinkRouter";
+import {mentionsRouter} from './routes/MentionsRouter';
+import {roleRouter} from './routes/RoleRouter';
+import {searchRouter} from './routes/SearchRouter';
+import {submissionRouter} from './routes/SubmissionRouter';
+import {permissionRouter} from './routes/PermissionRouter';
+import {pluginRouter} from './routes/PluginRouter';
+import {userRouter} from './routes/UserRouter';
 
-import {AuthMiddleware} from './middleware/AuthMiddleware';
-import {NotFoundDatabaseError} from './database/DatabaseErrors';
-import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/DatabaseErrorHelper';
-import {AuthError} from './helpers/AuthenticationHelper';
-import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
-import {InvalidParamsError} from './helpers/ParamsHelper';
-import {PermissionError} from "./helpers/PermissionHelper";
+/**
+ * The main file of express.js app
+ * @author Andrew Heath, Arthur Rump, Jarik Karsten, Cas Sievers, Rens Leendertz, Alexander Haas
+ */
 
 export const app = express();
 
-// Set up server and start lisening on configured port and hostname
+// Set up server and start listening on configured port and hostname
 const server = http.createServer(app);
 server.listen(config.port, config.hostname);
 
