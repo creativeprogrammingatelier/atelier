@@ -3,8 +3,8 @@ import chaiHttp from "chai-http";
 import jwt from "jsonwebtoken";
 import "mocha";
 
-import {app} from "../../api/src/app";
-import {decodeToken} from "../../api/src/helpers/AuthenticationHelper";
+import {app} from "../../../api/src/app";
+import {decodeToken} from "../../../api/src/helpers/AuthenticationHelper";
 import {privateKey, plugin} from "./Plugin";
 
 chai.use(chaiHttp);

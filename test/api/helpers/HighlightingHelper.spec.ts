@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import "mocha";
 
-import {before, Range, getRanges, rangesToString} from "../../client/src/helpers/HighlightingHelper";
+import {before, Range, getRanges, rangesToString} from "../../../client/src/helpers/HighlightingHelper";
 
 /**
  * Create a Range object

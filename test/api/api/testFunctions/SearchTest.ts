@@ -1,9 +1,9 @@
 import {deepStrictEqual, equal} from "assert";
 import {expect, assert} from "chai";
-import {Course} from "../../../models/api/Course";
-import {SearchResult, SearchResultFile, SearchResultComment, SearchResultSnippet} from "../../../models/api/SearchResult";
-import {Submission} from "../../../models/api/Submission";
-import {User} from "../../../models/api/User";
+import {Course} from "../../../../models/api/Course";
+import {SearchResult, SearchResultFile, SearchResultComment, SearchResultSnippet} from "../../../../models/api/SearchResult";
+import {Submission} from "../../../../models/api/Submission";
+import {User} from "../../../../models/api/User";
 
 import {
 	instanceOfUser,
@@ -13,7 +13,7 @@ import {
 	instanceOfSearchComment,
 	instanceOfSearchFile,
 	instanceOfSearchSnippet
-} from "../../InstanceOf";
+} from "../../../InstanceOf";
 import {
 	getAllSearch,
 	getUserSearch,

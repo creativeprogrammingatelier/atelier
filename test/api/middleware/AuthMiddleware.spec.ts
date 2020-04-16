@@ -2,8 +2,8 @@ import {expect} from "chai";
 import {Request, Response, NextFunction} from "express";
 import "mocha";
 
-import {issueToken} from "../../api/src/helpers/AuthenticationHelper";
-import {AuthMiddleware} from "../../api/src/middleware/AuthMiddleware";
+import {issueToken} from "../../../api/src/helpers/AuthenticationHelper";
+import {AuthMiddleware} from "../../../api/src/middleware/AuthMiddleware";
 
 describe("AuthMiddleware.requireAuth", () => {
 	const response = {} as unknown as Response;

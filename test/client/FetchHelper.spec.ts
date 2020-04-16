@@ -4,7 +4,7 @@ import chaiAsPromised from "chai-as-promised";
 import "mocha";
 import {Response} from "node-fetch";
 
-import {Fetch, FetchError, JsonFetchError} from "../src/helpers/api/FetchHelper";
+import {Fetch, FetchError, JsonFetchError} from "../../client/src/helpers/api/FetchHelper";
 
 chai.use(chaiSpies);
 chai.use(chaiAsPromised);

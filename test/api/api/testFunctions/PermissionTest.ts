@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {viewPermissions, PermissionEnum, containsPermission, managePermissions} from "../../../models/enums/PermissionEnum";
-import {getEnum} from "../../../helpers/EnumHelper";
+import {viewPermissions, PermissionEnum, containsPermission, managePermissions} from "../../../../models/enums/PermissionEnum";
+import {getEnum} from "../../../../helpers/EnumHelper";
 
-import {instanceOfPermission, instanceOfUser, instanceOfCourseUser} from "../../InstanceOf";
+import {instanceOfPermission, instanceOfUser, instanceOfCourseUser} from "../../../InstanceOf";
 import {
 	setPermissionsCourse,
 	setPermissionsGlobal,

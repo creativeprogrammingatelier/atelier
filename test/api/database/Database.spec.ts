@@ -1,4 +1,4 @@
-import {main} from '../../api/src/database/dbTester'
+import {main} from '../../../api/src/database/dbTester'
 
 describe("database testing", () => {
 	//This makeDB doesn't run sequentially with other files, and breaks them consequentially

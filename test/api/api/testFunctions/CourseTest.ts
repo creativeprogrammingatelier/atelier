@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {CoursePartial} from "../../../models/api/Course";
-import {CourseState} from "../../../models/enums/CourseStateEnum";
+import {CoursePartial} from "../../../../models/api/Course";
+import {CourseState} from "../../../../models/enums/CourseStateEnum";
 
-import {instanceOfCoursePartial, instanceOfCourseUser} from "../../InstanceOf";
+import {instanceOfCoursePartial, instanceOfCourseUser} from "../../../InstanceOf";
 import {
 	getCourse,
 	getCourses,

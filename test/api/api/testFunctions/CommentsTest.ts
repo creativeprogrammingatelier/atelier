@@ -1,9 +1,9 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {Comment} from "../../../models/api/Comment";
+import {Comment} from "../../../../models/api/Comment";
 
-import {instanceOfComment} from "../../InstanceOf";
+import {instanceOfComment} from "../../../InstanceOf";
 import {
 	getCommentsUser,
 	USER_ID,

@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {CourseUser} from "../../../models/api/CourseUser";
-import {User} from "../../../models/api/User";
+import {CourseUser} from "../../../../models/api/CourseUser";
+import {User} from "../../../../models/api/User";
 
-import {instanceOfUser, instanceOfCourseUser} from "../../InstanceOf";
+import {instanceOfUser, instanceOfCourseUser} from "../../../InstanceOf";
 import {
 	getOwnUser1,
 	getOwnUser2,

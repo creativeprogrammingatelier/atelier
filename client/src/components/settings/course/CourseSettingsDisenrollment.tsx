@@ -29,7 +29,7 @@ export function CourseSettingsDisenrollment({courseID}: CourseSettingsDisenrollm
 	}
 	
 	return <Form>
-		<UserSearch onSelected={setUser}/>
+		<UserSearch courseID={courseID} onSelected={setUser}/>
 		{
 			user &&
 			<Fragment>

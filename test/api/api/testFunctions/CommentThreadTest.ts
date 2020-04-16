@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import {assert} from "console";
 
-import {CommentThread} from "../../../models/api/CommentThread";
-import {ThreadState} from "../../../models/enums/ThreadStateEnum";
+import {CommentThread} from "../../../../models/api/CommentThread";
+import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
-import {instanceOfCommentThread} from "../../InstanceOf";
+import {instanceOfCommentThread} from "../../../InstanceOf";
 import {
 	adminSetPermissions,
 	getCommentThread,

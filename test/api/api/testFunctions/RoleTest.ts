@@ -1,9 +1,9 @@
 import {expect, assert} from "chai";
 
-import {CourseRole} from "../../../models/enums/CourseRoleEnum";
-import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
+import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
+import {GlobalRole} from "../../../../models/enums/GlobalRoleEnum";
 
-import {instanceOfUser, instanceOfCourseUser} from "../../InstanceOf";
+import {instanceOfUser, instanceOfCourseUser} from "../../../InstanceOf";
 import {
 	setCourseRole,
 	setGlobalRole,

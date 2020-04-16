@@ -1,8 +1,8 @@
 import {expect} from "chai";
 import "mocha";
-import {repeatIt, randomNumberArray, randomBool, TEST_COUNT} from "../QuickCheck";
+import {repeatIt, randomNumberArray, randomBool, TEST_COUNT} from "../../QuickCheck";
 
-import "../../helpers/Extensions";
+import "../../../helpers/Extensions";
 
 describe("Array.skipWhile", () => {
 	repeatIt("should give no results if predicate is false", () => {
