@@ -3,11 +3,10 @@ import {useHistory} from "react-router-dom";
 import {Button, Form} from "react-bootstrap";
 
 import {CourseState} from "../../../../../models/enums/CourseStateEnum";
+import {FeedbackContent} from "../../feedback/Feedback";
 
 import {useCourses} from "../../../helpers/api/APIHooks";
-
 import {FeedbackError} from "../../feedback/FeedbackError";
-import {FeedbackContent} from "../../feedback/Feedback";
 import {LabeledInput} from "../../input/LabeledInput";
 
 export function CourseCreator() {

@@ -4,7 +4,7 @@ import {Invite} from "../../../../../models/api/Invite";
 import {Permission} from "../../../../../models/api/Permission";
 import {InviteRole} from "../../../../../models/enums/InviteRoleEnum";
 
-import {coursePermission, getInvites} from "../../../helpers/api/APIHelper";
+import {coursePermission, getInviteLinks} from "../../../helpers/api/APIHelper";
 
 import {Loading} from "../../general/loading/Loading";
 import {CourseInvite} from "./CourseInvite";
@@ -14,7 +14,7 @@ interface CourseSettingsInvitesProperties {
 }
 export function CourseSettingsInvites({courseID}: CourseSettingsInvitesProperties) {
 	return <Loading<[Permission, Invite]>
-		loader={(courseID: string) => Promise.all([coursePermission(courseID), getInvites(courseID)])}
+		loader={(courseID: string) => Promise.all([coursePermission(courseID), getInviteLinks(courseID)])}
 		params={[courseID]}
 		component={(response: [Permission, Invite]) =>
 			<Fragment>

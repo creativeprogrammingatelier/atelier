@@ -23,7 +23,6 @@ import {courseRouter} from './routes/CourseRouter';
 import {fileRouter} from './routes/FileRouter';
 import {indexRouter} from './routes/IndexRouter';
 import {inviteRouter} from "./routes/InviteRouter";
-import {inviteLinkRouter} from "./routes/InviteLinkRouter";
 import {mentionsRouter} from './routes/MentionsRouter';
 import {roleRouter} from './routes/RoleRouter';
 import {searchRouter} from './routes/SearchRouter';
@@ -85,7 +84,6 @@ app.use('/api/role', roleRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);
-app.use('/invite', inviteLinkRouter);
 
 // Give a 404 in case the API route does not exist
 app.all('/api/*', (_, response) => response.status(404).send({
@@ -102,8 +100,7 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
     console.log('\x1b[31m', error);
 
     if (error instanceof AuthError) {
-        //response.status(401).send({error: error.reason, message: error.message});
-        response.status(401).redirect('/login');
+        response.status(401).send({error: error.reason, message: error.message});
     } else if (error instanceof PermissionError) {
         response.status(401).send({error: error.reason, message: error.message});
     } else if (error instanceof NotFoundDatabaseError) {

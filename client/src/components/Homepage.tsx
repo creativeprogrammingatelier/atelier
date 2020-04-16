@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
 
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
@@ -13,7 +13,15 @@ import {Permissions} from "./general/Permissions";
 
 export function Homepage() {
 	const courses = useCourses();
-	
+
+	const redirect = localStorage.getItem('redirect');
+	console.log("Homepage: " + redirect);
+	if (redirect) {
+		const history = useHistory();
+		localStorage.removeItem('redirect');
+		history.push(redirect);
+	}
+
 	return <Frame title="Home" sidebar search>
 		<Jumbotron>
 			<h1>Home</h1>

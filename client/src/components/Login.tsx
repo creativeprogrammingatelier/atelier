@@ -24,6 +24,11 @@ export function Login({location}: LoginProperties) {
 	if (AuthHelper.loggedIn() && location && location.state && location.state.from) {
 		return <Redirect to={location.state.from}/>;
 	}
+
+	if (location && location.state && location.state.from) {
+		console.log("Login: " + location.state.from);
+		localStorage.setItem('redirect', location.state.from);
+	}
 	
 	return <Jumbotron className="cover">
 		<Logo/>

@@ -254,13 +254,16 @@ export const setPermissionGlobal = (userID: string, permissions: Permissions) =>
 };
 
 // Invites
-export const getInvites = (courseID: string) => {
+export const getInvite = (inviteID: string) => {
+    return Fetch.fetchJson<CourseUser>(`/api/invite/${inviteID}`);
+};
+export const getInviteLinks = (courseID: string) => {
 	return Fetch.fetchJson<Invite>(`/api/invite/course/${courseID}/all`);
 };
-export const getInvite = (courseID: string, role: InviteRole) => {
+export const getInviteLink = (courseID: string, role: InviteRole) => {
 	return Fetch.fetchJson<CourseInvite>(`/api/invite/course/${courseID}/role/${role}`);
 };
-export const deleteInvite = (courseID: string, role: InviteRole) => {
+export const deleteInviteLink = (courseID: string, role: InviteRole) => {
 	return Fetch.fetchJson<Comment>(`/api/invite/course/${courseID}/role/${role}`, {method: "DELETE"});
 };
 

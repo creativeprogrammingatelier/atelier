@@ -5,7 +5,7 @@ import {FiPlus, FiX} from "react-icons/all";
 import {CourseInvite as CourseInviteModel} from "../../../../../models/api/Invite";
 import {InviteRole} from "../../../../../models/enums/InviteRoleEnum";
 
-import {deleteInvite, getInvite} from "../../../helpers/api/APIHelper";
+import {deleteInviteLink, getInviteLink} from "../../../helpers/api/APIHelper";
 
 import {LabeledInput} from "../../input/LabeledInput";
 
@@ -19,13 +19,13 @@ export function CourseInvite({name, link, role, courseID}: CourseInvitePropertie
 	const [inviteLink, setInviteLink] = useState(link ? `${window.location.origin}/invite/${link}` : "");
 	
 	const createLink = (role: InviteRole) => {
-		getInvite(courseID, role)
+		getInviteLink(courseID, role)
 			.then((courseInvite: CourseInviteModel) => {
 				setInviteLink(`${window.location.origin}/invite/${courseInvite.inviteID}`);
 			});
 	};
 	const deleteLink = () => {
-		deleteInvite(courseID, role)
+		deleteInviteLink(courseID, role)
 			.then(() => {
 				setInviteLink("");
 			});

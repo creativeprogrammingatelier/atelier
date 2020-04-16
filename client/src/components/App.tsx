@@ -1,6 +1,7 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
 
+import {AuthHelper} from "../helpers/AuthHelper";
 import {CacheProvider} from "./general/loading/CacheProvider";
 import {TimeProvider} from "./data/TimeProvider";
 import {AuthenticatedRoute} from "./AuthenticatedRoute";
@@ -12,6 +13,7 @@ import {Login} from "./Login";
 import {Homepage} from "./Homepage";
 import {Activity} from "./Activity";
 import {Bootstrap} from "./Bootstrap";
+import {Invite} from "./share/Invite";
 import {CourseOverview} from "./CourseOverview";
 import {SearchOverview} from "./search/SearchOverview";
 import {CourseSettings} from "./settings/course/CourseSettings";
@@ -37,6 +39,7 @@ export function App() {
 				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
 				<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
 				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
+				<AuthenticatedRoute path='/invite/:inviteId' component={Invite}/>
 				<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={UserCourseOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserCourseOverview}/>
 				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
