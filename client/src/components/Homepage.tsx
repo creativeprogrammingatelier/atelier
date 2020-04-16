@@ -2,11 +2,11 @@ import React from "react";
 import {Frame} from "./frame/Frame";
 import {Button, Jumbotron} from "react-bootstrap";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
+import {Panel} from "./general/Panel";
 import {Permissions} from "./general/Permissions";
 import {useCourses} from "../helpers/api/APIHooks";
 import {Link} from "react-router-dom";
 import {Cached} from "./general/loading/Cached";
-import {PanelButton} from "./general/PanelButton";
 
 export function Homepage() {
     const courses = useCourses();
@@ -28,7 +28,7 @@ export function Homepage() {
             {/* TODO: Add a NonEmpty wrapper for if the user is not enrolled in any course */}
             <Cached cache={courses} timeout={3600}>
                 {(course, state) =>
-                    <PanelButton
+                    <Panel
                         key={course.ID}
                         display={course.name}
                         location={`/course/${course.ID}`}
