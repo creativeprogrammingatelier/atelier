@@ -11,12 +11,12 @@ interface CourseSettingsDeleteProperties {
 	courseID: string
 }
 export function CourseSettingsDelete({courseID}: CourseSettingsDeleteProperties) {
-    const history = useHistory();
-    const course = useCourse(courseID)
+	const history = useHistory();
+	const course = useCourse(courseID);
 	const handleDelete = () => {
 		course.delete().then(() => history.push("/"));
 	};
-
+	
 	return <Fragment>
 		<FeedbackError>Deleting a course is permanent, and can not be undone. All the submissions and comments in this course will be gone forever.</FeedbackError>
 		<ButtonMultistate variant="danger" states={[

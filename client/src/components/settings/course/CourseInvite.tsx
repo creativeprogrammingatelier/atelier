@@ -10,37 +10,36 @@ import {deleteInvite, getInvite} from "../../../helpers/api/APIHelper";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface CourseInviteProperties {
-    name: string,
-    link?: string,
-    role: InviteRole
-    courseID: string,
+	name: string,
+	link?: string,
+	role: InviteRole
+	courseID: string,
 }
-
 export function CourseInvite({name, link, role, courseID}: CourseInviteProperties) {
-    const [inviteLink, setInviteLink] = useState(link ? `${window.location.origin}/invite/${link}` : "");
-
-    const createLink = (role: InviteRole) => {
-        getInvite(courseID, role)
-            .then((courseInvite: CourseInviteModel) => {
-                setInviteLink(`${window.location.origin}/invite/${courseInvite.inviteID}`);
-            });
-    };
-
-    const deleteLink = () => {
-        deleteInvite(courseID, role)
-            .then(() => {
-                setInviteLink("");
-            });
-    };
-
-    return <LabeledInput label={name}>
-        <Form.Control plaintext readOnly placeholder="No invite link generated" value={inviteLink}/>
-        <InputGroup.Append>
-            {inviteLink ?
-                <Button onClick={() => deleteLink()}>Remove link <FiX/></Button>
-                :
-                <Button onClick={() => createLink(role)}>Create link <FiPlus/></Button>
-            }
-        </InputGroup.Append>
-    </LabeledInput>;
+	const [inviteLink, setInviteLink] = useState(link ? `${window.location.origin}/invite/${link}` : "");
+	
+	const createLink = (role: InviteRole) => {
+		getInvite(courseID, role)
+			.then((courseInvite: CourseInviteModel) => {
+				setInviteLink(`${window.location.origin}/invite/${courseInvite.inviteID}`);
+			});
+	};
+	const deleteLink = () => {
+		deleteInvite(courseID, role)
+			.then(() => {
+				setInviteLink("");
+			});
+	};
+	
+	return <LabeledInput label={name}>
+		<Form.Control plaintext readOnly placeholder="No invite link generated" value={inviteLink}/>
+		<InputGroup.Append>
+			{
+				inviteLink ?
+					<Button onClick={() => deleteLink()}>Remove link <FiX/></Button>
+					:
+					<Button onClick={() => createLink(role)}>Create link <FiPlus/></Button>
+			}
+		</InputGroup.Append>
+	</LabeledInput>;
 }
