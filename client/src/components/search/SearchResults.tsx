@@ -1,10 +1,13 @@
 import React, {Fragment} from "react";
+
 import {SearchResult} from "../../../../models/api/SearchResult";
-import {DataList} from "../data/DataList";
-import {DataItem} from "../data/DataItem";
+
 import {ParentalProperties} from "../../helpers/ParentHelper";
-import {DataBlock} from "../data/DataBlock";
 import {TimeHelper} from "../../helpers/TimeHelper";
+
+import {DataBlock} from "../data/DataBlock";
+import {DataItem} from "../data/DataItem";
+import {DataList} from "../data/DataList";
 
 interface SearchResultProperties {
 	results: SearchResult
