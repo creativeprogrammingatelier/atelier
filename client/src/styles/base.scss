@@ -1,20 +1,21 @@
 @import "./variabes.scss";
 @import "~bootstrap/scss/bootstrap.scss";
 
+// Default element styles
 * {
 	overflow-wrap: break-word;
 }
 html, body {
-	background-color: $backgroundColor;
+	background-color: $colorBackground;
 }
 a {
 	color: $colorWhite;
 }
 p a {
-	color: $primaryColor;
+	color: $colorPrimary;
 }
 p a:hover {
-	color: $secondaryColor;
+	color: $colorSecondary;
 }
 button:focus {
 	outline: none;
@@ -22,7 +23,7 @@ button:focus {
 thead {
 	padding: 1rem;
 	color: $colorWhite;
-	background-color: $primaryColor;
+	background-color: $colorPrimary;
 }
 tbody {
 	tr:nth-child(even) {
@@ -43,11 +44,150 @@ textarea:focus, textarea:active {
 	outline: none;
 }
 
+// Custom generic use classes
+.round {
+	border-radius: 100vw;
+}
+.transparent {
+	background: transparent;
+}
+.restricted {
+	.btn:not(:disabled):not(.disabled) {
+		background-color: $colorRestricted;
+	}
+
+	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
+		background-color: $colorRestrictedAlternate;
+	}
+
+	.buttonBar {
+		background-color: $colorRestricted;
+	}
+}
+.restricted.block {
+	border-color: $colorRestricted;
+}
+
+.floater {
+	position: sticky;
+	z-index: 1040;
+
+	.btn {
+		min-width: inherit;
+		min-height: inherit;
+	}
+}
+.floater > * {
+	box-shadow: $shadowMedium;
+}
+
+.label {
+	margin: 0;
+	padding: 0.25rem 0.5rem;
+	display: inline-block;
+	color: $colorWhite;
+	background-color: $colorSecondary;
+}
+
+// Custom larger content containers
+.content {
+	//margin-top: $headerHeight;
+}
+.contentPage {
+	min-height: 100vh;
+	display: flex;
+	flex-flow: column;
+}
+.contentTab {
+	//padding-bottom: calc(28px + 1rem);
+	flex: 1 1 auto;
+}
+
+// Custom generic use content containers
+.area {
+	background-color: $colorWhite;
+}
+.block {
+	border-left: 0.5rem solid $colorPrimary;
+}
+.panel {
+	width: 20rem;
+	max-width: 100%;
+	margin: 0;
+	position: relative;
+	display: inline-block;
+	background-color: $colorPrimary;
+	color: $colorWhite;
+
+	a {
+		color: $colorWhite;
+	}
+
+	.panelText {
+		min-height: 7rem;
+		padding: 0.5rem;
+
+		h1, h2, h3, h4, h5, h6 {
+			margin: 0 0.5rem;
+			font-weight: 300;
+		}
+	}
+
+	.panelBottom {
+		width: 100%;
+		padding: 0.5rem 1rem;
+		background-color: $colorSecondary;
+	}
+}
+.panel:hover {
+	a {
+		text-decoration: none;
+		//color: $colorOffWhite;
+	}
+
+	.panelBottom {
+		background: $gradientSecondary;
+		box-shadow: $shadowSmallUp;
+	}
+}
+.panel:not(:last-child) {
+	margin: 0 1rem 1rem 0;
+}
+
+.dataItem, .dataBlock, .dataToggle {
+	a {
+		color: unset;
+	}
+
+	a:hover {
+		text-decoration: none;
+	}
+
+	.toast {
+		max-width: unset;
+		box-shadow: none;
+	}
+}
+.dataItem:hover, .dataBlock:hover {
+	a {
+		.toast {
+			box-shadow: $shadowMedium;
+		}
+	}
+}
+.dataToggle:hover {
+	box-shadow: $shadowMedium;
+}
+.dataItem:not(:last-child), .dataBlock:not(:last-child), .dataToggle:not(:last-child) {
+	margin-bottom: 0.5rem;
+}
+
+// Bootstrap navigation bars (headers)
 .navbar {
 	//width: 100%;
 	height: $headerHeight;
 	margin: 0 !important;
-	background-color: $primaryColor;
+	background-color: $colorPrimary;
 	//background: $gradientHorizontal;
 
 	h1, h2, h3, h4, h5, h6 {
@@ -77,15 +217,17 @@ textarea:focus, textarea:active {
 	}
 }
 .nav {
-	background-color: $secondaryColor;
+	background-color: $colorSecondary;
 }
 .nav-pills .nav-link {
 	border-radius: 0;
 }
 .nav-pills .nav-link.active {
-	background-color: $primaryColor;
+	background-color: $colorPrimary;
 }
 
+
+// Sidebar
 .sidebar {
 	height: 100vh;
 	background: $gradientVertical;
@@ -154,102 +296,65 @@ textarea:focus, textarea:active {
 	background-color: #FFFFFF20;
 }
 
-.content {
-	//margin-top: $headerHeight;
+// Bootstrap jumbotron
+.contentPage .jumbotron:first-child {
+	padding-top: calc(#{$headerHeight} - 10px);
 }
-.contentPage {
-	min-height: 100vh;
-	display: flex;
-	flex-flow: column;
-}
-.contentTab {
-	//padding-bottom: calc(28px + 1rem);
-	flex: 1 1 auto;
-}
-
-.panel {
-	width: 20rem;
-	max-width: 100%;
+.jumbotron {
 	margin: 0;
-	position: relative;
-	display: inline-block;
-	background-color: $primaryColor;
-    color: $colorWhite;
-    
+	padding: 1rem 1.5rem;
+	color: $colorWhite;
+	background: $gradientSecondary;
+	border-radius: 0;
+
+	* {
+		font-weight: 300;
+	}
+
+	p:last-child {
+		margin: 0;
+	}
+
 	a {
-		color: $colorWhite;
-    }
+		color: $colorPrimary;
 
-    .panelText {
-        min-height: 7rem;
-        padding: 0.5rem;
-
-        h1, h2, h3, h4, h5, h6 {
-            margin: 0 0.5rem;
-            font-weight: 300;
-        }
-    }
-
-    .panelBottom {
-        width: 100%;
-        padding: 0.5rem 1rem;
-        background-color: $secondaryColor;
-    }
-}
-.panel:hover {
-	a {
-		text-decoration: none;
-		//color: $colorOffWhite;
-    }
-
-    .panelBottom {
-        background: $gradientSecondary;
-        box-shadow: $shadowSmallUp;
-    }
-}
-.panel:not(:last-child) {
-	margin: 0 1rem 1rem 0;
-}
-
-.area {
-	background-color: $colorWhite;
-}
-.block {
-	border-left: 0.5rem solid $primaryColor;
-}
-
-.dataItem, .dataBlock, .dataToggle {
-	a {
-		color: unset;
 	}
 
 	a:hover {
 		text-decoration: none;
-	}
 
-	.toast {
-		max-width: unset;
-		box-shadow: none;
-	}
-}
-.dataItem:hover, .dataBlock:hover {
-	a {
-		.toast {
-			box-shadow: $shadowMedium;
+		.btn {
+			background-color: $colorOffWhite;
 		}
 	}
+
+	.btn {
+		color: $colorPrimary;
+		background-color: $colorWhite;
+	}
+
+	.btn:hover {
+		background-color: $colorOffWhite;
+	}
 }
-.dataToggle:hover {
-	box-shadow: $shadowMedium;
+.cover {
+	width: 100vw;
+	min-height: 100vh;
+	padding: 2rem;
+	background: $gradientVertical;
+
+	hr {
+		margin: 1rem 0;
+		border-color: $colorWhite;
+	}
 }
-.dataItem:not(:last-child), .dataBlock:not(:last-child), .dataToggle:not(:last-child) {
-	margin-bottom: 0.5rem;
-}
+
+// Bootstrap toasts
 .toast {
 	backdrop-filter: none;
 	background-color: $colorWhite;
 	border: none;
-	border-left: 0.5rem solid $primaryColor;
+	border-left: 0.5rem solid $colorPrimary;
 	border-radius: 0;
 	opacity: 1 !important;
 }
@@ -265,6 +370,54 @@ textarea:focus, textarea:active {
 	padding: 0.5rem;
 }
 
+// Bootstrap alerts
+.close {
+	font-weight: 300;
+	color: $colorOffWhite;
+	text-shadow: none;
+	opacity: 1;
+}
+.close:hover {
+	color: $colorOffWhite;
+}
+.alert {
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0;
+
+	.btn {
+		top: 0;
+		right: 0;
+		padding: 0.5rem 0.75rem;
+		position: absolute;
+		background-color: transparent;
+	}
+}
+.alert-dismissible {
+	padding-right: 3rem;
+
+	.close {
+		padding: 0.5rem 1rem;
+	}
+}
+.alert-success {
+	color: $colorWhite;
+	background: $gradientSuccess;
+}
+.alert-danger {
+	color: $colorWhite;
+	background: $gradientDanger;
+}
+.messages {
+	position: fixed;
+	left: 0;
+	top: 0;
+	padding: 1rem;
+	width: 100%;
+	z-index: 1060;
+}
+
+// Bootstrap badges
 .badge {
 	vertical-align: inherit;
 	font-size: 85%;
@@ -289,6 +442,8 @@ textarea:focus, textarea:active {
 .badge-primary {
 	background-color: $colorPrimary;
 }
+
+// Custom tag component, a wrapper for bootstrap's badge
 .tagLarge {
 	padding-top: 0.5rem;
 	padding-bottom: 0.5rem;
@@ -299,10 +454,28 @@ textarea:focus, textarea:active {
 	cursor: pointer;
 }
 
-.qrCode {
-	max-height: 50vh;
+// Mentions, a variant of tag components
+.mentions {
+	background-color: $colorWhite;
+	box-shadow: $shadowSmallDown inset;
+}
+.mention {
+	padding: 0.1rem 0.5rem;
+	color: $colorWhite;
+	background-color: $colorPrimary;
+	border-radius: 1rem;
+}
+.mention:not(:last-child) {
+	margin-right: 0.25rem;
+	margin-bottom: 0.25rem;
+}
+.mention:hover {
+	color: $colorOffWhite;
+	background-color: $colorSecondary;
+	box-shadow: $shadowSmall;
 }
 
+// Bootstrap forms
 .form-group {
 	margin: 0;
 }
@@ -355,6 +528,7 @@ textarea:focus, textarea:active {
 	border: none;
 }
 
+// Bootstrap buttons
 .btn {
 	border: 0;
 	border-radius: 0;
@@ -371,11 +545,11 @@ textarea:focus, textarea:active {
 }
 .btn-primary {
 	color: $colorWhite;
-	background-color: $primaryColor;
+	background-color: $colorPrimary;
 }
 .btn-primary:not(:disabled):not(.disabled):hover, .btn-primary:not(:disabled):not(.disabled):focus, .btn-primary:not(:disabled):not(.disabled):active {
 	color: $colorOffWhite;
-	background-color: $secondaryColor;
+	background-color: $colorSecondary;
 }
 .btn-danger {
 	color: $colorWhite;
@@ -385,6 +559,8 @@ textarea:focus, textarea:active {
 	color: $colorOffWhite;
 	background-color: $colorDangerAlternate;
 }
+
+// Custom button related components
 .buttonFloating {
 	bottom: 44px;
 	right: 0;
@@ -397,7 +573,7 @@ textarea:focus, textarea:active {
 	z-index: 1030;
 }
 .buttonBar {
-	background-color: $primaryColor;
+	background-color: $colorPrimary;
 }
 .buttonBarRound {
 	.btn {
@@ -422,124 +598,12 @@ textarea:focus, textarea:active {
 	}
 }
 
-.mentions {
-	background-color: $colorWhite;
-	box-shadow: $shadowSmallDown inset;
-}
-.mention {
-	padding: 0.1rem 0.5rem;
-	color: $colorWhite;
-	background-color: $primaryColor;
-	border-radius: 1rem;
-}
-.mention:not(:last-child) {
-	margin-right: 0.25rem;
-	margin-bottom: 0.25rem;
-}
-.mention:hover {
-	color: $colorOffWhite;
-	background-color: $secondaryColor;
-	box-shadow: $shadowSmall;
+// QR code
+.qrCode {
+	max-height: 50vh;
 }
 
-.contentPage .jumbotron:first-child {
-	padding-top: calc(#{$headerHeight} - 10px);
-}
-.jumbotron {
-	margin: 0;
-	padding: 1rem 1.5rem;
-	color: $colorWhite;
-	background: $gradientSecondary;
-	border-radius: 0;
-
-	* {
-		font-weight: 300;
-	}
-
-	p:last-child {
-		margin: 0;
-	}
-
-	a {
-		color: $primaryColor;
-
-	}
-
-	a:hover {
-		text-decoration: none;
-
-		.btn {
-			background-color: $colorOffWhite;
-		}
-	}
-
-	.btn {
-		color: $primaryColor;
-		background-color: $colorWhite;
-	}
-
-	.btn:hover {
-		background-color: $colorOffWhite;
-	}
-}
-.cover {
-	width: 100vw;
-	min-height: 100vh;
-	padding: 2rem;
-	background: $gradientVertical;
-
-	hr {
-		margin: 1rem 0;
-		border-color: $colorWhite;
-	}
-}
-
-.close {
-	font-weight: 300;
-	color: $colorOffWhite;
-	text-shadow: none;
-	opacity: 1;
-}
-.close:hover {
-	color: $colorOffWhite;
-}
-.alert {
-	padding: 0.5rem 1rem;
-	border: none;
-	border-radius: 0;
-
-	.btn {
-		top: 0;
-		right: 0;
-		padding: 0.5rem 0.75rem;
-		position: absolute;
-		background-color: transparent;
-	}
-}
-.alert-dismissible {
-	padding-right: 3rem;
-
-	.close {
-		padding: 0.5rem 1rem;
-	}
-}
-.alert-success {
-	color: $colorWhite;
-	background: $gradientSuccess;
-}
-.alert-danger {
-	color: $colorWhite;
-	background: $gradientDanger;
-}
-.messages {
-    position: fixed;
-    left: 0;
-    top: 0;
-    padding: 1rem;
-    width: 100%;
-    z-index: 1060;
-}
-
+// Directory viewer
 .directoryNode {
 	margin: 0 0 0 0.5rem;
 
@@ -565,42 +629,7 @@ textarea:focus, textarea:active {
 	color: $colorDisabled;
 }
 
-.round {
-	border-radius: 100vw;
-}
-.transparent {
-	background: transparent;
-}
-.restricted {
-	.btn:not(:disabled):not(.disabled) {
-		background-color: $colorRestricted;
-	}
-
-	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
-		background-color: $colorRestrictedAlternate;
-	}
-
-	.buttonBar {
-		background-color: $colorRestricted;
-	}
-}
-.restricted.block {
-	border-color: $colorRestricted;
-}
-
-.floater {
-	position: sticky;
-	z-index: 1040;
-
-	.btn {
-		min-width: inherit;
-		min-height: inherit;
-	}
-}
-.floater > * {
-	box-shadow: $shadowMedium;
-}
-
+// Comments
 .commentThread:not(:last-child) {
 	//margin-bottom: 1rem;
 }
@@ -650,12 +679,4 @@ textarea:focus, textarea:active {
 		padding-left: 1rem;
 		padding-right: 1rem;
 	}
-}
-
-.label {
-	margin: 0;
-	padding: 0.25rem 0.5rem;
-	display: inline-block;
-	color: $colorWhite;
-	background-color: $colorSecondary;
 }

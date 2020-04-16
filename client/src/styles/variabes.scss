@@ -1,16 +1,7 @@
 // Custom variables
-$primaryColor: #7DA888;
-$primaryColor: #D18636;
-$primaryColor: #56C3D6;
-$primaryColor: #3FDAC1;
-$secondaryColor: #709178;
-$secondaryColor: #B36E39;
-$secondaryColor: #4CA1B0;
-$secondaryColor: #509899;
-$secondaryColor: #3EA39C;
-$tertiaryColor: #2C7A74;
 
-$backgroundColor: #F4F5F5;
+// Grayscale colors
+$colorBackground: #F4F5F5;
 $colorWhite: #FFFFFF;
 $colorAlternateWhite: #F9F9F9;
 $colorOffWhite: #EEEEEE;
@@ -19,8 +10,10 @@ $colorGray: gray;
 $colorBlack: #000000;
 $colorOffBlack: #212529;
 
-$colorPrimary: $primaryColor;
-$colorSecondary: $secondaryColor;
+// Theme colors
+$colorPrimary: #3FDAC1;
+$colorSecondary: #3EA39C;
+$colorTertiary: #2C7A74;
 $colorRestricted: #103C4C;
 $colorRestrictedAlternate: #1B4D5D;
 $colorDisabled: #AFB7B6;
@@ -33,10 +26,9 @@ $colorInfo: blue;
 $colorLight: $colorOffWhite;
 $colorDark: $colorOffBlack;
 
-$gradientVertical: linear-gradient(147deg, $secondaryColor 0%, $primaryColor 100%);
-$gradientHorizontal: linear-gradient(118deg, $secondaryColor 31%, $primaryColor 100%);
-$gradientHorizontal: linear-gradient(171deg, $secondaryColor 0%, $primaryColor 54%);
-$gradientSecondary: linear-gradient(147deg, $tertiaryColor 0%, $secondaryColor 100%);
+$gradientVertical: linear-gradient(147deg, $colorSecondary 0%, $colorPrimary 100%);
+$gradientHorizontal: linear-gradient(171deg, $colorSecondary 0%, $colorPrimary 54%);
+$gradientSecondary: linear-gradient(147deg, $colorTertiary 0%, $colorSecondary 100%);
 
 $gradientSuccess: linear-gradient(147deg, $colorSuccessAlternate 0%, $colorSuccess 100%);
 $gradientDanger: linear-gradient(147deg, $colorDangerAlternate 0%, $colorDanger 100%);
@@ -62,6 +54,6 @@ $shadowLarge: 0 0 100px 20px #00000085;
 
 $spacer: 1rem;
 $spacers: (
-		6: ($spacer * 4),
-		7: ($spacer * 5)
+	6: ($spacer * 4),
+	7: ($spacer * 5)
 );
