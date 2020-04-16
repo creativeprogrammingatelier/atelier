@@ -227,6 +227,16 @@ export class Cache {
         return this.exported.asObservable();
     }
 
+    /** Clear all items and collections in the cache */
+    clearAll() {
+        for (const itemKey of Object.keys(this.items)) {
+            this.getItem(itemKey).clear();
+        }
+        for (const collectionKey of Object.keys(this.collections)) {
+            this.getCollection(collectionKey).transaction(cache => cache.clear());
+        }
+    }
+
     /** Get the interface for a single item in the cache */
     getItem<T>(key: string, defaultValue?: T): CacheItemInterface<T> {
         if (!this.items[key]) {
