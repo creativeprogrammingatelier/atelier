@@ -16,7 +16,7 @@ import {
 } from "../../../models/enums/PermissionEnum";
 import {UserDB} from "../database/UserDB";
 import {User} from "../../../models/api/User";
-import {getEnum} from "../../../models/enums/EnumHelper";
+import {getEnum} from "../../../helpers/EnumHelper";
 import {CourseUser} from '../../../models/api/CourseUser';
 
 export const permissionRouter = express.Router();

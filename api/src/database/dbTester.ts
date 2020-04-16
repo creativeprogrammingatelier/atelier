@@ -7,7 +7,7 @@ import {Snippet} from "../../../models/database/Snippet";
 import {User} from "../../../models/database/User";
 import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {CourseState} from "../../../models/enums/CourseStateEnum";
-import {getEnum} from "../../../models/enums/EnumHelper";
+import {getEnum} from "../../../helpers/EnumHelper";
 import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
 import {SubmissionStatus} from "../../../models/enums/SubmissionStatusEnum";
 import {ThreadState} from "../../../models/enums/ThreadStateEnum";

@@ -12,7 +12,7 @@ import {FeedbackContent} from "../../feedback/Feedback";
 import {UserInfo} from "../user/UserInfo";
 import {UserRoles} from "../user/UserRoles";
 import {UserSearch} from "../user/UserSearch";
-import {getEnum} from "../../../../../models/enums/EnumHelper";
+import {getEnum} from "../../../../../helpers/EnumHelper";
 
 interface CourseSettingsEnrollmentProperties {
     courseID: string

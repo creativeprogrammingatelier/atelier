@@ -18,7 +18,7 @@ import {
     containsPermission,
     managePermissions
 } from "../../../models/enums/PermissionEnum";
-import {getEnum} from "../../../models/enums/EnumHelper";
+import {getEnum} from "../../../helpers/EnumHelper";
 
 export function permissionTest() {
     /**

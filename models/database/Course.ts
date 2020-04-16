@@ -4,7 +4,7 @@ import { Course as APICourse, CoursePartial as APICoursePartial } from "../api/C
 import { DBAPIUser, userToAPI, DBUser} from "./User"
 import { pgDB, DBTools, checkAvailable, toDec } from "../../api/src/database/HelperDB"
 import { Permission } from "../api/Permission"
-import { getEnum, checkEnum } from "../enums/EnumHelper"
+import { getEnum, checkEnum } from "../../helpers/EnumHelper"
 import { GlobalRole } from "../enums/GlobalRoleEnum"
 import { CourseRole } from "../enums/CourseRoleEnum"
 

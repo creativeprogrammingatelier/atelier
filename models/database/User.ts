@@ -2,7 +2,7 @@ import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
 import {User as APIUser} from "../api/User";
 import {DBTools, checkAvailable, toDec} from "../../api/src/database/HelperDB";
 import {GlobalRole} from "../enums/GlobalRoleEnum";
-import {getEnum} from "../enums/EnumHelper";
+import {getEnum} from "../../helpers/EnumHelper";
 
 export interface User extends DBTools {
     userID?: string,

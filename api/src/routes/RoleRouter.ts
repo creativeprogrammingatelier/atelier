@@ -6,7 +6,7 @@ import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {requirePermission} from "../helpers/PermissionHelper";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
-import {getEnum} from '../../../models/enums/EnumHelper';
+import {getEnum} from '../../../helpers/EnumHelper';
 import {CourseUser} from '../../../models/api/CourseUser';
 import {UserDB} from "../database/UserDB";
 import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";

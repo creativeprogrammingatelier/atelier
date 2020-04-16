@@ -1,5 +1,3 @@
-// TODO: This file is not an enum, so it's probably in the wrong place
-
 /**
  * A function to make sure a value is contained in an enum, this returns the correct enum value
  * If the given enum is of type <string>=<sameString>, this function can be used multiple times without issue.

@@ -2,7 +2,7 @@ import {DBTools, checkAvailable, toDec, noNull} from "../../api/src/database/Hel
 import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
 import {Mention as APIMention} from "../api/Mention";
 import {CourseRole} from "../enums/CourseRoleEnum";
-import {checkEnum, getEnum} from "../enums/EnumHelper";
+import {checkEnum, getEnum} from "../../helpers/EnumHelper";
 import {InvalidDatabaseResponseError} from "../../api/src/database/DatabaseErrors";
 import {User} from "../api/User";
 import {GlobalRole} from "../enums/GlobalRoleEnum";

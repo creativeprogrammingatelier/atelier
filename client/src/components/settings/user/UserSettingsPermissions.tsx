@@ -2,7 +2,7 @@ import React, {useState, Fragment, useEffect} from "react";
 import {Button, Form} from "react-bootstrap";
 import {CourseUser} from "../../../../../models/api/CourseUser";
 import {User} from "../../../../../models/api/User";
-import {getEnum} from "../../../../../models/enums/EnumHelper";
+import {getEnum} from "../../../../../helpers/EnumHelper";
 import {
     PermissionEnum,
     containsPermission,

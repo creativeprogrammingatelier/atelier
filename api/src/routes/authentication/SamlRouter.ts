@@ -9,7 +9,7 @@ import {AuthError, setTokenCookie} from '../../helpers/AuthenticationHelper';
 import {UserDB} from '../../database/UserDB';
 import {NotFoundDatabaseError} from '../../database/DatabaseErrors';
 import {GlobalRole} from '../../../../models/enums/GlobalRoleEnum';
-import {checkEnum, getEnum} from '../../../../models/enums/EnumHelper';
+import {checkEnum, getEnum} from '../../../../helpers/EnumHelper';
 
 setSchemaValidator(validator);
 
