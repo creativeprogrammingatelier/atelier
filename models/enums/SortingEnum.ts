@@ -1,4 +1,4 @@
 export enum Sorting {
-    alphabetical = "alphabetical",
-    datetime = "datetime",
+	alphabetical = "alphabetical",
+	datetime = "datetime",
 }

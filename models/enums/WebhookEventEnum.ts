@@ -1,4 +1,4 @@
 export enum WebhookEvent {
-    Submission = "submission",
-    SubmissionFile = "submission.file"
+	Submission = "submission",
+	SubmissionFile = "submission.file"
 }

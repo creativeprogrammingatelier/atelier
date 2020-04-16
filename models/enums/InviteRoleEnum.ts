@@ -1,5 +1,5 @@
 export enum InviteRole {
-    student = "student",
-    TA = "TA",
-    teacher = "teacher"
+	student = "student",
+	TA = "TA",
+	teacher = "teacher"
 }
