@@ -1,7 +1,7 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
 
-import {AuthHelper} from "../helpers/AuthHelper";
+import {ErrorBoundary} from "./general/ErrorBoundary";
 import {CacheProvider} from "./general/loading/CacheProvider";
 import {TimeProvider} from "./data/TimeProvider";
 import {AuthenticatedRoute} from "./AuthenticatedRoute";
@@ -28,30 +28,32 @@ import {UserCourseOverview} from "./user/UserCourseOverview";
 import "../styles/base.scss";
 
 export function App() {
-	return <TimeProvider>
-		<CacheProvider>
-			<Switch>
-				<Route path='/register' render={(props) => <Register {...props} />}/>
-				<Route path='/login' render={() => <Login/>}/>
-				<AuthenticatedRoute path='/logout' component={Logout}/>
-				<AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
-				<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
-				<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
-				<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
-				<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
-				<AuthenticatedRoute path='/invite/:inviteId' component={Invite}/>
-				<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={UserCourseOverview}/>
-				<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserCourseOverview}/>
-				<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
-				<AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings}/>
-				<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
-				<AuthenticatedRoute path='/search' component={SearchOverview}/>
-				<AuthenticatedRoute path='/account' component={UserSettings}/>
-				<AuthenticatedRoute path='/activity' component={Activity}/>
-				<AuthenticatedRoute path='/admin/settings' component={SystemSettings}/>
-				<AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
-				<AuthenticatedRoute path='/' component={Homepage}/>
-			</Switch>
-		</CacheProvider>
-	</TimeProvider>;
+	return <ErrorBoundary>
+		<TimeProvider>
+			<CacheProvider>
+				<Switch>
+					<Route path='/register' render={(props) => <Register {...props} />}/>
+					<Route path='/login' render={() => <Login/>}/>
+					<AuthenticatedRoute path='/logout' component={Logout}/>
+					<AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>
+					<AuthenticatedRoute path='/submission/:submissionId/:fileId/:tab' component={FileOverview}/>
+					<AuthenticatedRoute path='/submission/:submissionId' component={SubmissionOverview}/>
+					<AuthenticatedRoute path='/user/:userId/:tab' component={UserOverview}/>
+					<AuthenticatedRoute path='/user/:userId' component={UserOverview}/>
+					<AuthenticatedRoute path='/invite/:inviteId' component={Invite}/>
+					<AuthenticatedRoute path='/course/:courseId/user/:userId/:tab' component={UserCourseOverview}/>
+					<AuthenticatedRoute path='/course/:courseId/user/:userId' component={UserCourseOverview}/>
+					<AuthenticatedRoute path='/course/:courseId/search' component={SearchOverview}/>
+					<AuthenticatedRoute path='/course/:courseId/settings' component={CourseSettings}/>
+					<AuthenticatedRoute path='/course/:courseId' component={CourseOverview}/>
+					<AuthenticatedRoute path='/search' component={SearchOverview}/>
+					<AuthenticatedRoute path='/account' component={UserSettings}/>
+					<AuthenticatedRoute path='/activity' component={Activity}/>
+					<AuthenticatedRoute path='/admin/settings' component={SystemSettings}/>
+					<AuthenticatedRoute path='/bootstrap' component={Bootstrap}/>
+					<AuthenticatedRoute path='/' component={Homepage}/>
+				</Switch>
+			</CacheProvider>
+		</TimeProvider>
+	</ErrorBoundary>; 
 }

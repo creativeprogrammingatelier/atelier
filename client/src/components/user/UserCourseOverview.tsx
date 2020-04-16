@@ -10,6 +10,7 @@ import {getUser, getCourse} from "../../helpers/api/APIHelper";
 
 import {Frame} from "../frame/Frame";
 import {Loading} from "../general/loading/Loading";
+import {ErrorBoundary} from "../general/ErrorBoundary";
 import {TabBar} from "../tab/TabBar";
 import {CommentTab} from "./CommentTab";
 import {SubmissionTab} from "./SubmissionTab";
@@ -64,7 +65,9 @@ export function UserCourseOverview({match: {params: {courseId, userId, tab}}}: U
 								<p>Everything by <Link to={`/user/${user.ID}`}>{user.name}</Link> in <Link
 									to={`/course/${course.ID}`}>{course.name}</Link></p>
 							</Jumbotron>
-							{renderTabContents(user, course)}
+							<ErrorBoundary>
+								{renderTabContents(user, course)}
+							</ErrorBoundary>
 						</Fragment>
 					}
 				/>

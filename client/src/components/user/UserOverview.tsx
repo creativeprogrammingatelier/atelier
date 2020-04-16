@@ -8,6 +8,7 @@ import {getUser} from "../../helpers/api/APIHelper";
 
 import {Frame} from "../frame/Frame";
 import {Loading} from "../general/loading/Loading";
+import {ErrorBoundary} from "../general/ErrorBoundary";
 import {TabBar} from "../tab/TabBar";
 import {CommentTab} from "./CommentTab";
 import {CourseTab} from "./CourseTab";
@@ -55,7 +56,9 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
 					<h1>{user.name}</h1>
 					<p>Welcome back here! :D</p>
 				</Jumbotron>
-				{renderTabContents(user)}
+				<ErrorBoundary>
+					{renderTabContents(user)}
+				</ErrorBoundary>
 				<TabBar
 					tabs={[{
 						id: "courses",

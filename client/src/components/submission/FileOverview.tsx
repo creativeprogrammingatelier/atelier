@@ -13,6 +13,7 @@ import {useSubmission, useFile} from "../../helpers/api/APIHooks";
 import {CacheItem} from "../../helpers/api/Cache";
 
 import {FileNameHelper} from "../../helpers/FileNameHelper";
+import {ErrorBoundary} from "../general/ErrorBoundary";
 import {Cached} from "../general/loading/Cached";
 import {Frame} from "../frame/Frame";
 import {TabBar} from "../tab/TabBar";
@@ -74,7 +75,9 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 					</Cached>
 					{tab === "view" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
 				</Jumbotron>
-				{renderTabContents(file)}
+				<ErrorBoundary>
+					{renderTabContents(file)}
+				</ErrorBoundary>
 				<TabBar
 					tabs={[{
 						id: "view",
