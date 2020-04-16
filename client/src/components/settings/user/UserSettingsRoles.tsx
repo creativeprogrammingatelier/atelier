@@ -10,47 +10,46 @@ import {UserInfo} from "./UserInfo";
 import {UserRoles} from "./UserRoles";
 
 interface UserSettingsRolesProperties<T> {
-    roles: T,
-    courseID?: string
+	roles: T,
+	courseID?: string
 }
-
 export function UserSettingsRoles<T>({roles, courseID}: UserSettingsRolesProperties<T>) {
-    const [user, setUser] = useState(undefined as User | undefined);
-    const [role, setRole] = useState(undefined as T | undefined);
-
-    const handleUpdate = () => {
-        if (user && role) {
-            if (courseID) {
-                updateCourseRole(user.ID, courseID, role as unknown as CourseRole)
-                    .then((user: CourseUser) => {
-                        console.log("Updated role in course");
-                        console.log(user);
-                        setUser(undefined);
-                        setRole(undefined);
-                        // TODO: Visual feedback
-                    });
-            } else {
-                updateGlobalRole(user.ID, role as unknown as GlobalRole)
-                    .then((user: User) => {
-                        console.log("Updated global role");
-                        console.log(user);
-                        setUser(undefined);
-                        setRole(undefined);
-                        // TODO: Visual feedback
-                    });
-            }
-        }
-    };
-
-    return <Form>
-        <UserSearch courseID={courseID} onSelected={setUser}/>
-        {
-            user &&
-            <Fragment>
-                <UserInfo user={user}/>
-                <UserRoles<T> roles={roles} onSelected={setRole}/>
-                <Button onClick={handleUpdate}>Update Role</Button>
-            </Fragment>
-        }
-    </Form>
+	const [user, setUser] = useState(undefined as User | undefined);
+	const [role, setRole] = useState(undefined as T | undefined);
+	
+	const handleUpdate = () => {
+		if (user && role) {
+			if (courseID) {
+				updateCourseRole(user.ID, courseID, role as unknown as CourseRole)
+					.then((user: CourseUser) => {
+						console.log("Updated role in course");
+						console.log(user);
+						setUser(undefined);
+						setRole(undefined);
+						// TODO: Visual feedback
+					});
+			} else {
+				updateGlobalRole(user.ID, role as unknown as GlobalRole)
+					.then((user: User) => {
+						console.log("Updated global role");
+						console.log(user);
+						setUser(undefined);
+						setRole(undefined);
+						// TODO: Visual feedback
+					});
+			}
+		}
+	};
+	
+	return <Form>
+		<UserSearch courseID={courseID} onSelected={setUser}/>
+		{
+			user &&
+			<Fragment>
+				<UserInfo user={user}/>
+				<UserRoles<T> roles={roles} onSelected={setRole}/>
+				<Button onClick={handleUpdate}>Update Role</Button>
+			</Fragment>
+		}
+	</Form>;
 }
