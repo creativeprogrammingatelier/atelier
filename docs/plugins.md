@@ -2,6 +2,25 @@
 
 One of the central parts of the Atelier project is the ability of automated code checking services to leave comments on the user’s code. For this to work, Atelier needs to be able to notify plugins that something happened and also allow plugins to make API requests to gather more data, create comments or otherwise influence the system, depending on the needs of the plugin.
 
+We'll first take a look at how to install a plugin in Atelier, then we'll go into the technical details of how a plugin can integrate with Atelier.
+
+## Installing a plugin
+
+Plugins are configured in the system settings, where you can find a list of all plugins. For every plugin, the following fields can be set:
+
+| Field          | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| Name           | The name of the plugin, shown on objects created by the plugin. The suffix (Plugin) is automatically added |
+| Email          | The email address associated with the plugin’s user account  |
+| Webhook URL    | The URL of the plugin to which webhook requests are made     |
+| Webhook secret | A secret shared between Atelier and the plugin, used for the authentication of webhook requests |
+| Public key     | Cryptographic public key of the plugin, used for the authentication of API requests |
+| Used webhooks  | Set of events the plugin is subscribed to                    |
+
+Besides these fields, the settings page also displays the ID of the plugin, as some plugins may require this information to function correctly. The name and email are usually up to the administrator to decide, for the correct values of the other options, please consult the documentation of the plugin.
+
+## Technical description
+
 The system we designed is inspired by the GitHub Applications API and has two basic building blocks: an API that an application can call to modify the system, and a Webhook integration that can notify plugins of changes in the system. The general flow for a plugin could look like this:
 
 ![Flow for a generic plugin](assets/plugins/Generic plugin.png)
@@ -37,7 +56,7 @@ The plugin can use the same general API as is used by normal users via the front
 
 Besides the general user data, we do need more information for a plugin to function. For example a list of events that the plugin subscribes to and the URL at which the plugin listens for Webhook requests. To enable a secure exchange of information between Atelier and a plugin, we store two more properties of a plugin: a Webhook secret and a public key. An administrator can configure all these settings when they register a plugin in Atelier. The next section explains how these last two settings are used.
 
-## Security of plugins
+### Security of plugins
 
 There are two main problems of authentication with plugins: how does the plugin know that the Webhook was sent by Atelier and how does Atelier know that it’s the plugin making API requests.
 
@@ -47,7 +66,7 @@ The second problem is solved using the public key, which also needs to be config
 
 Examples of how to validate a Webhook request and how to request an API token can be found in the */test/plugin* folder.
 
-## Supported events
+### Supported events
 
 | Event             | Payload type | Description                                              |
 | ----------------- | ------------ | -------------------------------------------------------- |
