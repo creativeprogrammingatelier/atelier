@@ -1,16 +1,15 @@
 import React from "react";
-import {Sharing} from "../share/Sharing";
 import {File} from "../../../../models/api/File";
+import {Sharing} from "../share/Sharing";
 
-interface ShareProperties {
-    file: File,
-    url: string
+interface ShareTabProperties {
+	file: File,
+	url: string
 }
-
-export function ShareTab({url}: ShareProperties) {
-    return <div className="contentTab">
-        <div className="m-3">
-            <Sharing url={url}/>
-        </div>
-    </div>;
+export function ShareTab({url}: ShareTabProperties) {
+	return <div className="contentTab">
+		<div className="m-3">
+			<Sharing url={url}/>
+		</div>
+	</div>;
 }
