@@ -47,7 +47,7 @@ function Content({user}: ContentProperties) {
 		<Logo/>
 		<hr/>
 		<SidebarEntry location="/" icon={FiHome} close={close}>Home</SidebarEntry>
-		<SidebarEntry location="/activity" icon={FiActivity} close={close}>Activity</SidebarEntry>
+		<SidebarEntry location="/activity" icon={FiActivity} close={close}>Mentions</SidebarEntry>
 		<SidebarEntry location="/account" icon={FiSliders} close={close}>Account</SidebarEntry>
 		<Permissions
 			any={[
