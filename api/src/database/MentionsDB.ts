@@ -1,24 +1,21 @@
-import {pool, DBTools, extract, map, one, checkAvailable} from "./HelperDB"
+import {Mention, mentionToAPI} from "../../../models/database/Mention";
+
 import {UUIDHelper} from "../helpers/UUIDHelper";
-import {convertMention, Mention, mentionToAPI} from "../../../models/database/Mention";
-import {MentionsView} from "./ViewsDB";
+
 import {MissingFieldDatabaseError} from "./DatabaseErrors";
+import {pool, DBTools, extract, map, one, checkAvailable} from "./HelperDB"
+import {MentionsView} from "./ViewsDB";
 
 export class MentionsDB {
-    static async getMentionsUserCourse() {
-
-    }
-
-    static async getAllMentions(params: DBTools = {}) {
-        return MentionsDB.filterMentions(params);
-    }
-
-    static async getMentionsByUser(userID: string, courseID?: string, params: DBTools = {}) {
-        const {client = pool, limit = undefined, offset = undefined} = params;
-        const userid = UUIDHelper.toUUID(userID),
-            courseid = UUIDHelper.toUUID(courseID);
-
-        return client.query(`
+	static async getAllMentions(params: DBTools = {}) {
+		return MentionsDB.filterMentions(params);
+	}
+	static async getMentionsByUser(userID: string, courseID?: string, params: DBTools = {}) {
+		const {client = pool, limit = undefined, offset = undefined} = params;
+		const userid = UUIDHelper.toUUID(userID),
+			courseid = UUIDHelper.toUUID(courseID);
+		
+		return client.query(`
             SELECT m.*
             FROM "MentionsView" as m
             WHERE ($2::uuid IS NULL OR m.courseID = $2)
@@ -34,38 +31,36 @@ export class MentionsDB {
                 )
             ) ORDER BY m.created DESC LIMIT $3 OFFSET $4
 		`, [userid, courseid, limit, offset])
-            .then(extract).then(map(mentionToAPI))
-    }
-
-    static async getMentionsByComment(commentID: string, params: DBTools = {}) {
-        return this.filterMentions({...params, commentID})
-    }
-
-    static async getMentionByID(mentionID: string, params: DBTools = {}) {
-        return this.filterMentions({...params, mentionID}).then(one)
-    }
-
-    static async filterMentions(mention: Mention) {
-        const {
-            mentionID = undefined,
-            mentionGroup = undefined,
-            userID = undefined,
-            commentID = undefined,
-            limit = undefined,
-            offset = undefined,
-            commentThreadID = undefined,
-            submissionID = undefined,
-            courseID = undefined,
-            client = pool
-        } = mention;
-        const mentionid = UUIDHelper.toUUID(mentionID),
-            userid = UUIDHelper.toUUID(userID),
-            commentid = UUIDHelper.toUUID(commentID),
-            commentthreadid = UUIDHelper.toUUID(commentThreadID),
-            submissionid = UUIDHelper.toUUID(submissionID),
-            courseid = UUIDHelper.toUUID(courseID);
-
-        return client.query(`
+			.then(extract).then(map(mentionToAPI))
+	}
+	static async getMentionsByComment(commentID: string, params: DBTools = {}) {
+		return this.filterMentions({...params, commentID})
+	}
+	static async getMentionByID(mentionID: string, params: DBTools = {}) {
+		return this.filterMentions({...params, mentionID}).then(one)
+	}
+	
+	static async filterMentions(mention: Mention) {
+		const {
+			mentionID = undefined,
+			mentionGroup = undefined,
+			userID = undefined,
+			commentID = undefined,
+			limit = undefined,
+			offset = undefined,
+			commentThreadID = undefined,
+			submissionID = undefined,
+			courseID = undefined,
+			client = pool
+		} = mention;
+		const mentionid = UUIDHelper.toUUID(mentionID),
+			userid = UUIDHelper.toUUID(userID),
+			commentid = UUIDHelper.toUUID(commentID),
+			commentthreadid = UUIDHelper.toUUID(commentThreadID),
+			submissionid = UUIDHelper.toUUID(submissionID),
+			courseid = UUIDHelper.toUUID(courseID);
+		
+		return client.query(`
 			SELECT *
 			FROM "MentionsView"
 			WHERE 
@@ -80,23 +75,23 @@ export class MentionsDB {
 			LIMIT $8
 			OFFSET $9
 		`, [mentionid, userid, commentid, commentthreadid, submissionid, courseid, mentionGroup, limit, offset])
-            .then(extract).then(map(mentionToAPI))
-    }
-
-    static async addMention(mention: Mention) {
-        checkAvailable(["commentID"], mention);
-        if (!mention.userID && !mention.mentionGroup) {
-            throw new MissingFieldDatabaseError("Mention requires either a userID or a mentionGroup");
-        }
-        const {
-            userID,
-            commentID,
-            mentionGroup,
-            client = pool
-        } = mention;
-        const userid = UUIDHelper.toUUID(userID),
-            commentid = UUIDHelper.toUUID(commentID);
-        return client.query(`
+			.then(extract).then(map(mentionToAPI))
+	}
+	
+	static async addMention(mention: Mention) {
+		checkAvailable(["commentID"], mention);
+		if (!mention.userID && !mention.mentionGroup) {
+			throw new MissingFieldDatabaseError("Mention requires either a userID or a mentionGroup");
+		}
+		const {
+			userID,
+			commentID,
+			mentionGroup,
+			client = pool
+		} = mention;
+		const userid = UUIDHelper.toUUID(userID),
+			commentid = UUIDHelper.toUUID(commentID);
+		return client.query(`
 		WITH insert AS (
 			INSERT INTO "Mentions"
 			VALUES (DEFAULT, $1, $2, $3)
@@ -104,21 +99,20 @@ export class MentionsDB {
 		)
 		${MentionsView('insert')}
 		`, [commentid, userid, mentionGroup])
-            .then(extract).then(map(mentionToAPI)).then(one)
-    }
-
-    static async updateMention(mention: Mention) {
-        checkAvailable(["mentionID"], mention);
-        const {
-            mentionID,
-            commentID,
-            userID,
-            client = pool
-        } = mention;
-        const mentionid = UUIDHelper.toUUID(mentionID),
-            commentid = UUIDHelper.toUUID(commentID),
-            userid = UUIDHelper.toUUID(userID);
-        return client.query(`
+			.then(extract).then(map(mentionToAPI)).then(one)
+	}
+	static async updateMention(mention: Mention) {
+		checkAvailable(["mentionID"], mention);
+		const {
+			mentionID,
+			commentID,
+			userID,
+			client = pool
+		} = mention;
+		const mentionid = UUIDHelper.toUUID(mentionID),
+			commentid = UUIDHelper.toUUID(commentID),
+			userid = UUIDHelper.toUUID(userID);
+		return client.query(`
 		with update AS (
 			UPDATE "Mentions" SET
 			userID = COALESCE($2, userID),
@@ -128,19 +122,15 @@ export class MentionsDB {
 		)
 		${MentionsView("update")}
 		`, [mentionid, userid, commentid])
-            .then(extract).then(map(mentionToAPI)).then(one)
-    }
-
-    /**
-     * mentions are automatically deleted when their comment or user vanishes.
-     *
-     */
-    static async deleteMention(mentionID: string, params: DBTools = {}) {
-        const {
-            client = pool
-        } = params;
-        const mentionid = UUIDHelper.toUUID(mentionID);
-        return client.query(`
+			.then(extract).then(map(mentionToAPI)).then(one)
+	}
+	static async deleteMention(mentionID: string, params: DBTools = {}) {
+		// Mentions are automatically deleted when their comment or user vanishes.
+		const {
+			client = pool
+		} = params;
+		const mentionid = UUIDHelper.toUUID(mentionID);
+		return client.query(`
 		WITH delete AS (
 			DELETE FROM "Mentions"
 			WHERE mentionID = $1
@@ -148,5 +138,5 @@ export class MentionsDB {
 		)
 		${MentionsView('delete')}
 		`, [mentionid])
-    }
+	}
 }
