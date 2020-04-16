@@ -6,7 +6,7 @@ import {TimeProvider} from "./data/TimeProvider";
 import {AuthenticatedRoute} from "./AuthenticatedRoute";
 
 import Register from "./Register";
-import Logout from "./Logout";
+import {Logout} from "./Logout";
 import {Login} from "./Login";
 
 import {Homepage} from "./Homepage";
