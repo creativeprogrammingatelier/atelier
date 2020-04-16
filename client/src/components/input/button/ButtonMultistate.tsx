@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Button} from "react-bootstrap";
+
 import {BootstrapVariant} from "../../../helpers/BootstrapHelper";
 import {HTMLProperties} from "../../../helpers/HTMLHelper";
 import {Children} from "../../../helpers/ParentHelper";
@@ -11,6 +12,7 @@ interface ButtonMultistateProperties extends HTMLProperties {
 }
 export function ButtonMultistate({variant, states, finish, className, id, key}: ButtonMultistateProperties) {
 	const [state, setState] = useState(0);
+	
 	const handleClick = () => {
 		// This could look nicer, but setState is asynchronous
 		if (state === states.length - 1) {
