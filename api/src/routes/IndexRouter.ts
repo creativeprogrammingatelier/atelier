@@ -1,10 +1,11 @@
+import express from 'express';
+import path from 'path';
+
 /**
- * Base Routes File
+ * Default router for files and other things not caught by the other routers
  * Author: Andrew Heath
  * Date Created: 13/08/19
  */
-import express from 'express';
-import path from 'path';
 
 export const indexRouter = express.Router();
 
