@@ -44,65 +44,6 @@ textarea:focus, textarea:active {
 	outline: none;
 }
 
-// Custom generic use classes
-.round {
-	border-radius: 100vw;
-}
-.transparent {
-	background: transparent;
-}
-.restricted {
-	.btn:not(:disabled):not(.disabled) {
-		background-color: $colorRestricted;
-	}
-
-	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
-		background-color: $colorRestrictedAlternate;
-	}
-
-	.buttonBar {
-		background-color: $colorRestricted;
-	}
-}
-.restricted.block {
-	border-color: $colorRestricted;
-}
-
-.floater {
-	position: sticky;
-	z-index: 1040;
-
-	.btn {
-		min-width: inherit;
-		min-height: inherit;
-	}
-}
-.floater > * {
-	box-shadow: $shadowMedium;
-}
-
-.label {
-	margin: 0;
-	padding: 0.25rem 0.5rem;
-	display: inline-block;
-	color: $colorWhite;
-	background-color: $colorSecondary;
-}
-
-// Custom larger content containers
-.content {
-	//margin-top: $headerHeight;
-}
-.contentPage {
-	min-height: 100vh;
-	display: flex;
-	flex-flow: column;
-}
-.contentTab {
-	//padding-bottom: calc(28px + 1rem);
-	flex: 1 1 auto;
-}
-
 // Custom generic use content containers
 .area {
 	background-color: $colorWhite;
@@ -525,7 +466,14 @@ textarea:focus, textarea:active {
 	background-color: $colorSecondary;
 }
 .custom-control-label::before {
+	background-color: $colorAlternateWhite;
 	border: none;
+}
+.custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
+	background-color: $colorTertiary;
+}
+.custom-control-input[disabled] ~ .custom-control-label::before, .custom-control-input:disabled ~ .custom-control-label::before {
+	background-color: $colorOffWhite;
 }
 
 // Bootstrap buttons
@@ -679,4 +627,63 @@ textarea:focus, textarea:active {
 		padding-left: 1rem;
 		padding-right: 1rem;
 	}
+}
+
+// Custom generic use classes
+.round {
+	border-radius: 100vw;
+}
+.transparent {
+	background: transparent;
+}
+.restricted {
+	.btn:not(:disabled):not(.disabled) {
+		background-color: $colorRestricted;
+	}
+
+	.btn:not(:disabled):not(.disabled):hover, .btn:not(:disabled):not(.disabled):active {
+		background-color: $colorRestrictedAlternate;
+	}
+
+	.buttonBar {
+		background-color: $colorRestricted;
+	}
+}
+.restricted.block {
+	border-color: $colorRestricted;
+}
+
+.floater {
+	position: sticky;
+	z-index: 1040;
+
+	.btn {
+		min-width: inherit;
+		min-height: inherit;
+	}
+}
+.floater > * {
+	box-shadow: $shadowMedium;
+}
+
+.label {
+	margin: 0;
+	padding: 0.25rem 0.5rem;
+	display: inline-block;
+	color: $colorWhite;
+	background-color: $colorSecondary;
+}
+
+// Custom larger content containers
+.content {
+	//margin-top: $headerHeight;
+}
+.contentPage {
+	min-height: 100vh;
+	display: flex;
+	flex-flow: column;
+}
+.contentTab {
+	//padding-bottom: calc(28px + 1rem);
+	flex: 1 1 auto;
 }

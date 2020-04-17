@@ -86,7 +86,7 @@ export function UserSettingsPermissions({courseID}: UserSettingsPermissionsPrope
 
 function UserSettingsPermissionsSection({header, display, state, setState}: UserSettingsPermissionsSectionProperties) {
 	return <LabeledInput label={header}>
-		<Area>
+		<Area className="ml-2">
 			{Object.entries(display).map(([name, display]: [string, string]) =>
 				<CheckboxInput
 					key={name}

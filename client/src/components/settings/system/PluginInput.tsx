@@ -10,6 +10,7 @@ import {createPlugin, deletePlugin, updatePlugin} from "../../../helpers/api/API
 import {FeedbackError} from "../../feedback/FeedbackError";
 import {FeedbackContent} from "../../feedback/Feedback";
 import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
+import {Area} from "../../general/Area";
 import {MaybeInput} from "../../input/maybe/MaybeInput";
 import {MaybeTextarea} from "../../input/maybe/MaybeTextarea";
 import {CheckboxInput} from "../../input/CheckboxInput";
@@ -154,21 +155,23 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 			<MaybeTextarea modify={editing} placeholder="Plugin public key" value={publicKey} onChange={setPublicKey}/>
 		</LabeledInput>
 		<LabeledInput label="Used webhooks">
-			{Object.values(WebhookEvent).map(event =>
-				<CheckboxInput
-					name={event}
-					key={event}
-					value={event}
-					selected={hooks.includes(event)}
-					disabled={!editing}
-					onChange={(state) => {
-						state ?
-							setHooks(hooks => hooks.concat(event))
-							:
-							setHooks(hooks => hooks.filter(hook => hook !== event));
-					}}
-				/>
-			)}
+			<Area className="ml-2">
+				{Object.values(WebhookEvent).map(event =>
+					<CheckboxInput
+						name={event}
+						key={event}
+						value={event}
+						selected={hooks.includes(event)}
+						disabled={!editing}
+						onChange={(state) => {
+							state ?
+								setHooks(hooks => hooks.concat(event))
+								:
+								setHooks(hooks => hooks.filter(hook => hook !== event));
+						}}
+					/>
+				)}
+			</Area>
 		</LabeledInput>
 		{editing ?
 			<div>
