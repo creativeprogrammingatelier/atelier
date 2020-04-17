@@ -28,8 +28,10 @@ export function CommentTab({user, course}: CommentTabProperties) {
 							title: comment.user.name,
 							text: comment.text,
 							time: TimeHelper.fromString(comment.created),
-							transport: `/submission/${comment.references.submissionID}/${comment.references.fileID}/comments#${comment.references.commentThreadID}`
-							// TODO: Link to correct /submission/:submissionId/#:commentThreadId for project-level comments
+							transport: comment.references.fileID === undefined ?
+								`/submission/${comment.references.submissionID}#${comment.references.commentThreadID}`
+								:
+								`/submission/${comment.references.submissionID}/${comment.references.fileID}/comments#${comment.references.commentThreadID}`
 						};
 					})}
 				/>
