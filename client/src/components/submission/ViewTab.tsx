@@ -18,14 +18,14 @@ export function ViewTab({file, viewer: viewer}: ViewTabProperties) {
 	const fileComments = useFileComments(file.references.submissionID, file.ID);
 	
 	const sendComment: FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => {
-		const commentText = comment.trim();
-		if (commentText === "") {
+		const commentBody = comment.trim();
+		if (commentBody === "") {
 			// Should the user get an error message when sending an empty comment? or would they understand?
 			return Promise.resolve(new FeedbackMessage("error", false));
 		}
 		return fileComments.create({
 			submissionID: file.references.submissionID,
-			comment,
+			comment: commentBody,
 			snippet: selection,
 			visibility: restricted ? ThreadState.private : ThreadState.public
 		})

@@ -14,7 +14,7 @@ import {Snippet} from "../code/Snippet";
 import {Cached} from "../general/loading/Cached";
 import {Block} from "../general/Block";
 import {ButtonBar} from "../input/button/ButtonBar";
-import {FeedbackContent} from "../feedback/Feedback";
+import {FeedbackContent, FeedbackMessage} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
 import {Comment as CommentComponent} from "./Comment";
@@ -35,23 +35,27 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	};
 	
 	const handleCommentSend = async(comment: string) => {
-		const commentTrimmed = comment.trim();
-		return comments.create(commentTrimmed)
+		const commentBody = comment.trim();
+		if (commentBody === "") {
+			// Should the user get an error message when sending an empty comment? or would they understand?
+			return Promise.resolve(false);
+		}
+		return comments.create(commentBody)
 			.then(() => true)
-			.catch((err: Error) => {
-				setError("Failed to create reply: " + err.message);
+			.catch((error: Error) => {
+				setError("Failed to create reply: " + error.message);
 				return false;
 			});
 	};
 	const handleDiscard = () => {
 		threadCache.delete()
 			.then(() => setSuccess("This thread of comments has been deleted."))
-			.catch((err: Error) => setError(`Thread could not be deleted: ${err.message}`));
+			.catch((error: Error) => setError(`Thread could not be deleted: ${error.message}`));
 	};
 	const handleVisibility = () => {
 		threadCache.update(thread.visibility === ThreadState.public ? ThreadState.private : ThreadState.public)
 			.then(thread => setSuccess(`Visibility updated, now: ${thread.visibility}`))
-			.catch((err: Error) => setError(`Changing visibility failed: ${err.message}`));
+			.catch((error: Error) => setError(`Changing visibility failed: ${error.message}`));
 	};
 	
 	return <div className="mb-3">
