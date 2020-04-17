@@ -14,7 +14,7 @@ import {Snippet} from "../code/Snippet";
 import {Cached} from "../general/loading/Cached";
 import {Block} from "../general/Block";
 import {ButtonBar} from "../input/button/ButtonBar";
-import {FeedbackContent, FeedbackMessage} from "../feedback/Feedback";
+import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
 import {Comment as CommentComponent} from "./Comment";

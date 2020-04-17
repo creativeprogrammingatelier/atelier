@@ -38,14 +38,21 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	const submissionPath = "/submission/" + submissionId;
 	
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
+		const commentBody = comment.trim();
+		if (commentBody === "") {
+			// Should the user get an error message when sending an empty comment? or would they understand?
+			return Promise.resolve(false);
+		}
 		const createdComment = await projectComments.create({
 			submissionID: submissionId,
-			comment,
+			comment: commentBody,
 			visibility: restricted ? ThreadState.private : ThreadState.public
-		}).catch(status => {
-			setError(`Failed to create comment`);
-			return status;
-		});
+		})
+			.then(() => true)
+			.catch((error: Error) => {
+				setError(`Failed to create comment: ${error.message}`);
+				return false;
+			});
 		setCreatingComment(false);
 		return createdComment;
 	};
