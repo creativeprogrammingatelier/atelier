@@ -16,10 +16,10 @@ import {CourseState} from "../../../../models/enums/CourseStateEnum";
 import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
 import {GlobalRole} from "../../../../models/enums/GlobalRoleEnum";
 import {InviteRole} from "../../../../models/enums/InviteRoleEnum";
-import {Sorting} from "../../../../models/enums/SortingEnum";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
 import "../../../../helpers/Extensions";
+import {ParameterHelper} from "../ParameterHelper";
 
 import {Fetch} from "./FetchHelper";
 
@@ -35,33 +35,6 @@ const jsonBody = <T>(method: string, body: T) => ({
 	});
 const postJson = <T>(body: T) => jsonBody("POST", body);
 const putJson = <T>(body: T) => jsonBody("PUT", body);
-
-// Convert a key-value object into a string of query parameters
-function queryParams(params: {[key: string]: string | number | boolean | undefined}) {
-	if (!params) {
-		return "";
-	}
-	const items = Object.keys(params)
-		.filter(key => params[key] !== undefined)
-		.map(key => encodeURIComponent(key) + "=" + encodeURIComponent(params[key]!));
-	if (items.length > 0) {
-		return "?" + items.join("&");
-	} else {
-		return "";
-	}
-}
-
-// Interface for search parameters
-interface SearchParameters {
-	[key: string]: string | number | Sorting | undefined,
-	q: string,
-	limit?: number,
-	offset?: number,
-	sorting?: Sorting,
-	courseID?: string,
-	userID?: string,
-	submissionID?: string
-}
 
 // Courses
 export const getCourse = (courseID: string) => {
@@ -226,12 +199,12 @@ export const getCourseMentions = (courseID: string) => {
 
 // Search
 
-export const search = (params: SearchParameters) => {
-	return Fetch.fetchJson<SearchResult>("/api/search" + queryParams(params));
+export const search = (query: string) => {
+	return Fetch.fetchJson<SearchResult>(`/api/search${query}`);
 };
 export const searchUsers = (query: string, courseID?: string, limit = 20, offset = 0) => {
 	// If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
-	return Fetch.fetchJson<User[]>("/api/search/users" + queryParams({q: query, courseID, limit, offset}));
+	return Fetch.fetchJson<User[]>("/api/search/users" + ParameterHelper.createQueryParameters({q: query, courseID, limit, offset}));
 };
 
 // Auth

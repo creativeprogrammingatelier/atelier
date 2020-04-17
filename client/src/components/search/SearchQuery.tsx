@@ -7,10 +7,11 @@ import {Course} from "../../../../models/api/Course";
 import {SearchResult} from "../../../../models/api/SearchResult";
 import {Submission} from "../../../../models/api/Submission";
 import {User} from "../../../../models/api/User";
-import {Sorting} from "../../../../models/enums/SortingEnum";
+import {Sorting, sortingNames} from "../../../../models/enums/SortingEnum";
 
 import {getCourses, getSubmission, getUser, search} from "../../helpers/api/APIHelper";
 import {getEnum} from "../../../../helpers/EnumHelper";
+import {ParameterHelper} from "../../helpers/ParameterHelper";
 
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
@@ -24,11 +25,11 @@ interface SearchQueryProperties {
 	handleResponse?: (results: SearchResult) => void
 }
 export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
-	const [query, setQuery] = useState("");
+	const [query, setQuery] = useState(state.query ? state.query : "");
 	const [course, setCourse] = useState(state.course as string | undefined);
 	const [user, setUser] = useState(state.user as string | undefined);
 	const [submission, setSubmission] = useState(state.submission as string | undefined);
-	const [sorting, setSorting] = useState(Sorting.datetime);
+	const [sorting, setSorting] = useState(state.sorting ? state.sorting : Sorting.datetime);
 	const [error, setError] = useState(false as FeedbackContent);
 	const [shift, setShift] = useState(false);
 	const history = useHistory();
@@ -58,13 +59,15 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 	const handleSearch = async() => {
 		setError(false);
 		try {
-			const results = await search({
+			const parameters = ParameterHelper.createSearchParameters({
 				q: query,
 				courseID: course,
 				userID: user,
 				submissionID: submission,
 				sorting
 			});
+			const results = await search(parameters);
+			history.push(`/search${parameters}`);
 			setQuery("");
 			if (handleResponse !== undefined) {
 				handleResponse(results);
@@ -108,7 +111,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 				}
 			</Form.Group>
 		}
-		<LabeledInput label="Course">
+		<LabeledInput label="Course" className="w-50 pr-1">
 			<Loading<Course[]>
 				loader={getCourses}
 				component={courses =>
@@ -124,13 +127,13 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 				}
 			/>
 		</LabeledInput>
-		<LabeledInput label="Sorting">
+		<LabeledInput label="Sorting" className="w-50 pl-1">
 			<Form.Control
 				as="select"
 				defaultValue={Sorting.datetime}
 				onChange={event => setSorting(getEnum(Sorting, (event.target as HTMLInputElement).value))}
 			>
-				{Object.keys(Sorting).map(element => <option key={element} value={element}>{element}</option>)}
+				{Object.keys(Sorting).map(element => <option key={element} value={element}>{sortingNames[element]}</option>)}
 			</Form.Control>
 		</LabeledInput>
 		<LabeledInput label="Query">
