@@ -16,12 +16,15 @@ export function ImageViewer({file, sendComment}: FileViewerProperties) {
 	const [error, setError] = useState(false as FeedbackContent);
 	
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
-		return sendComment(comment, restricted).then(state => {
-			setSuccess(`Started new comment thread`);
-			return state;
-		}).catch(state => {
-			setError(`Could not create comment`);
-			return state;
+		return sendComment(comment, restricted).then(feedback => {
+			if (feedback.type === "success") {
+				setSuccess(feedback.content);
+				return true;
+			} else if (feedback.type === "error") {
+				setError(feedback.content);
+				return false;
+			}
+			return false;
 		});
 	};
 	

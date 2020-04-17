@@ -49,7 +49,14 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 		return snippets;
 	};
 	const handleCommentSend = async(comment: string, restricted: boolean, selection: Selection) => {
-		return sendComment(comment, restricted, selection);
+		return sendComment(comment, restricted, selection).then(feedback => {
+			if (feedback.type === "error") {
+				setError(feedback.content);
+				return false;
+			}
+			// Maybe a success message can be added, although a highlighted snippet should appear to indicate success
+			return true;
+		});
 	};
 	
 	return <Fragment>

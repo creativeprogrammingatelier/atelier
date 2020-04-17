@@ -13,6 +13,7 @@ import {useSubmission, useFile} from "../../helpers/api/APIHooks";
 import {CacheItem} from "../../helpers/api/Cache";
 
 import {FileNameHelper} from "../../helpers/FileNameHelper";
+import {FeedbackMessage} from "../feedback/Feedback";
 import {ErrorBoundary} from "../general/ErrorBoundary";
 import {Cached} from "../general/loading/Cached";
 import {Frame} from "../frame/Frame";
@@ -102,7 +103,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 	</Cached>;
 }
 
-export type FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => Promise<boolean>;
+export type FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => Promise<FeedbackMessage>;
 
 export interface FileViewerProperties {
 	file: File,

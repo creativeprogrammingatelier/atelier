@@ -7,6 +7,16 @@ import {HTMLProperties} from "../../helpers/HTMLHelper";
 import {Parent} from "../../helpers/ParentHelper";
 
 export type FeedbackContent = string | false;
+export type FeedbackType = "success" | "error";
+export class FeedbackMessage {
+	type: FeedbackType;
+	content: FeedbackContent;
+	
+	constructor(type: FeedbackType, content: FeedbackContent) {
+		this.type = type;
+		this.content = content;
+	}
+}
 
 export interface FeedbackProperties extends HTMLProperties {
 	show?: boolean | FeedbackContent,
