@@ -210,9 +210,9 @@ textarea:focus, textarea:active {
 	border-top: 1px solid $colorWhite;
 }
 .link {
-	padding: 0.75rem 0.5rem;
-
 	a {
+		padding: 0.75rem 0.5rem;
+		display: block;
 		color: #FFFFFF !important;
 	}
 
