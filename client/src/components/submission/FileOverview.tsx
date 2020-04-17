@@ -4,7 +4,7 @@ import {Button, Jumbotron} from "react-bootstrap";
 import {IconType} from "react-icons";
 import {FiMessageSquare, FiShare2} from "react-icons/all";
 import {map} from "rxjs/operators";
-import {useObservableState} from "observable-hooks";
+import {useObservableState, useObservable} from "observable-hooks";
 
 import {File} from "../../../../models/api/File";
 import {Selection} from "../../../../models/api/Snippet";
@@ -36,14 +36,15 @@ interface FileOverviewProperties {
 export function FileOverview({match: {params: {submissionId, fileId, tab}}}: FileOverviewProperties) {
 	const submission = useSubmission(submissionId);
 	const file = useFile(submissionId, fileId);
-	const fileViewer = useObservableState(
+	const fileViewerObservable = useObservable(() =>
 		file.observable.pipe(
 			map(item => {
 				const file = (item as CacheItem<File>)?.value;
 				return (file !== undefined && getFileViewer(file)) || FileViewerUnsupported;
 			})
-		), FileViewerUnsupported
+		)
 	);
+	const fileViewer = useObservableState(fileViewerObservable, FileViewerUnsupported);
 	
 	const submissionPath = "/submission/" + submissionId;
 	const filePath = submissionPath + "/" + fileId;
