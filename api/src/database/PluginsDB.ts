@@ -1,6 +1,7 @@
 import {PluginInput, convertPlugin, Plugin} from "../../../models/database/Plugin";
 import {convertPluginHook, PluginHookInput} from "../../../models/database/PluginHook";
 import {UUIDHelper} from "../helpers/UUIDHelper";
+import {logger} from "../helpers/LoggingHelper";
 import {checkAvailable, pool, pgDB, extract, map, one} from "./HelperDB";
 
 export class PluginsDB {
@@ -84,7 +85,7 @@ export class PluginsDB {
 			.then(extract).then(map(convertPlugin)).then(one);
 	}
 	static async deletePlugin(pluginID: string, client: pgDB = pool) {
-		console.warn("using this delete probably doesn't do what you want. \n\
+		logger.warn("using this delete probably doesn't do what you want. \n\
 By deleting the user associated with this plugin, the plugin will be deleted as well.");
 		const pluginid = UUIDHelper.toUUID(pluginID);
 		return client.query(`

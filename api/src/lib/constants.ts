@@ -2,12 +2,14 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 
+import {logger} from "../helpers/LoggingHelper";
+
 // Private helpers
 const keyFilePath = path.join(__dirname, "../../keys/jwtRS256.key");
 let authKey;
 if (!fs.existsSync(keyFilePath)) {
 	fs.mkdirSync(path.dirname(keyFilePath), {recursive: true});
-	console.log("Generating keys for signing JWT tokens.");
+	logger.info("Generating keys for signing JWT tokens.");
 	const {publicKey, privateKey} = crypto.generateKeyPairSync("rsa", {
 		modulusLength: 4096
 	});

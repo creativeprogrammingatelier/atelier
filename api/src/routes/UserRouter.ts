@@ -76,9 +76,9 @@ userRouter.get("/:userID", capture(async(request: Request, response: Response) =
 	const currentUserID: string = await getCurrentUserID(request);
 	const user: User = await UserDB.getUserByID(userID);
 	
-	console.log(`Querying user ${currentUserID}`);
+	request.log.debug(`Querying user ${currentUserID}`);
 	if (userID !== currentUserID) {
-		console.log("checking whether user has permission to get user profiles");
+		request.log.debug("checking whether user has permission to get user profiles");
 		await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
 	}
 	

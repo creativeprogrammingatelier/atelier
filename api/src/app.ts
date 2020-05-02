@@ -1,8 +1,9 @@
 import cookieParser from 'cookie-parser';
 import express, {Request, Response, NextFunction} from 'express';
 import http from 'http';
-import logger from 'morgan';
 import path from 'path';
+import pino from 'pino';
+import pinoHttp from 'pino-http';
 import socketio, {Socket} from 'socket.io';
 
 import {AuthError} from './helpers/AuthenticationHelper';
@@ -11,6 +12,7 @@ import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/
 import {InvalidParamsError} from './helpers/ParamsHelper';
 import {PermissionError} from "./helpers/PermissionHelper";
 import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
+import {logger} from './helpers/LoggingHelper';
 
 import {NotFoundDatabaseError} from './database/DatabaseErrors';
 import {AuthMiddleware} from './middleware/AuthMiddleware';
@@ -50,9 +52,16 @@ socket.on('connect', (socket: Socket) => {
     socket.emit('id', socket.id); 
 });
 
-// Add morgan request logger if this file is ran as the main program
+// Add logger if this file is ran as the main program
 if (require.main === module) {
-    app.use(logger('dev'));
+    app.use(pinoHttp({
+        logger
+    }));
+} else {
+    // Otherwise, disable logging in requests
+    app.use(pinoHttp({
+        logger: pino({ enabled: false })
+    }));
 }
 
 // Use express json and url parsing
@@ -96,23 +105,27 @@ app.use('/', indexRouter);
 
 // Handle all errors thrown in the pipeline
 app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
-    // Log the full error to the console, we want to see what went wrong...
-    console.log('\x1b[31m', error);
-
     if (error instanceof AuthError) {
+        request.log.info("Authentication error: %s", error.reason);
         response.status(401).send({error: error.reason, message: error.message});
     } else if (error instanceof PermissionError) {
+        request.log.info("Permission error: %s", error.reason);
         response.status(401).send({error: error.reason, message: error.message});
     } else if (error instanceof NotFoundDatabaseError) {
+        request.log.info({error}, "Requested item not found in the database");
         response.status(404).send({error: "item.notfound", message: "The requested item could not be found."});
     } else if (error instanceof InvalidParamsError) {
+        request.log.info("Invalid parameters supplied: %s", error.reason)
         response.status(400).send({error: error.reason, message: error.message});
     } else if (error instanceof ProjectValidationError) {
+        request.log.warning({error}, "An invalid project was uploaded: %s", error.message);
         response.status(400).send({error: "project.invalid", message: error.message});
     } else if (error instanceof Error && isPostgresError(error)) {
         const code = parsePostgresErrorCode(error as PostgresError);
+        request.log.error({error}, "An unforeseen error happened with the database: %s", code);
         response.status(500).send({error: code, message: "Something went wrong while connecting to the database."});
     } else {
+        request.log.error({error}, "An unknown error occured: %s", error.message);
         response.status(500).send({error: "unknown", message: "Something went wrong. Please try again later."});
     }
 });
@@ -120,7 +133,7 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
 // Handle errors that were not caught in the pipeline
 // This really shouldn't happen, it means requests will go unanswered
 process.on('unhandledRejection', error => {
-    console.log('\x1b[31mCRITICAL (Unhandled rejection): ', error);
+    logger.fatal({error}, "Unhandled rejection. (A request has not been answered.)");
 });
 
-console.log("Server started.");
+logger.info("Server started.");

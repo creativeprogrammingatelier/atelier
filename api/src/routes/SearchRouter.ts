@@ -97,7 +97,7 @@ searchRouter.get("/", capture(async(request, response) => {
 			comments: removePermissionsSearchResultComments(comments),
 			snippets: removePermissionsSearchResultSnippets(snippets)
 		} as SearchResult;
-		console.log("course searched. query:", query, "Found", result);
+		request.log.debug("course searched. query: %s; found: %o", query, result);
 		response.send(result);
 	} else {
 		// Global search outside of a course
@@ -111,7 +111,7 @@ searchRouter.get("/", capture(async(request, response) => {
 			comments: [],
 			snippets: []
 		};
-		console.log("global searched. query:", query, "Found", result);
+		request.log.debug("global searched. query: %s; found: %o", query, result);
 		response.send(result);
 	}
 }));

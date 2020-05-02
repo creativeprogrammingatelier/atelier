@@ -1,6 +1,8 @@
 import crypto from "crypto";
 import fetch, {Request} from "node-fetch";
 
+import {logger} from "./LoggingHelper";
+
 import {Plugin} from "../../../models/database/Plugin";
 import {WebhookEvent} from "../../../models/enums/WebhookEventEnum";
 
@@ -58,11 +60,9 @@ async function postWebhook<T>(plugin: Plugin, event: WebhookEvent, body: T) {
 		if (!res.ok) {
 			// TODO: store this somewhere the plugin owner can see it
 			const resText = await res.text();
-			console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.pluginID}).
-            Got response ${res.status}: ${resText}`);
+            logger.warn({res, body: resText, plugin}, "Got erronous response while posting event '%s' to plugin", event);
 		}
-	} catch (err) {
-		console.log(`Error while posting event '${event}' to ${plugin.webhookUrl} (ID: ${plugin.pluginID}).
-        Caught error: `, err);
+	} catch (error) {
+        logger.warn({error, plugin}, "Caught error while posting event '%s' to plugin", event);
 	}
 }

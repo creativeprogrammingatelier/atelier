@@ -1,6 +1,7 @@
 import * as pg from "pg";
 import {Sorting} from "../../../models/enums/SortingEnum";
 import {config} from "../helpers/ConfigurationHelper";
+import {logger} from "../helpers/LoggingHelper";
 import {NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResponseError} from "./DatabaseErrors";
 
 /**
@@ -16,7 +17,7 @@ export const pool = new pg.Pool({
 	...config.database.pool
 });
 
-pool.on("connect", () => console.log("Connected to the database."));
+pool.on("connect", () => logger.info("Connected to the database."));
 
 /**
  * This is the length of the permissions field.
@@ -199,7 +200,7 @@ export function one<T>(result: T[]) {
 		throw new NotFoundDatabaseError();
 	}
 	if (result.length !== 1) {
-		console.log(result);
+		logger.debug({result}, "Throwing error: Received multiple entries, but expected just one.");
 		throw new InvalidDatabaseResponseError("Multiple entries were returned, but expected one");
 	}
 	const one = result[0];

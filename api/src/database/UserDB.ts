@@ -271,7 +271,6 @@ export class UserDB {
 			FROM "Users" 
 			WHERE email = $1`, [email])
 			.then(extract).then(one).catch((error: Error) => {
-				console.error(error);
 				return onFailure(error)
 			});
 		if (res === undefined) {

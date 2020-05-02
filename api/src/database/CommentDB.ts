@@ -3,6 +3,7 @@ import {Comment, commentToAPI, DBAPIComment} from "../../../models/database/Comm
 import {submissionToAPI, DBAPISubmission} from "../../../models/database/Submission";
 
 import {UUIDHelper} from "../helpers/UUIDHelper";
+import {logger} from "../helpers/LoggingHelper";
 
 import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools} from "./HelperDB";
 import {commentsView} from "./ViewsDB";
@@ -119,7 +120,7 @@ export class CommentDB {
 	 */
 	static async searchComments(searchString: string, extras: Comment): Promise<SearchResultComment[]> {
 		checkAvailable(["currentUserID", "courseID"], extras);
-		console.log(extras);
+		logger.debug({extras}, "Extras while searching comments");
 		const {
 			commentID = undefined,
 			commentThreadID = undefined,
@@ -228,7 +229,7 @@ export class CommentDB {
 			|| submissionid !== undefined
 			|| courseid !== undefined
 			|| userID !== undefined) {
-			console.warn("Updating IDs is almost never a good idea");
+			logger.warn({comment}, "Updating IDs is almost never a good idea");
 		}
 		const args = [commentid, commentThreadid, userid, created, edited, body];
 		type argType = typeof args

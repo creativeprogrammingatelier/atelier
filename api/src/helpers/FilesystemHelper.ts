@@ -8,6 +8,7 @@ import path from 'path';
 import {File} from '../../../models/api/File';
 
 import {MAX_FILE_SIZE} from '../../../helpers/Constants';
+import {logger} from './LoggingHelper';
 
 import {UPLOADS_PATH} from '../lib/constants';
 
@@ -89,8 +90,9 @@ export const archiveProject = (reqFileLocation: string, projectName: string) =>
 		archive.on('warning', err => {
 			// ENOENT means that the file or folder could not be found
 			if (err.code === 'ENOENT') {
-				// TODO: proper logging
-				console.log(err);
+                logger.error({error: err}, 
+                    "File or folder could not be found while archiving project. Request file location: %s, project name: %s", 
+                    reqFileLocation, projectName);
 			} else {
 				reject(err);
 			}
