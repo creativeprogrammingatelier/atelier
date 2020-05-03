@@ -1,11 +1,36 @@
 import pino from "pino";
-import {config} from "./ConfigurationHelper";
+import pinoHttp from "pino-http";
+import { IncomingMessage } from "http";
+import { config } from "./ConfigurationHelper";
 
 /** Global instance of the logger */
 export const logger = pino({
-    name: "Server",
+    name: "Atelier",
+    redact: [ "req.headers.cookie", "res.headers['set-cookie']" ],
+    serializers: {
+        error: err => ({
+            type: err.constructor.name,
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+            reason: err.reason,
+            code: err.code,
+            detail: err.detail,
+        })
+    },
     level: 
         config.env === "production"
         ? "info"
         : "debug"
 });
+
+const requestMessage = (label: string) => (req: IncomingMessage) => 
+    // The req field is not defined in any type, but it does seem to exist
+    // tslint:disable-next-line: no-any
+    `Request${label}: ${(req as any).req?.method} ${(req as any).req?.originalUrl} - ${req.statusCode}`;
+
+export const httpLoggerOptions: pinoHttp.Options = {
+    logger,
+    customSuccessMessage: requestMessage(""),
+    customErrorMessage: requestMessage(" failed")
+}

@@ -12,7 +12,7 @@ import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/
 import {InvalidParamsError} from './helpers/ParamsHelper';
 import {PermissionError} from "./helpers/PermissionHelper";
 import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
-import {logger} from './helpers/LoggingHelper';
+import {logger, httpLoggerOptions} from './helpers/LoggingHelper';
 
 import {NotFoundDatabaseError} from './database/DatabaseErrors';
 import {AuthMiddleware} from './middleware/AuthMiddleware';
@@ -54,9 +54,7 @@ socket.on('connect', (socket: Socket) => {
 
 // Add logger if this file is ran as the main program
 if (require.main === module) {
-    app.use(pinoHttp({
-        logger
-    }));
+    app.use(pinoHttp(httpLoggerOptions));
 } else {
     // Otherwise, disable logging in requests
     app.use(pinoHttp({
