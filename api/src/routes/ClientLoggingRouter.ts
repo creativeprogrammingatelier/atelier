@@ -15,5 +15,5 @@ clientLoggingRouter.post("/", (request, response) => {
     for (const line of logs) {
         loggerDestination.write(JSON.stringify(line) + "\n");
     }
-    response.status(200);
+    response.send();
 });

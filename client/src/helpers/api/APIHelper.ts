@@ -264,5 +264,5 @@ export const deletePlugin = (pluginID: string) => {
 
 // Logging
 export const postLogs = (logs: object[]) =>
-    Fetch.fetchJson("/api/clientLogging", postJson(logs));
+    Fetch.fetch("/api/clientLogging", postJson(logs));
     
