@@ -27,6 +27,7 @@ import {
 	emptyCacheItem,
 	CacheItemInterface
 } from './Cache';
+import { logger } from '../LoggingHelper';
 
 /** 
  * API Hooks for using data from the API in React 
@@ -151,7 +152,7 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
  */
 function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, getCurrentUser: () => User, cache: Cache) {
 	const tempID = randomBytes(32).toString('hex');
-	console.log("Creating", tempID);
+	logger.debug("Creating %s", tempID);
 	const comment = {
 		ID: "",
 		user: getCurrentUser(),
@@ -169,7 +170,7 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
 	const tempComments = cache.getCollection<Comment>(`comments/${tempID}`);
 	tempComments.transaction(tempComments => tempComments.add(comment, CacheState.Loading));
 	return promise.then(thread => {
-		console.log("Creation of", tempID, "succeeded:", thread);
+		logger.debug("Creation of %s succeeded", tempID);
 		threads.transaction(threads => {
 			threads.remove(thread => thread.ID === tempID);
 			threads.add(thread, CacheState.Loaded);
@@ -182,7 +183,7 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
 		return thread;
 	})
 		.catch((err: Error) => {
-			console.log("Creation of", tempID, "failed:", err);
+			logger.debug({error: err}, "Creation of %s failed", tempID);
 			threads.transaction(threads => threads.remove(item => item.ID === tempID));
 			tempComments.transaction(tempComments => tempComments.clear());
 			throw err;
@@ -229,11 +230,11 @@ async function refreshItem<T>(promise: Promise<T>, cache: CacheItemInterface<T>)
  */
 async function create<T extends { ID: string }>(promise: Promise<T>, item: T, cache: CacheCollectionInterface<T>) {
 	const tempID = randomBytes(32).toString('hex');
-	console.log("Creating", tempID);
+	logger.debug("Creating %s", tempID);
 	cache.transaction(cache => cache.add({...item, ID: tempID}, CacheState.Loading));
 	try {
 		const result = await promise;
-		console.log("Creation of", tempID, "succeeded:", result);
+		logger.debug("Creation of %s succeeded", tempID);
 		cache.transaction(cache => {
 			cache.remove(item => item.ID === tempID);
 			cache.add(result, CacheState.Loaded);
@@ -241,7 +242,7 @@ async function create<T extends { ID: string }>(promise: Promise<T>, item: T, ca
 		return result;
 	}
 	catch (err) {
-		console.log("Creation of", tempID, "failed:", err);
+		logger.debug({error: err}, "Creation of %s failed", tempID);
 		cache.transaction(cache => {
 			cache.remove(item => item.ID === tempID);
 		});

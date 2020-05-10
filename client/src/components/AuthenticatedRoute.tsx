@@ -4,6 +4,7 @@ import {RouteComponentProps} from "react-router";
 
 import {AuthHelper} from "../helpers/AuthHelper";
 import {Login} from "./Login";
+import { logger } from "../helpers/LoggingHelper";
 
 interface LocationProperties {
 	pathname: string
@@ -17,7 +18,7 @@ export function AuthenticatedRoute<T>({path, component, location}: Authenticated
 	if (AuthHelper.loggedIn()) {
 		return <Route path={path} component={component}/>;
 	} else {
-		console.log("route" + (location ? location.pathname : path));
+		logger.debug("After login redirect to: %s", (location ? location.pathname : path));
 		return <Route render={props => <Login {...props} location={{state : {from : location ? location.pathname : path}}} />}/>
 		//return <Redirect to={{pathname: "/login", state: {from: location ? location.pathname : path}}}/>;
 	}

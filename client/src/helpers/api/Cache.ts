@@ -1,4 +1,5 @@
 import {Observable, Subscriber, BehaviorSubject} from "rxjs";
+import { logger } from "../LoggingHelper";
 
 /** The state of any item in the cache */
 export enum CacheState {
@@ -298,7 +299,7 @@ export class Cache {
 					// Create a new Observable for every call to getCollection, because the options may be different,
 					// so they should receive different values. Keep track of all subscriptions and their options.
 					this.collections[key].subscribers.push({options, subscriber});
-					console.log("Add subscription to", key, "with subKey", options.subKey, "; length:", this.collections[key].subscribers.length);
+					logger.trace("Add subscription to %s with subKey %s; length: %d", key, options.subKey, this.collections[key].subscribers.length);
 					// The subscriber immediately receives the current cached value
 					subscriber.next(returnCollection(this.collections[key], options));
 				});
@@ -307,7 +308,7 @@ export class Cache {
 					const i = this.collections[key].subscribers.findIndex(sub => sub.subscriber === subscriber);
 					if (i !== -1) {
 						this.collections[key].subscribers.splice(i, 1);
-						console.log("Remove subscription to", key, "; length:", this.collections[key].subscribers.length);
+						logger.trace("Remove subscription to %s; length: %d", key, this.collections[key].subscribers.length);
 					}
 				};
 			}),

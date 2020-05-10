@@ -2,6 +2,7 @@ import React, {ErrorInfo} from "react";
 
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
+import {logger} from "../../helpers/LoggingHelper";
 
 interface ErrorBoundaryProperties { }
 interface ErrorBoundaryState {
@@ -24,7 +25,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProperties, Erro
 	}
 
 	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-		// TODO: log this somewhere
+		logger.fatal({error, errorInfo}, "Caught React error, a big red error was displayed");
 	}
 
 	render() {
