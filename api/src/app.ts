@@ -19,6 +19,7 @@ import {AuthMiddleware} from './middleware/AuthMiddleware';
 
 // API routes
 import {authRouter} from './routes/authentication/AuthRouter';
+import {clientLoggingRouter} from './routes/ClientLoggingRouter';
 import {commentRouter} from './routes/CommentRouter';
 import {commentThreadRouter} from './routes/CommentThreadRouter'
 import {courseRouter} from './routes/CourseRouter';
@@ -79,6 +80,7 @@ app.use(express.static(path.join(__dirname, '../../client/')));
 
 // Define all API endpoints
 app.use('/api/auth', authRouter);
+app.use('/api/clientLogging', clientLoggingRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);

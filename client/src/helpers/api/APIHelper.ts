@@ -261,3 +261,8 @@ export const updatePlugin = (plugin: Partial<Plugin> & {pluginID: string}) => {
 export const deletePlugin = (pluginID: string) => {
 	return Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, {method: "DELETE"});
 };
+
+// Logging
+export const postLogs = (logs: object[]) =>
+    Fetch.fetchJson("/api/clientLogging", postJson(logs));
+    

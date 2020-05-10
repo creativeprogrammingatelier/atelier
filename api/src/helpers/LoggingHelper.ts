@@ -3,6 +3,9 @@ import pinoHttp from "pino-http";
 import { IncomingMessage } from "http";
 import { config } from "./ConfigurationHelper";
 
+/** Destination for logging */
+export const loggerDestination = pino.destination();
+
 /** Global instance of the logger */
 export const logger = pino({
     name: "Atelier",
@@ -22,7 +25,7 @@ export const logger = pino({
         config.env === "production"
         ? "info"
         : "debug"
-});
+}, loggerDestination);
 
 const requestMessage = (label: string) => (req: IncomingMessage) => 
     // The req field is not defined in any type, but it does seem to exist
