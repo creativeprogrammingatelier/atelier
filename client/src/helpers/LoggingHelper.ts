@@ -27,10 +27,14 @@ export function getClientId() {
 
 /** Global instance of our logger */
 export const logger = pino({
+    // TODO: get loglevel from environment (e.g. debug in development, warn in prod)
     browser: {
         write: event => {
             console.log(event);
-            queueLogEvent(event);
+            // Only send events > warn to the server
+            if ((event as any).level > pino.levels.values["warn"]) {
+                queueLogEvent(event);
+            }
         }
     }
 });
