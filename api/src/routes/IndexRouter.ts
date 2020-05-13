@@ -1,30 +1,16 @@
+import express from 'express';
+import path from 'path';
+
 /**
- * Base Routes File 
+ * Default router for files and other things not caught by the other routers
  * Author: Andrew Heath
  * Date Created: 13/08/19
  */
 
-/**
- * Dependencies 
- */
-var express = require('express');
-var router = express.Router();
-const path = require('path');
-  
-import {Response} from "express";
-/**
- * Serves default index
- */
-router.get('/', function (request: Request, result: Response, next: Function) {
-  result.render('index');
-});
+export const indexRouter = express.Router();
 
-/**
- * Serves the react bundle 
- */
-router.get('*', function (request: Request, result: Response, next: Function) {
-  result.sendFile(path.resolve(__dirname + '../../../../client/index.html'));
-});
+/** Serves default index */
+indexRouter.get('/', (_, res) => res.render('index'));
 
-
-module.exports = router;
+/** Serves the react bundle */
+indexRouter.get('*', (_, res) => res.sendFile(path.resolve(__dirname + '../../../../client/index.html')));

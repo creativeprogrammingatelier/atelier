@@ -1,90 +1,126 @@
-/**
- * The main faile of express.js app
- * @author Andrew Heath
- */
+import cookieParser from 'cookie-parser';
+import express, {Request, Response, NextFunction} from 'express';
+import http from 'http';
+import logger from 'morgan';
+import path from 'path';
+import socketio, {Socket} from 'socket.io';
+
+import {AuthError} from './helpers/AuthenticationHelper';
+import {config} from './helpers/ConfigurationHelper';
+import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/DatabaseErrorHelper';
+import {InvalidParamsError} from './helpers/ParamsHelper';
+import {PermissionError} from "./helpers/PermissionHelper";
+import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
+
+import {NotFoundDatabaseError} from './database/DatabaseErrors';
+import {AuthMiddleware} from './middleware/AuthMiddleware';
+
+// API routes
+import {authRouter} from './routes/authentication/AuthRouter';
+import {commentRouter} from './routes/CommentRouter';
+import {commentThreadRouter} from './routes/CommentThreadRouter'
+import {courseRouter} from './routes/CourseRouter';
+import {fileRouter} from './routes/FileRouter';
+import {indexRouter} from './routes/IndexRouter';
+import {inviteRouter} from "./routes/InviteRouter";
+import {mentionsRouter} from './routes/MentionsRouter';
+import {roleRouter} from './routes/RoleRouter';
+import {searchRouter} from './routes/SearchRouter';
+import {submissionRouter} from './routes/SubmissionRouter';
+import {permissionRouter} from './routes/PermissionRouter';
+import {pluginRouter} from './routes/PluginRouter';
+import {userRouter} from './routes/UserRouter';
 
 /**
- * Dependencies
+ * The main file of express.js app
+ * @author Andrew Heath, Arthur Rump, Jarik Karsten, Cas Sievers, Rens Leendertz, Alexander Haas
  */
-import path from "path"
-import express, {Request, Response, Errback} from 'express';
-import { Socket } from "socket.io";
-let createError = require('http-errors');
-let cookieParser = require('cookie-parser');
-let logger = require('morgan');
-const mongoose = require('mongoose');
-let usersRouter = require('./routes/UsersRouter');
-let authRouter = require('./routes/AuthRouter');
-let filesRouter = require('./routes/FilesRouter');
-let commentRouter = require('./routes/CommentsRouter');
-let indexRouter = require('./routes/IndexRouter');
 
+export const app = express();
 
-let app = express();
-// app.listen(5000, () => console.log('Listening on port 5000!'))
-app.use(logger('dev'));
+// Set up server and start listening on configured port and hostname
+const server = http.createServer(app);
+server.listen(config.port, config.hostname);
+
+// Set up Socket.io
+const socket = socketio(server);
+app.set('socket-io', socket);
+socket.on('connect', (socket: Socket) => {
+    // send each client their socket id
+    socket.emit('id', socket.id); 
+});
+
+// Add morgan request logger if this file is ran as the main program
+if (require.main === module) {
+    app.use(logger('dev'));
+}
+
+// Use express json and url parsing
 app.use(express.json());
 app.use(express.urlencoded({
-  extended: false
+    extended: false
 }));
 
-//Socket io
-let http = require('http').createServer(app);
-http.listen(5000, "127.0.0.1");
-const socket: Socket = require('socket.io')(http);
-app.set('socket-io', socket);
-
-socket.on('connect', (socket: Socket) => {
-  socket.emit('id', socket.id) // send each client their socket id
-})
+// Use the cookieParser middleware to parse cookies
 app.use(cookieParser());
-/**
- * Adding default static
- */
 
+// Refresh token cookies when they are provided and getting old
+app.use(AuthMiddleware.refreshCookieToken);
+
+// Serve static files from the client directory
 app.use(express.static(path.join(__dirname, '../../client/')));
-/**
- * Setting routes
- * IMPORTANT INSURE THAT INDEX IS ALWAYS LAST, as it has catch all 
- */
-app.use('/auth', authRouter);
-app.use('/users', usersRouter);
-app.use('/files', filesRouter);
-app.use('/comments', commentRouter);
+
+// Define all API endpoints
+app.use('/api/auth', authRouter);
+app.use('/api/comment', commentRouter);
+app.use('/api/commentThread', commentThreadRouter);
+app.use('/api/course', courseRouter);
+app.use('/api/file', fileRouter);
+app.use('/api/invite', inviteRouter);
+app.use('/api/mentions', mentionsRouter);
+app.use('/api/permission', permissionRouter);
+app.use('/api/plugin', pluginRouter);
+app.use('/api/role', roleRouter);
+app.use('/api/search', searchRouter);
+app.use('/api/submission', submissionRouter);
+app.use('/api/user', userRouter);
+
+// Give a 404 in case the API route does not exist
+app.all('/api/*', (_, response) => response.status(404).send({
+    error: "route.notfound",
+    message: "This is not a valid API endpoint."
+}));
+
+// The index router catches all other request, serving the frontend
 app.use('/', indexRouter);
 
+// Handle all errors thrown in the pipeline
+app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
+    // Log the full error to the console, we want to see what went wrong...
+    console.log('\x1b[31m', error);
 
-/**
- * Error handling 404
- * */
-
-app.use(function (err: any, req: Request, res: Response, next: Function) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500).json({
-    error: err
-  });
+    if (error instanceof AuthError) {
+        response.status(401).send({error: error.reason, message: error.message});
+    } else if (error instanceof PermissionError) {
+        response.status(401).send({error: error.reason, message: error.message});
+    } else if (error instanceof NotFoundDatabaseError) {
+        response.status(404).send({error: "item.notfound", message: "The requested item could not be found."});
+    } else if (error instanceof InvalidParamsError) {
+        response.status(400).send({error: error.reason, message: error.message});
+    } else if (error instanceof ProjectValidationError) {
+        response.status(400).send({error: "project.invalid", message: error.message});
+    } else if (error instanceof Error && isPostgresError(error)) {
+        const code = parsePostgresErrorCode(error as PostgresError);
+        response.status(500).send({error: code, message: "Something went wrong while connecting to the database."});
+    } else {
+        response.status(500).send({error: "unknown", message: "Something went wrong. Please try again later."});
+    }
 });
 
-//Databse connection 
-/**
- * @TODO refactor
- */
-const mongo_uri = 'mongodb://localhost/react-auth';
-
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-mongoose.set('useUnifiedTopology', true);
-
-mongoose.connect(mongo_uri, function (err: Error) {
-  if (err) {
-    throw err;
-
-  } else {
-    console.log(`Successfully connected to ${mongo_uri}`);
-  }
+// Handle errors that were not caught in the pipeline
+// This really shouldn't happen, it means requests will go unanswered
+process.on('unhandledRejection', error => {
+    console.log('\x1b[31mCRITICAL (Unhandled rejection): ', error);
 });
 
-module.exports = app;
+console.log("Server started.");

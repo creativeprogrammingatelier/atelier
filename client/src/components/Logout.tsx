@@ -1,39 +1,35 @@
-import * as React from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import Login from "./Login";
-import AuthHelper from "../../helpers/AuthHelper";
+import React, {useState, useEffect, Fragment} from "react";
+import {Redirect} from "react-router-dom";
 
-class Logout extends React.Component {
-    state: { loggedOut: boolean }
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            loggedOut: false
-        }
+import {AuthHelper} from "../helpers/AuthHelper";
 
-    }
-    componentDidMount() {
-        AuthHelper.logout()
-        this.setState({
-            loggedOut: true
-        });
-    }
+import {FeedbackContent} from "./feedback/Feedback";
+import {FeedbackError} from "./feedback/FeedbackError";
+import {useRawCache} from "./general/loading/CacheProvider";
+import {LoadingIcon} from "./general/loading/LoadingIcon";
 
-    render() {
-        if (this.state.loggedOut == true) {
-            return (
-                < div >
-                    <Redirect to={{ pathname: '/login' }} />
-                </div>
-            )
-        }
-        return (
-            <div className="spinner-border" role="status">
-                <span className="sr-only">Loading...</span>
-            </div>
-
-        )
-
-    }
-} export default Logout;
+export function Logout() {
+	const [loggedOut, setLoggedOut] = useState(false);
+	const [error, setError] = useState(false as FeedbackContent);
+	const cache = useRawCache();
+	
+	useEffect(() => {
+		AuthHelper.logout()
+			.then(() => {
+				cache.clearAll();
+				setLoggedOut(true);
+			})
+			.catch((err: Error) => setError(`Failed to log out: ${err.message}`));
+	}, []);
+	
+	if (loggedOut) {
+		return <Redirect to={{pathname: "/login"}}/>;
+	} else {
+		return (
+			<Fragment>
+				<FeedbackError close={setError}>{error}</FeedbackError>
+				<LoadingIcon/>
+			</Fragment>
+		);
+	}
+}

@@ -1,0 +1,59 @@
+// Custom variables
+
+// Grayscale colors
+$colorBackground: #F4F5F5;
+$colorWhite: #FFFFFF;
+$colorAlternateWhite: #F9F9F9;
+$colorOffWhite: #EEEEEE;
+$colorOffWhite: #E9EAEA;
+$colorGray: gray;
+$colorBlack: #000000;
+$colorOffBlack: #212529;
+
+// Theme colors
+$colorPrimary: #3FDAC1;
+$colorSecondary: #3EA39C;
+$colorTertiary: #2C7A74;
+$colorRestricted: #103C4C;
+$colorRestrictedAlternate: #1B4D5D;
+$colorDisabled: #AFB7B6;
+$colorSuccess: #21B517;
+$colorSuccessAlternate: #48AD36;
+$colorDanger: #CE3B33;
+$colorDangerAlternate: #CA4B25;
+$colorWarning: yellow;
+$colorInfo: blue;
+$colorLight: $colorOffWhite;
+$colorDark: $colorOffBlack;
+
+$gradientVertical: linear-gradient(147deg, $colorSecondary 0%, $colorPrimary 100%);
+$gradientHorizontal: linear-gradient(171deg, $colorSecondary 0%, $colorPrimary 54%);
+$gradientSecondary: linear-gradient(147deg, $colorTertiary 0%, $colorSecondary 100%);
+
+$gradientSuccess: linear-gradient(147deg, $colorSuccessAlternate 0%, $colorSuccess 100%);
+$gradientDanger: linear-gradient(147deg, $colorDangerAlternate 0%, $colorDanger 100%);
+
+$fontTitle: "Fredoka One", cursive;
+
+$headerHeight: 70px;
+
+$shadowSmall: 0 0 10px 0 #B1B1B121;
+$shadowSmallUp: 0 -5px 10px 0 #B1B1B121;
+$shadowSmallDown: 0 5px 10px 0 #B1B1B121;
+$shadowInsetSmallDown: inset 0px 5px 10px -5px #B1B1B121;
+$shadowMedium: 0 0 10px 0 #47474740;
+$shadowLarge: 0 0 100px 20px #00000085;
+
+
+// Bootstrap variables
+
+//https://github.com/twbs/bootstrap/blob/master/scss/_variables.scss
+
+//$red: $colorDanger;
+//$alert-bg-level: 0;
+
+$spacer: 1rem;
+$spacers: (
+	6: ($spacer * 4),
+	7: ($spacer * 5)
+);

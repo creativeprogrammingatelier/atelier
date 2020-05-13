@@ -1,74 +1,41 @@
+import {RequestHandler} from "express";
+import {verifyToken, getToken, AuthError, setTokenCookie} from "../helpers/AuthenticationHelper";
+import {captureNext} from "../helpers/ErrorHelper";
+
 /**
- * Middleware 
- *  Provides management of token, and authentication checks
- * Author: Andrew Heath
+ * Middleware for checking user authentication and authorization
+ * Author: Andrew Heath, Arthur Rump
  * Created: 13/08/19
  */
-
-import jwt from 'jsonwebtoken';
-import UsersMiddleware from './UsersMiddleware';
-import {Constants}  from '../lib/constants';
-import {Request, Response} from "express";
-import { User, IUser } from '../../../models/user';
-
-
-export default class AuthMiddleWare { 
-    /**
-     * Checks to see whether requset is authenticated correctly
-     * @param {*} request 
-     * @param {*} result 
-     * @param {*} next Callback
-     */
-    static withAuth (request: Request , result: Response, onSuccess: Function) : void {
-        const token = request.headers.authorization;
-        if (!token) {
-            result.status(401).send('Unauthorized: No token provided');
-        } else {
-            jwt.verify(token, Constants.AUTHSECRETKEY, function (error: Error, decoded: Object) {
-                if (error) {
-                    console.error(error)
-                    result.status(401).send('Unauthorized: Invalid token');
-                } else {
-                    onSuccess();
-                }
-            });
-        }
-    }
-
-    static getAllStudents(onSuccess: Function, onFailure: Function){
-        User.find({
-            role: "student"
-        }, (error: Error, result : IUser[]) => {
-            if (!error) {
-                onSuccess(result);
-            } else {
-                onFailure(error);
-            }
-        })
-    }
-    static checkRole(request: Request, role: String, onSuccess: Function, onFailure: Function){
-        UsersMiddleware.getUser(request, (user : IUser) => {
-            if (user.role.toLowerCase() == role.toLowerCase()) {
-                onSuccess();
-            } else {
-                onFailure('Unauthorized: Incorrect role');
-            }
-        }, onFailure )
-    }
-
-    static checkRoles(request: Request, roles: String[], onSuccess: Function, onFailure: Function){
-        for (const role of roles) {
-            UsersMiddleware.getUser(request, (user : IUser) => {
-                    if (user.role.toLowerCase() == role.toLowerCase()) {
-                        onSuccess();
-                    }
-                }, onFailure)
-        }
-    }
-
-    static getRole(request: Request, onSuccess: Function, onFailure: Function){
-        UsersMiddleware.getUser(request, (user : IUser) => {
-                onSuccess(user.role.toLowerCase());
-        }, onFailure )
-    }
+export class AuthMiddleware {
+	/** Middleware function that will refresh tokens in cookies */
+	static refreshCookieToken: RequestHandler = captureNext(async(request, response, next) => {
+		if (request.cookies.atelierToken) {
+			try {
+				const token = await verifyToken<{userID: string}>(request.cookies.atelierToken);
+				// The JWT expiration is stored in seconds, Date.now() in milliseconds
+				if (token.iat * 1000 + 600000 < Date.now()) {
+					await setTokenCookie(response, token.userID);
+				}
+			} catch (err) {
+				// Ignore AuthErrors, if auth is required for the route,
+				// it will be handled in requireAuth
+				if (!(err instanceof AuthError)) {
+					throw err;
+				}
+			}
+		}
+		next();
+	});
+	
+	/** Middleware function that will block all non-authenticated requests */
+	static requireAuth: RequestHandler = captureNext(async(request, _response, next) => {
+		const token = getToken(request);
+		if (!token) {
+			next(new AuthError("token.notProvided", "No token was provided with this request. You're probably not logged in."));
+		} else {
+			await verifyToken(token);
+			next();
+		}
+	});
 }

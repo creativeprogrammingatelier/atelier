@@ -1,0 +1,62 @@
+Role Permissions:
+- roleID
+- permission (bitmap)
+
+Users:
+- userID
+- role
+- name
+- email
+- hash
+
+Courses:
+- courseID
+- name
+- creator?
+- state (open/closed etc..)
+
+Course Registrations:
+- courseID
+- userID
+- role
+- permissions
+
+Submissions:
+- submissionID
+- userID
+- name
+- date
+- state (new/archived etc..)
+
+Files:
+- fileID
+- submissionID
+- name/path
+- type
+
+CommentThread:
+- commentThreadID
+- submissionID
+- fileID?
+- snippetID?
+- visibilityState
+
+Comments:
+- commentID
+- commentThreadID
+- userID
+- date
+- text
+
+Snippets:
+- snippetID
+- startLine
+- endLine
+- startCharacter?
+- endCharacter?
+
+Mentions:
+- mentionID
+- commentThreadID
+- userID
+
