@@ -91,12 +91,14 @@ userRouter.get("/:userID", capture(async(request: Request, response: Response) =
 userRouter.put("/", capture(async(request: Request, response: Response) => {
 	const currentUserID: string = await getCurrentUserID(request);
 	const updatedEmail: string | undefined = request.body.email;
-	const updatedName: string | undefined = request.body.name;
+    const updatedName: string | undefined = request.body.name;
+    const updatedResearchAllowed: boolean | undefined = request.body.researchAllowed;
 	
 	const user: User = await UserDB.updateUser({
 		userID: currentUserID,
 		email: updatedEmail,
-		userName: updatedName
+        userName: updatedName,
+        researchAllowed: updatedResearchAllowed
 	});
 	response.status(200).send(user);
 }));

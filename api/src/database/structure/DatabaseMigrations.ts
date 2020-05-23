@@ -7,6 +7,13 @@ interface Migrations {
 }
 
 const migrations: Migrations = {
+    // Introduces a new researchAllowed column in the Users table
+    2: async client => {
+        client.query(`
+            ALTER TABLE "Users" ADD COLUMN researchAllowed boolean
+        `);
+    },
+
     // The base schema when migrations were introduced
     1: async client => {
         // There is no previous version, so this should never run
