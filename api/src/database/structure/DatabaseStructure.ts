@@ -6,6 +6,8 @@ import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
 import {databaseSamples} from "./DatabaseSamples";
 
+const VERSION = 1;
+
 if (require.main === module) {
 	//args without node & path name
 	const args = process.argv.splice(2);
@@ -74,13 +76,22 @@ DROP VIEW IF EXISTS
     "CourseRegistrationViewAll";
 
 DROP TABLE IF EXISTS 
+    "Metadata",
 	"GlobalRolePermissions",
 	"CourseRolePermissions", "Users", 
 	"Courses", "CourseRegistration", 
 	"Submissions", "Files", "Snippets", 
 	"CommentThread", "Comments", 
 	"Mentions", "CourseInvites",
-	"Plugins", "PluginHooks";
+    "Plugins", "PluginHooks";
+    
+CREATE TABLE "Metadata" (
+    key         text PRIMARY KEY,
+    value       text NOT NULL
+);
+
+INSERT INTO "Metadata" VALUES
+    ('version', '${VERSION}');
 
 CREATE TABLE "CourseRolePermissions" (
    courseRoleID      text PRIMARY KEY,
