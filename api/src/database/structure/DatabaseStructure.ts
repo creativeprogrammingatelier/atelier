@@ -6,6 +6,11 @@ import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
 import {databaseSamples} from "./DatabaseSamples";
 
+// IMPORTANT
+// If you make any changes to the database schema, please upgrade the version number
+// and create a migration in the DatabaseMigrations file to update running Atelier 
+// applications. Please make sure that this schema results in the same database structure
+// as applying the migration on the previous version does.
 const VERSION = 1;
 
 if (require.main === module) {
