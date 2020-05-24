@@ -25,7 +25,7 @@ export function Sidebar({position, close}: SidebarProperties) {
 			<div className="sidebarContainer row no-gutters" style={{left: position}}>
 				<div className="sidebar col-10 col-sm-8 col-md-5 col-lg-3 col-xl-2 p-0">
 					<Heading transparent large leftButton={{icon: FiX, click: close}}/>
-					<Content user={user}/>
+					<Content user={user} close={close}/>
 				</div>
 				<div className="sidebarOutside col-2 col-sm-4 col-md-7 col-lg-9 col-xl-10" onClick={close}/>
 			</div>
@@ -33,16 +33,17 @@ export function Sidebar({position, close}: SidebarProperties) {
 		<Responsive breakpoints={["large", "extraLarge"]}>
 			<div className="sidebar col-10 col-sm-8 col-md-5 col-lg-3 col-xl-2 p-0 position-fixed shadow-none">
 				<Heading transparent large/>
-				<Content user={user}/>
+				<Content user={user} close={close}/>
 			</div>
 		</Responsive>
 	</Fragment>;
 }
 
 interface ContentProperties {
-	user: Refresh<User>
+    user: Refresh<User>,
+    close: React.MouseEventHandler
 }
-function Content({user}: ContentProperties) {
+function Content({user, close}: ContentProperties) {
 	return <div className="sidebarContent p-0">
 		<Logo/>
 		<hr/>
