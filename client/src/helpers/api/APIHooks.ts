@@ -286,6 +286,25 @@ async function update<T extends { ID: string } & Res, Res>(promise: Promise<Res>
 }
 
 /**
+ * Generic update function to update a single cacheItem
+ * @param promise the promise that will return the updated item
+ * @param update item iwth values in updated fields, or undefined for fields that should stay the same
+ * @param cache the cache to store the data in
+ */
+async function updateItem<T extends Res, Res>(promise: Promise<Res>, update: Partial<T>, cache: CacheItemInterface<T>) {
+    const oldItem = cache.getCurrentValue();
+    cache.updateItem(old => updateModel(old, update), CacheState.Loading);
+    try {
+        const result = await promise;
+        cache.updateItem(old => updateModel(old, result), CacheState.Loaded);
+        return cache.getCurrentValue().value;
+    } catch (err) {
+        cache.updateItem(_ => oldItem.value, oldItem.state);
+        throw err;
+    }
+}
+
+/**
  * Generic delete function to remove items from a collection
  * @param promise the promise that will return the deleted item
  * @param selector selector for items to delete
@@ -441,12 +460,18 @@ export function useCourseMentions(courseID: string): Refresh<Mention> {
 		defaultTimeout: 30
 	}
 }
-export function useCurrentUser(): Refresh<User> {
+export function useCurrentUser(): Refresh<User> & Update<[Partial<User>], User> {
 	const currentUser = useCacheItem<User>("currentUser");
 	return {
 		observable: currentUser.observable,
-		refresh: () => refreshItem(API.getCurrentUser(), currentUser),
-		defaultTimeout: 3 * 24 * 3600
+		defaultTimeout: 3 * 24 * 3600,
+        refresh: () => refreshItem(API.getCurrentUser(), currentUser),
+        update: (updatedUser) =>
+			updateItem(
+				API.setUser(updatedUser),
+				updatedUser,
+				currentUser
+			)
 	}
 }
 export function useProjectComments(submissionID: string): Refresh<CommentThread> & Create<[CreateCommentThread], CommentThread> {
