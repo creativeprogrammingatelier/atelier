@@ -6,6 +6,16 @@ import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
 import {databaseSamples} from "./DatabaseSamples";
 
+// IMPORTANT
+// If you make any changes to the database schema, please upgrade the version number
+// and create a migration in the DatabaseMigrations file to update running Atelier 
+// applications. Please make sure that this schema results in the same database structure
+// as applying the migration on the previous version does.
+// This does not apply to views, as those are recreated on every start of Atelier anyway,
+// whether they are changed or not. If a view changes because of a schema change, you don't
+// have to include those views in the migration.
+const VERSION = 2;
+
 if (require.main === module) {
 	//args without node & path name
 	const args = process.argv.splice(2);
@@ -36,7 +46,7 @@ if (require.main === module) {
 }
 
 async function makeDB(client: pgDB = pool) {
-	const query = makeDBString();
+	const query = dropViewQueries + dropTableQueries + createTableQueries + createViewQueries;
 	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
 	//  console.log(singles)
 	//  for (const item of singles){
@@ -60,37 +70,65 @@ async function makeDB(client: pgDB = pool) {
 		throw e;
 	});
 }
-function makeDBString() {
-	return `
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+export const dropViewQueries = `
 DROP VIEW IF EXISTS 
-	"SubmissionsRefs", "CommentThreadRefs",
-	"UsersView", "CoursesView",
-	"SubmissionsView", "FilesView",
-	"SnippetsView", "CommentsView",
-	"CommentThreadView", "CourseRegistrationView",
+    "SubmissionsRefs", "CommentThreadRefs",
+    "UsersView", "CoursesView",
+    "SubmissionsView", "FilesView",
+    "SnippetsView", "CommentsView",
+    "CommentThreadView", "CourseRegistrationView",
     "MentionsView", "CourseUsersView", "CourseUsersViewAll",
     "CourseRegistrationViewAll";
+`;
 
+const dropTableQueries = `
 DROP TABLE IF EXISTS 
+    "Metadata",
 	"GlobalRolePermissions",
 	"CourseRolePermissions", "Users", 
 	"Courses", "CourseRegistration", 
 	"Submissions", "Files", "Snippets", 
 	"CommentThread", "Comments", 
 	"Mentions", "CourseInvites",
-	"Plugins", "PluginHooks";
+    "Plugins", "PluginHooks";
+`;
+
+const createTableQueries = `
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    
+CREATE TABLE "Metadata" (
+    key         text PRIMARY KEY,
+    value       text NOT NULL
+);
+
+INSERT INTO "Metadata" VALUES
+    ('version', '${VERSION}');
 
 CREATE TABLE "CourseRolePermissions" (
    courseRoleID      text PRIMARY KEY,
    permission        bit(${permissionBits}) NOT NULL
 );
 
+INSERT INTO "CourseRolePermissions" VALUES
+	('moduleCoordinator', 64898867406::bit(${permissionBits})),
+    ('student', 25769803776::bit(${permissionBits})),
+    ('TA', 64898465858::bit(${permissionBits})),
+	('teacher', 64898859078::bit(${permissionBits})),
+	('unregistered', 0::bit(${permissionBits})),
+	('plugin', 0::bit(${permissionBits}));
+
 CREATE TABLE "GlobalRolePermissions" (
 	globalRoleID        text PRIMARY KEY,
 	permission          bit(${permissionBits}) NOT NULL
 );
+
+INSERT INTO "GlobalRolePermissions" VALUES
+	('admin', 64907262175::bit(${permissionBits})),
+	('staff', 14528::bit(${permissionBits})),
+	('user', 0::bit(${permissionBits})),
+	('unregistered', 0::bit(${permissionBits})),
+	('plugin', 0::bit(${permissionBits}));
 
 CREATE TABLE "Users" (
 	userID         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -99,7 +137,8 @@ CREATE TABLE "Users" (
 	email          text NOT NULL UNIQUE CHECK (email <> ''),
 	globalRole     text NOT NULL REFERENCES "GlobalRolePermissions"(globalRoleID) DEFAULT 'unregistered',
 	permission     bit(${permissionBits}) NOT NULL,
-	hash           char(60) NOT NULL
+    hash           char(60) NOT NULL,
+    researchAllowed boolean -- can be null, if the user has not responded yet
 );
 
 CREATE TABLE "Plugins" (
@@ -230,7 +269,9 @@ CREATE TRIGGER DEFAULT_FILE
 	AFTER INSERT ON "Submissions"
 	FOR EACH ROW
 	EXECUTE FUNCTION defaultFile();
+`;
 
+export const createViewQueries = `
 CREATE VIEW "SubmissionsRefs" AS (
 	SELECT courseID, submissionID
 	FROM "Submissions"
@@ -332,23 +373,4 @@ CREATE OR REPLACE FUNCTION _viewableSubmissions (userID uuid, courseID uuid)
 		FROM _viewableSubmissions($1, $2)
 	);
 	END; $$ LANGUAGE plpgsql;
-	 
-
--- the standard roles
-
-INSERT INTO "CourseRolePermissions" VALUES
-	('moduleCoordinator', 64898867406::bit(${permissionBits})),
-    ('student', 25769803776::bit(${permissionBits})),
-    ('TA', 64898465858::bit(${permissionBits})),
-	('teacher', 64898859078::bit(${permissionBits})),
-	('unregistered', 0::bit(${permissionBits})),
-	('plugin', 0::bit(${permissionBits}));
-
-INSERT INTO "GlobalRolePermissions" VALUES
-	('admin', 64907262175::bit(${permissionBits})),
-	('staff', 14528::bit(${permissionBits})),
-	('user', 0::bit(${permissionBits})),
-	('unregistered', 0::bit(${permissionBits})),
-	('plugin', 0::bit(${permissionBits}));
 `;
-}

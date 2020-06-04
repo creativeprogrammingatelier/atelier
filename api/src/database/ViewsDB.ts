@@ -12,7 +12,8 @@ export function usersView(userTable = `"Users"`) {
 		SELECT userID, 
 			userName, 
 			email,
-			globalRole, 
+            globalRole,
+            researchAllowed,
 			permission | (
 				SELECT permission 
 				FROM "GlobalRolePermissions" 

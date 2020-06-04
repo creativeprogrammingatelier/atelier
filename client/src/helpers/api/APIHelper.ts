@@ -72,7 +72,7 @@ export const getUser = (userId: string) => {
 export const getAllUsers = () => {
 	return Fetch.fetchJson<User[]>(`/api/user/all`);
 };
-export const setUser = (body: {name?: string, email?: string}) => {
+export const setUser = (body: Partial<User>) => {
 	return Fetch.fetchJson<User>(`/api/user/`, putJson(body));
 };
 export const getUsersByCourse = (courseID: string) => {

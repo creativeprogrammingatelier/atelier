@@ -12,6 +12,7 @@ import {InvalidParamsError} from './helpers/ParamsHelper';
 import {PermissionError} from "./helpers/PermissionHelper";
 import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
 
+import {upgradeDatabase} from './database/structure/DatabaseMigrations';
 import {NotFoundDatabaseError} from './database/DatabaseErrors';
 import {AuthMiddleware} from './middleware/AuthMiddleware';
 
@@ -37,6 +38,11 @@ import {userRouter} from './routes/UserRouter';
  */
 
 export const app = express();
+
+// First things first: make sure the database is at the expected version
+// TODO: Create a better async startup mechanism, this is quite hacky
+//       and with proper formatting it would also look absolutely terrible
+upgradeDatabase().then(() => {
 
 // Set up server and start listening on configured port and hostname
 const server = http.createServer(app);
@@ -124,3 +130,5 @@ process.on('unhandledRejection', error => {
 });
 
 console.log("Server started.");
+
+});

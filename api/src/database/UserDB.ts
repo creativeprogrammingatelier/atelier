@@ -76,7 +76,8 @@ export class UserDB {
 			userName = undefined,
 			email = undefined,
 			globalRole: role = undefined,
-			permission = undefined,
+            permission = undefined,
+            researchAllowed = undefined,
 			
 			limit = undefined,
 			offset = undefined,
@@ -92,12 +93,13 @@ export class UserDB {
 			($1::uuid IS NULL OR userID = $1)
 		AND ($2::text IS NULL OR userName ILIKE $2)
 		AND ($3::text IS NULL OR email = $3)
-		AND ($4::text IS NULL OR globalrole = $4)
-		AND ($5::bit(${permissionBits}) IS NULL OR (permission & $5) = $5)
+        AND ($4::text IS NULL OR globalrole = $4)
+        AND ($5::bit(${permissionBits}) IS NULL OR (permission & $5) = $5)
+        AND ($6::boolean IS NULL OR researchAllowed = $6::boolean)
 		ORDER BY userName, email --email is unique, so unique ordering
-		LIMIT $6
-		OFFSET $7
-		`, [userid, username, email, role, binPerm, limit, offset])
+		LIMIT $7
+		OFFSET $8
+		`, [userid, username, email, role, binPerm, researchAllowed, limit, offset])
 			.then(extract).then(map(userToAPI))
 	}
 	static async filterUserInCourse(user: User & { courseID?: string }) {
@@ -106,7 +108,8 @@ export class UserDB {
 			userName = undefined,
 			email = undefined,
 			globalRole: role = undefined,
-			courseID = undefined,
+            courseID = undefined,
+            researchAllowed = undefined,
 			
 			limit = undefined,
 			offset = undefined,
@@ -125,10 +128,11 @@ export class UserDB {
 		AND ($3::text IS NULL OR userName ILIKE $3)
 		AND ($4::text IS NULL OR email = $4)
         AND ($5::text IS NULL OR globalrole = $5)
+        AND ($6::text IS NULL OR researchAllowed = $6::boolean)
 		ORDER BY userName, email --email is unique, so unique ordering
-		LIMIT $6
-		OFFSET $7
-		`, [courseid, userid, username, email, role, limit, offset])
+		LIMIT $7
+		OFFSET $8
+		`, [courseid, userid, username, email, role, researchAllowed, limit, offset])
 			.then(extract).then(map(userToAPI))
 	}
 	static async searchUser(searchString: string, params: DBTools = {}) {
@@ -147,7 +151,8 @@ export class UserDB {
 			password,
 			globalRole: role,
 			userName,
-			permission = 0,
+            permission = 0,
+            researchAllowed = undefined,
 			samlID = undefined,
 			client = pool
 		} = user;
@@ -156,11 +161,11 @@ export class UserDB {
 		return client.query(`
 			WITH insert AS (
 				INSERT INTO "Users" 
-				VALUES (DEFAULT, $1, $2, $3, $4, $5, $6) 
+				VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7) 
 				RETURNING *
 			)
 			${usersView('insert')}
-			`, [samlID, userName, email, role, binPerm, hash])
+			`, [samlID, userName, email, role, binPerm, hash, researchAllowed])
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	
@@ -178,7 +183,8 @@ export class UserDB {
 			password = undefined,
 			globalRole: role = undefined,
 			permission = undefined,
-			userName = undefined,
+            userName = undefined,
+            researchAllowed = undefined,
 			
 			client = pool
 		} = user;
@@ -193,12 +199,13 @@ export class UserDB {
 			hash = COALESCE($3, hash),
 			userName = COALESCE($4, userName),
 			globalRole = COALESCE($5, globalRole),
-			permission = COALESCE($6, permission)
+            permission = COALESCE($6, permission),
+            researchAllowed = COALESCE($7, researchAllowed)
 			WHERE userID = $1
 			RETURNING *
 		)
 		${usersView("update")}
-			`, [userid, email, hash, userName, role, binPerm])
+			`, [userid, email, hash, userName, role, binPerm, researchAllowed])
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	

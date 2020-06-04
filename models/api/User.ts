@@ -4,5 +4,6 @@ export interface User {
 	ID: string,
 	name: string,
 	email: string,
-	permission: Permission
+    permission: Permission,
+    researchAllowed?: boolean
 }

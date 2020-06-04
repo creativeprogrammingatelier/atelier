@@ -13,7 +13,8 @@ export interface User extends DBTools {
 	email?: string,
 	globalRole?: GlobalRole,
 	permission?: number,
-	password?: string,
+    password?: string,
+    researchAllowed?: boolean,
 }
 export interface DBUser extends DBAPIUser {
 	samlid: string,
@@ -25,7 +26,8 @@ export interface DBAPIUser {
 	username: string,
 	email: string,
 	globalrole: string,
-	permission: string,
+    permission: string,
+    researchallowed?: boolean
 }
 
 export function convertUser(db: DBUser): User {
@@ -36,7 +38,8 @@ export function convertUser(db: DBUser): User {
 		userName: db.username,
 		email: db.email,
 		globalRole: getEnum(GlobalRole, db.globalrole),
-		permission: toDec(db.permission)
+        permission: toDec(db.permission),
+        researchAllowed: db.researchallowed
 	}
 }
 export function userToAPI(db: DBAPIUser): APIUser {
@@ -48,6 +51,7 @@ export function userToAPI(db: DBAPIUser): APIUser {
 		permission: {
 			globalRole: getEnum(GlobalRole, db.globalrole),
 			permissions: toDec(db.permission)
-		}
+        },
+        researchAllowed: db.researchallowed
 	}
 }

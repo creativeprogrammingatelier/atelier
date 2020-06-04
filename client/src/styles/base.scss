@@ -11,11 +11,13 @@ html, body {
 a {
 	color: $colorWhite;
 }
-p a {
+p a, p a:not([href]) {
 	color: $colorPrimary;
 }
-p a:hover {
-	color: $colorSecondary;
+p a:hover, p a:not([href]):hover {
+    color: $colorSecondary;
+    text-decoration: underline;
+    cursor: pointer;
 }
 button:focus {
 	outline: none;
@@ -466,7 +468,7 @@ textarea:focus, textarea:active {
 	background-color: $colorSecondary;
 }
 .custom-control-label::before {
-	background-color: $colorAlternateWhite;
+	background-color: $colorOffWhite;
 	border: none;
 }
 .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
@@ -686,4 +688,20 @@ textarea:focus, textarea:active {
 .contentTab {
 	//padding-bottom: calc(28px + 1rem);
 	flex: 1 1 auto;
+}
+
+// Full page overlay
+.overlay {
+    width: 100%;
+    height: 100%;
+    background-color: #000b;
+    position: fixed;
+    left: 0; 
+    top: 0; 
+    z-index: 2000; 
+    overflow: auto;
+}
+
+.no-scroll {
+    overflow: hidden;
 }
