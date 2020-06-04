@@ -158,7 +158,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
 			<Area className="ml-2">
 				{Object.values(WebhookEvent).map(event =>
 					<CheckboxInput
-						name={event}
+						children={event}
 						key={event}
 						value={event}
 						selected={hooks.includes(event)}

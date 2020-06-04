@@ -91,7 +91,7 @@ function UserSettingsPermissionsSection({header, display, state, setState}: User
 				<CheckboxInput
 					key={name}
 					value={name}
-					name={display}
+					children={display}
 					selected={state[name]}
 					onChange={(state) => setState(name, state)}
 				/>

@@ -60,10 +60,11 @@ export function UserSettingsGeneral() {
         <LabeledInput label="Research">
             <Area className="ml-2 my-2">
                 <CheckboxInput
-                    name="Submissions and comments I make on Atelier may be used for research purposes."
                     value="researchAllowed"
                     selected={researchAllowed}
-                    onChange={setResearchAllowed} />
+                    onChange={setResearchAllowed}>
+                    I consent to the use of my comments and submissions for research purposes, as described <a>here</a>.
+                </CheckboxInput>
             </Area>
         </LabeledInput>
         <FeedbackError close={setError}>{error}</FeedbackError>

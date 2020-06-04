@@ -1,14 +1,14 @@
 import {Form} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
-interface CheckboxInputProperties {
-	name: string,
+interface CheckboxInputProperties extends ParentalProperties {
 	value: string,
 	selected?: boolean,
 	disabled?: boolean,
 	onChange: (state: boolean) => void
 }
-export function CheckboxInput({name, value, selected, disabled, onChange}: CheckboxInputProperties) {
+export function CheckboxInput({children, value, selected, disabled, onChange}: CheckboxInputProperties) {
 	const [active, setActive] = useState(selected);
 	
 	const handleChange = () => {
@@ -25,6 +25,6 @@ export function CheckboxInput({name, value, selected, disabled, onChange}: Check
 			disabled={disabled}
 			onChange={handleChange}
 		/>
-		<Form.Check.Label htmlFor={value}>{name}</Form.Check.Label>
+		<Form.Check.Label htmlFor={value}>{children}</Form.Check.Label>
 	</Form.Check>;
 }

@@ -697,4 +697,9 @@ textarea:focus, textarea:active {
     left: 0; 
     top: 0; 
     z-index: 2000; 
+    overflow: auto;
+}
+
+.no-scroll {
+    overflow: hidden;
 }
