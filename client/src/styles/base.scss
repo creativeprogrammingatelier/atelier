@@ -468,7 +468,7 @@ textarea:focus, textarea:active {
 	background-color: $colorSecondary;
 }
 .custom-control-label::before {
-	background-color: $colorAlternateWhite;
+	background-color: $colorOffWhite;
 	border: none;
 }
 .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
