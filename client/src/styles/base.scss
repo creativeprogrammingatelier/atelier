@@ -11,11 +11,13 @@ html, body {
 a {
 	color: $colorWhite;
 }
-p a {
+p a, p a:not([href]) {
 	color: $colorPrimary;
 }
-p a:hover {
-	color: $colorSecondary;
+p a:hover, p a:not([href]):hover {
+    color: $colorSecondary;
+    text-decoration: underline;
+    cursor: pointer;
 }
 button:focus {
 	outline: none;

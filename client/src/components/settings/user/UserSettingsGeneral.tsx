@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, Fragment} from "react";
 import {Button, Form} from "react-bootstrap";
 
 import {CacheItem, CacheState} from "../../../helpers/api/Cache";
@@ -12,7 +12,26 @@ import {FeedbackError} from "../../feedback/FeedbackError";
 import {FeedbackContent} from "../../feedback/Feedback";
 import {CheckboxInput} from "../../input/CheckboxInput";
 import {LabeledInput} from "../../input/LabeledInput";
-import { FeedbackSuccess } from "../../feedback/FeedbackSuccess";
+import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
+import {Overlay} from "../../general/Overlay";
+import {ResearchPermissionInformation} from "../../ResearchPermissionWrapper";
+
+interface ResearchInfoPopupProperties {
+    close: () => void
+}
+
+function ResearchInfoPopup({ close }: ResearchInfoPopupProperties) {
+    return <Overlay>
+        <Area className="p-4 mx-auto my-5 col-12 col-sm-10 col-md-8">
+            <div className="col-10 mx-auto">
+                <ResearchPermissionInformation />
+                <div style={{ textAlign: "center" }}>
+                    <Button onClick={close}>Close</Button>
+                </div>
+            </div>
+        </Area>
+    </Overlay>
+}
 
 export function UserSettingsGeneral() {
     const [name, setName] = useState("");
@@ -21,6 +40,7 @@ export function UserSettingsGeneral() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false as FeedbackContent);
     const [success, setSuccess] = useState(false as FeedbackContent);
+    const [showResearchInfo, setShowResearchInfo] = useState(false);
     const user = useCurrentUser();
     
     const userObservable = useObservable(() => user.observable);
@@ -39,36 +59,47 @@ export function UserSettingsGeneral() {
             .then(_ => setSuccess("Your settings were successfully updated"))
             .catch(error => setError(`Failed to update course: ${error}`));
     };
+
+    const handleResearchInformationClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        event.preventDefault();
+        setShowResearchInfo(true);
+    }
     
-    return <Form>
-        <LabeledInput label="Name">
-            <Form.Control
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(event: React.FormEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
-            />
-        </LabeledInput>
-        <LabeledInput label="Email">
-            <Form.Control
-                type="text"
-                placeholder="Your email"
-                value={email}
-                onChange={(event: React.FormEvent<HTMLInputElement>) => setEmail((event.target as HTMLInputElement).value)}
-            />
-        </LabeledInput>
-        <LabeledInput label="Research">
-            <Area className="ml-2 my-2">
-                <CheckboxInput
-                    value="researchAllowed"
-                    selected={researchAllowed}
-                    onChange={setResearchAllowed}>
-                    I consent to the use of my comments and submissions for research purposes, as described <a>here</a>.
-                </CheckboxInput>
-            </Area>
-        </LabeledInput>
-        <FeedbackError close={setError}>{error}</FeedbackError>
-        <FeedbackSuccess close={setSuccess} timeout={3000}>{success}</FeedbackSuccess>
-        <Button onClick={handleUpdate} disabled={loading}>Update</Button>
-    </Form>;
+    return <Fragment>
+        {showResearchInfo && <ResearchInfoPopup close={() => setShowResearchInfo(false)} />}
+        <Form>
+            <LabeledInput label="Name">
+                <Form.Control
+                    type="text"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(event: React.FormEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
+                    />
+            </LabeledInput>
+            <LabeledInput label="Email">
+                <Form.Control
+                    type="text"
+                    placeholder="Your email"
+                    value={email}
+                    onChange={(event: React.FormEvent<HTMLInputElement>) => setEmail((event.target as HTMLInputElement).value)}
+                    />
+            </LabeledInput>
+            <LabeledInput label="Research">
+                <Area className="ml-2 my-2">
+                    <CheckboxInput
+                        value="researchAllowed"
+                        selected={researchAllowed}
+                        onChange={setResearchAllowed}>
+                        <p className="m-0 p-0">
+                            I consent to the use of my comments and submissions for research purposes, 
+                            as described <a onClick={handleResearchInformationClick}>here</a>.
+                        </p>
+                    </CheckboxInput>
+                </Area>
+            </LabeledInput>
+            <FeedbackError close={setError}>{error}</FeedbackError>
+            <FeedbackSuccess close={setSuccess} timeout={3000}>{success}</FeedbackSuccess>
+            <Button onClick={handleUpdate} disabled={loading}>Update</Button>
+        </Form>
+    </Fragment>
 }
