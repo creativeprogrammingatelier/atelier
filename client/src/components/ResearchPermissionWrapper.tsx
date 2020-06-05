@@ -38,7 +38,10 @@ export function ResearchPermissionInformation() {
 function ResearchPermissionOverlay() {
     const currentUser = useCurrentUser();
     const [researchAllowed, setResearchAllowed] = useState(false);
-    const handleSubmit = () => currentUser.update({ researchAllowed });
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        currentUser.update({ researchAllowed });
+    } 
 
     return <Overlay>
         <Area className="p-4 mx-auto my-5 col-12 col-sm-10 col-md-8">
