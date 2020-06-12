@@ -631,6 +631,10 @@ textarea:focus, textarea:active {
 	}
 }
 
+.comment {
+    white-space: pre-wrap;
+}
+
 // Custom generic use classes
 .round {
 	border-radius: 100vw;
