@@ -73,7 +73,7 @@ export function UserSettingsGeneral() {
                     type="text"
                     placeholder="Your name"
                     value={name}
-                    onChange={(event: React.FormEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
                     />
             </LabeledInput>
             <LabeledInput label="Email">
@@ -81,7 +81,7 @@ export function UserSettingsGeneral() {
                     type="text"
                     placeholder="Your email"
                     value={email}
-                    onChange={(event: React.FormEvent<HTMLInputElement>) => setEmail((event.target as HTMLInputElement).value)}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail((event.target as HTMLInputElement).value)}
                     />
             </LabeledInput>
             <LabeledInput label="Research">

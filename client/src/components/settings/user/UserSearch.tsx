@@ -34,7 +34,7 @@ export function UserSearch({courseID, onSelected}: UserSearchProperties) {
 			type="text"
 			placeholder="Name"
 			value={search}
-			onChange={(event: React.FormEvent<HTMLInputElement>) => setSearch((event.target as HTMLInputElement).value)}
+			onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearch((event.target as HTMLInputElement).value)}
 		/>
 		{
 			users.length > 0 &&

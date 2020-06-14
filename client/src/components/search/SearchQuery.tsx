@@ -143,7 +143,7 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 				onKeyUp={handleKeyUp}
 				placeholder="Search"
 				value={query}
-				onChange={(event: React.FormEvent<HTMLInputElement>) => setQuery((event.target as HTMLInputElement).value)}
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery((event.target as HTMLInputElement).value)}
 			/>
 			<InputGroup.Append>
 				<Button onClick={handleSearch}>Search</Button>

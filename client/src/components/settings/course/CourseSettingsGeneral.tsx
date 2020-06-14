@@ -40,7 +40,7 @@ export function CourseSettingsGeneral({courseID}: CourseSettingsGeneralPropertie
 				type="text"
 				placeholder="Course name"
 				value={name}
-				onChange={(event: React.FormEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
 			/>
 		</LabeledInput>
 		<LabeledInput label="Course state">

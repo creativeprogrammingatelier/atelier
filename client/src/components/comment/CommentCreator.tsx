@@ -26,7 +26,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 	const [caretPosition, setCaretPosition] = useState(0);
 	const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
 	const [suggestionBase, updateSuggestionBase] = useState("");
-	const input = useRef(null as (HTMLInputElement & FormControl<"input"> | null));
+	const input = useRef(null as (HTMLInputElement & FormControl | null));
 	
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Shift") {
@@ -50,7 +50,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 			setShift(false);
 		}
 	};
-	const handleCommentChange = (event: React.FormEvent<HTMLInputElement>) => setComment((event.target as HTMLInputElement).value);
+	const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => setComment((event.target as HTMLInputElement).value);
 	const handleCommentSubmit = async() => {
 		if (!sending) {
 			setSending(true);

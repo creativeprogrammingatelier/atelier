@@ -16,7 +16,7 @@ export function MaybeInput({modify, placeholder, value, onChange, children}: May
 					type="text"
 					placeholder={placeholder}
 					value={value}
-					onChange={(event: React.FormEvent<HTMLInputElement>) => onChange && onChange((event.target as HTMLInputElement).value)}
+					onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange && onChange((event.target as HTMLInputElement).value)}
 				/>
 				:
 				children ? children : <Form.Control plaintext readOnly value={value}/>

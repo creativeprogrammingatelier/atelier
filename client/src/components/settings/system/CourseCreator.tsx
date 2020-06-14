@@ -35,7 +35,7 @@ export function CourseCreator() {
 				type="text"
 				placeholder="Course name"
 				value={courseName}
-				onChange={(event: React.FormEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value)}
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value)}
 			/>
 			<Button onClick={() => handleSubmission(courseName)}>Create Course</Button>
 		</LabeledInput>
