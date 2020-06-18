@@ -19,6 +19,7 @@ import {pgDB, transaction} from "../database/HelperDB";
 import {SnippetDB} from "../database/SnippetDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {createTags} from "../helpers/TagsHelper";
 
 /**
  * Api routes relating to comment threads
@@ -56,7 +57,8 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
 	});
 	
 	await createMentions(commentBody, comment.ID, comment.references.courseID, userID, client);
-	
+	await createTags(commentBody, comment.ID, client);
+
 	return {...commentThread, comments: commentThread.comments.concat(comment)};
 }
 

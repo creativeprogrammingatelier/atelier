@@ -21,7 +21,7 @@ import {SnippetDB} from "../database/SnippetDB";
 import {SubmissionDB} from "../database/SubmissionDB";
 import {UserDB} from "../database/UserDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-
+import {TagsDB} from "../database/TagsDB";
 /**
  * Routes for searching.
  * All routes accept these query parameters:
@@ -135,6 +135,12 @@ searchRouter.get("/users", capture(async(request, response) => {
 	}
 	const users = await filterUser(query, common);
 	response.send(users);
+}));
+
+/** get the most used tags tags */
+searchRouter.get("/tags", capture(async(request, response) => {
+	const tags = await TagsDB.getMostUsedTags(10);
+	response.send(tags);
 }));
 
 /** Search for comments */

@@ -6,6 +6,7 @@ import {File as APIFile} from "../../../../models/api/File";
 import {CourseInvite, Invite} from "../../../../models/api/Invite";
 import {LoginProvider} from "../../../../models/api/LoginProvider";
 import {Mention} from "../../../../models/api/Mention";
+import {Tag} from "../../../../models/api/Tag";
 import {Permission, Permissions} from "../../../../models/api/Permission";
 import {Plugin} from "../../../../models/api/Plugin";
 import {SearchResult} from "../../../../models/api/SearchResult";
@@ -205,6 +206,11 @@ export const search = (query: string) => {
 export const searchUsers = (query: string, courseID?: string, limit = 20, offset = 0) => {
 	// If courseID is not present global users as searched. Permissions in a course/globally might not be set correctly yet by the database
 	return Fetch.fetchJson<User[]>("/api/search/users" + ParameterHelper.createQueryParameters({q: query, courseID, limit, offset}));
+};
+
+//Tags
+export const getMostPopularTags = (limit: number, query= "",  offset = 0) => {
+	return  Fetch.fetchJson<Tag[]>("/api/search/tags" + ParameterHelper.createQueryParameters({q: query, limit, offset}));
 };
 
 // Auth

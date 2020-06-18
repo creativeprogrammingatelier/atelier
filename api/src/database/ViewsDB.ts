@@ -202,3 +202,29 @@ export function MentionsView(mentionsTable = `"Mentions"`) {
 		AND cv.courseID = c.courseID
 	`;
 }
+
+export function TagsView(tagsTable = `"Tags"`) {
+	return `
+		SELECT 
+			t.tagID, t.tagbody,
+			cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 
+			cv.submissionID, cv.courseID, cv.created, cv.edited, 
+			cv.body, cv.type, cv.lineStart,
+			cmu.userID as cmuUserID, 
+			cmu.userName as cmuUserName, cmu.email as cmuEmail, 
+			cmu.globalRole as cmuGlobalRole,
+			cmu.permission as cmuPermission, 
+			subm.title as submTitle, 
+			c.courseName
+		FROM 
+			${tagsTable} as t, 
+			"CommentsView" as cv, 
+			"Submissions" as subm, 
+			"CourseUsersView" as cmu, 
+			"Courses" as c
+		WHERE t.commentID = cv.commentID
+		AND cv.submissionID = subm.submissionID
+		AND cv.courseID = c.courseID
+		AND cv.userID = cmu.userID
+	`;
+}

@@ -53,8 +53,7 @@ export function databaseSamples(client: pgDB = pool): Promise<void> {
      INSERT INTO "Courses" VALUES 
           (${uuid0}, 'Pearls of Computer Science', DEFAULT, ${uuid0}),
 		(${uuid1}, 'Art, Impact and Technology', DEFAULT, ${uuid0});
-	
-	
+	  
      INSERT INTO "CourseRegistration" VALUES
           (${uuid1}, ${uuid5}, 'student', 3${permissionType}),
           (${uuid0}, ${uuid0}, 'student', ${permissionType}),
@@ -190,6 +189,8 @@ all @teachers in one go!'),
           INSERT INTO "Mentions" VALUES 
                (${uuid0}, ${uuid0}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'), null),
                (${uuid1}, ${uuid5}, NULL, 'teacher');
+          INSERT INTO "Tags" VALUES
+          		(${uuid0}, ${uuid5}, 'test');
 
           
      `;
