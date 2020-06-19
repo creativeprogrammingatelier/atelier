@@ -7,6 +7,17 @@ interface Migrations {
 }
 
 const migrations: Migrations = {
+    // Adds a table with tag
+    3: async client => {
+        client.query(`
+            CREATE TABLE "Tags" (
+	                tagID      		uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+	                commentID      	uuid NOT NULL REFERENCES "Comments"(commentID) ON DELETE CASCADE,
+	                tagbody         text NOT NULL
+            );
+        `);
+    },
+
     // Introduces a new researchAllowed column in the Users table
     2: async client => {
         client.query(`
