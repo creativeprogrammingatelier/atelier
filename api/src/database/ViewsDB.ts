@@ -226,5 +226,6 @@ export function TagsView(tagsTable = `"Tags"`) {
 		AND cv.submissionID = subm.submissionID
 		AND cv.courseID = c.courseID
 		AND cv.userID = cmu.userID
+		AND cv.courseID = cmu.courseID
 	`;
 }
