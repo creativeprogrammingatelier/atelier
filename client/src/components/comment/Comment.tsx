@@ -13,6 +13,7 @@ import {ButtonMultistate} from "../input/button/ButtonMultistate";
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import {Cached} from "../general/loading/Cached";
+import {Tag} from "../general/Tag";
 
 interface CommentProperties {
 	comment: Comment
@@ -50,7 +51,10 @@ export function Comment({comment}: CommentProperties) {
 	return <Fragment>
 		<div className="comment px-2 py-1" onMouseDown={handleDown} onMouseUp={handleUp} onTouchStart={handleDown} onTouchEnd={handleUp}>
 			<small><span>{comment.user.name}</span> at <span>{TimeHelper.toDateTimeString(TimeHelper.fromString(comment.created))}</span></small>
-			<div style={comment.text === "This comment was deleted" ? {fontStyle: "italic"} : {}}>{comment.text}</div>
+			<div style={comment.text === "This comment was deleted" ? {fontStyle: "italic"} : {}}>
+				{comment.text.split(" ").map(text => text[0] == "#" ? <Tag key={text} large round theme="primary">{text}</Tag>: text + " ")
+				}
+			</div>
 		</div>
 		{
 			menuOpen &&

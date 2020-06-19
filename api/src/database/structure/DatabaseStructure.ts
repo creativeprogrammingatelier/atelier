@@ -3,7 +3,7 @@ import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
 import {isPostgresError} from "../../helpers/DatabaseErrorHelper";
 
 import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
-import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, CourseUsersViewAll} from "../ViewsDB";
+import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, TagsView, CourseUsersViewAll} from "../ViewsDB";
 import {databaseSamples} from "./DatabaseSamples";
 
 // IMPORTANT
@@ -14,7 +14,7 @@ import {databaseSamples} from "./DatabaseSamples";
 // This does not apply to views, as those are recreated on every start of Atelier anyway,
 // whether they are changed or not. If a view changes because of a schema change, you don't
 // have to include those views in the migration.
-const VERSION = 2;
+const VERSION = 3;
 
 if (require.main === module) {
 	//args without node & path name
@@ -78,7 +78,7 @@ DROP VIEW IF EXISTS
     "SubmissionsView", "FilesView",
     "SnippetsView", "CommentsView",
     "CommentThreadView", "CourseRegistrationView",
-    "MentionsView", "CourseUsersView", "CourseUsersViewAll",
+    "MentionsView", "TagsView", "CourseUsersView", "CourseUsersViewAll",
     "CourseRegistrationViewAll";
 `;
 
@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS
 	"Courses", "CourseRegistration", 
 	"Submissions", "Files", "Snippets", 
 	"CommentThread", "Comments", 
-	"Mentions", "CourseInvites",
+	"Mentions", "Tags", "CourseInvites",
     "Plugins", "PluginHooks";
 `;
 
@@ -231,6 +231,12 @@ CREATE TABLE "Mentions" (
 	userGroup	   text REFERENCES "CourseRolePermissions"(courseRoleID) ON DELETE CASCADE,
 	CONSTRAINT either_or CHECK ((userID IS NULL) != (userGroup IS NULL))
 );
+
+CREATE TABLE "Tags" (
+	tagID      		uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+	commentID      	uuid NOT NULL REFERENCES "Comments"(commentID) ON DELETE CASCADE,
+	tagbody         text NOT NULL
+);
 	
 
 CREATE OR REPLACE FUNCTION delSnippet() 
@@ -319,6 +325,9 @@ CREATE VIEW "CommentThreadView" as (
 );
 CREATE VIEW "MentionsView" as (
 	${MentionsView()}
+);
+CREATE VIEW "TagsView" as (
+	${TagsView()}
 );
 
 

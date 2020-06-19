@@ -4,6 +4,7 @@ import {FiEye, FiEyeOff, FiSend} from "react-icons/all";
 import {Controlled as CodeMirror} from "react-codemirror2";
 
 import {MentionSuggestions} from "./MentionSuggestions";
+import {TagSuggestions} from "./TagSuggestions";
 
 interface MentionProperties {
 	courseID: string
@@ -25,6 +26,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 	const [shift, setShift] = useState(false);
 	const [caretPosition, setCaretPosition] = useState(0);
 	const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
+	const [tagIndex, updateTagIndex] = useState(undefined as number | undefined);
 	const [suggestionBase, updateSuggestionBase] = useState("");
 	const input = useRef(null as (HTMLInputElement & FormControl | null));
 	
@@ -78,6 +80,23 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 			}
 		}
 	};
+
+	const handleTagSelected = (name: string) => {
+		if (tagIndex !== undefined) {
+			const textWithTag = comment.substring(0, tagIndex + 1) + name + " ";
+			const textAfter = comment.substring(caretPosition);
+			setComment(textWithTag + textAfter);
+			if (input.current !== null) {
+				const position = textWithTag.length;
+				// Set focus back to the input textarea
+				input.current.focus();
+				// Set the caret back to the position after the insertion
+				// This happens with a 1 ms delay, otherwise the caret
+				// appears at the end of the textarea
+				setTimeout(() => input.current && input.current.setSelectionRange(position, position), 1);
+			}
+		}
+	};
 	
 	useEffect(() => {
 		// Poll every 100ms for the location of the caret in the textarea and update
@@ -106,6 +125,9 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 		} else {
 			updateSuggestionBase("");
 		}
+
+		updateTagIndex(allIndexesOf(comment, "#").reverse().find(index => index < caretPosition));
+
 	}, [caretPosition]);
 	
 	return <Form className={"commentCreator" + (large ? " commentCreatorLarge" : "") + (round ? " commentCreatorRound" : "") + (restricted ? " restricted" : "") + (transparent ? " bg-transparent" : "")}>
@@ -140,6 +162,15 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 						onSelected={(user: string) => handleMentionSelected(user)}
 					/>
 				}
+				{
+					<TagSuggestions
+						prefix='#'
+						tagIndex={tagIndex}
+						round={round}
+						onSelected={(tag: string) => handleTagSelected(tag)}
+					/>
+				}
+
 			</InputGroup>
 		</Form.Group>
 	</Form>;

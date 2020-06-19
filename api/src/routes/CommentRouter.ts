@@ -11,6 +11,7 @@ import {PermissionError, requireRegisteredCommentThreadID} from "../helpers/Perm
 import {CommentDB} from "../database/CommentDB";
 import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {createTags} from "../helpers/TagsHelper";
 
 /**
  * Api routes relating to comments
@@ -55,7 +56,7 @@ commentRouter.put("/:commentThreadID", capture(async(request, response) => {
 	const commentThreadID = request.params.commentThreadID;
 	const currentUserID: string = await getCurrentUserID(request);
 	const commentBody = request.body.comment;
-	
+
 	// User should be registered
 	await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 	
@@ -68,7 +69,8 @@ commentRouter.put("/:commentThreadID", capture(async(request, response) => {
 		});
 		
 		await createMentions(commentBody, comment.ID, comment.references.courseID, currentUserID, client);
-		
+		await createTags(commentBody, comment.ID, client);
+
 		return comment;
 	});
 	
