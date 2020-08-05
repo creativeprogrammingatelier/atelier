@@ -4,7 +4,88 @@
 
 Atelier is an online environment to assist with programming tutorials. It facilitates interactions between students and teaching assistants to help them with their programming projects, allowing students to easily share and discuss their code with teaching assistants. Atelier is part of a [research project](https://www.utwente.nl/en/eemcs/fmt/research/projects/atelier/) of the FMT group at the University of Twente.
 
-## Run your own Atelier
+## Developing Atelier
+
+To run and debug Atelier in your local development environment, you'll need the following tools installed:
+
+- [Node.js](https://nodejs.org/): to run the backend server and development tools (the LTS version is recommended, but other versions might work too)
+- [PostgreSQL](https://www.postgresql.org/): to run a local database (but you can also use a remote database, if you prefer)
+- TypeScript and webpack: `npm install -g typescript webpack`
+- Some editor that supports TypeScript (e.g. [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm/))
+
+Once you've got the tooling set up, we can start with getting Atelier running:
+
+1. Clone the repo and switch to the atelier directory
+
+2. Run `npm install` to install the dependencies
+
+3. Create a development configuration:
+
+   1. Copy */config/example.json* to */config/development.json*
+   2. Set the database `user`, `database` and `password` to the values you configured while installing PostgreSQL
+
+4. Run `npm run compile` to compile the backend
+
+5. Run `npm run database-dev` to set up the database structure and add some development sample data
+
+6. Run `npm run watch-frontend` to run webpack in watch mode to compile the frontend application
+
+7. Run `npm run start` to start the server
+
+8. Navigate to <http://localhost:5000>
+
+9. You will be shown the login page. Click on the *Samling* button to log in. In the *Name Identifier* field, fill in one of the following user identifiers:
+
+   - `admin` - a global admin user, who is allowed to do anything in the system
+   - `user` - a global 'user' user, who is enrolled in a course as a student
+   - `teacher` - a global staff user, who is enrolled in a course as a teacher 
+   - `TA` - a global 'user' user, who is enrolled in a course as a teaching assistant
+
+   Then click *Next* and *Post Response!* to log in.
+
+   (*Note:* there is known issue with using Samling and Firefox or Safari. After logging in, you'll be redirected back to http://localhost:5000/login. Simply change the address in your address bar back to http://localhost:5000 to proceed.)
+
+Now you are ready to start developing Atelier further. Also take a look at the [*/docs/dev*](/docs/dev) folder for more information about developing all parts of the Atelier system.
+
+### npm run scripts
+
+In *package.json*, a couple scripts are defined to do common operations while developing Atelier. Here's an overview of all of them by type of action:
+
+**Compiling**
+
+- `compile` - Compile the backend using the TypeScript compiler
+- `prepare` - Alias for `compile`
+- `compile-frontend` - Compile the frontend React application using webpack in production mode
+
+**Running and watching**
+
+- `start` - Start the server
+- `watch-backend` - Compile the backend using the TypeScript compiler in watch mode
+- `watch-frontend` - Compile the frontend React application using webpack in development mode
+
+**Testing**
+
+- `test` - Run all tests, alias for `test-backend` and `test-frontend` combined
+- `test-backend` - Run the tests for the backend
+- `test-backend-nyc` - Run the tests for the backend with coverage detection (using the nyc package)
+- `test-frontend` - Run the tests for the frontend
+
+*Note:* the backend tests require a connection to a database with sample data, which can be generated using the commands below.
+
+**Database**
+
+- `database-build` - Create the database table structure, dropping old tables if they already exist
+- `database-samples` - Add sample data to an existing database structure
+- `database-dev` - Set up the database for development, including sample data
+
+### Optional Tools for Development
+
+These are some useful tools you might want to use when working on Atelier:
+
+* React Developer Tools ([Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)/[Firefox](https://addons.mozilla.org/en-US/firefox/addon/react-devtools/)) - Plugin that helps with debugging React applications
+* [Postman](https://www.getpostman.com/) - An API testing tool
+
+## Running Atelier in Production
 
 The best way to run Atelier in your own production environment, is by using the Docker image. You can build the image from this repo using the `docker build . -t atelier` command, to create an image called `atelier`. 
 
@@ -79,7 +160,7 @@ secrets:
 
 This setup uses files in the *./secrets* folder to configure the database username and password across the two containers, and mounts all volumes for persistent data to folders in the current working directory. A configuration file called *production.json* is assumed to be available in the *./config* folder.
 
-In practice, we recommend running Atelier behind a proxy server that allows for HTTPS connections, instead of directly exposing Atelier on only port 80 (HTTP). You could for example add an [nginx container](https://hub.docker.com/_/nginx/) to your docker-compose configuration, or use an external proxy server.
+In practice, we recommend running Atelier behind a proxy server that allows for HTTPS connections, instead of directly exposing Atelier on only port 80 (HTTP). You could, for example, add an [nginx container](https://hub.docker.com/_/nginx/) to your docker-compose configuration, or use an external proxy server.
 
 ### First run setup
 
@@ -92,116 +173,6 @@ docker exec atelier_atelier_1 node api/src/database/structure/DatabaseStructure.
 where you replace `atelier_atelier_1` with the name of your Atelier container.
 
 // TODO: create an admin account
-
-## Developing Atelier
-
-To run and debug Atelier in your local development environment, you'll need the following tools installed:
-
-- [Node.js](https://nodejs.org/): to run the backend server and development tools (the LTS version is recommended, but other versions might work too)
-- [PostgreSQL](https://www.postgresql.org/): to run a local database (but you can also use a remote database, if you prefer)
-- TypeScript and webpack: `npm install -g typescript webpack`
-- Some editor that supports TypeScript (e.g. [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm/))
-
-Once you've got the tooling set up, we can start with getting Atelier running:
-
-1. Clone the repo and switch to the atelier directory
-
-2. Run `npm install` to install the dependencies
-
-3. Create a development configuration:
-
-   1. Copy */config/example.json* to */config/development.json*
-   2. Set the database `user`, `database` and `password` to the values you configured while installing PostgreSQL
-
-4. Run `npm run compile` to compile the backend
-
-5. Run `npm run database-dev` to set up the database structure and add some development sample data
-
-6. Run `npm run watch-frontend` to run webpack in watch mode to compile the frontend application
-
-7. Run `npm run start` to start the server
-
-8. Navigate to <http://localhost:5000>
-
-9. You will be shown the login page. Click on the *Samling* button to log in. In the *Name Identifier* field, fill in one of the following user identifiers:
-
-   - `admin` - a global admin user, who is allowed to do anything in the system
-   - `user` - a global 'user' user, who is enrolled in a course as a student
-   - `teacher` - a global staff user, who is enrolled in a course as a teacher 
-   - `TA` - a global 'user' user, who is enrolled in a course as a teaching assistant
-
-   Then click *Next* and *Post Response!* to log in.
-
-   (*Note:* there is known issue with using Samling and Firefox or Safari. After logging in, you'll be redirected back to http://localhost:5000/login. Simply change the address in your address bar back to http://localhost:5000 to proceed.)
-
-Now you are ready to start developing Atelier further. Also take a look at the [*/docs/dev*](/docs/dev) folder for more information about developing all parts of the Atelier system.
-
-### Overview of the repo
-
-An overview of the structure of the repository, to provide a quick look of what goes where
-
-- `/` - the root, contains mainly tooling configuration files
-  - `/api/src` - source files for the API backend
-    - `/database` - helpers for interfacing with tables in the database
-      - `/structure` - files that generate the table and views structure
-    - `/helpers` - helpers for use throughout the backend
-    - `/lib` - define some constants
-    - `/middleware` - contains middleware used in the request pipeline
-    - `/routes` - defines all backend routes
-    - `app.ts` - entrypoint for the backend
-  - `/build` - output folder for compiled JavaScript files
-  - `/client` - files for the React frontend
-    - `/src` - source files
-      - `/components` - the components that make up the frontend
-      - `/helpers` - helpers that are used throughout the frontend
-      - `/styles` - all styling for the frontend
-    - `/test` - tests for the frontend
-  - `/config` - configuration files for Atelier
-  - `/design` - some design documents
-  - `/docs` - documentation for users and developers
-  - `/helpers` - helpers that are used in both the backend and frontend
-  - `/models` - declaration of all models, used in both the backend and frontend
-    - `/api` - models used in communication between backend and frontend
-    - `/database` - models used in communication with the database
-    - `/enums` - enums that are shared across both types of models
-  - `/test` - tests for the backend API
-  - `/uploads` - folder where uploaded projects will be stored
-
-### npm run scripts
-
-In *package.json*, a couple scripts are defined to do common operations while developing Atelier. Here's an overview of all of them by type of action:
-
-**Compiling**
-
-- `compile` - Compile the backend using the TypeScript compiler
-- `prepare` - Alias for `compile`
-- `compile-frontend` - Compile the frontend React application using webpack in production mode
-
-**Running and watching**
-
-- `start` - Start the server
-- `watch-backend` - Compile the backend using the TypeScript compiler in watch mode
-- `watch-frontend` - Compile the frontend React application using webpack in development mode
-
-**Testing**
-
-- `test` - Run all tests, alias for `test-backend` and `test-frontend` combined
-- `test-backend` - Run the tests for the backend
-- `test-backend-nyc` - Run the tests for the backend with coverage detection (using the nyc package)
-- `test-frontend` - Run the tests for the frontend
-
-**Database**
-
-- `database-build` - Create the database table structure, dropping old tables if they already exist
-- `database-samples` - Add sample data to an existing database structure
-- `database-dev` - Set up the database for development, including sample data
-
-### Optional Tools for Development
-
-These are some useful tools you might want to use when working on Atelier:
-
-* React Developer Tools ([Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)/[Firefox](https://addons.mozilla.org/en-US/firefox/addon/react-devtools/)) - Plugin that helps with debugging React applications
-* [Postman](https://www.getpostman.com/) - An API testing tool
 
 ## Design Guidelines
 
