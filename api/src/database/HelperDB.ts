@@ -268,7 +268,9 @@ export function funmap3<A, a, B, b, C, c>(
  */
 export interface DBTools {
 	limit?: number,
-	offset?: number,
+    offset?: number,
+    after?: Date,
+    before?: Date,
 	sorting?: Sorting,
 	currentUserID?: string,
 	client?: pgDB

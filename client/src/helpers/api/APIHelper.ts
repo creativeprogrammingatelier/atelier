@@ -20,7 +20,7 @@ import {InviteRole} from "../../../../models/enums/InviteRoleEnum";
 import {ThreadState} from "../../../../models/enums/ThreadStateEnum";
 
 import "../../../../helpers/Extensions";
-import {ParameterHelper} from "../ParameterHelper";
+import {ParameterHelper, PaginationParameters} from "../ParameterHelper";
 
 import {Fetch} from "./FetchHelper";
 
@@ -81,14 +81,14 @@ export const getUsersByCourse = (courseID: string) => {
 };
 
 // Submissions
-export const getCourseSubmissions = (courseId: string) => {
-	return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}`);
+export const getCourseSubmissions = (courseId: string, pagination?: PaginationParameters) => {
+	return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}` + ParameterHelper.createQueryParameters({...pagination}));
 };
-export const getCourseUserSubmissions = (courseId: string, userId: string) => {
-	return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}/user/${userId}`);
+export const getCourseUserSubmissions = (courseId: string, userId: string, pagination?: PaginationParameters) => {
+	return Fetch.fetchJson<Submission[]>(`/api/submission/course/${courseId}/user/${userId}` + ParameterHelper.createQueryParameters({...pagination}));
 };
-export const getUserSubmissions = (userId: string) => {
-	return Fetch.fetchJson<Submission[]>(`/api/submission/user/${userId}`);
+export const getUserSubmissions = (userId: string, pagination?: PaginationParameters) => {
+	return Fetch.fetchJson<Submission[]>(`/api/submission/user/${userId}` + ParameterHelper.createQueryParameters({...pagination}));
 };
 export const getSubmission = (submissionID: string) => {
 	return Fetch.fetchJson<Submission>(`/api/submission/${submissionID}`);

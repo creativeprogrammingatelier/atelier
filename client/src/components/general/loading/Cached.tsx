@@ -1,14 +1,15 @@
 import React, {useEffect, Fragment} from "react";
 import {useObservableState} from "observable-hooks";
 
-import {APICache, Refresh} from "../../../helpers/api/APIHooks";
+import {APICache, Refresh, LoadMore} from "../../../helpers/api/APIHooks";
 import {CacheState} from "../../../helpers/api/Cache";
 
 import {LoadingIcon} from "./LoadingIcon";
+import { Button } from "react-bootstrap";
 
 interface CachedProperties<T> {
 	/** Interface to the cached data and optional refresh */
-	cache: APICache<T> | Refresh<T>,
+	cache: APICache<T> | Refresh<T> | LoadMore<T>,
 	/** The amount of time to wait until the data is expired and should be refreshed */
 	timeout?: number,
 	/** Wrapper to display around the loading indicator */
@@ -79,7 +80,12 @@ export function Cached<T>(
 		if ("value" in cached) {
 			return <Fragment children={children(cached.value, cached.state)}/>;
 		} else {
-			return <Fragment children={cached.items.map(item => children(item.value, item.state))}/>;
+			return (
+                <Fragment>
+                    {cached.items.map(item => children(item.value, item.state))}
+                    {"loadMore" in cache && cache.loadMore && <Button onClick={() => cache.loadMore()}>Load more</Button>}
+                </Fragment>
+            );
 		}
 	}
 }

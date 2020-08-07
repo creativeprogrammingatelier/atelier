@@ -68,7 +68,9 @@ export class SubmissionDB {
 			globalRole: role = undefined,
 			
 			limit = undefined,
-			offset = undefined,
+            offset = undefined,
+            after = undefined,
+            before = undefined,
 			client = pool,
 			
 			addFiles = false
@@ -84,7 +86,9 @@ export class SubmissionDB {
 				AND ($3::uuid IS NULL OR userID=$3)
 				--submission
 				AND ($4::text IS NULL OR title=$4)
-				AND ($5::timestamp IS NULL OR date <= $5)
+                AND ($5::timestamp IS NULL OR date <= $5)
+                AND ($12::timestamp IS NULL OR date > $12)
+                AND ($13::timestamp IS NULL OR date < $13)
 				AND ($6::text IS NULL OR state=$6)
 				--user
 				AND ($7::text IS NULL OR userName=$7)
@@ -96,7 +100,7 @@ export class SubmissionDB {
 			`, [submissionid, courseid, userid,
 			title, date, state,
 			name, email, role,
-			limit, offset])
+			limit, offset, after, before])
 			.then(extract).then(map(submissionToAPI));
 		if (addFiles) {
 			return SubmissionDB.addFiles(query, client);
@@ -122,7 +126,9 @@ export class SubmissionDB {
 			globalRole: role = undefined,
 			
 			limit = undefined,
-			offset = undefined,
+            offset = undefined,
+            after = undefined,
+            before = undefined,
 			sorting = Sorting.datetime,
 			currentUserID = undefined,
 			client = pool,
@@ -137,14 +143,16 @@ export class SubmissionDB {
 		
 		const query = pool.query(`
 			SELECT s.* 
-			FROM "SubmissionsView" as s, viewableSubmissions($12, $2) as opts
+			FROM "SubmissionsView" as s, viewableSubmissions($14, $2) as opts
 			WHERE 
 				($1::uuid IS NULL OR s.submissionID=$1)
 			AND ($2::uuid IS NULL OR s.courseID=$2)
 			AND ($3::uuid IS NULL OR s.userID=$3)
 			--submission
 			AND ($4::text IS NULL OR s.title=$4)
-			AND ($5::timestamp IS NULL OR s.date <= $5)
+            AND ($5::timestamp IS NULL OR s.date <= $5)
+            AND ($12::timestamp IS NULL OR date > $12)
+            AND ($13::timestamp IS NULL OR date < $13)
 			AND ($6::text IS NULL OR s.state=$6)
 			--user
 			AND ($7::text IS NULL OR s.userName=$7)
@@ -157,7 +165,7 @@ export class SubmissionDB {
 			`, [submissionid, courseid, userid,
 			searchTitle, date, state,
 			name, email, role,
-			limit, offset, currentuserid])
+			limit, offset, after, before, currentuserid])
 			.then(extract).then(map(submissionToAPI));
 		if (addFiles) {
 			return SubmissionDB.addFiles(query, client);

@@ -50,3 +50,10 @@ interface SearchParameters {
 	userID?: string,
 	submissionID?: string
 }
+
+export interface PaginationParameters {
+    limit?: number,
+    offset?: number,
+    after?: number,
+    before?: number
+}

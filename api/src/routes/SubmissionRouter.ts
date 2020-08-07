@@ -19,6 +19,7 @@ import {transaction} from "../database/HelperDB";
 import {SubmissionDB} from "../database/SubmissionDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {UPLOADS_PATH} from "../lib/constants";
+import { getPaginationQueryParams } from "../helpers/ParamsHelper";
 
 /**
  * Api routes relating to submission information
@@ -34,12 +35,13 @@ submissionRouter.use(AuthMiddleware.requireAuth);
  */
 submissionRouter.get("/course/:courseID", capture(async(request: Request, response: Response) => {
 	const userID: string = await getCurrentUserID(request);
-	const courseID: string = request.params.courseID;
+    const courseID: string = request.params.courseID;
+    const paginationParams = getPaginationQueryParams(request);
 	
 	// Requires registration in the course
 	await requireRegistered(userID, courseID);
 	
-	let submissions: Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID);
+	let submissions: Submission[] = await SubmissionDB.getSubmissionsByCourse(courseID, paginationParams);
 	submissions = (await filterSubmission(submissions, userID))
 		.map(submission => removePermissionsSubmission(submission));
 	response.status(200).send(submissions);
@@ -52,14 +54,15 @@ submissionRouter.get("/course/:courseID", capture(async(request: Request, respon
  */
 submissionRouter.get("/user/:userID", capture(async(request: Request, response: Response) => {
 	const userID: string = request.params.userID;
-	const currentUserID: string = await getCurrentUserID(request);
+    const currentUserID: string = await getCurrentUserID(request);
+    const paginationParams = getPaginationQueryParams(request);
 	
 	// Requires view all submission permission if you are not the user
 	if (userID !== currentUserID) {
 		await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions);
 	}
 	
-	const submissions: Submission[] = (await SubmissionDB.getUserSubmissions(userID))
+	const submissions: Submission[] = (await SubmissionDB.getUserSubmissions(userID, paginationParams))
 		.map(submission => removePermissionsSubmission(submission));
 	response.status(200).send(submissions);
 }));
@@ -70,7 +73,8 @@ submissionRouter.get("/user/:userID", capture(async(request: Request, response: 
 submissionRouter.get("/course/:courseID/user/:userID", capture(async(request: Request, response: Response) => {
 	const courseID = request.params.courseID;
 	const userID = request.params.userID;
-	const currentUserID: string = await getCurrentUserID(request);
+    const currentUserID: string = await getCurrentUserID(request);
+    const paginationParams = getPaginationQueryParams(request);
 	
 	// Requires enrolled in the course & view all permissions if you are not the user
 	await requireRegistered(currentUserID, courseID);
@@ -78,7 +82,7 @@ submissionRouter.get("/course/:courseID/user/:userID", capture(async(request: Re
 		await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 	}
 	
-	const submissions: Submission[] = (await SubmissionDB.getRecents({userID, courseID}))
+	const submissions: Submission[] = (await SubmissionDB.getRecents({userID, courseID, ...paginationParams}))
 		.map(submission => removePermissionsSubmission(submission));
 	response.status(200).send(submissions);
 }));

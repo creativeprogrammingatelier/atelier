@@ -42,7 +42,12 @@ export interface APICache<T> {
 }
 
 /**
- * A refreshable cache can be refreshed with a request to the API
+ * A refreshable cache can be refreshed with a request to the API.
+ * When calling refresh, all data in the cache will be replaced with the results
+ * returned by the API, which means that older data may be lost. On endpoints
+ * with support for pagination, this should not be called too often. (Still should 
+ * be called once in a while to make sure deleted items get purged, since we have
+ * no update mechanism for that.)
  */
 export interface Refresh<T> extends APICache<T> {
 	/** 
@@ -91,6 +96,16 @@ export interface Delete<Arg extends any[], T> extends APICache<T> {
 	 * item, or rejecting the promise if the API request fails
 	 */
 	delete: (...args: Arg) => Promise<T>
+}
+
+/**
+ * Items in this type of cache support pagination, so you can load more items into the cache,
+ * or check if new items have appeared.
+ */
+// tslint:disable-next-line: no-any
+export interface LoadMore<T> extends APICache<T> {
+    loadNew: () => Promise<boolean>,
+    loadMore: () => Promise<boolean>
 }
 
 // Generic helper functions
@@ -392,18 +407,21 @@ export function useCoursePermission(courseID: string): Refresh<Permission> {
 		refresh: () => refreshItem(API.coursePermission(courseID), permission)
 	}
 }
-export function useCourseSubmissions(courseID: string): Refresh<Submission> & Create<[string, File[]], Submission> {
+export function useCourseSubmissions(courseID: string): Refresh<Submission> & Create<[string, File[]], Submission> & LoadMore<Submission> {
 	const submissions = useCacheCollection<Submission>(`submissions`, {
 		subKey: courseID,
 		filter: submission => submission?.references?.courseID === courseID,
 		// Sort by date, newest first
 		sort: (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
 	});
-	const getCurrentUser = useCurrentUserDirect();
+    const getCurrentUser = useCurrentUserDirect();
+    const getDates = () => submissions.getCurrentValue().items.map(x => new Date(x.value.date).getTime());
 	return {
 		observable: submissions.observable,
-		refresh: () => refreshCollection(API.getCourseSubmissions(courseID), submissions),
-		defaultTimeout: 60,
+		refresh: () => refreshCollection(API.getCourseSubmissions(courseID, { limit: 50 }), submissions),
+        defaultTimeout: 60,
+        loadNew: () => refreshCollection(API.getCourseSubmissions(courseID, { after: Math.max(...getDates()) }), submissions),
+        loadMore: () => refreshCollection(API.getCourseSubmissions(courseID, { before: Math.min(...getDates()), limit: 50 }), submissions),
 		create: (projectName: string, files: File[]) =>
 			create(
 				API.createSubmission(courseID, projectName, files),
