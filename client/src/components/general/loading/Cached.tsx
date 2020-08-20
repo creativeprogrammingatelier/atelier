@@ -11,7 +11,9 @@ interface CachedProperties<T> {
 	/** Interface to the cached data and optional refresh */
 	cache: APICache<T> | Refresh<T> | LoadMore<T>,
 	/** The amount of time to wait until the data is expired and should be refreshed */
-	timeout?: number,
+    timeout?: number,
+    /** Helper to get dates out of items, required for load more */
+    extractDate?: (item: T) => Date,
 	/** Wrapper to display around the loading indicator */
 	wrapper?: (children: React.ReactNode) => React.ReactNode,
 	/** Callback to call when an error occurs while refreshing data */
@@ -39,7 +41,7 @@ function jitter(time: number) {
 
 export function Cached<T>(
 	{
-		cache, timeout, wrapper, onError = msg => {},
+		cache, timeout, extractDate, wrapper, onError = msg => {},
 		updateCount = count => {},
 		children
 	}: CachedProperties<T>
@@ -83,7 +85,13 @@ export function Cached<T>(
 			return (
                 <Fragment>
                     {cached.items.map(item => children(item.value, item.state))}
-                    {"loadMore" in cache && cache.loadMore && <Button onClick={() => cache.loadMore()}>Load more</Button>}
+                    {"loadMore" in cache && cache.loadMore && extractDate && 
+                        <Button onClick={() => cache.loadMore(
+                            Math.max(...cached.items.map(item => extractDate(item.value).getTime())) 
+                            + 3 * 24 * 60 * 60 * 1000)}>
+                            Load more
+                        </Button>
+                    }
                 </Fragment>
             );
 		}

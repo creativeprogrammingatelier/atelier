@@ -105,7 +105,7 @@ export interface Delete<Arg extends any[], T> extends APICache<T> {
 // tslint:disable-next-line: no-any
 export interface LoadMore<T> extends APICache<T> {
     loadNew: () => Promise<boolean>,
-    loadMore: () => Promise<boolean>
+    loadMore: (until: number) => Promise<boolean>
 }
 
 // Generic helper functions
@@ -421,7 +421,7 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
 		refresh: () => refreshCollection(API.getCourseSubmissions(courseID, { limit: 50 }), submissions),
         defaultTimeout: 60,
         loadNew: () => refreshCollection(API.getCourseSubmissions(courseID, { after: Math.max(...getDates()) }), submissions),
-        loadMore: () => refreshCollection(API.getCourseSubmissions(courseID, { before: Math.min(...getDates()), limit: 50 }), submissions),
+        loadMore: (until) => refreshCollection(API.getCourseSubmissions(courseID, { before: Math.min(...getDates()), after: until }), submissions),
 		create: (projectName: string, files: File[]) =>
 			create(
 				API.createSubmission(courseID, projectName, files),
@@ -456,26 +456,32 @@ export function useSubmission(submissionID: string): Refresh<Submission> & Delet
 			)
 	};
 }
-export function useMentions(): Refresh<Mention> {
+export function useMentions(): Refresh<Mention> & LoadMore<Mention> {
 	const mentions = useCacheCollection<Mention>("mentions", {
 		sort: (a, b) => new Date(b.comment.created).getTime() - new Date(a.comment.created).getTime()
-	});
+    });
+    const getDates = () => mentions.getCurrentValue().items.map(x => new Date(x.value.comment.created).getTime())
 	return {
 		observable: mentions.observable,
 		refresh: () => refreshCollection(API.getMentions(), mentions),
-		defaultTimeout: 30
+        defaultTimeout: 30,
+        loadNew: () => refreshCollection(API.getMentions({ after: Math.max(...getDates()) }), mentions),
+        loadMore: (until) => refreshCollection(API.getMentions({ before: Math.min(...getDates()), after: until }), mentions)
 	}
 }
-export function useCourseMentions(courseID: string): Refresh<Mention> {
+export function useCourseMentions(courseID: string): Refresh<Mention> & LoadMore<Mention> {
 	const mentions = useCacheCollection<Mention>("mentions", {
 		subKey: courseID,
 		filter: mention => mention?.references?.courseID === courseID,
 		sort: (a, b) => new Date(b.comment.created).getTime() - new Date(a.comment.created).getTime()
-	});
+    });
+    const getDates = () => mentions.getCurrentValue().items.map(x => new Date(x.value.comment.created).getTime())
 	return {
 		observable: mentions.observable,
 		refresh: () => refreshCollection(API.getCourseMentions(courseID), mentions),
-		defaultTimeout: 30
+        defaultTimeout: 30,
+        loadNew: () => refreshCollection(API.getCourseMentions(courseID, { after: Math.max(...getDates()) }), mentions),
+        loadMore: (until) => refreshCollection(API.getCourseMentions(courseID, { before: Math.min(...getDates()), after: until }), mentions)
 	}
 }
 export function useCurrentUser(): Refresh<User> & Update<[Partial<User>], User> {

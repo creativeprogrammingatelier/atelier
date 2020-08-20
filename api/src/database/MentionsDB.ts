@@ -11,7 +11,7 @@ export class MentionsDB {
 		return MentionsDB.filterMentions(params);
 	}
 	static async getMentionsByUser(userID: string, courseID?: string, params: DBTools = {}) {
-		const {client = pool, limit = undefined, offset = undefined} = params;
+		const {client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined} = params;
 		const userid = UUIDHelper.toUUID(userID),
 			courseid = UUIDHelper.toUUID(courseID);
 		
@@ -29,8 +29,10 @@ export class MentionsDB {
                         AND cr.courseRole = m.userGroup
                     )
                 )
-            ) ORDER BY m.created DESC LIMIT $3 OFFSET $4
-		`, [userid, courseid, limit, offset])
+            ) AND ($5::timestamp IS NULL OR m.created > $5)
+            AND ($6::timestamp IS NULL OR m.created < $6)
+            ORDER BY m.created DESC LIMIT $3 OFFSET $4
+		`, [userid, courseid, limit, offset, after, before])
 			.then(extract).then(map(mentionToAPI))
 	}
 	static async getMentionsByComment(commentID: string, params: DBTools = {}) {
@@ -47,7 +49,9 @@ export class MentionsDB {
 			userID = undefined,
 			commentID = undefined,
 			limit = undefined,
-			offset = undefined,
+            offset = undefined,
+            after = undefined,
+            before = undefined,
 			commentThreadID = undefined,
 			submissionID = undefined,
 			courseID = undefined,
@@ -71,10 +75,12 @@ export class MentionsDB {
 			AND ($5::uuid IS NULL OR submissionID = $5)
             AND ($6::uuid IS NULL OR courseID = $6)
             AND ($7::text IS NULL OR userGroup = $7)
+            AND ($10::timestamp IS NULL OR created > $10)
+            AND ($11::timestamp IS NULL OR created < $11)
 			ORDER BY created DESC
 			LIMIT $8
 			OFFSET $9
-		`, [mentionid, userid, commentid, commentthreadid, submissionid, courseid, mentionGroup, limit, offset])
+		`, [mentionid, userid, commentid, commentthreadid, submissionid, courseid, mentionGroup, limit, offset, after, before])
 			.then(extract).then(map(mentionToAPI))
 	}
 	

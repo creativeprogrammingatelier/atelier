@@ -191,11 +191,11 @@ export const createSubmissionCommentThread = (submissionID: string, thread: Crea
 };
 
 // Mentions
-export const getMentions = () => {
-	return Fetch.fetchJson<Mention[]>("/api/mentions");
+export const getMentions = (pagination?: PaginationParameters) => {
+	return Fetch.fetchJson<Mention[]>("/api/mentions" + ParameterHelper.createQueryParameters({...pagination}));
 };
-export const getCourseMentions = (courseID: string) => {
-	return Fetch.fetchJson<Mention[]>(`/api/mentions/course/${courseID}`);
+export const getCourseMentions = (courseID: string, pagination?: PaginationParameters) => {
+	return Fetch.fetchJson<Mention[]>(`/api/mentions/course/${courseID}` + ParameterHelper.createQueryParameters({...pagination}));
 };
 
 // Search

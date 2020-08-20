@@ -54,7 +54,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 					</Permissions>
 				</Jumbotron>
 				<DataList header="Mentions" childCount={mentionCount}>
-					<Cached cache={mentions} timeout={30} updateCount={setMentionCount}>
+					<Cached cache={mentions} timeout={30} extractDate={m => new Date(m.comment.created)} updateCount={setMentionCount}>
 						{mention =>
 							<DataBlock
 								key={mention.ID}
@@ -88,7 +88,7 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 						) || <FeedbackSuccess close={setUploadingSuccess}>{uploadingSuccess}</FeedbackSuccess>
 					}}
 				>
-					<Cached cache={submissions} timeout={30}>
+					<Cached cache={submissions} extractDate={s => new Date(s.date)} timeout={30}>
 						{
 							submission =>
 								<DataBlock
