@@ -7,6 +7,23 @@ interface Migrations {
 }
 
 const migrations: Migrations = {
+    // Adds automated and sharedBy fields to CommentThread, to distinguish automated
+    // comments and add the ability to show the user that made such a comment public
+    4: async client => {
+        client.query(`
+            ALTER TABLE "CommentThread" 
+                ADD COLUMN automated boolean NOT NULL DEFAULT FALSE,
+                ADD COLUMN sharedBy uuid REFERENCES "Users"(userID) ON DELETE SET NULL;
+            -- Set threads created by plugins as automated:
+            UPDATE "CommentThread" AS ct SET automated = TRUE
+                FROM "Comments" as c, "Users" AS u 
+                WHERE c.commentThreadID = ct.commentThreadID
+                AND c.userID = u.userID
+                AND c.created = (SELECT MIN(created) FROM "Comments" as c2 WHERE c2.commentThreadID = ct.commentThreadID)
+                AND u.globalRole = 'plugin';
+        `);
+    },
+
     // Adds a table with tag
     3: async client => {
         client.query(`

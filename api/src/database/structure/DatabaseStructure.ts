@@ -14,7 +14,7 @@ import {databaseSamples} from "./DatabaseSamples";
 // This does not apply to views, as those are recreated on every start of Atelier anyway,
 // whether they are changed or not. If a view changes because of a schema change, you don't
 // have to include those views in the migration.
-const VERSION = 3;
+const VERSION = 4;
 
 if (require.main === module) {
 	//args without node & path name
@@ -212,7 +212,12 @@ CREATE TABLE "CommentThread" (
 	submissionID      uuid NOT NULL REFERENCES "Submissions"(submissionID) ON DELETE CASCADE,
 	fileID            uuid NOT NULL REFERENCES "Files"(fileID),
 	snippetID         uuid NOT NULL UNIQUE REFERENCES "Snippets"(snippetID),
-	visibilityState   text NOT NULL DEFAULT 'public'
+    visibilityState   text NOT NULL DEFAULT 'public',
+    automated         boolean NOT NULL DEFAULT FALSE, -- indicator that this comment was created by an automated system
+    sharedBy          uuid REFERENCES "Users"(userID) ON DELETE SET NULL 
+                      -- if the user that shared this comment, i.e. made it public to students, is deleted
+                      -- the comment should still exist, so we set the value back to null (which is also the
+                      -- value for comments that are not shared)
 );
 
 CREATE TABLE "Comments" (

@@ -41,7 +41,8 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
 		submissionID,
 		fileID,
 		snippetID,
-		visibilityState: request.body.visibility ? request.body.visibility : ThreadState.public,
+        visibilityState: request.body.visibility ? request.body.visibility : ThreadState.public,
+        automated: request.body.automated !== undefined ? request.body.automated : false,
 		client
 	});
 	
@@ -169,7 +170,8 @@ commentThreadRouter.put('/:commentThreadID', capture(async (request, response) =
 	
 	const commentThread: CommentThread = await ThreadDB.updateThread({
 		commentThreadID,
-		visibilityState
+        visibilityState,
+        sharedByID: visibilityState === ThreadState.public ? currentUserID : undefined
 	});
 	response.status(200).send(removePermissionsCommentThread(commentThread));
 }));

@@ -136,13 +136,16 @@ export function commentThreadView(commentThreadTable = `"CommentThread"`) {
 	return `
 		SELECT 
 			sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
-			ct.visibilityState,
+			ct.visibilityState, ct.automated,
 			sv.body, sv.contextBefore, sv.contextAfter, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
-			fv.pathname, fv.type
-		FROM ${commentThreadTable} as ct, "SubmissionsRefs" as sr, "Snippets" as sv, "Files" as fv
-		WHERE ct.submissionID = sr.submissionID
-		AND ct.snippetID = sv.snippetID
-		AND fv.fileID = ct.fileID
+            fv.pathname, fv.type,
+            u.userID as sharedByID, u.userName as sharedByName, u.email as sharedByEmail, 
+            u.globalRole as sharedByGlobalRole, u.courseRole as sharedByCourseRole, u.permission as sharedByPermission
+        FROM ${commentThreadTable} as ct
+        JOIN "SubmissionsRefs" as sr ON ct.submissionID = sr.submissionID 
+        JOIN "Snippets" as sv ON ct.snippetID = sv.snippetID
+        JOIN "Files" as fv ON fv.fileID = ct.fileID
+        LEFT JOIN "CourseUsersView" as u ON ct.sharedBy = u.userID AND sr.courseID = u.courseID
 	`;
 }
 

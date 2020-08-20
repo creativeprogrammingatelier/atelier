@@ -2,13 +2,16 @@ import {Selection, Snippet} from "./Snippet";
 import {Comment} from "./Comment";
 import {File} from "./File";
 import {ThreadState} from "../enums/ThreadStateEnum";
+import { User } from "./User";
 
 export interface CommentThread {
 	ID: string,
 	visibility: ThreadState,
 	file?: File,
 	snippet?: Snippet,
-	comments: Comment[],
+    comments: Comment[],
+    automated: boolean,
+    sharedBy?: User,
 	references: {
 		courseID: string,
 		submissionID: string,
@@ -18,6 +21,7 @@ export interface CommentThread {
 export interface CreateCommentThread {
 	comment: string,
 	snippet?: Selection,
-	visibility?: ThreadState,
+    visibility?: ThreadState,
+    automated?: boolean,
 	submissionID: string
 }
