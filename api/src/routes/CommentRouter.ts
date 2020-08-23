@@ -2,16 +2,18 @@ import express from "express";
 
 import {Comment} from "../../../models/api/Comment";
 
-import {removePermissionsComment} from "../helpers/APIFilterHelper";
+import {removePermissionsComment, removePermissions} from "../helpers/APIFilterHelper";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {createMentions} from "../helpers/MentionsHelper";
-import {PermissionError, requireRegisteredCommentThreadID} from "../helpers/PermissionHelper";
+import {PermissionError, requireRegisteredCommentThreadID, requireRegistered, requirePermission} from "../helpers/PermissionHelper";
 
 import {CommentDB} from "../database/CommentDB";
 import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {createTags} from "../helpers/TagsHelper";
+import { getCommonQueryParams } from "../helpers/ParamsHelper";
+import { PermissionEnum } from "../../../models/enums/PermissionEnum";
 
 /**
  * Api routes relating to comments
@@ -42,6 +44,58 @@ commentRouter.get("/course/:courseID/user/:userID", capture(async(request, respo
 		.map(comment => removePermissionsComment(comment));
 	response.status(200).send(comments);
 }));
+
+/** Get all comments on submissions by the current user */
+commentRouter.get("/mysubmissions", capture(async (request, response) => {
+    const params = getCommonQueryParams(request);
+    const userID = await getCurrentUserID(request);
+    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, undefined, params))
+        .map(removePermissionsComment);
+    response.status(200).send(comments);
+}));
+
+/** Get all comments on submissions by the current user inside a course */
+commentRouter.get("/course/:courseID/mysubmissions", capture(async (request, response) => {
+    const params = getCommonQueryParams(request);
+    const userID = await getCurrentUserID(request);
+    const courseID = request.params.courseID;
+    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, courseID, params))
+        .map(removePermissionsComment);
+    response.status(200).send(comments);
+}));
+
+/** Get all comments for threads the current user participates in */
+commentRouter.get("/participated", capture(async (request, response) => {
+    const params = getCommonQueryParams(request);
+    const userID = await getCurrentUserID(request);
+    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, undefined, params))
+        .map(removePermissionsComment);
+    response.status(200).send(comments);
+}));
+
+/** Get all comments for threads the current user participates in */
+commentRouter.get("/course/:courseID/participated", capture(async (request, response) => {
+    const params = getCommonQueryParams(request);
+    const userID = await getCurrentUserID(request);
+    const courseID = request.params.courseID;
+    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, courseID, params))
+        .map(removePermissionsComment);
+    response.status(200).send(comments);
+}));
+
+/** Get all comments in a course */
+commentRouter.get("/course/:courseID", capture(async (request, response) => {
+    const currentUserID = await getCurrentUserID(request);
+    const params = getCommonQueryParams(request);
+    const courseID = request.params.courseID;
+
+    await requireRegistered(currentUserID, courseID);
+    await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
+
+    const comments = (await CommentDB.filterComment({ courseID, ...params }))
+        .map(removePermissionsComment);
+    response.status(200).send(comments);
+}))
 
 // ---------- PUT REQUESTS ----------
 

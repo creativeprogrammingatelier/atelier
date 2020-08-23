@@ -10,7 +10,7 @@ import {commentThreadOwner} from "../../../helpers/CommentThreadHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {getFilePathOnDisk, readFileAsString} from '../helpers/FilesystemHelper';
 import {createMentions} from '../helpers/MentionsHelper';
-import {requirePermission, requireRegisteredCommentThreadID, requireRegisteredFileID, requireRegisteredSubmissionID} from "../helpers/PermissionHelper";
+import {requirePermission, requireRegisteredCommentThreadID, requireRegisteredFileID, requireRegisteredSubmissionID, requireRegistered} from "../helpers/PermissionHelper";
 import {getContextLines} from '../../../helpers/SnippetHelper';
 
 import {CommentDB} from "../database/CommentDB";
@@ -20,6 +20,7 @@ import {SnippetDB} from "../database/SnippetDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {createTags} from "../helpers/TagsHelper";
+import { getCommonQueryParams } from "../helpers/ParamsHelper";
 
 /**
  * Api routes relating to comment threads
@@ -64,6 +65,42 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
 }
 
 // ---------- GET REQUESTS ----------
+
+/** Get all comments on submissions by the current user */
+commentThreadRouter.get("/mysubmissions", capture(async (request, response) => {
+    const params = getCommonQueryParams(request);
+    const userID = await getCurrentUserID(request);
+    const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, undefined, true, params)
+        .then(threads => filterCommentThread(threads, userID))
+        .then(threads => threads.map(removePermissionsCommentThread));
+    response.status(200).send(threads);
+}));
+
+/** Get all comments on submissions by the current user inside a course */
+commentThreadRouter.get("/course/:courseID/mysubmissions", capture(async (request, response) => {
+    const params = getCommonQueryParams(request);
+    const userID = await getCurrentUserID(request);
+    const courseID = request.params.courseID;
+    const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, courseID, true, params)
+        .then(threads => filterCommentThread(threads, userID))
+        .then(threads => threads.map(removePermissionsCommentThread));
+    response.status(200).send(threads);
+}));
+
+/** Get all commentthreads inside a course */
+commentThreadRouter.get("/course/:courseID", capture(async (request, response) => {
+    const currentUserID = await getCurrentUserID(request);
+    const params = getCommonQueryParams(request);
+    const courseID = request.params.courseID;
+
+    await requireRegistered(currentUserID, courseID);
+    await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
+
+    const threads = await ThreadDB.filterThread({ courseID, addComments: true, ...params })
+        .then(threads => filterCommentThread(threads, currentUserID))
+        .then(threads => threads.map(removePermissionsCommentThread));
+    response.status(200).send(threads);
+}));
 
 /**
  * Get a specific comment thread.

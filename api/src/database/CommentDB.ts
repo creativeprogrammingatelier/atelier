@@ -57,7 +57,37 @@ export class CommentDB {
 	}
 	static async getCommentByID(commentID: string, client: pgDB = pool) {
 		return CommentDB.filterComment({commentID, client}).then(one);
-	}
+    }
+    
+    static async getCommentsByThreadParticipation(userID: string, courseID?: string, params: DBTools = {}) {
+        const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
+        const userid = UUIDHelper.toUUID(userID), courseid = UUIDHelper.toUUID(courseID);
+        return client.query(`
+            SELECT DISTINCT cv.* FROM "CommentsView" AS cv
+            JOIN "Comments" AS c ON c.commentThreadID = cv.commentThreadID
+            WHERE c.userID = $1
+            AND ($2::uuid IS NULL OR cv.courseID = $2)
+            AND ($5::timestamp IS NULL OR cv.created > $5)
+            AND ($6::timestamp IS NULL OR cv.created < $6)
+            ORDER BY cv.created DESC
+            LIMIT $3 OFFSET $4
+        `, [userid, courseid, limit, offset, after, before]).then(extract).then(map(commentToAPI));
+    }
+
+    static async getCommentsBySubmissionOwner(submissionOwnerID: string, courseID?: string, params: DBTools = {}) {
+        const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
+        const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
+        return client.query(`
+            SELECT cv.* FROM "CommentsView" AS cv
+            JOIN "Submissions" AS s ON s.submissionID = cv.submissionID
+            WHERE s.userID = $1
+            AND ($2::uuid IS NULL OR cv.courseID = $2)
+            AND ($5::timestamp IS NULL OR cv.created > $5)
+            AND ($6::timestamp IS NULL OR cv.created < $6)
+            ORDER BY cv.created DESC
+            LIMIT $3 OFFSET $4
+        `, [userid, courseid, limit, offset, after, before]).then(extract).then(map(commentToAPI));
+    }
 
 	/**
 	 * return a subset of comments that pass the input filter
@@ -79,7 +109,9 @@ export class CommentDB {
 			edited = undefined,
 			body = undefined,
 			limit = undefined,
-			offset = undefined,
+            offset = undefined,
+            after = undefined,
+            before = undefined,
 			client = pool
 		} = comment;
 		const commentid = UUIDHelper.toUUID(commentID),
@@ -90,7 +122,7 @@ export class CommentDB {
 			bodysearch = searchify(body);
 
 		const args = [commentid, commentthreadid, submissionid, courseid, userid,
-			created, edited, bodysearch, limit, offset];
+			created, edited, bodysearch, limit, offset, after, before];
 		type argType = typeof args;
 		return client.query<DBAPIComment, argType>(`
 			SELECT c.*
@@ -102,7 +134,9 @@ export class CommentDB {
 			AND ($4::uuid IS NULL OR courseID=$4)
 			AND ($5::uuid IS NULL OR userID=$5)
 			AND ($6::timestamp IS NULL OR created >= $6)
-			AND ($7::timestamp IS NULL OR edited >= $7)
+            AND ($7::timestamp IS NULL OR edited >= $7)
+            AND ($11::timestamp IS NULL OR created > $11)
+            AND ($12::timestamp IS NULL OR created < $12)
 			AND ($8::text IS NULL OR body ILIKE $8)
 			ORDER BY created DESC, commentID --unique in case 2 comments same time
 			LIMIT $9

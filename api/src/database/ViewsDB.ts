@@ -140,7 +140,8 @@ export function commentThreadView(commentThreadTable = `"CommentThread"`) {
 			sv.body, sv.contextBefore, sv.contextAfter, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
             fv.pathname, fv.type,
             u.userID as sharedByID, u.userName as sharedByName, u.email as sharedByEmail, 
-            u.globalRole as sharedByGlobalRole, u.courseRole as sharedByCourseRole, u.permission as sharedByPermission
+            u.globalRole as sharedByGlobalRole, u.courseRole as sharedByCourseRole, u.permission as sharedByPermission,
+            (SELECT MIN(created) FROM "Comments" as c WHERE c.commentThreadID = ct.commentThreadID) AS created
         FROM ${commentThreadTable} as ct
         JOIN "SubmissionsRefs" as sr ON ct.submissionID = sr.submissionID 
         JOIN "Snippets" as sv ON ct.snippetID = sv.snippetID

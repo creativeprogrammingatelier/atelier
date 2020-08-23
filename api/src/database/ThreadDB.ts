@@ -53,7 +53,9 @@ export class ThreadDB {
 			type = undefined,
 			//extra params
 			limit = undefined,
-			offset = undefined,
+            offset = undefined,
+            after = undefined,
+            before = undefined,
 			client = pool
 		} = filterObj;
 		const commentThreadid = UUIDHelper.toUUID(commentThreadID),
@@ -83,8 +85,10 @@ export class ThreadDB {
 			AND ($13::integer IS NULL OR lineEnd = $13)
 			AND ($14::integer IS NULL OR charStart = $14)
 			AND ($15::integer IS NULL OR charEnd = $15)
-
-			ORDER BY commentThreadID -- make sure it is always ordered the same
+            -- date
+            AND ($18::timestamp IS NULL OR created > $18)
+            AND ($19::timestamp IS NULL OR created < $19)
+			ORDER BY created DESC
 			LIMIT $16
 			OFFSET $17
 				`, [
@@ -109,7 +113,9 @@ export class ThreadDB {
             charEnd,
 			//extra params
 			limit,
-			offset
+            offset,
+            after,
+            before
 		])
 			.then(extract).then(map(threadToAPI));
 		
@@ -118,7 +124,28 @@ export class ThreadDB {
 		} else {
 			return query;
 		}
-	}
+    }
+    
+    static async getThreadsBySubmissionOwner(submissionOwnerID: string, courseID?: string, addComments = false, params: DBTools = {}) {
+        const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
+        const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
+        const query = client.query(`
+            SELECT ct.*
+            FROM "CommentThreadView" AS ct
+            JOIN "Submissions" AS s ON s.submissionID = ct.submissionID
+            WHERE s.userID = $1
+            AND ($2::uuid IS NULL OR ct.courseID = $2)
+            AND ($5::timestamp IS NULL OR ct.created > $5)
+            AND ($6::timestamp IS NULL OR ct.created < $6)
+            ORDER BY ct.created DESC
+            LIMIT $3 OFFSET $4
+        `, [userid, courseid, limit, offset, after, before]).then(extract).then(map(threadToAPI));
+        if (addComments) {
+			return ThreadDB.addComments(query, client);
+		} else {
+			return query;
+		}
+    }
 	
 	static async addCommentSingle(firstQuery: Promise<APIThread>, client: pgDB = pool): Promise<APIThread> {
 		//receive first result, modify it to accomodate for comments.
