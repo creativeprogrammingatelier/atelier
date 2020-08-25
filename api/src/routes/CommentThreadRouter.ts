@@ -70,7 +70,7 @@ async function createCommentThread(request: Request, client: pgDB, snippetID?: s
 commentThreadRouter.get("/mysubmissions", capture(async (request, response) => {
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
-    const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, undefined, true, params)
+    const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, undefined, true, true, params)
         .then(threads => filterCommentThread(threads, userID))
         .then(threads => threads.map(removePermissionsCommentThread));
     response.status(200).send(threads);
@@ -81,7 +81,7 @@ commentThreadRouter.get("/course/:courseID/mysubmissions", capture(async (reques
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
     const courseID = request.params.courseID;
-    const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, courseID, true, params)
+    const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, courseID, true, true, params)
         .then(threads => filterCommentThread(threads, userID))
         .then(threads => threads.map(removePermissionsCommentThread));
     response.status(200).send(threads);

@@ -26,7 +26,8 @@ export interface Thread extends DBTools {
     sharedByCourseRole?: string,
     sharedByPermission?: string,
 	//requires extra database call
-	addComments?: boolean,
+    addComments?: boolean,
+    automatedOnlyIfShared?: boolean
 }
 export interface DBThread {
 	commentthreadid: string,

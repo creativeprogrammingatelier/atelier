@@ -41,7 +41,8 @@ export class ThreadDB {
 			//thread-specific
             visibilityState = undefined,
             automated = undefined,
-			addComments = false,
+            addComments = false,
+            automatedOnlyIfShared = false,
 			//snippet-specific
 			lineStart = undefined,
 			lineEnd = undefined,
@@ -76,6 +77,7 @@ export class ThreadDB {
 			--thread
             AND ($7::text IS NULL OR visibilityState = $7)
             AND (TRUE OR $8::boolean IS NULL OR automated = $8)
+            AND (NOT $20::boolean OR automated = FALSE OR visibilityState = 'public')
 			--file
 			AND ($9::text IS NULL OR pathname ILIKE $9)
 			AND ($10::text IS NULL OR type ILIKE $10)
@@ -115,7 +117,9 @@ export class ThreadDB {
 			limit,
             offset,
             after,
-            before
+            before,
+            // Only include automated comments if they are shared
+            automatedOnlyIfShared
 		])
 			.then(extract).then(map(threadToAPI));
 		
@@ -126,7 +130,7 @@ export class ThreadDB {
 		}
     }
     
-    static async getThreadsBySubmissionOwner(submissionOwnerID: string, courseID?: string, addComments = false, params: DBTools = {}) {
+    static async getThreadsBySubmissionOwner(submissionOwnerID: string, courseID?: string, addComments = false, automatedOnlyIfShared = false, params: DBTools = {}) {
         const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
         const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
         const query = client.query(`
@@ -135,11 +139,12 @@ export class ThreadDB {
             JOIN "Submissions" AS s ON s.submissionID = ct.submissionID
             WHERE s.userID = $1
             AND ($2::uuid IS NULL OR ct.courseID = $2)
+            AND (NOT $7::boolean OR automated = FALSE OR visibilityState = 'public')
             AND ($5::timestamp IS NULL OR ct.created > $5)
             AND ($6::timestamp IS NULL OR ct.created < $6)
             ORDER BY ct.created DESC
             LIMIT $3 OFFSET $4
-        `, [userid, courseid, limit, offset, after, before]).then(extract).then(map(threadToAPI));
+        `, [userid, courseid, limit, offset, after, before, automatedOnlyIfShared]).then(extract).then(map(threadToAPI));
         if (addComments) {
 			return ThreadDB.addComments(query, client);
 		} else {

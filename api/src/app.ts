@@ -21,6 +21,7 @@ import {authRouter} from './routes/authentication/AuthRouter';
 import {commentRouter} from './routes/CommentRouter';
 import {commentThreadRouter} from './routes/CommentThreadRouter'
 import {courseRouter} from './routes/CourseRouter';
+import {feedRouter} from './routes/FeedRouter';
 import {fileRouter} from './routes/FileRouter';
 import {indexRouter} from './routes/IndexRouter';
 import {inviteRouter} from "./routes/InviteRouter";
@@ -81,6 +82,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/commentThread', commentThreadRouter);
 app.use('/api/course', courseRouter);
+app.use('/api/feed', feedRouter);
 app.use('/api/file', fileRouter);
 app.use('/api/invite', inviteRouter);
 app.use('/api/mentions', mentionsRouter);
