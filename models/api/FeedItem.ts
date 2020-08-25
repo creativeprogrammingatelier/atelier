@@ -4,7 +4,9 @@ import { CommentThread } from "./CommentThread";
 import { Comment } from "./Comment";
 
 export type FeedItem =
-    | { type: "submission", data: Submission, timestamp: string }
-    | { type: "mention", data: Mention, timestamp: string }
-    | { type: "commentThread", data: CommentThread, timestamp: string }
-    | { type: "comment", data: Comment, timestamp: string }
+    { ID: string; timestamp: string } & (
+        | { type: "submission", data: Submission }
+        | { type: "mention", data: Mention }
+        | { type: "commentThread", data: CommentThread }
+        | { type: "comment", data: Comment }
+    )

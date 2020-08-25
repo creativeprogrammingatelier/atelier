@@ -27,6 +27,8 @@ import {
 	emptyCacheItem,
 	CacheItemInterface
 } from './Cache';
+import { FeedItem } from '../../../../models/api/FeedItem';
+import { PaginationParameters } from '../ParameterHelper';
 
 /** 
  * API Hooks for using data from the API in React 
@@ -437,6 +439,37 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
 				submissions
 			)
 	}
+}
+export function usePersonalFeed(courseID?: string): Refresh<FeedItem> & LoadMore<FeedItem> {
+    const feed = useCacheCollection<FeedItem>("personalFeed", {
+        subKey: courseID,
+        filter: courseID ? item => item.data.references.courseID === courseID : _ => true,
+        // Sort by date, newest first
+        sort: (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    });
+    const getDates = () => feed.getCurrentValue().items.map(x => new Date(x.value.timestamp).getTime());
+    const apiGet = (params: PaginationParameters) => courseID ? API.getPersonalCourseFeed(courseID, params) : API.getPersonalFeed(params);
+    return {
+        observable: feed.observable,
+        defaultTimeout: 20,
+        refresh: () => refreshCollection(apiGet({ limit: 50 }), feed),
+        loadNew: () => refreshCollection(apiGet({ after: Math.max(...getDates()) }), feed),
+        loadMore: (until) => refreshCollection(apiGet({ before: Math.min(...getDates()), after: until }), feed)
+    }
+}
+export function useCourseFeed(courseID: string): Refresh<FeedItem> & LoadMore<FeedItem> {
+    const feed = useCacheCollection<FeedItem>(`courseFeed/${courseID}`, {
+        // Sort by date, newest first
+        sort: (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    });
+    const getDates = () => feed.getCurrentValue().items.map(x => new Date(x.value.timestamp).getTime());
+    return {
+        observable: feed.observable,
+        defaultTimeout: 30,
+        refresh: () => refreshCollection(API.getCourseFeed(courseID, { limit: 50 }), feed),
+        loadNew: () => refreshCollection(API.getCourseFeed(courseID, { after: Math.max(...getDates()) }), feed),
+        loadMore: until => refreshCollection(API.getCourseFeed(courseID, { before: Math.min(...getDates()), after: until }), feed)
+    }
 }
 export function useSubmission(submissionID: string): Refresh<Submission> & Delete<[], Submission> {
 	const submissions = useCacheCollection<Submission>(`submissions`, {

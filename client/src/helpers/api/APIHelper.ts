@@ -12,6 +12,7 @@ import {Plugin} from "../../../../models/api/Plugin";
 import {SearchResult} from "../../../../models/api/SearchResult";
 import {Submission} from "../../../../models/api/Submission";
 import {User} from "../../../../models/api/User";
+import {FeedItem} from "../../../../models/api/FeedItem";
 
 import {CourseState} from "../../../../models/enums/CourseStateEnum";
 import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
@@ -267,3 +268,13 @@ export const updatePlugin = (plugin: Partial<Plugin> & {pluginID: string}) => {
 export const deletePlugin = (pluginID: string) => {
 	return Fetch.fetchJson<User>(`/api/plugin/${pluginID}`, {method: "DELETE"});
 };
+
+// Feeds
+export const getPersonalFeed = (pagination?: PaginationParameters) =>
+    Fetch.fetchJson<FeedItem[]>("/api/feed/personal" + ParameterHelper.createQueryParameters({...pagination}));
+
+export const getPersonalCourseFeed = (courseID: string, pagination?: PaginationParameters) =>
+    Fetch.fetchJson<FeedItem[]>(`/api/feed/course/${courseID}/personal` + ParameterHelper.createQueryParameters({...pagination}));
+
+export const getCourseFeed = (courseID: string, pagination?: PaginationParameters) =>
+    Fetch.fetchJson<FeedItem[]>(`/api/feed/course/${courseID}` + ParameterHelper.createQueryParameters({...pagination}));
