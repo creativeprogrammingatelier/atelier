@@ -12,6 +12,13 @@ export interface CommentThread {
     comments: Comment[],
     automated: boolean,
     sharedBy?: User,
+    submission: {
+        name: string,
+        user: { 
+            ID: string,
+            userName: string 
+        }
+    }
 	references: {
 		courseID: string,
 		submissionID: string,

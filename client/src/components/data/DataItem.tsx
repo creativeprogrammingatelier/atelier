@@ -15,11 +15,13 @@ export function DataItem({transport, text, tags, className, id, key, children}: 
 	return <div className={"dataItem " + className} id={id} key={key}>
 		<OptionalLink to={transport ? transport : ""}>
 			<Toast>
-				<ToastBody>
-					<p className="m-0 mr-1 d-inline">{text}</p>
-					{tags !== undefined && tags.map((tag) => <Tag {...tag}/>)}
+				<ToastBody style={{display: "flex"}}>
+                    <span className="mr-auto">
+                        <p className="m-0 mr-1 d-inline">{text}</p>
+                        {tags !== undefined && tags.map((tag) => <Tag {...tag}/>)}
+                    </span>
+                    {children}
 				</ToastBody>
-				{children}
 			</Toast>
 		</OptionalLink>
 	</div>;

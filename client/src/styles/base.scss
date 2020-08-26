@@ -97,7 +97,7 @@ textarea:focus, textarea:active {
 	margin: 0 1rem 1rem 0;
 }
 
-.dataItem, .dataBlock, .dataToggle {
+.dataItem, .dataBlock, .dataToggle, .block {
 	a {
 		color: unset;
 	}
@@ -113,7 +113,7 @@ textarea:focus, textarea:active {
 }
 .dataItem:hover, .dataBlock:hover {
 	a {
-		.toast {
+		.toast, .comment {
 			box-shadow: $shadowMedium;
 		}
 	}
@@ -712,4 +712,14 @@ textarea:focus, textarea:active {
 
 .no-scroll {
     overflow: hidden;
+}
+
+.feedBlock {
+    p {
+        margin-bottom: .2em;
+    }
+
+    margin-bottom: 1rem;
+    padding-left: 6px;
+    border-left: 4px $colorPrimary solid;
 }

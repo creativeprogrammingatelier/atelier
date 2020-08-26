@@ -30,7 +30,7 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
         ThreadDB.getThreadsBySubmissionOwner(userID, courseID, true, true, params)
             .then(threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
-            .then(map(thread => ({ type: "commentThread", data: thread, timestamp: thread.comments[0].created, ID: thread.ID }))),
+            .then(map(thread => ({ type: "commentThread", data: thread, relation: "yourSubmission", timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
         // TODO: Handle visibility of comments (also in comments api?)
         // CommentDB.getCommentsBySubmissionOwner(userID, courseID, params)
         //     .then(map(removePermissionsComment))

@@ -134,8 +134,9 @@ export function commentsView(commentsTable = `"Comments"`, usersView = `"UsersVi
 
 export function commentThreadView(commentThreadTable = `"CommentThread"`) {
 	return `
-		SELECT 
-			sr.courseID, sr.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
+		SELECT
+            s.courseID, s.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
+            s.title as submissionName, su.userID as submissionUserID, su.userName as submissionUserName,
 			ct.visibilityState, ct.automated,
 			sv.body, sv.contextBefore, sv.contextAfter, sv.lineStart, sv.charStart, sv.lineEnd, sv.charEnd,
             fv.pathname, fv.type,
@@ -143,10 +144,11 @@ export function commentThreadView(commentThreadTable = `"CommentThread"`) {
             u.globalRole as sharedByGlobalRole, u.courseRole as sharedByCourseRole, u.permission as sharedByPermission,
             (SELECT MIN(created) FROM "Comments" as c WHERE c.commentThreadID = ct.commentThreadID) AS created
         FROM ${commentThreadTable} as ct
-        JOIN "SubmissionsRefs" as sr ON ct.submissionID = sr.submissionID 
+        JOIN "Submissions" as s ON ct.submissionID = s.submissionID 
+        JOIN "UsersView" as su ON su.userID = s.userID
         JOIN "Snippets" as sv ON ct.snippetID = sv.snippetID
         JOIN "Files" as fv ON fv.fileID = ct.fileID
-        LEFT JOIN "CourseUsersView" as u ON ct.sharedBy = u.userID AND sr.courseID = u.courseID
+        LEFT JOIN "CourseUsersView" as u ON ct.sharedBy = u.userID AND s.courseID = u.courseID
 	`;
 }
 
