@@ -77,7 +77,7 @@ feedRouter.get("/course/:courseID", capture(async (request, response) => {
         ThreadDB.filterThread({ courseID, addComments: true, automatedOnlyIfShared: true, ...params })
             .then(threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
-            .then(map(thread => ({ type: "commentThread", data: thread, timestamp: thread.comments[0].created, ID: thread.ID }))),
+            .then(map(thread => ({ type: "commentThread", data: thread, timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
         // TODO: Handle visibility of comments
         // CommentDB.filterComment({ courseID, ...params })
         //     .then(map(removePermissionsComment))

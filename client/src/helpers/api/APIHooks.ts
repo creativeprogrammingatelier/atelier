@@ -440,7 +440,22 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
 			)
 	}
 }
+function refreshFeedWithComments(promise: Promise<FeedItem[]>, feed: CacheCollectionInterface<FeedItem>, cache: Cache) {
+    const res = refreshCollection(promise, feed);
+    promise.then(data => {
+        const threads = data.filter(x => x.type === "commentThread").map(x => x.data) as CommentThread[];
+        for (const thread of threads) {
+            const comments = cache.getCollection<Comment>(`comments/${thread.ID}`);
+            comments.transaction(comments => {
+                comments.remove(() => true);
+                comments.addAll(thread.comments, CacheState.Loaded);
+            });
+        }
+    });
+    return res;
+} 
 export function usePersonalFeed(courseID?: string): Refresh<FeedItem> & LoadMore<FeedItem> {
+    const cache = useRawCache();
     const feed = useCacheCollection<FeedItem>("personalFeed", {
         subKey: courseID,
         filter: courseID ? item => item.data.references.courseID === courseID : _ => true,
@@ -452,12 +467,13 @@ export function usePersonalFeed(courseID?: string): Refresh<FeedItem> & LoadMore
     return {
         observable: feed.observable,
         defaultTimeout: 20,
-        refresh: () => refreshCollection(apiGet({ limit: 50 }), feed),
-        loadNew: () => refreshCollection(apiGet({ after: Math.max(...getDates()) }), feed),
-        loadMore: (until) => refreshCollection(apiGet({ before: Math.min(...getDates()), after: until }), feed)
+        refresh: () => refreshFeedWithComments(apiGet({ limit: 50 }), feed, cache),
+        loadNew: () => refreshFeedWithComments(apiGet({ after: Math.max(...getDates()) }), feed, cache),
+        loadMore: (until) => refreshFeedWithComments(apiGet({ before: Math.min(...getDates()), after: until }), feed, cache)
     }
 }
 export function useCourseFeed(courseID: string): Refresh<FeedItem> & LoadMore<FeedItem> {
+    const cache = useRawCache();
     const feed = useCacheCollection<FeedItem>(`courseFeed/${courseID}`, {
         // Sort by date, newest first
         sort: (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -466,9 +482,9 @@ export function useCourseFeed(courseID: string): Refresh<FeedItem> & LoadMore<Fe
     return {
         observable: feed.observable,
         defaultTimeout: 30,
-        refresh: () => refreshCollection(API.getCourseFeed(courseID, { limit: 50 }), feed),
-        loadNew: () => refreshCollection(API.getCourseFeed(courseID, { after: Math.max(...getDates()) }), feed),
-        loadMore: until => refreshCollection(API.getCourseFeed(courseID, { before: Math.min(...getDates()), after: until }), feed)
+        refresh: () => refreshFeedWithComments(API.getCourseFeed(courseID, { limit: 50 }), feed, cache),
+        loadNew: () => refreshFeedWithComments(API.getCourseFeed(courseID, { after: Math.max(...getDates()) }), feed, cache),
+        loadMore: until => refreshFeedWithComments(API.getCourseFeed(courseID, { before: Math.min(...getDates()), after: until }), feed, cache)
     }
 }
 export function useSubmission(submissionID: string): Refresh<Submission> & Delete<[], Submission> {

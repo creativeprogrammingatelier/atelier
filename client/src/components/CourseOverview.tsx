@@ -1,35 +1,34 @@
 import React, {useState, Fragment} from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
-import {FiPlus, FiX} from "react-icons/all";
+import {FiPlus, FiX, FiInbox, FiList} from "react-icons/all";
 
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
-import {useCourse, useCourseSubmissions, useCourseMentions} from "../helpers/api/APIHooks";
+import {useCourse} from "../helpers/api/APIHooks";
 
-import {DataList} from "./data/DataList";
-import {DataBlock} from "./data/DataBlock";
 import {FeedbackContent} from "./feedback/Feedback";
 import {FeedbackSuccess} from "./feedback/FeedbackSuccess";
 import {Frame} from "./frame/Frame";
 import {Permissions} from "./general/Permissions";
 import {Cached} from "./general/loading/Cached";
 import {Uploader} from "./uploader/Uploader";
+import { PersonalFeed, CourseFeed } from "./feed/Feed";
+import { TabBar } from "./tab/TabBar";
 
 interface CourseOverviewProperties {
 	match: {
 		params: {
-			courseId: string
+            courseId: string,
+            tab?: string
 		}
 	}
 }
-export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProperties) {
-	const [mentionCount, setMentionCount] = useState(0); // TODO: this is terrible and should not be needed
+export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: CourseOverviewProperties) {
 	const [uploading, setUploading] = useState(false);
 	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
 	const course = useCourse(courseId);
-	const submissions = useCourseSubmissions(courseId);
-	const mentions = useCourseMentions(courseId);
+    const url = `/course/${courseId}`;
 	
 	return <Cached
 		cache={course}
@@ -53,54 +52,35 @@ export function CourseOverview({match: {params: {courseId}}}: CourseOverviewProp
 						<Link to={`/course/${courseId}/settings`}><Button>Settings</Button></Link>
 					</Permissions>
 				</Jumbotron>
-				<DataList header="Mentions" childCount={mentionCount}>
-					<Cached cache={mentions} timeout={30} extractDate={m => new Date(m.comment.created)} updateCount={setMentionCount}>
-						{mention =>
-							<DataBlock
-								key={mention.ID}
-								title={`Mentioned by ${mention.comment.user.name} on ${mention.submissionTitle}`}
-								text={mention.comment.text}
-								time={new Date(mention.comment.created)}
-								transport={
-									mention.comment.references.fileID !== undefined ?
-										`/submission/${mention.references.submissionID}/${mention.comment.references.fileID}/comments#${mention.comment.references.commentThreadID}`
-										:
-										`/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`
-								}
-							/>
-						}
-					</Cached>
-				</DataList>
-				<DataList
-					header="Submissions"
-					optional={{
-						icon: uploading ? FiX : FiPlus,
-						click: () => setUploading(!uploading),
-						component: (
-							uploading &&
-							<Uploader
-								courseId={courseId}
-								onUploadComplete={() => {
-									setUploadingSuccess("Upload successful");
-									setUploading(false);
-								}}
-							/>
-						) || <FeedbackSuccess close={setUploadingSuccess}>{uploadingSuccess}</FeedbackSuccess>
-					}}
-				>
-					<Cached cache={submissions} extractDate={s => new Date(s.date)} timeout={30}>
-						{
-							submission =>
-								<DataBlock
-									key={submission.ID}
-									transport={`/submission/${submission.ID}`}
-									title={submission.name}
-									text={"Submitted by " + submission.user.name}
-									time={new Date(submission.date)}
-								/>
-						}
-					</Cached>
-				</DataList>
+
+                <Uploader
+                    courseId={courseId}
+                    onUploadComplete={() => {
+                        setUploadingSuccess("Upload successful");
+                    }}
+                />
+                <FeedbackSuccess close={setUploadingSuccess}>{uploadingSuccess}</FeedbackSuccess>
+
+				{
+                    tab === "public"
+                    ? <CourseFeed courseID={courseId} />
+                    : <PersonalFeed courseID={courseId} />
+                }
+
+                <TabBar
+                    active={tab}
+                    tabs={[{
+                        id: "personal",
+                        icon: FiInbox,
+                        text: "Personal",
+                        location: url + "/personal"
+                    }, {
+                        id: "public",
+                        icon: FiList,
+                        text: "Public",
+                        location: url + "/public"
+                    }]}
+                />
 			</Frame>
 		}
 	</Cached>;
