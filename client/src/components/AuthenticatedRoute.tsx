@@ -17,7 +17,7 @@ interface AuthenticatedRouteProperties<T> {
 export function AuthenticatedRoute<T>({path, component, location}: AuthenticatedRouteProperties<T>) {
 	if (AuthHelper.loggedIn()) {
 		return <ResearchPermissionWrapper>
-            <Route path={path} component={component}/>;
+            <Route path={path} component={component}/>
         </ResearchPermissionWrapper>;
 	} else {
 		console.log("route" + (location ? location.pathname : path));
