@@ -1,4 +1,4 @@
-import React, {useEffect, Fragment} from "react";
+import React, {useEffect, Fragment, useState} from "react";
 import {useObservableState} from "observable-hooks";
 
 import {APICache, Refresh, LoadMore} from "../../../helpers/api/APIHooks";
@@ -46,7 +46,8 @@ export function Cached<T>(
 		children
 	}: CachedProperties<T>
 ) {
-	const cached = useObservableState(cache.observable)!;
+    const cached = useObservableState(cache.observable)!;
+    const [loadMoreEnabled, setLoadMoreEnabled] = useState(true);
 	
 	useEffect(() => {
 		if ("refresh" in cache && cache.refresh) {
@@ -85,12 +86,20 @@ export function Cached<T>(
 			return (
                 <Fragment>
                     {cached.items.map(item => children(item.value, item.state))}
-                    {"loadMore" in cache && cache.loadMore && extractDate && 
-                        <Button onClick={() => cache.loadMore(
-                            Math.max(...cached.items.map(item => extractDate(item.value).getTime())) 
-                            + 3 * 24 * 60 * 60 * 1000)}>
-                            Load more
-                        </Button>
+                    {   
+                        "loadMore" in cache && cache.loadMore && extractDate && (
+                            loadMoreEnabled
+                            ? (
+                                <Button onClick={() => {
+                                        cache.loadMore(
+                                            Math.max(...cached.items.map(item => extractDate(item.value).getTime())) 
+                                            + 3 * 24 * 60 * 60 * 1000
+                                        ).then(res => { if (res === 0) setLoadMoreEnabled(false); })
+                                    }}>
+                                    Load more
+                                </Button>
+                            ) : <p>Nothing more to load.</p>
+                        )
                     }
                 </Fragment>
             );

@@ -52,11 +52,11 @@ export interface APICache<T> {
  * no update mechanism for that.)
  */
 export interface Refresh<T> extends APICache<T> {
-	/** 
-	 * Refresh the data in the cache, returning true if the request 
-	 * is successful or rejecting the promise if not 
-	 */
-	refresh: () => Promise<boolean>,
+    /** 
+     * Refresh the data in the cache, returning the number of refreshed items
+     * if succesful, rejecting the promise if not
+     */
+	refresh: () => Promise<number>,
 	/** The default time to wait before refreshing this type of data */
 	defaultTimeout: number
 }
@@ -102,12 +102,12 @@ export interface Delete<Arg extends any[], T> extends APICache<T> {
 
 /**
  * Items in this type of cache support pagination, so you can load more items into the cache,
- * or check if new items have appeared.
+ * or check if new items have appeared. Both functions return the number of new items.
  */
 // tslint:disable-next-line: no-any
 export interface LoadMore<T> extends APICache<T> {
-    loadNew: () => Promise<boolean>,
-    loadMore: (until: number) => Promise<boolean>
+    loadNew: () => Promise<number>,
+    loadMore: (until: number) => Promise<number>
 }
 
 // Generic helper functions
@@ -159,7 +159,7 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
 				});
 			}
 		});
-		return true;
+		return result.length;
 	});
 }
 
@@ -222,7 +222,7 @@ async function refreshCollection<T extends { ID: string }>(promise: Promise<T | 
 			cache.add(result, CacheState.Loaded);
 		}
 	}, result instanceof Array ? CacheState.Loaded : CacheState.Uninitialized);
-	return true;
+	return result instanceof Array ? result.length : 1;
 }
 
 /**
@@ -234,7 +234,7 @@ async function refreshCollection<T extends { ID: string }>(promise: Promise<T | 
 async function refreshItem<T>(promise: Promise<T>, cache: CacheItemInterface<T>) {
 	const result = await promise;
 	cache.updateItem(() => result, CacheState.Loaded);
-	return true;
+	return 1;
 }
 
 /**
