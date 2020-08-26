@@ -19,7 +19,7 @@ export function Snippet({snippet, expanded}: SnippetProperties) {
 	const postLines: string = completeSnippet.slice(MINIMIZED_LINES).join("\n") + databaseBottom;
 	
 	return <Code
-		code={expanded ? preLines + mainLines + postLines : mainLines}
+		code={expanded ? preLines + mainLines + "\n" + postLines : mainLines}
 		options={{
 			mode: snippet.file.type,
 			firstLineNumber: expanded ? snippet.start.line + 2 - linesTop : snippet.start.line + 1,
