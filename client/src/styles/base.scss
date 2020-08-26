@@ -587,6 +587,10 @@ textarea:focus, textarea:active {
 	box-shadow: $shadowInsetSmallDown;
 }
 
+.commentThread .commentThreadExpand {
+    font-size: .8em;
+}
+
 .commentCreator {
 	background-color: $colorWhite;
 }

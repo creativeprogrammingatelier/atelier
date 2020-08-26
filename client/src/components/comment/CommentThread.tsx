@@ -19,6 +19,8 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
 import {Comment as CommentComponent} from "./Comment";
 import {CommentCreator} from "./CommentCreator";
+import { useObservableState, useObservable } from "observable-hooks";
+import { map } from "rxjs/operators";
 
 interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
@@ -32,7 +34,9 @@ export function CommentThread({thread}: CommentThreadProperties) {
 	const comments = useComments(thread.ID);
 	const commentsCombined = {
 		observable: useCollectionCombined(comments.observable)
-	};
+    };
+    const commentCountObservable = useObservable(() => commentsCombined.observable.pipe(map(item => item.value.length)));
+    const commentCount = useObservableState(commentCountObservable, 0);
 	
 	const handleCommentSend = async(comment: string) => {
 		const commentBody = comment.trim();
@@ -85,8 +89,12 @@ export function CommentThread({thread}: CommentThreadProperties) {
 						</Button>
 					</Link>
 				}
-				<Button onClick={() => setOpened(!opened)}>{opened ? <FiChevronUp size={14} color="#FFFFFF"/> :
-					<FiChevronDown size={14} color="#FFFFFF"/>}</Button>
+                <Button className="commentThreadExpand" onClick={() => setOpened(!opened)}>
+                    { opened 
+                      ? <FiChevronUp size={14} color="#FFFFFF"/>
+                      : <FiChevronDown size={14} color="#FFFFFF"/> }
+                    { commentCount > 0 ? " " + commentCount : "" }
+                </Button>
 			</ButtonBar>
 		</Block>
 		<FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
