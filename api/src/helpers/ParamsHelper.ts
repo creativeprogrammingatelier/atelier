@@ -40,8 +40,10 @@ export function getPaginationQueryParams(request: Request, maxLimit = 700) {
     // Use only before with the oldest known item to do pagination (combined with limit, 
     //     return only the l newest items before t)
     // Before and after can be combined
-    const after = request.query.after === undefined ? undefined : new Date(Number(request.query.after));
-    const before = request.query.before === undefined ? undefined : new Date(Number(request.query.before));
+    const afterNum = Number(request.query.after);
+    const after = request.query.after === undefined || !isFinite(afterNum) ? undefined : new Date(afterNum);
+    const beforeNum = Number(request.query.before);
+    const before = request.query.before === undefined || !isFinite(beforeNum) ? undefined : new Date(beforeNum);
 
     return {limit, offset, after, before};
 }
