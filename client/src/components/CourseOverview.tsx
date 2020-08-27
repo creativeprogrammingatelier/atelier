@@ -80,20 +80,21 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
                     : <PersonalFeed courseID={courseId} buttons={[uploadButton]} />
                 }
 
-                <TabBar
-                    active={tab}
-                    tabs={[{
-                        id: "personal",
-                        icon: FiInbox,
-                        text: "Personal",
-                        location: url + "/personal"
-                    }, {
-                        id: "public",
-                        icon: FiList,
-                        text: "Public",
-                        location: url + "/public"
-                    }]}
-                />
+                <Permissions course={courseId} single={PermissionEnum.viewAllSubmissions}>
+                    <TabBar
+                        active={tab}
+                        tabs={[{
+                            id: "personal",
+                            icon: FiInbox,
+                            text: "Personal",
+                            location: url + "/personal"
+                        }, {
+                            id: "public",
+                            icon: FiList,
+                            text: "Public",
+                            location: url + "/public"
+                        }]} />
+                </Permissions>
 			</Frame>
 		}
 	</Cached>;
