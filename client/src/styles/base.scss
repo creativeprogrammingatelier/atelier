@@ -749,3 +749,9 @@ textarea:focus, textarea:active {
 .feedButtons > button > span {
     margin-left: .2rem;
 }
+
+.feedFilters {
+    margin-bottom: 1rem;
+    padding: .5rem;
+    background-color: $colorWhite;
+}
