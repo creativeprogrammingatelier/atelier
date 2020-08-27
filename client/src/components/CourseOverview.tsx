@@ -1,7 +1,7 @@
 import React, {useState, Fragment} from "react";
 import {Link} from "react-router-dom";
 import {Button, Jumbotron} from "react-bootstrap";
-import {FiPlus, FiX, FiInbox, FiList} from "react-icons/all";
+import {FiPlus, FiX, FiInbox, FiList, FiUpload} from "react-icons/all";
 
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
@@ -15,6 +15,8 @@ import {Cached} from "./general/loading/Cached";
 import {Uploader} from "./uploader/Uploader";
 import { PersonalFeed, CourseFeed } from "./feed/Feed";
 import { TabBar } from "./tab/TabBar";
+import { Overlay } from "./general/Overlay";
+import { Area } from "./general/Area";
 
 interface CourseOverviewProperties {
 	match: {
@@ -29,6 +31,8 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
 	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
 	const course = useCourse(courseId);
     const url = `/course/${courseId}`;
+
+    const uploadButton = { icon: FiUpload, text: "Upload", onClick: () => setUploading(true) };
 	
 	return <Cached
 		cache={course}
@@ -53,18 +57,27 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
 					</Permissions>
 				</Jumbotron>
 
-                <Uploader
-                    courseId={courseId}
-                    onUploadComplete={() => {
-                        setUploadingSuccess("Upload successful");
-                    }}
-                />
+                {
+                    uploading &&
+                    <Overlay>
+                        <Area className="p-4 mx-auto my-5 col-12 col-sm-10 col-md-8">
+                            <button className="overlayClose" onClick={() => setUploading(false)}><FiX color="#000000" size={32} /></button>
+                            <Uploader
+                                courseId={courseId}
+                                onUploadComplete={() => {
+                                    setUploadingSuccess("Upload successful");
+                                    setUploading(false);
+                                }} />
+                        </Area>
+                    </Overlay>
+                }
+
                 <FeedbackSuccess close={setUploadingSuccess}>{uploadingSuccess}</FeedbackSuccess>
 
 				{
                     tab === "public"
-                    ? <CourseFeed courseID={courseId} />
-                    : <PersonalFeed courseID={courseId} />
+                    ? <CourseFeed courseID={courseId} buttons={[uploadButton]} />
+                    : <PersonalFeed courseID={courseId} buttons={[uploadButton]} />
                 }
 
                 <TabBar

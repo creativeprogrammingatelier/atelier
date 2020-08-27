@@ -710,6 +710,16 @@ textarea:focus, textarea:active {
     overflow: auto;
 }
 
+.overlayClose {
+    background-color: $colorWhite;
+    color: $colorOffBlack;
+    border: none;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 4000;
+}
+
 .no-scroll {
     overflow: hidden;
 }
@@ -722,4 +732,20 @@ textarea:focus, textarea:active {
     margin-bottom: 1rem;
     padding-left: 6px;
     border-left: 4px $colorPrimary solid;
+}
+
+.feedButtons {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: .2rem;
+}
+
+.feedButtons > button {
+    display: flex;
+    align-items: center;
+    margin-left: .2rem;
+}
+
+.feedButtons > button > span {
+    margin-left: .2rem;
 }
