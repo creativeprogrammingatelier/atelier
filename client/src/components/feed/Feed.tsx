@@ -50,7 +50,7 @@ function Feed({ feed, global, buttons }: FeedProperties) {
                     <FilterBox tag="submission" name="Submissions" filtered={filtered} setFiltered={setFiltered} />
                     <FilterBox tag="mention" name="Mentions" filtered={filtered} setFiltered={setFiltered} />
                     <FilterBox tag="commentThread" name="New comments" filtered={filtered} setFiltered={setFiltered} />
-                    <FilterBox tag="comment" name="Replies" filtered={filtered} setFiltered={setFiltered} />
+                    {/* <FilterBox tag="comment" name="Replies" filtered={filtered} setFiltered={setFiltered} /> */}
                 </div>
             }
             <Cached cache={filteredFeed} extractDate={item => new Date(item.timestamp)}>

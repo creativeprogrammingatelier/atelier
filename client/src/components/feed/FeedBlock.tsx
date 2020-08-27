@@ -24,7 +24,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
         case "submission": {
             const submission = data.data;
             const userLink = <Link to={`/course/${submission.references.courseID}/user/${submission.user.ID}`}>{submission.user.name}</Link>;
-            const courseLink = global ? <Fragment> in <Link to={`/course/${submission.references.courseID}`}>TODO: coursename</Link></Fragment> : <Fragment />;
+            const courseLink = /*global ? <Fragment> in <Link to={`/course/${submission.references.courseID}`}>TODO: coursename</Link></Fragment> :*/ <Fragment />;
             const submissionLink = `/submission/${submission.ID}`;
             return (
                 <div className="feedBlock">
@@ -46,7 +46,8 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                 : `/submission/${mention.references.submissionID}#${mention.comment.references.commentThreadID}`
             return (
                 <div className="feedBlock">
-                    <p>Mentioned by {userLink} on {submissionLink} (by TODO: user){courseLink}:</p>
+                    {/* TODO: username for the submission (by user X) */}
+                    <p>Mentioned by {userLink} on {submissionLink}{courseLink}:</p>
                     <Block>
                         <Link to={commentLink}>
                             <Comment comment={mention.comment} />
@@ -59,7 +60,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             const thread = data.data;
             const submissionLink = <Link to={`/submission/${thread.references.submissionID}`}>{thread.submission.name}</Link>;
             const submissionUserLink = <Link to={`/course/${thread.references.courseID}/user/${thread.submission.user.ID}`}>{thread.submission.user.userName}</Link>;
-            const courseLink = global ? <Fragment> in <Link to={`/course/${thread.references.courseID}`}>TODO: coursename</Link></Fragment> : <Fragment />;
+            const courseLink = /*global ? <Fragment> in <Link to={`/course/${thread.references.courseID}`}>TODO: coursename</Link></Fragment> :*/ <Fragment />;
             let relationIndicator = <Fragment />;
             switch (data.relation) {
                 case "yourSubmission":
