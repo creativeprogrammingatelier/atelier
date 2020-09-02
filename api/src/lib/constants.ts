@@ -21,4 +21,4 @@ if (!fs.existsSync(keyFilePath)) {
 // Public constants
 export const UPLOADS_PATH = "uploads";
 export const AUTHSECRETKEY = authKey;
-export const TOKEN_EXPIRATION = "40d"; // TODO: change to a more sensible time limit on tokens
+export const TOKEN_EXPIRATION = "2h"; // TODO: change to a more sensible time limit on tokens
