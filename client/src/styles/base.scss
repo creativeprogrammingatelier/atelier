@@ -724,6 +724,7 @@ textarea:focus, textarea:active {
     overflow: hidden;
 }
 
+// Feed
 .feedBlock {
     p {
         margin-bottom: .2em;
@@ -754,4 +755,16 @@ textarea:focus, textarea:active {
     margin-bottom: 1rem;
     padding: .5rem;
     background-color: $colorWhite;
+}
+
+// Breadcrumbs
+.breadcrumbs {
+    // Z-index hack to make the negative margin work
+    position: relative;
+    z-index: 1200;
+    margin: -1.4rem 0 .4rem;
+    
+    .sep {
+        margin: 0 .4rem;
+    }
 }

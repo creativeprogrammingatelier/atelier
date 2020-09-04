@@ -10,7 +10,8 @@ import {DBAPIUser, userToAPI} from "./User";
 
 export interface Submission extends DBTools {
 	submissionID?: string;
-	courseID?: string;
+    courseID?: string;
+    courseName?: string;
 	userID?: string;
 	title?: string;
 	date?: Date;
@@ -20,7 +21,8 @@ export interface Submission extends DBTools {
 }
 export interface DBSubmission {
 	submissionid: string;
-	courseid: string;
+    courseid: string;
+    coursename: string;
 	userid: string;
 	title: string;
 	date: Date;
@@ -34,7 +36,8 @@ export function convertSubmission(db: DBSubmission): Submission {
 	checkAvailable(["submissionid", "courseid", "userid", "title", "date", "state"], db);
 	return {
 		submissionID: UUIDHelper.fromUUID(db.submissionid),
-		courseID: UUIDHelper.fromUUID(db.courseid),
+        courseID: UUIDHelper.fromUUID(db.courseid),
+        courseName: db.coursename,
 		userID: UUIDHelper.fromUUID(db.userid),
 		title: db.title,
 		date: db.date,
@@ -52,7 +55,8 @@ export function submissionToAPI(db: DBAPISubmission): APISubmission {
 		state: getEnum(SubmissionStatus, db.state),
 		files: [],
 		references: {
-			courseID: UUIDHelper.fromUUID(db.courseid)
+            courseID: UUIDHelper.fromUUID(db.courseid),
+            courseName: db.coursename
 		}
 	};
 }

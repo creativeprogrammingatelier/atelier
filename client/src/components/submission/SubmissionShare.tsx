@@ -1,5 +1,4 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import {Jumbotron} from "react-bootstrap";
 
 import {useSubmission} from "../../helpers/api/APIHooks";
@@ -7,6 +6,7 @@ import {useSubmission} from "../../helpers/api/APIHooks";
 import {Frame} from "../frame/Frame";
 import {Cached} from "../general/loading/Cached";
 import {Sharing} from "../share/Sharing";
+import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
 
 interface SubmissionShareProperties {
 	match: {
@@ -28,8 +28,12 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
 			<Frame title={submission.name} sidebar
 				search={{course: submission.references.courseID, submission: submissionId}}>
 				<Jumbotron>
-					<h1>Share Me!</h1>
-					<p>Back to <Link to={submissionPath}>{submission.name}</Link></p>
+                    <Breadcrumbs>
+                        <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
+                        <Crumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} />
+                        <Crumb text={submission.name} link={submissionPath} />
+                    </Breadcrumbs>
+					<h1>Share</h1>
 				</Jumbotron>
 				<div className="m-3">
 					<Sharing url={submissionURL}/>

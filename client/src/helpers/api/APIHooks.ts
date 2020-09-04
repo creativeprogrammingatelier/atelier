@@ -434,7 +434,7 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
 					user: getCurrentUser(),
 					state: "new",
 					files: [],
-					references: {courseID}
+					references: {courseName: "", courseID}
 				},
 				submissions
 			)

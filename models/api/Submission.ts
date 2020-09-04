@@ -9,6 +9,7 @@ export interface Submission {
 	state: string,
 	files: File[],
 	references: {
-		courseID: string
+        courseID: string,
+        courseName: string
 	}
 }

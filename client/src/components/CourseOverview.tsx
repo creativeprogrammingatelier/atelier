@@ -42,7 +42,6 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
 			<Frame title={course.name} sidebar search={{course: courseId}}>
 				<Jumbotron>
 					<h1>{course.name}</h1>
-					<p>Created by {course.creator.name}</p>
 					<Permissions
 						any={[
 							PermissionEnum.manageCourses,

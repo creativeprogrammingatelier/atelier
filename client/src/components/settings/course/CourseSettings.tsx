@@ -17,6 +17,7 @@ import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
 import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
+import { Breadcrumbs, Crumb } from "../../general/Breadcrumbs";
 
 interface CourseSettingsProperties {
 	match: {
@@ -39,8 +40,10 @@ export function CourseSettings({match: {params: {courseId}}}: CourseSettingsProp
 		{course =>
 			<Frame title={course.name} sidebar search={{course: courseId}}>
 				<Jumbotron>
-					<h1>{course.name}</h1>
-					<p>Created by {course.creator.name}</p>
+                    <Breadcrumbs>
+                        <Crumb text={course.name} link={`/course/${courseId}`} />
+                    </Breadcrumbs>
+					<h1>Course Settings</h1>
 				</Jumbotron>
 				<Settings courseID={courseId}/>
 			</Frame>

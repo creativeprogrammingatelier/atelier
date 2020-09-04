@@ -24,6 +24,7 @@ import {FileViewerUnsupported} from "./fileviewers/UnsupportedViewer";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {ViewTab} from "./ViewTab";
+import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
 
 interface FileOverviewProperties {
 	match: {
@@ -69,12 +70,16 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 			<Frame title={FileNameHelper.fromPath(file.name)} sidebar
 				search={{course: file.references.courseID, submission: submissionId}}>
 				<Jumbotron>
-					<h1>{FileNameHelper.fromPath(file.name)}</h1>
-					<Cached cache={submission}>
-						{submission =>
-							<p>In project <Link to={submissionPath}>{submission.name}</Link> by <Link to={"/user/" + submission.user.ID}>{submission.user.name}</Link></p>
-						}
+                    <Cached cache={submission}>
+                        {submission =>
+                            <Breadcrumbs>
+                                <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
+                                <Crumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} />
+                                <Crumb text={submission.name} link={submissionPath} />
+                            </Breadcrumbs>
+                        }
 					</Cached>
+					<h1>{FileNameHelper.fromPath(file.name)}</h1>						
 					{tab === "view" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
 				</Jumbotron>
 				<ErrorBoundary>

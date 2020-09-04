@@ -14,6 +14,7 @@ import {ErrorBoundary} from "../general/ErrorBoundary";
 import {TabBar} from "../tab/TabBar";
 import {CommentTab} from "./CommentTab";
 import {SubmissionTab} from "./SubmissionTab";
+import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
 
 interface UserOverviewProperties {
 	match: {
@@ -61,9 +62,10 @@ export function UserCourseOverview({match: {params: {courseId, userId, tab}}}: U
 					component={course =>
 						<Fragment>
 							<Jumbotron>
+                                <Breadcrumbs>
+                                    <Crumb text={course.name} link={`/course/${course.ID}`} />
+                                </Breadcrumbs>
 								<h1>{user.name}</h1>
-								<p>Everything by <Link to={`/user/${user.ID}`}>{user.name}</Link> in <Link
-									to={`/course/${course.ID}`}>{course.name}</Link></p>
 							</Jumbotron>
 							<ErrorBoundary>
 								{renderTabContents(user, course)}
