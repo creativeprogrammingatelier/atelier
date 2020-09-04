@@ -13,8 +13,10 @@ RUN npm install -g typescript webpack
 
 # Install dependencies separately, so they can be cached
 COPY package.json ./
+COPY package-lock.json ./
 RUN npm install
 RUN rm package.json
+RUN rm package-lock.json
 
 # Copy in the full application
 COPY . .
