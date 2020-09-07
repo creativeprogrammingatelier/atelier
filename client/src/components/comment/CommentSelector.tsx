@@ -1,5 +1,5 @@
 import React, {useState, Fragment} from "react";
-import {FiTag} from "react-icons/all";
+import {FiTag, FiPlus} from "react-icons/all";
 import {Button} from "react-bootstrap";
 import {Editor} from "codemirror";
 import {Controlled as CodeMirror} from "react-codemirror2";
@@ -59,7 +59,8 @@ export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHa
 			{codeViewer({
 				...codeProperties, ...{
 					handleClick,
-					handleSelect
+                    handleSelect,
+                    selecting
 				}
 			})}
 		</Block>
@@ -87,7 +88,7 @@ export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHa
 			:
 			<Floater right={0} bottom={"calc(28px + 1.5rem)"} width="3rem" height="3rem"
 				className="mx-n2 my-2 mb-n2 text-right">
-				<Button className="round" onClick={() => setSelecting(true)}><FiTag size={22}/></Button>
+				<Button className="round" onClick={() => setSelecting(true)}><FiPlus size={22}/> New comment</Button>
 			</Floater>
 		}
 	</Fragment>;

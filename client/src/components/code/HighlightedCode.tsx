@@ -13,9 +13,10 @@ export interface SnippetHighlight extends Snippet {
 	onClick: Function,
 }
 export interface HighlightedCodeProperties extends CodeProperties {
-	snippets: SnippetHighlight[]
+    snippets: SnippetHighlight[],
+    selecting: boolean
 }
-export function HighlightedCode({code, options, snippets, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
+export function HighlightedCode({code, options, snippets, selecting, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
 	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 	const [click, setClick] = useState(noPosition);
 	
@@ -62,7 +63,7 @@ export function HighlightedCode({code, options, snippets, handleInitialize = def
 	 * the case the first comment will have its onClick method called.
 	 */
 	const clickComment = () => {
-		if (snippets && click !== noPosition) {
+		if (snippets && !selecting && click !== noPosition) {
 			let topPriority: SnippetHighlight | undefined = undefined;
 			
 			// Find the topPriority snippet matching the click location

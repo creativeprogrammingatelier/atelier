@@ -66,7 +66,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 					{body =>
 						<CommentSelector<HighlightedCodeProperties>
 							codeViewer={HighlightedCode}
-							codeProperties={{code: body, snippets, options: {mode: file.type}}}
+							codeProperties={{code: body, snippets, selecting: false, options: {mode: file.type}}}
 							mentions={{courseID: file.references.courseID}}
 							sendHandler={handleCommentSend}
 						/>
