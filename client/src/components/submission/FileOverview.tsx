@@ -24,7 +24,8 @@ import {FileViewerUnsupported} from "./fileviewers/UnsupportedViewer";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {ViewTab} from "./ViewTab";
-import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
+import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
+import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 interface FileOverviewProperties {
 	match: {
@@ -74,7 +75,8 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
                         {submission =>
                             <Breadcrumbs>
                                 <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
-                                <Crumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} />
+                                <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} 
+                                    course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} />
                                 <Crumb text={submission.name} link={submissionPath} />
                             </Breadcrumbs>
                         }

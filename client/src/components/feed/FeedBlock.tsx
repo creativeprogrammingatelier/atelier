@@ -7,6 +7,8 @@ import { Block } from "../general/Block";
 import { useTime } from "../data/TimeProvider";
 import { DataBlock } from "../data/DataBlock";
 import { FiFile, FiMessageSquare } from "react-icons/fi";
+import { Permissions } from "../general/Permissions";
+import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 /** Helper function to make sure a switch is exhaustive */
 function assertNever(x: never) {
@@ -23,7 +25,10 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
     switch (data.type) {
         case "submission": {
             const submission = data.data;
-            const userLink = <Link to={`/course/${submission.references.courseID}/user/${submission.user.ID}`}>{submission.user.name}</Link>;
+            const userLink = 
+                <Permissions course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} error={submission.user.name}>
+                    <Link to={`/course/${submission.references.courseID}/user/${submission.user.ID}`}>{submission.user.name}</Link>;
+                </Permissions>
             const courseLink = /*global ? <Fragment> in <Link to={`/course/${submission.references.courseID}`}>TODO: coursename</Link></Fragment> :*/ <Fragment />;
             const submissionLink = `/submission/${submission.ID}`;
             return (
@@ -42,7 +47,10 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             }
         case "mention": {
             const mention = data.data;
-            const userLink = <Link to={`/course/${mention.references.courseID}/user/${mention.comment.user.ID}`}>{mention.comment.user.name}</Link>;
+            const userLink = 
+                <Permissions course={mention.references.courseID} single={PermissionEnum.viewAllUserProfiles} error={mention.comment.user.name}>
+                    <Link to={`/course/${mention.references.courseID}/user/${mention.comment.user.ID}`}>{mention.comment.user.name}</Link>;
+                </Permissions>
             const submissionLink = <Link to={`/submission/${mention.references.submissionID}`}>{mention.submissionTitle}</Link>;
             const courseLink = global ? <Fragment> in <Link to={`/course/${mention.references.courseID}`}>{mention.courseName}</Link></Fragment> : <Fragment />;
             const commentLink =
@@ -64,7 +72,10 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
         case "commentThread": {
             const thread = data.data;
             const submissionLink = <Link to={`/submission/${thread.references.submissionID}`}>{thread.submission.name}</Link>;
-            const submissionUserLink = <Link to={`/course/${thread.references.courseID}/user/${thread.submission.user.ID}`}>{thread.submission.user.userName}</Link>;
+            const submissionUserLink = 
+                <Permissions course={thread.references.courseID} single={PermissionEnum.viewAllUserProfiles} error={thread.submission.user.userName}>
+                    <Link to={`/course/${thread.references.courseID}/user/${thread.submission.user.ID}`}>{thread.submission.user.userName}</Link>;
+                </Permissions>
             const courseLink = /*global ? <Fragment> in <Link to={`/course/${thread.references.courseID}`}>TODO: coursename</Link></Fragment> :*/ <Fragment />;
             let relationIndicator = <Fragment />;
             switch (data.relation) {

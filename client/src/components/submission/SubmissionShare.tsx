@@ -6,7 +6,8 @@ import {useSubmission} from "../../helpers/api/APIHooks";
 import {Frame} from "../frame/Frame";
 import {Cached} from "../general/loading/Cached";
 import {Sharing} from "../share/Sharing";
-import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
+import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
+import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 interface SubmissionShareProperties {
 	match: {
@@ -30,7 +31,8 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
 				<Jumbotron>
                     <Breadcrumbs>
                         <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
-                        <Crumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} />
+                        <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} 
+                            course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} />
                         <Crumb text={submission.name} link={submissionPath} />
                     </Breadcrumbs>
 					<h1>Share</h1>

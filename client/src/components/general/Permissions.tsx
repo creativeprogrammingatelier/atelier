@@ -28,7 +28,7 @@ interface AllPermissionsProperties extends GenericPermissionsProperties {
 	all: PermissionEnum[]
 }
 
-type PermissionsProperties =
+export type PermissionsProperties =
 	| SinglePermissionsProperties
 	| AllPermissionsProperties
 	| AnyPermissionsProperties

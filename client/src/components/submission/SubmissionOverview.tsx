@@ -17,7 +17,8 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {Frame} from "../frame/Frame";
 import {Cached} from "../general/loading/Cached";
 import {ButtonMultistate} from "../input/button/ButtonMultistate";
-import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
+import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
+import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 interface SubmissionOverviewProperties {
 	match: {
@@ -70,7 +71,8 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 				<Jumbotron>
                     <Breadcrumbs>
                         <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
-                        <Crumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} />
+                        <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} 
+                            course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} />
                     </Breadcrumbs>
 					<h1>{submission.name}</h1>
 					<p><small className="text-light">{TimeHelper.toDateTimeString(TimeHelper.fromString(submission.date))}</small></p>
