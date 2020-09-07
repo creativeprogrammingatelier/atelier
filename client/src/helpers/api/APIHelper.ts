@@ -71,6 +71,9 @@ export const getCurrentUser = () => {
 export const getUser = (userId: string) => {
 	return Fetch.fetchJson<User>(`/api/user/${userId}`);
 };
+export const getCourseUser = (userId: string, courseId: string) => {
+    return Fetch.fetchJson<CourseUser>(`/api/user/${userId}/course/${courseId}`);
+};
 export const getAllUsers = () => {
 	return Fetch.fetchJson<User[]>(`/api/user/all`);
 };

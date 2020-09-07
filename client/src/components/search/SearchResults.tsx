@@ -10,19 +10,30 @@ import {DataItem} from "../data/DataItem";
 import {DataList} from "../data/DataList";
 
 interface SearchResultProperties {
-	results: SearchResult
+    results: SearchResult,
+    course?: string
 	// More stuff to support the load more functionality
 }
-export function SearchResults({results}: SearchResultProperties) {
+export function SearchResults({results, course}: SearchResultProperties) {
 	return <Fragment>
 		{
-			results.users.length > 0 &&
+            results.users.length > 0 &&
 			<SearchResultSection header="Users" query="">
-				{results.users.map(user => <DataItem key={user.ID} text={user.name} transport={"/user/" + user.ID}/>)}
+				{results.users.map(user => 
+                    <DataItem 
+                        key={user.ID} 
+                        text={user.name} 
+                        transport={
+                            course === undefined
+                            ? `/user/${user.ID}`
+                            : `/course/${course}/user/${user.ID}`
+                        } />
+                )}
 			</SearchResultSection>
 		}
 		{
-			results.courses.length > 0 && <SearchResultSection header="Courses" query="">
+			results.courses.length > 0 && 
+            <SearchResultSection header="Courses" query="">
 				{results.courses.map(course =>
 					<DataItem key={course.ID} text={course.name} transport={"/course/" + course.ID}/>
 				)}

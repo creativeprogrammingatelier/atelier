@@ -21,6 +21,7 @@ interface SearchOverviewProperties {
 	}
 }
 export function SearchOverview({location: {state={}, search}}: SearchOverviewProperties) {
+    const [selectedCourse, setSelectedCourse] = useState(state.course);
 	const [searchResults, setSearchResults] = useState(undefined as unknown as SearchResult);
 	
 	return <Frame title="Search" sidebar>
@@ -28,9 +29,9 @@ export function SearchOverview({location: {state={}, search}}: SearchOverviewPro
 			<h1>Search</h1>
 		</Jumbotron>
 		<div className="m-3">
-			<SearchQuery state={mergeState(state, search)} handleResponse={results => setSearchResults(results)}/>
+			<SearchQuery state={mergeState(state, search)} onCourseChange={setSelectedCourse} handleResponse={results => setSearchResults(results)}/>
 		</div>
-		{searchResults && <SearchResults results={searchResults}/>}
+		{searchResults && <SearchResults course={selectedCourse} results={searchResults}/>}
 	</Frame>;
 }
 

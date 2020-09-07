@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useHistory} from "react-router-dom";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {FiX} from "react-icons/all";
@@ -21,10 +21,11 @@ import {LabeledInput} from "../input/LabeledInput";
 import {SearchProperties} from "./SearchOverview";
 
 interface SearchQueryProperties {
-	state: SearchProperties,
+    state: SearchProperties,
+    onCourseChange?: (course?: string) => void,
 	handleResponse?: (results: SearchResult) => void
 }
-export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
+export function SearchQuery({state, onCourseChange, handleResponse}: SearchQueryProperties) {
 	const [query, setQuery] = useState(state.query ? state.query : "");
 	const [course, setCourse] = useState(state.course as string | undefined);
 	const [user, setUser] = useState(state.user as string | undefined);
@@ -32,7 +33,9 @@ export function SearchQuery({state, handleResponse}: SearchQueryProperties) {
 	const [sorting, setSorting] = useState(state.sorting ? state.sorting : Sorting.datetime);
 	const [error, setError] = useState(false as FeedbackContent);
 	const [shift, setShift] = useState(false);
-	const history = useHistory();
+    const history = useHistory();
+    
+    useEffect(() => onCourseChange && onCourseChange(course), [course]);
 	
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Shift") {

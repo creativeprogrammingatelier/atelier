@@ -85,6 +85,26 @@ userRouter.get("/:userID", capture(async(request: Request, response: Response) =
 	response.status(200).send(user);
 }));
 
+/**
+ * Get a user within the context of a course
+ */
+userRouter.get("/:userID/course/:courseID/", capture(async(request: Request, response: Response) => {
+    const currentUserID: string = await getCurrentUserID(request);
+    const userID: string = request.params.userID;
+	const courseID: string = request.params.courseID;
+	
+	// Either of these 3 permissions should be set. In this case managing user permissions
+	// implies permission to view all users.
+	await requirePermissions(currentUserID, [
+		PermissionEnum.viewAllUserProfiles,
+		PermissionEnum.manageUserPermissionsManager,
+		PermissionEnum.manageUserPermissionsView
+	], courseID, true);
+	
+	const user = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+	response.status(200).send(user);
+}));
+
 // ---------- PUT REQUESTS ----------
 
 /** Set details for current user */

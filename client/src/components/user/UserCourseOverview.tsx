@@ -6,7 +6,7 @@ import {FiMessageSquare, FiPackage} from "react-icons/all";
 import {Course} from "../../../../models/api/Course";
 import {User} from "../../../../models/api/User";
 
-import {getUser, getCourse} from "../../helpers/api/APIHelper";
+import {getUser, getCourse, getCourseUser} from "../../helpers/api/APIHelper";
 
 import {Frame} from "../frame/Frame";
 import {Loading} from "../general/loading/Loading";
@@ -15,6 +15,7 @@ import {TabBar} from "../tab/TabBar";
 import {CommentTab} from "./CommentTab";
 import {SubmissionTab} from "./SubmissionTab";
 import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
+import { CourseUser, courseUserToUser } from "../../../../models/api/CourseUser";
 
 interface UserOverviewProperties {
 	match: {
@@ -51,11 +52,11 @@ export function UserCourseOverview({match: {params: {courseId, userId, tab}}}: U
 		return <div><h1>Tab not found!</h1></div>;
 	};
 	
-	return <Loading<User>
-		loader={getUser}
-		params={[userId]}
+	return <Loading<CourseUser>
+		loader={getCourseUser}
+		params={[userId, courseId]}
 		component={user =>
-			<Frame title={user.name} sidebar search={{course: courseId, user: user.name}}>
+			<Frame title={user.userName} sidebar search={{course: courseId, user: user.userName}}>
 				<Loading<Course>
 					loader={getCourse}
 					params={[courseId]}
@@ -65,10 +66,10 @@ export function UserCourseOverview({match: {params: {courseId, userId, tab}}}: U
                                 <Breadcrumbs>
                                     <Crumb text={course.name} link={`/course/${course.ID}`} />
                                 </Breadcrumbs>
-								<h1>{user.name}</h1>
+								<h1>{user.userName}</h1>
 							</Jumbotron>
 							<ErrorBoundary>
-								{renderTabContents(user, course)}
+								{renderTabContents(courseUserToUser(user), course)}
 							</ErrorBoundary>
 						</Fragment>
 					}
