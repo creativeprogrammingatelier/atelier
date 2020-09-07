@@ -27,7 +27,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             const submission = data.data;
             const userLink = 
                 <Permissions course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} error={submission.user.name}>
-                    <Link to={`/course/${submission.references.courseID}/user/${submission.user.ID}`}>{submission.user.name}</Link>;
+                    <Link to={`/course/${submission.references.courseID}/user/${submission.user.ID}`}>{submission.user.name}</Link>
                 </Permissions>
             const courseLink = /*global ? <Fragment> in <Link to={`/course/${submission.references.courseID}`}>TODO: coursename</Link></Fragment> :*/ <Fragment />;
             const submissionLink = `/submission/${submission.ID}`;
@@ -49,7 +49,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             const mention = data.data;
             const userLink = 
                 <Permissions course={mention.references.courseID} single={PermissionEnum.viewAllUserProfiles} error={mention.comment.user.name}>
-                    <Link to={`/course/${mention.references.courseID}/user/${mention.comment.user.ID}`}>{mention.comment.user.name}</Link>;
+                    <Link to={`/course/${mention.references.courseID}/user/${mention.comment.user.ID}`}>{mention.comment.user.name}</Link>
                 </Permissions>
             const submissionLink = <Link to={`/submission/${mention.references.submissionID}`}>{mention.submissionTitle}</Link>;
             const courseLink = global ? <Fragment> in <Link to={`/course/${mention.references.courseID}`}>{mention.courseName}</Link></Fragment> : <Fragment />;
@@ -74,7 +74,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             const submissionLink = <Link to={`/submission/${thread.references.submissionID}`}>{thread.submission.name}</Link>;
             const submissionUserLink = 
                 <Permissions course={thread.references.courseID} single={PermissionEnum.viewAllUserProfiles} error={thread.submission.user.userName}>
-                    <Link to={`/course/${thread.references.courseID}/user/${thread.submission.user.ID}`}>{thread.submission.user.userName}</Link>;
+                    <Link to={`/course/${thread.references.courseID}/user/${thread.submission.user.ID}`}>{thread.submission.user.userName}</Link>
                 </Permissions>
             const courseLink = /*global ? <Fragment> in <Link to={`/course/${thread.references.courseID}`}>TODO: coursename</Link></Fragment> :*/ <Fragment />;
             let relationIndicator = <Fragment />;
