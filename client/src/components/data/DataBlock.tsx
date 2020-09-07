@@ -5,15 +5,16 @@ import {TimeHelper} from "../../helpers/TimeHelper";
 import {OptionalLink} from "../general/OptionalLink";
 import {Tag, TagProperties} from "../general/Tag";
 import {useTime} from "./TimeProvider";
+import { ParentalProperties } from "../../helpers/ParentHelper";
 
-interface DataBlockProperties {
+interface DataBlockProperties extends ParentalProperties {
 	transport?: string,
 	title: string,
-	text: string,
+	text?: string,
 	time: Date | string,
 	tags?: TagProperties[]
 }
-export function DataBlock({transport, title, text, time, tags}: DataBlockProperties) {
+export function DataBlock({transport, title, text, time, tags, children}: DataBlockProperties) {
 	const currentTime = useTime();
 	return <div className="dataBlock">
 		<OptionalLink to={transport ? transport : ""}>
@@ -26,7 +27,7 @@ export function DataBlock({transport, title, text, time, tags}: DataBlockPropert
 					<small className="text-muted text-right">{typeof time === "string" ? time : TimeHelper.howLongAgo(time, currentTime)}</small>
 				</ToastHeader>
 				<ToastBody>
-					{text}
+					{text}{children}
 				</ToastBody>
 			</Toast>
 		</OptionalLink>

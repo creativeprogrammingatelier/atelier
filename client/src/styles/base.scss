@@ -757,6 +757,10 @@ textarea:focus, textarea:active {
     background-color: $colorWhite;
 }
 
+.toast-body .icon-label {
+    margin-right: 1rem;
+}
+
 // Breadcrumbs
 .breadcrumbs {
     // Z-index hack to make the negative margin work

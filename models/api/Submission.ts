@@ -6,7 +6,9 @@ export interface Submission {
 	name: string,
 	user: User,
 	date: string,
-	state: string,
+    state: string,
+    fileCount: number,
+    threadCount: number,
 	files: File[],
 	references: {
         courseID: string,

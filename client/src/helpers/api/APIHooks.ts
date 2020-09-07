@@ -432,7 +432,9 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
 					name: projectName,
 					date: new Date(Date.now()).toISOString(),
 					user: getCurrentUser(),
-					state: "new",
+                    state: "new",
+                    fileCount: 0,
+                    threadCount: 0,
 					files: [],
 					references: {courseName: "", courseID}
 				},

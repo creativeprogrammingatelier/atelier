@@ -94,7 +94,9 @@ export function CoursesView(coursesTable = `"Courses"`, usersView = `"UsersView"
 
 export function submissionsView(submissionsTable = `"Submissions"`, usersView = `"UsersView"`) {
 	return `
-		SELECT s.*, c.courseName, u.userName, u.globalrole, u.email, u.permission
+        SELECT s.*, c.courseName, u.userName, u.globalrole, u.email, u.permission,
+            (SELECT COUNT(*) FROM "Files" as f WHERE f.submissionID = s.submissionID) as fileCount,
+            (SELECT COUNT(*) FROM "CommentThread" as ct WHERE ct.submissionID = s.submissionID AND visibilityState = 'public') as threadCount
         FROM ${submissionsTable} as s
         JOIN ${usersView} as u ON u.userID = s.userID
         JOIN "Courses" as c ON c.courseID = s.courseID

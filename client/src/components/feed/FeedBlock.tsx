@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import { Comment } from "../comment/Comment";
 import { Block } from "../general/Block";
 import { useTime } from "../data/TimeProvider";
-import { TimeHelper } from "../../helpers/TimeHelper";
-import { DataItem } from "../data/DataItem";
+import { DataBlock } from "../data/DataBlock";
+import { FiFile, FiMessageSquare } from "react-icons/fi";
 
 /** Helper function to make sure a switch is exhaustive */
 function assertNever(x: never) {
@@ -29,9 +29,14 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             return (
                 <div className="feedBlock">
                     <p>New submission by {userLink}{courseLink}:</p>
-                    <DataItem transport={submissionLink} text={submission.name}>
-                        <small className="text-muted text-right">{TimeHelper.howLongAgo(new Date(submission.date), currentTime)}</small>
-                    </DataItem>
+                    <DataBlock transport={submissionLink} title={submission.name} time={new Date(submission.date)}>
+                        <span className="icon-label" title={`${submission.fileCount} file${submission.fileCount !== 1 ? "s" : ""}`}>
+                            <FiFile /> {submission.fileCount}
+                        </span>
+                        <span className="icon-label" title={`${submission.threadCount} comment${submission.threadCount !== 1 ? "s" : ""}`}>
+                            <FiMessageSquare /> {submission.threadCount}
+                        </span>
+                    </DataBlock>
                 </div>
             );
             }
