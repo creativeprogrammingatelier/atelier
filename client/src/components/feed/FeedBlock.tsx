@@ -107,11 +107,11 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             let relationIndicator = <Fragment />;
             switch (data.relation) {
                 case "yourSubmission":
-                    relationIndicator = <p>New reply on {submissionLink}{courseLink}:</p>;
+                    relationIndicator = <p>New reply in a thread on your submission {submissionLink}{courseLink}:</p>;
                     break;
                 case "participated":
                 case undefined:
-                    relationIndicator = <p>New reply on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
+                    relationIndicator = <p>New reply in a thread you're in (on {submissionLink} by {submissionUserLink}){courseLink}:</p>;
                     break;
                 default:
                     assertNever(data.relation);
