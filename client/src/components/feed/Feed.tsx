@@ -19,13 +19,14 @@ interface FeedButton {
 
 interface FeedProperties {
     global: boolean,
+    type: "personal" | "public",
     feed: Refresh<FeedItem> & LoadMore<FeedItem>,
     buttons: FeedButton[]
 }
 
-function Feed({ feed, global, buttons }: FeedProperties) {
+function Feed({ feed, type, global, buttons }: FeedProperties) {
     const [filtersExpanded, setFiltersExpanded] = useState(false);
-    const [filtered, setFiltered] = useState([ "submission", "mention", "commentThread", "comment" ]);
+    const [filtered, setFiltered] = useState([ "submission", "mention", "commentThread" ].concat(...(type === "personal" ? [ "comment" ] : [])));
     const filteredObservable = useObservable(pluckFirst, [filtered]);
     const filteredFeedObservable = useObservable(() => 
         combineLatest([feed.observable, filteredObservable]).pipe(
@@ -38,11 +39,11 @@ function Feed({ feed, global, buttons }: FeedProperties) {
     const filteredFeed = { ...feed, observable: filteredFeedObservable };
 
     useEffect(() => {
-        const storedFilter = localStorage.getItem("feedFilter");
+        const storedFilter = localStorage.getItem(`feedFilter#${type}`);
         if (storedFilter) setFiltered(JSON.parse(storedFilter));
     }, [])
     useEffect(() => {
-        localStorage.setItem("feedFilter", JSON.stringify(filtered));
+        localStorage.setItem(`feedFilter#${type}`, JSON.stringify(filtered));
     }, [filtered]);
 
     return (
@@ -72,13 +73,13 @@ function Feed({ feed, global, buttons }: FeedProperties) {
 interface PersonalFeedProperties { courseID?: string, buttons?: FeedButton[] }
 export function PersonalFeed({ courseID, buttons = [] }: PersonalFeedProperties) {
     const feed = usePersonalFeed(courseID);
-    return (<Feed feed={feed} buttons={buttons} global={courseID === undefined} />);
+    return (<Feed feed={feed} type="personal" buttons={buttons} global={courseID === undefined} />);
 }
 
 interface CourseFeedProperties { courseID: string, buttons?: FeedButton[] }
 export function CourseFeed({ courseID, buttons = [] }: CourseFeedProperties) {
     const feed = useCourseFeed(courseID);
-    return (<Feed feed={feed} buttons={buttons} global={false} />);
+    return (<Feed feed={feed} type="public" buttons={buttons} global={false} />);
 }
 
 interface FilterBoxProperties {

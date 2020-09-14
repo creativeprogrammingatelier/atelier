@@ -111,10 +111,10 @@ feedRouter.get("/course/:courseID", capture(async (request, response) => {
             .then(threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
             .then(map(thread => ({ type: "commentThread", data: thread, timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
-        // TODO: Handle visibility of comments
-        // CommentDB.filterComment({ courseID, ...params })
-        //     .then(map(removePermissionsComment))
-        //     .then(map(comment => ({ type: "comment", data: comment, timestamp: comment.created })))
+        CommentDB.filterComment({ courseID, onlyReplies: true, ...params })
+            .then(comments => filterComments(comments, userID))
+            .then(map(removePermissionsComment))
+            .then(map(comment => ({ type: "comment", data: comment, timestamp: comment.created, ID: comment.ID })))
     ]);
     const sortedData = ([] as FeedItem[]).concat(...data)
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());

@@ -102,7 +102,7 @@ export class CommentDB {
 	 *                  'limit' and 'offset' fields allow to manipulate the number of results
 	 *                  the results are sorted by date, newest first
 	 */
-	static async filterComment(comment: Comment) {
+	static async filterComment(comment: Comment & { onlyReplies?: boolean }) {
 		const {
 			commentID = undefined,
 			commentThreadID = undefined,
@@ -116,6 +116,7 @@ export class CommentDB {
             offset = undefined,
             after = undefined,
             before = undefined,
+            onlyReplies = false,
 			client = pool
 		} = comment;
 		const commentid = UUIDHelper.toUUID(commentID),
@@ -126,23 +127,25 @@ export class CommentDB {
 			bodysearch = searchify(body);
 
 		const args = [commentid, commentthreadid, submissionid, courseid, userid,
-			created, edited, bodysearch, limit, offset, after, before];
+			created, edited, bodysearch, limit, offset, after, before, onlyReplies];
 		type argType = typeof args;
 		return client.query<DBAPIComment, argType>(`
 			SELECT c.*
-			FROM "CommentsView" as c
+            FROM "CommentsView" as c
+            JOIN "CommentThreadView" AS ct ON ct.commentThreadID = c.commentThreadID
 			WHERE
-				($1::uuid IS NULL OR commentID=$1)
-			AND ($2::uuid IS NULL OR commentThreadID=$2)
-			AND ($3::uuid IS NULL OR submissionID=$3)
-			AND ($4::uuid IS NULL OR courseID=$4)
-			AND ($5::uuid IS NULL OR userID=$5)
-			AND ($6::timestamp IS NULL OR created >= $6)
-            AND ($7::timestamp IS NULL OR edited >= $7)
-            AND ($11::timestamp IS NULL OR created > $11)
-            AND ($12::timestamp IS NULL OR created < $12)
-			AND ($8::text IS NULL OR body ILIKE $8)
-			ORDER BY created DESC, commentID --unique in case 2 comments same time
+				($1::uuid IS NULL OR c.commentID=$1)
+			AND ($2::uuid IS NULL OR c.commentThreadID=$2)
+			AND ($3::uuid IS NULL OR c.submissionID=$3)
+			AND ($4::uuid IS NULL OR c.courseID=$4)
+			AND ($5::uuid IS NULL OR c.userID=$5)
+			AND ($6::timestamp IS NULL OR c.created >= $6)
+            AND ($7::timestamp IS NULL OR c.edited >= $7)
+            AND ($11::timestamp IS NULL OR c.created > $11)
+            AND ($12::timestamp IS NULL OR c.created < $12)
+            AND ($8::text IS NULL OR c.body ILIKE $8)
+            AND (NOT $13::boolean OR c.created <> ct.created) -- only include replies, so comments that were created later
+			ORDER BY c.created DESC, c.commentID --unique in case 2 comments same time
 			LIMIT $9
 			OFFSET $10
 			`, args)
