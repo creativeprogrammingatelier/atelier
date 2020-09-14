@@ -38,6 +38,31 @@ export async function filterCommentThread(commentThreads: CommentThread[], userI
 }
 
 /**
+ * Filters comment API response. Comments are assumed in the same course.
+ * - Comment is returned if PermissionEnum.viewRestrictedComments is set in permissions
+ * - Comment is returned if user is the author of the comment
+ * @param comments, comments sent back to user
+ * @param userID, ID of the requesting user
+ * @param permissions, permissions of the user. If not set course permissions are taken from the first comment.
+ */
+export async function filterComments(comments: Comment[], userID: string, permissions?: number) {
+	if (comments.length === 0) {
+		return comments;
+	}
+	if (permissions === undefined) {
+		const courseID: string = comments[0].references.courseID;
+		permissions = await getCoursePermissions(userID, courseID);
+	}
+	if (!containsPermission(PermissionEnum.viewRestrictedComments, permissions)) {
+		return comments.filter((comment: Comment) =>
+			comment.thread.visibility === ThreadState.public ||
+			comment.user.ID === userID
+		);
+	}
+	return comments;
+}
+
+/**
  * Filter course API response.
  * - course is returned if Permission.viewAllCourses is set in permissions
  * - course is returned if user is enrolled in the course

@@ -125,13 +125,17 @@ export function commentsView(commentsTable = `"Comments"`, usersView = `"UsersVi
 		SELECT 
 			c.*, 
 			u.userName, u.globalrole, u.email, u.permission, 
-			ctr.submissionID, ctr.courseID, ctr.fileID, ctr.snippetID,
+            ctr.submissionID, ctr.courseID, ctr.fileID, ctr.snippetID,
+            ctr.visibilityState, ctr.automated,
+            s.title as submissionName, su.userID as submissionUserID, su.userName as submissionUserName,
 			fv.type, sv.lineStart --null checks
-		FROM ${commentsTable} as c, ${usersView} as u, "CommentThreadRefs" as ctr, "FilesView" as fv, "SnippetsView" as sv
-		WHERE c.userID = u.userID
-		AND ctr.commentThreadID = c.commentThreadID
-		AND fv.fileID = ctr.fileID
-		AND sv.snippetID = ctr.snippetID
+        FROM ${commentsTable} as c 
+        JOIN ${usersView} as u ON c.userID = u.userID 
+        JOIN "CommentThreadRefs" as ctr ON ctr.commentThreadID = c.commentThreadID
+        JOIN "FilesView" as fv ON fv.fileID = ctr.fileID
+        JOIN "SnippetsView" as sv ON sv.snippetID = ctr.snippetID
+        JOIN "Submissions" as s ON ctr.submissionID = s.submissionID
+        JOIN ${usersView} as su ON su.userID = s.userID
 	`;
 }
 
@@ -161,7 +165,8 @@ export function MentionsView(mentionsTable = `"Mentions"`) {
 			m.mentionID, m.userGroup,
 			cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 
 			cv.submissionID, cv.courseID, cv.created, cv.edited, 
-			cv.body, cv.type, cv.lineStart,
+            cv.body, cv.type, cv.lineStart, cv.visibilityState, cv.automated,
+            cv.submissionName, cv.submissionUserID, cv.submissionUserName,
 			cu.userID, cu.userName, cu.email, cu.globalRole, 
 			cu.courseRole, cu.permission, 
 			cmu.userID as cmuUserID, 
@@ -188,7 +193,8 @@ export function MentionsView(mentionsTable = `"Mentions"`) {
 			m.mentionID, m.userGroup, 
 			cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 
 			cv.submissionID, cv.courseID, cv.created, cv.edited,
-			cv.body, cv.type, cv.lineStart,
+            cv.body, cv.type, cv.lineStart, cv.visibilityState, cv.automated,
+            cv.submissionName, cv.submissionUserID, cv.submissionUserName,
 			NULL, NULL, NULL, NULL, 
 			NULL, NULL, 
 			cmu.userID as cmuUserID, 
@@ -218,7 +224,8 @@ export function TagsView(tagsTable = `"Tags"`) {
 			t.tagID, t.tagbody,
 			cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 
 			cv.submissionID, cv.courseID, cv.created, cv.edited, 
-			cv.body, cv.type, cv.lineStart,
+            cv.body, cv.type, cv.lineStart, cv.visibilityState, cv.automated,
+            cv.submissionName, cv.submissionUserID, cv.submissionUserName,
 			cmu.userID as cmuUserID, 
 			cmu.userName as cmuUserName, cmu.email as cmuEmail, 
 			cmu.globalRole as cmuGlobalRole,

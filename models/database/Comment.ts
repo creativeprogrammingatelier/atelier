@@ -3,6 +3,8 @@ import {DBTools, checkAvailable} from "../../api/src/database/HelperDB";
 
 import {Comment as APIComment} from "../api/Comment";
 import {DBAPIUser, userToAPI} from "./User";
+import { ThreadState } from "../enums/ThreadStateEnum";
+import { getEnum } from "../../helpers/EnumHelper";
 
 export interface Comment extends DBTools {
 	commentID?: string,
@@ -26,7 +28,14 @@ export interface DBComment {
 	userid: string,
 	created: Date,
 	edited: Date,
-	body: string,
+    body: string,
+    //thread
+    visibilitystate: string,
+    automated: boolean,
+    //submission
+    submissionname: string,
+    submissionuserid: string,
+    submissionusername: string,
 	//null checks
 	type: string,
 	linestart: number,
@@ -56,7 +65,15 @@ export function commentToAPI(db: DBAPIComment): APIComment {
 		user: userToAPI(db),
 		text: db.body,
 		created: db.created.toISOString(),
-		edited: db.edited.toISOString(),
+        edited: db.edited.toISOString(),
+        thread: {
+            visibility: getEnum(ThreadState, db.visibilitystate),
+            automated: db.automated
+        },
+        submission: {
+            name: db.submissionname,
+            user: { ID: db.submissionuserid, userName: db.submissionusername }
+        },
 		references: {
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid),

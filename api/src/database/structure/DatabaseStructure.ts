@@ -289,7 +289,7 @@ CREATE VIEW "SubmissionsRefs" AS (
 );
 
 CREATE VIEW "CommentThreadRefs" AS (
-	SELECT sr.*, ct.commentThreadID, ct.snippetID, ct.fileID
+	SELECT sr.*, ct.commentThreadID, ct.snippetID, ct.fileID, ct.automated, ct.visibilityState
 	FROM "CommentThread" as ct, "SubmissionsRefs" as sr
 	WHERE sr.submissionID = ct.submissionID
 );

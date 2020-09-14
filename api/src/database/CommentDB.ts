@@ -59,19 +59,21 @@ export class CommentDB {
 		return CommentDB.filterComment({commentID, client}).then(one);
     }
     
-    static async getCommentsByThreadParticipation(userID: string, courseID?: string, params: DBTools = {}) {
+    static async getCommentsByThreadParticipation(userID: string, courseID?: string, onlyReplies = false, params: DBTools = {}) {
         const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
         const userid = UUIDHelper.toUUID(userID), courseid = UUIDHelper.toUUID(courseID);
         return client.query(`
             SELECT DISTINCT cv.* FROM "CommentsView" AS cv
             JOIN "Comments" AS c ON c.commentThreadID = cv.commentThreadID
+            JOIN "CommentThreadView" AS ct ON ct.commentThreadID = cv.commentThreadID
             WHERE c.userID = $1
             AND ($2::uuid IS NULL OR cv.courseID = $2)
             AND ($5::timestamp IS NULL OR cv.created > $5)
             AND ($6::timestamp IS NULL OR cv.created < $6)
+            AND (NOT $7::boolean OR cv.created <> ct.created) -- only include replies, so comments that were created later
             ORDER BY cv.created DESC
             LIMIT $3 OFFSET $4
-        `, [userid, courseid, limit, offset, after, before]).then(extract).then(map(commentToAPI));
+        `, [userid, courseid, limit, offset, after, before, onlyReplies]).then(extract).then(map(commentToAPI));
     }
 
     static async getCommentsBySubmissionOwner(submissionOwnerID: string, courseID?: string, params: DBTools = {}) {

@@ -174,7 +174,9 @@ function createCommentThread(thread: CreateCommentThread, promise: Promise<Comme
 		user: getCurrentUser(),
 		text: thread.comment,
 		created: new Date(Date.now()).toISOString(),
-		edited: new Date(Date.now()).toISOString(),
+        edited: new Date(Date.now()).toISOString(),
+        thread: { visibility: thread.visibility || ThreadState.public, automated: thread.automated || false },
+        submission: { name: "", user: { userName: "", ID: "" } },
 		references: {submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: ""}
 	};
 	threads.transaction(threads => threads.add({
@@ -652,7 +654,9 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
 					user: getCurrentUser(),
 					text: comment,
 					created: new Date(Date.now()).toISOString(),
-					edited: new Date(Date.now()).toISOString(),
+                    edited: new Date(Date.now()).toISOString(),
+                    thread: { visibility: ThreadState.public, automated: false },
+                    submission: { name: "", user: { userName: "", ID: "" } },
 					references: {submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: ""}
 				},
 				comments

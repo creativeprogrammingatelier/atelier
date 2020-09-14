@@ -9,6 +9,7 @@ import { DataBlock } from "../data/DataBlock";
 import { FiFile, FiMessageSquare } from "react-icons/fi";
 import { Permissions } from "../general/Permissions";
 import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
+import { ThreadState } from "../../../../models/enums/ThreadStateEnum";
 
 /** Helper function to make sure a switch is exhaustive */
 function assertNever(x: never) {
@@ -61,7 +62,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                 <div className="feedBlock">
                     {/* TODO: username for the submission (by user X) */}
                     <p>Mentioned by {userLink} on {submissionLink}{courseLink}:</p>
-                    <Block>
+                    <Block className={mention.comment.thread.visibility === ThreadState.private ? "restricted" : ""}>
                         <Link to={commentLink}>
                             <Comment comment={mention.comment} />
                         </Link>
@@ -82,9 +83,6 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                 case "yourSubmission":
                     relationIndicator = <p>New comment on {submissionLink}{courseLink}:</p>;
                     break;
-                case "participated":
-                    relationIndicator = <p>New reply on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
-                    break;
                 case undefined:
                     relationIndicator = <p>New comment on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
                     break;
@@ -99,7 +97,39 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
             );
         }
         case "comment":
-            return (<Fragment />);
+            const comment = data.data;
+            const submissionLink = <Link to={`/submission/${comment.references.submissionID}`}>{comment.submission.name}</Link>;
+            const submissionUserLink =
+                <Permissions course={comment.references.courseID} single={PermissionEnum.viewAllUserProfiles} error={comment.submission.user.userName}>
+                    <Link to={`/course/${comment.references.courseID}/user/${comment.submission.user.ID}`}>{comment.submission.user.userName}</Link>
+                </Permissions>
+            const courseLink = /*global ? <Fragment> in <Link to={`/course/${comment.references.courseID}`}>TODO: coursename</Link></Fragment> :*/ <Fragment />;
+            const commentLink =
+                comment.references.fileID !== undefined 
+                ? `/submission/${comment.references.submissionID}/${comment.references.fileID}/comments#${comment.references.commentThreadID}`
+                : `/submission/${comment.references.submissionID}#${comment.references.commentThreadID}`
+            let relationIndicator = <Fragment />;
+            switch (data.relation) {
+                case "yourSubmission":
+                    relationIndicator = <p>New reply on {submissionLink}{courseLink}:</p>;
+                    break;
+                case "participated":
+                case undefined:
+                    relationIndicator = <p>New reply on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
+                    break;
+                default:
+                    assertNever(data.relation);
+            }
+            return (
+                <div className="feedBlock">
+                    {relationIndicator}
+                    <Block className={comment.thread.visibility === ThreadState.private ? "restricted" : ""}>
+                        <Link to={commentLink}>
+                            <Comment comment={comment} />
+                        </Link>
+                    </Block>
+                </div>
+            );
         default:
             assertNever(data);
             return (<Fragment />);

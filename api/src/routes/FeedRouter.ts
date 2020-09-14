@@ -1,6 +1,6 @@
 import express from "express";
 
-import {removePermissionsMention, removePermissionsCommentThread, removePermissionsComment, removePermissionsSubmission, filterCommentThread} from "../helpers/APIFilterHelper";
+import {removePermissionsMention, removePermissionsCommentThread, removePermissionsComment, removePermissionsSubmission, filterCommentThread, filterComments} from "../helpers/APIFilterHelper";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {getCommonQueryParams} from "../helpers/ParamsHelper";
@@ -31,13 +31,13 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
             .then(threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
             .then(map(thread => ({ type: "commentThread", data: thread, relation: "yourSubmission", timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
-        // TODO: Handle visibility of comments (also in comments api?)
         // CommentDB.getCommentsBySubmissionOwner(userID, courseID, params)
         //     .then(map(removePermissionsComment))
         //     .then(map(comment => ({ type: "comment", data: comment, timestamp: comment.created }))),
-        // CommentDB.getCommentsByThreadParticipation(userID, courseID, params)
-        //     .then(map(removePermissionsComment))
-        //     .then(map(comment => ({ type: "comment", data: comment, timestamp: comment.created })))
+        CommentDB.getCommentsByThreadParticipation(userID, courseID, true, params)
+            .then(comments => filterComments(comments, userID))
+            .then(map(removePermissionsComment))
+            .then(map(comment => ({ type: "comment", data: comment, relation: "participated", timestamp: comment.created, ID: comment.ID })))
     ]);
     return ([] as FeedItem[]).concat(...data)
         // Sort by date descending

@@ -2,7 +2,7 @@ import express from "express";
 
 import {Comment} from "../../../models/api/Comment";
 
-import {removePermissionsComment, removePermissions} from "../helpers/APIFilterHelper";
+import {removePermissionsComment, removePermissions, filterComments} from "../helpers/APIFilterHelper";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {createMentions} from "../helpers/MentionsHelper";
@@ -29,7 +29,8 @@ commentRouter.use(AuthMiddleware.requireAuth);
  */
 commentRouter.get("/user/:userID", capture(async(request, response) => {
 	const userID = request.params.userID;
-	const comments = (await CommentDB.filterComment({userID}))
+	const comments = (await CommentDB.filterComment({userID})
+        .then(comments => filterComments(comments, userID)))
 		.map(comment => removePermissionsComment(comment));
 	response.status(200).send(comments);
 }));
@@ -40,7 +41,8 @@ commentRouter.get("/user/:userID", capture(async(request, response) => {
 commentRouter.get("/course/:courseID/user/:userID", capture(async(request, response) => {
 	const courseID = request.params.courseID;
 	const userID = request.params.userID;
-	const comments = (await CommentDB.filterComment({courseID, userID}))
+	const comments = (await CommentDB.filterComment({courseID, userID})
+        .then(comments => filterComments(comments, userID)))
 		.map(comment => removePermissionsComment(comment));
 	response.status(200).send(comments);
 }));
@@ -49,7 +51,8 @@ commentRouter.get("/course/:courseID/user/:userID", capture(async(request, respo
 commentRouter.get("/mysubmissions", capture(async (request, response) => {
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
-    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, undefined, params))
+    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, undefined, params)
+        .then(comments => filterComments(comments, userID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);
 }));
@@ -59,7 +62,8 @@ commentRouter.get("/course/:courseID/mysubmissions", capture(async (request, res
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
     const courseID = request.params.courseID;
-    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, courseID, params))
+    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, courseID, params)
+        .then(comments => filterComments(comments, userID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);
 }));
@@ -68,7 +72,8 @@ commentRouter.get("/course/:courseID/mysubmissions", capture(async (request, res
 commentRouter.get("/participated", capture(async (request, response) => {
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
-    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, undefined, params))
+    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, undefined, false, params)
+        .then(comments => filterComments(comments, userID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);
 }));
@@ -78,7 +83,8 @@ commentRouter.get("/course/:courseID/participated", capture(async (request, resp
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
     const courseID = request.params.courseID;
-    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, courseID, params))
+    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, courseID, false, params)
+        .then(comments => filterComments(comments, userID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);
 }));
@@ -92,7 +98,8 @@ commentRouter.get("/course/:courseID", capture(async (request, response) => {
     await requireRegistered(currentUserID, courseID);
     await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 
-    const comments = (await CommentDB.filterComment({ courseID, ...params }))
+    const comments = (await CommentDB.filterComment({ courseID, ...params })
+        .then(comments => filterComments(comments, currentUserID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);
 }))
