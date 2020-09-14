@@ -10,11 +10,7 @@ import { FiFile, FiMessageSquare } from "react-icons/fi";
 import { Permissions } from "../general/Permissions";
 import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 import { ThreadState } from "../../../../models/enums/ThreadStateEnum";
-
-/** Helper function to make sure a switch is exhaustive */
-function assertNever(x: never) {
-	throw Error(`Object should be never: ${x}`);
-}
+import { assertNever } from "../../../../helpers/Never";
 
 interface FeedBlockProperties {
     global: boolean,

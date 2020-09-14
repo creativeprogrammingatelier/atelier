@@ -15,6 +15,7 @@ import {MentionsDB} from "../database/MentionsDB";
 import { SubmissionDB } from "../database/SubmissionDB";
 import { ThreadDB } from "../database/ThreadDB";
 import { CommentDB } from "../database/CommentDB";
+import { assertNever } from "../../../helpers/Never";
 
 export const feedRouter = express.Router();
 feedRouter.use(AuthMiddleware.requireAuth);
@@ -39,7 +40,38 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
             .then(map(removePermissionsComment))
             .then(map(comment => ({ type: "comment", data: comment, relation: "participated", timestamp: comment.created, ID: comment.ID })))
     ]);
-    return ([] as FeedItem[]).concat(...data)
+    const byCommentId = ([] as FeedItem[]).concat(...data)
+        // Group all items related to a single comment together, so we'll only show one of them in the feed
+        .reduce((acc, next) => {
+            let commentID = "";
+            switch (next.type) {
+                case "submission":
+                    // A submission is not equivalent to a comment, so group it by its own ID
+                case "comment":
+                    commentID = next.ID;
+                    break;
+                case "commentThread":
+                    commentID = next.data.comments[0]?.ID || next.data.ID;
+                    break;
+                case "mention":
+                    commentID = next.data.comment?.ID || next.data.ID;
+                    break;
+                default:
+                    assertNever(next);
+            }
+            if (commentID in acc) {
+                acc[commentID].push(next);
+            } else {
+                acc[commentID] = [next];
+            }
+            return acc;
+        }, {} as { [ID: string]: FeedItem[] })
+    return Object.values(byCommentId)
+        .map(arr => 
+            arr.find(f => f.type === "submission") 
+            || arr.find(f => f.type === "mention") 
+            || arr.find(f => f.type === "commentThread") 
+            || arr.find(f => f.type === "comment")!)
         // Sort by date descending
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 }
