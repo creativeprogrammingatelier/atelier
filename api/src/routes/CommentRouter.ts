@@ -47,48 +47,6 @@ commentRouter.get("/course/:courseID/user/:userID", capture(async(request, respo
 	response.status(200).send(comments);
 }));
 
-/** Get all comments on submissions by the current user */
-commentRouter.get("/mysubmissions", capture(async (request, response) => {
-    const params = getCommonQueryParams(request);
-    const userID = await getCurrentUserID(request);
-    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, undefined, params)
-        .then(comments => filterComments(comments, userID)))
-        .map(removePermissionsComment);
-    response.status(200).send(comments);
-}));
-
-/** Get all comments on submissions by the current user inside a course */
-commentRouter.get("/course/:courseID/mysubmissions", capture(async (request, response) => {
-    const params = getCommonQueryParams(request);
-    const userID = await getCurrentUserID(request);
-    const courseID = request.params.courseID;
-    const comments = (await CommentDB.getCommentsBySubmissionOwner(userID, courseID, params)
-        .then(comments => filterComments(comments, userID)))
-        .map(removePermissionsComment);
-    response.status(200).send(comments);
-}));
-
-/** Get all comments for threads the current user participates in */
-commentRouter.get("/participated", capture(async (request, response) => {
-    const params = getCommonQueryParams(request);
-    const userID = await getCurrentUserID(request);
-    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, undefined, false, params)
-        .then(comments => filterComments(comments, userID)))
-        .map(removePermissionsComment);
-    response.status(200).send(comments);
-}));
-
-/** Get all comments for threads the current user participates in */
-commentRouter.get("/course/:courseID/participated", capture(async (request, response) => {
-    const params = getCommonQueryParams(request);
-    const userID = await getCurrentUserID(request);
-    const courseID = request.params.courseID;
-    const comments = (await CommentDB.getCommentsByThreadParticipation(userID, courseID, false, params)
-        .then(comments => filterComments(comments, userID)))
-        .map(removePermissionsComment);
-    response.status(200).send(comments);
-}));
-
 /** Get all comments in a course */
 commentRouter.get("/course/:courseID", capture(async (request, response) => {
     const currentUserID = await getCurrentUserID(request);
