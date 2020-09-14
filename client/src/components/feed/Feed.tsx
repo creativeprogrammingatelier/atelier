@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FeedItem } from "../../../../models/api/FeedItem";
 import { FeedBlock } from "./FeedBlock";
 import { usePersonalFeed, useCourseFeed, LoadMore, Refresh } from "../../helpers/api/APIHooks";
@@ -36,6 +36,15 @@ function Feed({ feed, global, buttons }: FeedProperties) {
             ))
     );
     const filteredFeed = { ...feed, observable: filteredFeedObservable };
+
+    useEffect(() => {
+        const storedFilter = localStorage.getItem("feedFilter");
+        if (storedFilter) setFiltered(JSON.parse(storedFilter));
+    }, [])
+    useEffect(() => {
+        localStorage.setItem("feedFilter", JSON.stringify(filtered));
+    }, [filtered]);
+
     return (
         <div className="m-3">
             <div className="feedButtons">
