@@ -58,7 +58,8 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                 <div className="feedBlock">
                     {/* TODO: username for the submission (by user X) */}
                     <p>Mentioned by {userLink} on {submissionLink}{courseLink}:</p>
-                    <Block className={mention.comment.thread.visibility === ThreadState.private ? "restricted" : ""}>
+                    {/* .thread is not nullable, but it may not exist in old data (such as stored in the cache) */}
+                    <Block className={mention.comment.thread?.visibility === ThreadState.private ? "restricted" : ""}>
                         <Link to={commentLink}>
                             <Comment comment={mention.comment} />
                         </Link>
@@ -83,7 +84,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                     relationIndicator = <p>New comment on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
                     break;
                 default:
-                    assertNever(data.relation);
+                    assertNever(data);
             }
             return (
                 <div className="feedBlock">
@@ -116,12 +117,13 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                     relationIndicator = <p>New reply on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
                     break;
                 default:
-                    assertNever(data.relation);
+                    assertNever(data);
             }
             return (
                 <div className="feedBlock">
                     {relationIndicator}
-                    <Block className={comment.thread.visibility === ThreadState.private ? "restricted" : ""}>
+                    {/* .thread is not nullable, but it may not exist in old data (such as stored in the cache) */}
+                    <Block className={comment.thread?.visibility === ThreadState.private ? "restricted" : ""}>
                         <Link to={commentLink}>
                             <Comment comment={comment} />
                         </Link>
