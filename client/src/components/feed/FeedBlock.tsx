@@ -84,7 +84,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                     relationIndicator = <p>New comment on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
                     break;
                 default:
-                    assertNever(data);
+                    assertNever(data.relation);
             }
             return (
                 <div className="feedBlock">
@@ -117,7 +117,7 @@ export function FeedBlock({ data, global }: FeedBlockProperties) {
                     relationIndicator = <p>New reply on {submissionLink} (by {submissionUserLink}){courseLink}:</p>;
                     break;
                 default:
-                    assertNever(data);
+                    assertNever(data.relation);
             }
             return (
                 <div className="feedBlock">
