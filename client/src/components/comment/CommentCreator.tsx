@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Form, FormControl, InputGroup} from "react-bootstrap";
+import {Button, Form, InputGroup} from "react-bootstrap";
 import {FiEye, FiEyeOff, FiSend} from "react-icons/all";
 import {Controlled as CodeMirror} from "react-codemirror2";
 
@@ -28,7 +28,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
 	const [mentionIndex, updateMentionIndex] = useState(undefined as number | undefined);
 	const [tagIndex, updateTagIndex] = useState(undefined as number | undefined);
 	const [suggestionBase, updateSuggestionBase] = useState("");
-	const input = useRef(null as (HTMLInputElement & FormControl | null));
+	const input = useRef(null as (HTMLInputElement | null));
 	
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Shift") {

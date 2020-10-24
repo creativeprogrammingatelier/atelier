@@ -12,7 +12,8 @@ describe("AuthMiddleware.requireAuth", () => {
 	// tslint:disable-next-line: no-any
 	function next(check: (args: any[]) => void = () => {
 	}) {
-		return ((...args) => {
+		// tslint:disable-next-line: no-any
+		return ((...args: any[]) => {
 			nextCount++;
 			check(args);
 		}) as NextFunction;
