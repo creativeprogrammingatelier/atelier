@@ -52,7 +52,7 @@
 		"react-icons": "^3.11.0",
 		"react-router-dom": "^5.2.0",
 		"rxjs": "^6.6.3",
-		"samlify": "^2.7.5",
+		"samlify": "2.7.3",
 		"socket.io": "^2.3.0"
 	},
 	"devDependencies": {
