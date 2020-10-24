@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
+		"preinstall": "npx npm-force-resolutions",
 		"compile": "tsc -p .",
 		"prepare": "npm run compile",
 		"compile-frontend": "npx webpack ---config webpack.production.config.js ./client/src",
@@ -55,6 +56,9 @@
 		"samlify": "2.7.3",
 		"socket.io": "^2.3.0"
 	},
+	"resolutions": {
+		"node-forge": "0.10.0"
+	},
 	"devDependencies": {
 		"@babel/cli": "^7.12.1",
 		"@babel/core": "^7.12.3",
@@ -102,6 +106,7 @@
 		"mocha-steps": "^1.3.0",
 		"node-fetch": "^2.6.1",
 		"node-sass": "^4.14.1",
+		"npm-force-resolutions": "0.0.3",
 		"nyc": "^15.1.0",
 		"sass-loader": "^8.0.2",
 		"source-map-loader": "^0.2.4",
