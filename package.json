@@ -57,7 +57,8 @@
 		"socket.io": "^2.3.0"
 	},
 	"resolutions": {
-		"node-forge": "0.10.0"
+		"node-forge": "0.10.0",
+		"xml-crypto": "2.0.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.12.1",
