@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
 
 module.exports = {
     mode: "development",
@@ -26,11 +27,7 @@ module.exports = {
                 }
             }
             
-        }),
-        // new webpack.ProvidePlugin({
-        //     "React": "react",
-        //     'ReactDOM':   'react-dom',
-        // }),
+        })
     ],
     module: {
         rules: [{

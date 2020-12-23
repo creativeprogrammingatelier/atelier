@@ -1,4 +1,6 @@
 {
     "mode": "file",
-    "out": "docs"
+    "out": "typedoc",
+    "module": "commonjs",
+    "inputFiles": ["./api", "./client"]
 }

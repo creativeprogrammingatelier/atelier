@@ -1,0 +1,2647 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>atelier-core</title>
+	<meta name="description" content="Documentation for atelier-core">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">atelier-core</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>atelier-core</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 align="center">
+					<img src="./logo.png" alt="Atelier" height="200" align="center" />
+				</h1>
+				<p>Atelier is an online environment to assist with programming tutorials. It facilitates interactions between students and teaching assistants to help them with their programming projects, allowing students to easily share and discuss their code with teaching assistants. Atelier is part of a <a href="https://www.utwente.nl/en/eemcs/fmt/research/projects/atelier/">research project</a> of the FMT group at the University of Twente.</p>
+				<a href="#developing-atelier" id="developing-atelier" style="color: inherit; text-decoration: none;">
+					<h2>Developing Atelier</h2>
+				</a>
+				<p>To run and debug Atelier in your local development environment, you&#39;ll need the following tools installed:</p>
+				<ul>
+					<li><a href="https://nodejs.org/">Node.js</a>: to run the backend server and development tools (the LTS version is recommended, but other versions might work too)</li>
+					<li><a href="https://www.postgresql.org/">PostgreSQL</a>: to run a local database (but you can also use a remote database, if you prefer)</li>
+					<li>TypeScript and webpack: <code>npm install -g typescript webpack</code></li>
+					<li>Some editor that supports TypeScript (e.g. <a href="https://code.visualstudio.com">Visual Studio Code</a>, <a href="https://www.jetbrains.com/webstorm/">WebStorm</a>)</li>
+				</ul>
+				<p>Once you&#39;ve got the tooling set up, we can start with getting Atelier running:</p>
+				<ol>
+					<li><p>Clone the repo and switch to the atelier directory</p>
+					</li>
+					<li><p>Run <code>npm install</code> to install the dependencies</p>
+					</li>
+					<li><p>Create a development configuration:</p>
+						<ol>
+							<li>Copy <em>/config/example.json</em> to <em>/config/development.json</em></li>
+							<li>Set the database <code>user</code>, <code>database</code> and <code>password</code> to the values you configured while installing PostgreSQL</li>
+						</ol>
+					</li>
+					<li><p>Run <code>npm run compile</code> to compile the backend</p>
+					</li>
+					<li><p>Run <code>npm run database-dev</code> to set up the database structure and add some development sample data</p>
+					</li>
+					<li><p>Run <code>npm run watch-frontend</code> to run webpack in watch mode to compile the frontend application</p>
+					</li>
+					<li><p>Run <code>npm run start</code> to start the server</p>
+					</li>
+					<li><p>Navigate to <a href="http://localhost:5000">http://localhost:5000</a></p>
+					</li>
+					<li><p>You will be shown the login page. Click on the <em>Samling</em> button to log in. In the <em>Name Identifier</em> field, fill in one of the following user identifiers:</p>
+						<ul>
+							<li><code>admin</code> - a global admin user, who is allowed to do anything in the system</li>
+							<li><code>user</code> - a global &#39;user&#39; user, who is enrolled in a course as a student</li>
+							<li><code>teacher</code> - a global staff user, who is enrolled in a course as a teacher </li>
+							<li><code>TA</code> - a global &#39;user&#39; user, who is enrolled in a course as a teaching assistant</li>
+						</ul>
+						<p>Then click <em>Next</em> and <em>Post Response!</em> to log in.</p>
+						<p>(<em>Note:</em> there is known issue with using Samling and Firefox or Safari. After logging in, you&#39;ll be redirected back to <a href="http://localhost:5000/login">http://localhost:5000/login</a>. Simply change the address in your address bar back to <a href="http://localhost:5000">http://localhost:5000</a> to proceed.)</p>
+					</li>
+				</ol>
+				<p>Now you are ready to start developing Atelier further. Also take a look at the <a href="/docs/dev"><em>/docs/dev</em></a> folder for more information about developing all parts of the Atelier system.</p>
+				<a href="#npm-run-scripts" id="npm-run-scripts" style="color: inherit; text-decoration: none;">
+					<h3>npm run scripts</h3>
+				</a>
+				<p>In <em>package.json</em>, a couple scripts are defined to do common operations while developing Atelier. Here&#39;s an overview of all of them by type of action:</p>
+				<p><strong>Compiling</strong></p>
+				<ul>
+					<li><code>compile</code> - Compile the backend using the TypeScript compiler</li>
+					<li><code>prepare</code> - Alias for <code>compile</code></li>
+					<li><code>compile-frontend</code> - Compile the frontend React application using webpack in production mode</li>
+				</ul>
+				<p><strong>Running and watching</strong></p>
+				<ul>
+					<li><code>start</code> - Start the server</li>
+					<li><code>watch-backend</code> - Compile the backend using the TypeScript compiler in watch mode</li>
+					<li><code>watch-frontend</code> - Compile the frontend React application using webpack in development mode</li>
+				</ul>
+				<p><strong>Testing</strong></p>
+				<ul>
+					<li><code>test</code> - Run all tests, alias for <code>test-backend</code> and <code>test-frontend</code> combined</li>
+					<li><code>test-backend</code> - Run the tests for the backend</li>
+					<li><code>test-backend-nyc</code> - Run the tests for the backend with coverage detection (using the nyc package)</li>
+					<li><code>test-frontend</code> - Run the tests for the frontend</li>
+				</ul>
+				<p><em>Note:</em> the backend tests require a connection to a database with sample data, which can be generated using the commands below.</p>
+				<p><strong>Database</strong></p>
+				<ul>
+					<li><code>database-build</code> - Create the database table structure, dropping old tables if they already exist</li>
+					<li><code>database-samples</code> - Add sample data to an existing database structure</li>
+					<li><code>database-dev</code> - Set up the database for development, including sample data</li>
+				</ul>
+				<a href="#optional-tools-for-development" id="optional-tools-for-development" style="color: inherit; text-decoration: none;">
+					<h3>Optional Tools for Development</h3>
+				</a>
+				<p>These are some useful tools you might want to use when working on Atelier:</p>
+				<ul>
+					<li>React Developer Tools (<a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi">Chrome</a>/<a href="https://addons.mozilla.org/en-US/firefox/addon/react-devtools/">Firefox</a>) - Plugin that helps with debugging React applications</li>
+					<li><a href="https://www.getpostman.com/">Postman</a> - An API testing tool</li>
+				</ul>
+				<a href="#running-atelier-in-production" id="running-atelier-in-production" style="color: inherit; text-decoration: none;">
+					<h2>Running Atelier in Production</h2>
+				</a>
+				<p>The best way to run Atelier in your own production environment, is by using the Docker image. You can build the image from this repo using the <code>docker build . -t atelier</code> command, to create an image called <code>atelier</code>. </p>
+				<p>The image exposes three volumes:</p>
+				<ul>
+					<li><code>/atelier/config</code> - the folder containing the configuration files to set up Atelier for your environment</li>
+					<li><code>/atelier/uploads</code> - the folder where uploaded projects will be stored</li>
+					<li><code>/atelier/api/keys</code> - the folder where (generated) RSA keys for signing JWT tokens will be stored</li>
+				</ul>
+				<p>Mounting the first volume to a folder containing a file called <em>production.json</em> is required for Atelier to run. Atelier will run without mounting the other two folders, but uploaded projects will be discarded when the container is restarted or a new version is deployed. Not mounting <code>atelier/api/keys</code> will lead to all existing tokens being invalidated when a new version is deployed, potentially causing hiccups in the user experience.</p>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h3>Configuration</h3>
+				</a>
+				<p>An example configuration file can be found at <a href="/config/example.json"><em>config/example.json</em></a>. This file, however, is mainly meant to provide default values in a development environment and it should be modified to align with your environment. When running in a Docker container, it is recommended to use the <a href="https://docs.docker.com/engine/swarm/secrets/">Docker secrets</a> mechanism to configure some of your sensitive values:</p>
+				<pre><code class="language-json">{
+    <span class="hljs-attr">&quot;baseUrl&quot;</span>: <span class="hljs-string">&quot;https://atelier.example.com&quot;</span>,
+    <span class="hljs-attr">&quot;port&quot;</span>: <span class="hljs-string">&quot;ENV::EXPOSED_PORT&quot;</span>,
+    <span class="hljs-attr">&quot;loginProviders&quot;</span>: [ ],
+    <span class="hljs-attr">&quot;database&quot;</span>: {
+        <span class="hljs-attr">&quot;host&quot;</span>: <span class="hljs-string">&quot;database-container-name&quot;</span>,
+        <span class="hljs-attr">&quot;user&quot;</span>: <span class="hljs-string">&quot;FILE::/run/secrets/database_user&quot;</span>,
+        <span class="hljs-attr">&quot;database&quot;</span>: <span class="hljs-string">&quot;FILE::/run/secrets/database_user&quot;</span>,
+        <span class="hljs-attr">&quot;password&quot;</span>: <span class="hljs-string">&quot;FILE::/run/secrets/database_password&quot;</span>,
+        <span class="hljs-attr">&quot;pool&quot;</span>: {
+            <span class="hljs-attr">&quot;max&quot;</span>: <span class="hljs-number">60</span>
+        }
+    }
+}</code></pre>
+				<p>The Docker image uses the <code>EXPOSED_PORT</code> environment variable to decide the port that the container exposes, so we configure Atelier to listen on that port using the <code>ENV::</code> syntax. The secret values for the database connection are set using Docker secrets, so those are mapped to their respective file locations. Take a look at <a href="/docs/configuration.md"><em>/docs/configuration.md</em></a> learn more about all configuration options Atelier provides.</p>
+				<a href="#using-docker-compose" id="using-docker-compose" style="color: inherit; text-decoration: none;">
+					<h3>Using docker-compose</h3>
+				</a>
+				<p>Since Atelier needs access to a PostgreSQL database, it is preferred to set up a docker-compose environment, in which both containers are setup correctly:</p>
+				<pre><code class="language-yaml"><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3.7&#x27;</span>
+<span class="hljs-attr">services:</span>
+  <span class="hljs-attr">atelier:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">atelier</span>
+    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-number">80</span><span class="hljs-string">:5000</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./config:/atelier/config</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./uploads:/atelier/uploads</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./secrets/jwt:/atelier/api/keys</span>
+    <span class="hljs-attr">secrets:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">database_user</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">database_password</span>
+  <span class="hljs-attr">database:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">postgres</span>
+    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">POSTGRES_DB_FILE:</span> <span class="hljs-string">/run/secrets/database_user</span>
+      <span class="hljs-attr">POSTGRES_USER_FILE:</span> <span class="hljs-string">/run/secrets/database_user</span>
+      <span class="hljs-attr">POSTGRES_PASSWORD_FILE:</span> <span class="hljs-string">/run/secrets/database_password</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./database/data:/var/lib/postgresql/data</span>
+    <span class="hljs-attr">secrets:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">database_user</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">database_password</span>
+<span class="hljs-attr">secrets:</span>
+  <span class="hljs-attr">database_user:</span>
+    <span class="hljs-attr">file:</span> <span class="hljs-string">./secrets/database_user</span>
+  <span class="hljs-attr">database_password:</span>
+    <span class="hljs-attr">file:</span> <span class="hljs-string">./secrets/database_password</span></code></pre>
+				<p>This setup uses files in the <em>./secrets</em> folder to configure the database username and password across the two containers, and mounts all volumes for persistent data to folders in the current working directory. A configuration file called <em>production.json</em> is assumed to be available in the <em>./config</em> folder.</p>
+				<p>In practice, we recommend running Atelier behind a proxy server that allows for HTTPS connections, instead of directly exposing Atelier on only port 80 (HTTP). You could, for example, add an <a href="https://hub.docker.com/_/nginx/">nginx container</a> to your docker-compose configuration, or use an external proxy server.</p>
+				<a href="#first-run-setup" id="first-run-setup" style="color: inherit; text-decoration: none;">
+					<h3>First run setup</h3>
+				</a>
+				<p>After both containers are started, the database needs to be set up with the correct structure. To do this, run </p>
+				<pre><code>docker exec atelier_atelier_1 node api<span class="hljs-regexp">/src/</span>database<span class="hljs-regexp">/structure/</span>DatabaseStructure.js</code></pre>
+				<p>where you replace <code>atelier_atelier_1</code> with the name of your Atelier container.</p>
+				<p>// TODO: create an admin account</p>
+				<a href="#design-guidelines" id="design-guidelines" style="color: inherit; text-decoration: none;">
+					<h2>Design Guidelines</h2>
+				</a>
+				<p>The Atelier design is based on Bootstrap, with additional custom styling for the distinctive Atelier look.</p>
+				<a href="#icons" id="icons" style="color: inherit; text-decoration: none;">
+					<h3>Icons</h3>
+				</a>
+				<p>The project is using <a href="https://react-icons.netlify.com/#/">React Icon package</a>, which contains a number of icon packs. Preference should be given to the <a href="https://react-icons.netlify.com/#/icons/fi">Feather</a> Icon pack.</p>
+				<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+					<h2>Contributing</h2>
+				</a>
+				<p>If you wish to contribute, please first make a branch named after yourself or the features you are implementing. If you plan to do a larger amount of work, please first open an issue to discuss your plans. This prevents double work and other forms of disappointment.</p>
+				<a href="#contributors" id="contributors" style="color: inherit; text-decoration: none;">
+					<h2>Contributors</h2>
+				</a>
+				<ul>
+					<li><a href="mailto:a.j.heath@student.utwente.nl">Andrew Heath</a></li>
+					<li>Margot Rutgers</li>
+					<li>Alexander Haas</li>
+					<li>Jarik Karsten</li>
+					<li>Rens Leendertz</li>
+					<li><a href="https://github.com/arthurrump">Arthur Rump</a></li>
+					<li>Cas Sievers</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Externals</span>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/__global.html">__global</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/cachestate.html" class="tsd-kind-icon">Cache<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/courserole.html" class="tsd-kind-icon">Course<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/coursestate.html" class="tsd-kind-icon">Course<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/globalrole.html" class="tsd-kind-icon">Global<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/inviterole.html" class="tsd-kind-icon">Invite<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/loadingstate.html" class="tsd-kind-icon">Loading<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/permissionenum.html" class="tsd-kind-icon">Permission<wbr>Enum</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/postgreserrorcode.html" class="tsd-kind-icon">Postgres<wbr>Error<wbr>Code</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/sorting.html" class="tsd-kind-icon">Sorting</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/submissionstatus.html" class="tsd-kind-icon">Submission<wbr>Status</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/threadstate.html" class="tsd-kind-icon">Thread<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/webhookevent.html" class="tsd-kind-icon">Webhook<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/autherror.html" class="tsd-kind-icon">Auth<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authhelper.html" class="tsd-kind-icon">Auth<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authmiddleware.html" class="tsd-kind-icon">Auth<wbr>Middleware</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/cache.html" class="tsd-kind-icon">Cache</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/cacheerror.html" class="tsd-kind-icon">Cache<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/canvascourselist.html" class="tsd-kind-icon">Canvas<wbr>Course<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/clickhelper.html" class="tsd-kind-icon">Click<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/commentdb.html" class="tsd-kind-icon">CommentDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/configurationerror.html" class="tsd-kind-icon">Configuration<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/copyhelper.html" class="tsd-kind-icon">Copy<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/coursedb.html" class="tsd-kind-icon">CourseDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinvitedb.html" class="tsd-kind-icon">Course<wbr>InviteDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseregistrationdb.html" class="tsd-kind-icon">Course<wbr>RegistrationDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseroledb.html" class="tsd-kind-icon">Course<wbr>RoleDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/databaseerror.html" class="tsd-kind-icon">Database<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/enumerror.html" class="tsd-kind-icon">Enum<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/errorboundary.html" class="tsd-kind-icon">Error<wbr>Boundary</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/feedbackmessage.html" class="tsd-kind-icon">Feedback<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/fetch.html" class="tsd-kind-icon">Fetch</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/fetcherror.html" class="tsd-kind-icon">Fetch<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/file.html" class="tsd-kind-icon">File</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/filedb.html" class="tsd-kind-icon">FileDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/filenamehelper.html" class="tsd-kind-icon">File<wbr>Name<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/invaliddatabaseinputerror.html" class="tsd-kind-icon">Invalid<wbr>Database<wbr>Input<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/invaliddatabaseresponseerror.html" class="tsd-kind-icon">Invalid<wbr>Database<wbr>Response<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/invalidparamserror.html" class="tsd-kind-icon">Invalid<wbr>Params<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/jsonfetcherror.html" class="tsd-kind-icon">Json<wbr>Fetch<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/lockqueue.html" class="tsd-kind-icon">Lock<wbr>Queue</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/mentionsdb.html" class="tsd-kind-icon">MentionsDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/metadatadb.html" class="tsd-kind-icon">MetadataDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/missingfielddatabaseerror.html" class="tsd-kind-icon">Missing<wbr>Field<wbr>Database<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/node.html" class="tsd-kind-icon">Node</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/notfounddatabaseerror.html" class="tsd-kind-icon">Not<wbr>Found<wbr>Database<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/parameterhelper.html" class="tsd-kind-icon">Parameter<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/parent.html" class="tsd-kind-icon">Parent</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/permissionerror.html" class="tsd-kind-icon">Permission<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pluginsdb.html" class="tsd-kind-icon">PluginsDB</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
+						<a href="classes/projectvalidationerror.html" class="tsd-kind-icon">Project<wbr>Validation<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/register.html" class="tsd-kind-icon">Register</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rolehelper.html" class="tsd-kind-icon">Role<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scrollhelper.html" class="tsd-kind-icon">Scroll<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/selectionhelper.html" class="tsd-kind-icon">Selection<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/snippetdb.html" class="tsd-kind-icon">SnippetDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/socketmiddleware.html" class="tsd-kind-icon">Socket<wbr>Middleware</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/submissiondb.html" class="tsd-kind-icon">SubmissionDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/tagsdb.html" class="tsd-kind-icon">TagsDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/threaddb.html" class="tsd-kind-icon">ThreadDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/timehelper.html" class="tsd-kind-icon">Time<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/toplevelnode.html" class="tsd-kind-icon">Top<wbr>Level<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/uuiderror.html" class="tsd-kind-icon">UUIDError</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/uuidhelper.html" class="tsd-kind-icon">UUIDHelper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/userdb.html" class="tsd-kind-icon">UserDB</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/apicache.html" class="tsd-kind-icon">APICache</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/allpermissionsproperties.html" class="tsd-kind-icon">All<wbr>Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/anypermissionsproperties.html" class="tsd-kind-icon">Any<wbr>Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/areaproperties.html" class="tsd-kind-icon">Area<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/authenticatedrouteproperties.html" class="tsd-kind-icon">Authenticated<wbr>Route<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/blockproperties.html" class="tsd-kind-icon">Block<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/breadcrumbsproperties.html" class="tsd-kind-icon">Breadcrumbs<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/builtinloginconfiguration.html" class="tsd-kind-icon">Builtin<wbr>Login<wbr>Configuration</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/buttonbarproperties.html" class="tsd-kind-icon">Button<wbr>Bar<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/buttonmultistateproperties.html" class="tsd-kind-icon">Button<wbr>Multistate<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/cachecollection.html" class="tsd-kind-icon">Cache<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/cachecollectioninterface.html" class="tsd-kind-icon">Cache<wbr>Collection<wbr>Interface</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/cacheitem.html" class="tsd-kind-icon">Cache<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/cacheiteminterface.html" class="tsd-kind-icon">Cache<wbr>Item<wbr>Interface</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/cacheproperties.html" class="tsd-kind-icon">Cache<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/cachedproperties.html" class="tsd-kind-icon">Cached<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/checkboxinputproperties.html" class="tsd-kind-icon">Checkbox<wbr>Input<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clickposition.html" class="tsd-kind-icon">Click<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/codeproperties.html" class="tsd-kind-icon">Code<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/codeselection.html" class="tsd-kind-icon">Code<wbr>Selection</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/comment.html" class="tsd-kind-icon">Comment</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/commentcreatorproperties.html" class="tsd-kind-icon">Comment<wbr>Creator<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/commentproperties.html" class="tsd-kind-icon">Comment<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/commentselectorproperties.html" class="tsd-kind-icon">Comment<wbr>Selector<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/commenttabproperties.html" class="tsd-kind-icon">Comment<wbr>Tab<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/commentthread.html" class="tsd-kind-icon">Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/commentthreadproperties.html" class="tsd-kind-icon">Comment<wbr>Thread<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/common.html" class="tsd-kind-icon">Common</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/configuration.html" class="tsd-kind-icon">Configuration</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/contentproperties.html" class="tsd-kind-icon">Content<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/course.html" class="tsd-kind-icon">Course</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursefeedproperties.html" class="tsd-kind-icon">Course<wbr>Feed<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/courseinvite.html" class="tsd-kind-icon">Course<wbr>Invite</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/courseinviteproperties.html" class="tsd-kind-icon">Course<wbr>Invite<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/courseoverviewproperties.html" class="tsd-kind-icon">Course<wbr>Overview<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/coursepartial.html" class="tsd-kind-icon">Course<wbr>Partial</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/coursepermission.html" class="tsd-kind-icon">Course<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursepermissionsproperties.html" class="tsd-kind-icon">Course<wbr>Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursesettingsdeleteproperties.html" class="tsd-kind-icon">Course<wbr>Settings<wbr>Delete<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursesettingsdisenrollmentproperties.html" class="tsd-kind-icon">Course<wbr>Settings<wbr>Disenrollment<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursesettingsenrollmentproperties.html" class="tsd-kind-icon">Course<wbr>Settings<wbr>Enrollment<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursesettingsgeneralproperties.html" class="tsd-kind-icon">Course<wbr>Settings<wbr>General<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursesettingsinvitesproperties.html" class="tsd-kind-icon">Course<wbr>Settings<wbr>Invites<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursesettingsproperties.html" class="tsd-kind-icon">Course<wbr>Settings<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursetabproperties.html" class="tsd-kind-icon">Course<wbr>Tab<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/courseuser.html" class="tsd-kind-icon">Course<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/courseuseroutput.html" class="tsd-kind-icon">Course<wbr>User<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/create.html" class="tsd-kind-icon">Create</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/createcommentthread.html" class="tsd-kind-icon">Create<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/crumbproperties.html" class="tsd-kind-icon">Crumb<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbapiuser.html" class="tsd-kind-icon">DBAPIUser</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbcomment.html" class="tsd-kind-icon">DBComment</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbcourse.html" class="tsd-kind-icon">DBCourse</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbcourseext.html" class="tsd-kind-icon">DBCourse<wbr>Ext</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbcourseinvite.html" class="tsd-kind-icon">DBCourse<wbr>Invite</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbcourseuser.html" class="tsd-kind-icon">DBCourse<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbfile.html" class="tsd-kind-icon">DBFile</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbmention.html" class="tsd-kind-icon">DBMention</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbmetadata.html" class="tsd-kind-icon">DBMetadata</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbplugin.html" class="tsd-kind-icon">DBPlugin</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbpluginhook.html" class="tsd-kind-icon">DBPlugin<wbr>Hook</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbrolepermission.html" class="tsd-kind-icon">DBRole<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbsnippet.html" class="tsd-kind-icon">DBSnippet</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbsubmission.html" class="tsd-kind-icon">DBSubmission</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbtag.html" class="tsd-kind-icon">DBTag</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbthread.html" class="tsd-kind-icon">DBThread</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/dbtools.html" class="tsd-kind-icon">DBTools</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/dbuser.html" class="tsd-kind-icon">DBUser</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/datablocklistproperties.html" class="tsd-kind-icon">Data<wbr>Block<wbr>List<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/datablockproperties.html" class="tsd-kind-icon">Data<wbr>Block<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/dataitemlistproperties.html" class="tsd-kind-icon">Data<wbr>Item<wbr>List<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/dataitemproperties.html" class="tsd-kind-icon">Data<wbr>Item<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/datalistentryproperties.html" class="tsd-kind-icon">Data<wbr>List<wbr>Entry<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/datalistoptional.html" class="tsd-kind-icon">Data<wbr>List<wbr>Optional</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/datalistproperties.html" class="tsd-kind-icon">Data<wbr>List<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/datatriggerproperties.html" class="tsd-kind-icon">Data<wbr>Trigger<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/delete.html" class="tsd-kind-icon">Delete</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/directorynodeproperties.html" class="tsd-kind-icon">Directory<wbr>Node<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/directoryviewerproperties.html" class="tsd-kind-icon">Directory<wbr>Viewer<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/errorboundaryproperties.html" class="tsd-kind-icon">Error<wbr>Boundary<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/errorboundarystate.html" class="tsd-kind-icon">Error<wbr>Boundary<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/exportedcache.html" class="tsd-kind-icon">Exported<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fakebuttonproperties.html" class="tsd-kind-icon">Fake<wbr>Button<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/feedblockproperties.html" class="tsd-kind-icon">Feed<wbr>Block<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/feedbutton.html" class="tsd-kind-icon">Feed<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/feedproperties.html" class="tsd-kind-icon">Feed<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/feedbackproperties.html" class="tsd-kind-icon">Feedback<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fileinputproperties.html" class="tsd-kind-icon">File<wbr>Input<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fileoverviewproperties.html" class="tsd-kind-icon">File<wbr>Overview<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fileviewer.html" class="tsd-kind-icon">File<wbr>Viewer</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fileviewerproperties.html" class="tsd-kind-icon">File<wbr>Viewer<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/filterboxproperties.html" class="tsd-kind-icon">Filter<wbr>Box<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/floaterproperties.html" class="tsd-kind-icon">Floater<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/frameproperties.html" class="tsd-kind-icon">Frame<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/genericpermissionsproperties.html" class="tsd-kind-icon">Generic<wbr>Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/getcachecollectionoptions.html" class="tsd-kind-icon">Get<wbr>Cache<wbr>Collection<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/globalpermissionsproperties.html" class="tsd-kind-icon">Global<wbr>Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/htmlproperties.html" class="tsd-kind-icon">HTMLProperties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/headerbuttonproperties.html" class="tsd-kind-icon">Header<wbr>Button<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/headerproperties.html" class="tsd-kind-icon">Header<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/headingbuttonproperties.html" class="tsd-kind-icon">Heading<wbr>Button<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/headingproperties.html" class="tsd-kind-icon">Heading<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/highlightedcodeproperties.html" class="tsd-kind-icon">Highlighted<wbr>Code<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/istatecanvascourselist.html" class="tsd-kind-icon">IState<wbr>Canvas<wbr>Course<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/invite.html" class="tsd-kind-icon">Invite</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inviteproperties.html" class="tsd-kind-icon">Invite<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/labeledinputproperties.html" class="tsd-kind-icon">Labeled<wbr>Input<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/loadmore.html" class="tsd-kind-icon">Load<wbr>More</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/loadingproperties.html" class="tsd-kind-icon">Loading<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/locationproperties.html" class="tsd-kind-icon">Location<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/loginconfiguration.html" class="tsd-kind-icon">Login<wbr>Configuration</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/loginproperties.html" class="tsd-kind-icon">Login<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/loginprovider.html" class="tsd-kind-icon">Login<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/loginredirectproperties.html" class="tsd-kind-icon">Login<wbr>Redirect<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/managerestrictedbuttonsproperties.html" class="tsd-kind-icon">Manage<wbr>Restricted<wbr>Buttons<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/maybeinputproperties.html" class="tsd-kind-icon">Maybe<wbr>Input<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/maybetextareaproperties.html" class="tsd-kind-icon">Maybe<wbr>Textarea<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/mention.html" class="tsd-kind-icon">Mention</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/mentionproperties.html" class="tsd-kind-icon">Mention<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/mentionsuggestionsproperties.html" class="tsd-kind-icon">Mention<wbr>Suggestions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/metadata.html" class="tsd-kind-icon">Metadata</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/migrations.html" class="tsd-kind-icon">Migrations</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/nonemptyproperties.html" class="tsd-kind-icon">Non<wbr>Empty<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/optionallinkproperties.html" class="tsd-kind-icon">Optional<wbr>Link<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/paginationparameters.html" class="tsd-kind-icon">Pagination<wbr>Parameters</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/panelproperties.html" class="tsd-kind-icon">Panel<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/parentalproperties.html" class="tsd-kind-icon">Parental<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/permission.html" class="tsd-kind-icon">Permission</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permissiondisplay.html" class="tsd-kind-icon">Permission<wbr>Display</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permissionstate.html" class="tsd-kind-icon">Permission<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/permissions.html" class="tsd-kind-icon">Permissions</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/personalfeedproperties.html" class="tsd-kind-icon">Personal<wbr>Feed<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/plugin.html" class="tsd-kind-icon">Plugin</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/pluginhook.html" class="tsd-kind-icon">Plugin<wbr>Hook</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/plugininput.html" class="tsd-kind-icon">Plugin<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/plugininputproperties.html" class="tsd-kind-icon">Plugin<wbr>Input<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/position.html" class="tsd-kind-icon">Position</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/postgreserror.html" class="tsd-kind-icon">Postgres<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-external">
+						<a href="interfaces/projectfile.html" class="tsd-kind-icon">Project<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-external">
+						<a href="interfaces/projectvalidation.html" class="tsd-kind-icon">Project<wbr>Validation</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/qrcodeproperties.html" class="tsd-kind-icon">QRCode<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/radioinputproperties.html" class="tsd-kind-icon">Radio<wbr>Input<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/range.html" class="tsd-kind-icon">Range</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/refresh.html" class="tsd-kind-icon">Refresh</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/researchinfopopupproperties.html" class="tsd-kind-icon">Research<wbr>Info<wbr>Popup<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/responsiveproperties.html" class="tsd-kind-icon">Responsive<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/samlloginconfiguration.html" class="tsd-kind-icon">Saml<wbr>Login<wbr>Configuration</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/searchoverviewproperties.html" class="tsd-kind-icon">Search<wbr>Overview<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/searchparameters.html" class="tsd-kind-icon">Search<wbr>Parameters</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/searchproperties.html" class="tsd-kind-icon">Search<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/searchqueryproperties.html" class="tsd-kind-icon">Search<wbr>Query<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/searchresult.html" class="tsd-kind-icon">Search<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/searchresultcomment.html" class="tsd-kind-icon">Search<wbr>Result<wbr>Comment</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/searchresultfile.html" class="tsd-kind-icon">Search<wbr>Result<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/searchresultproperties.html" class="tsd-kind-icon">Search<wbr>Result<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/searchresultsectionproperties.html" class="tsd-kind-icon">Search<wbr>Result<wbr>Section<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/searchresultsnippet.html" class="tsd-kind-icon">Search<wbr>Result<wbr>Snippet</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/selection.html" class="tsd-kind-icon">Selection</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/servererror.html" class="tsd-kind-icon">Server<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/settingsproperties.html" class="tsd-kind-icon">Settings<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/sharetabproperties.html" class="tsd-kind-icon">Share<wbr>Tab<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/sharingproperties.html" class="tsd-kind-icon">Sharing<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/sidebarentryproperties.html" class="tsd-kind-icon">Sidebar<wbr>Entry<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/sidebarproperties.html" class="tsd-kind-icon">Sidebar<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/singlepermissionsproperties.html" class="tsd-kind-icon">Single<wbr>Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/snippet.html" class="tsd-kind-icon">Snippet</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/snippethighlight.html" class="tsd-kind-icon">Snippet<wbr>Highlight</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/snippetproperties.html" class="tsd-kind-icon">Snippet<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/store.html" class="tsd-kind-icon">Store</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/submission.html" class="tsd-kind-icon">Submission</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/submissionoverviewproperties.html" class="tsd-kind-icon">Submission<wbr>Overview<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/submissionshareproperties.html" class="tsd-kind-icon">Submission<wbr>Share<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/submissiontabproperties.html" class="tsd-kind-icon">Submission<wbr>Tab<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/subscribablecollection.html" class="tsd-kind-icon">Subscribable<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tabbarproperties.html" class="tsd-kind-icon">Tab<wbr>Bar<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tabbuttonproperties.html" class="tsd-kind-icon">Tab<wbr>Button<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tabproperties.html" class="tsd-kind-icon">Tab<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/tag.html" class="tsd-kind-icon">Tag</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tagproperties.html" class="tsd-kind-icon">Tag<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tagsuggestionsproperties.html" class="tsd-kind-icon">Tag<wbr>Suggestions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/thread.html" class="tsd-kind-icon">Thread</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tokenprops.html" class="tsd-kind-icon">Token<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/update.html" class="tsd-kind-icon">Update</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/uploaderproperties.html" class="tsd-kind-icon">Uploader<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/user.html" class="tsd-kind-icon">User</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/userinfoproperties.html" class="tsd-kind-icon">User<wbr>Info<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/useroverviewproperties.html" class="tsd-kind-icon">User<wbr>Overview<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/userrolesproperties.html" class="tsd-kind-icon">User<wbr>Roles<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/usersearchproperties.html" class="tsd-kind-icon">User<wbr>Search<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/usersettingspermissionsproperties.html" class="tsd-kind-icon">User<wbr>Settings<wbr>Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/usersettingspermissionssectionproperties.html" class="tsd-kind-icon">User<wbr>Settings<wbr>Permissions<wbr>Section<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/usersettingsrolesproperties.html" class="tsd-kind-icon">User<wbr>Settings<wbr>Roles<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/viewtabproperties.html" class="tsd-kind-icon">View<wbr>Tab<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/webhookrequest.html" class="tsd-kind-icon">Webhook<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#bootstrapvariant" class="tsd-kind-icon">Bootstrap<wbr>Variant</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#breakpoint" class="tsd-kind-icon">Breakpoint</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#children" class="tsd-kind-icon">Children</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#childrenconstructor" class="tsd-kind-icon">Children<wbr>Constructor</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#dbapicomment" class="tsd-kind-icon">DBAPIComment</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#dbapicourse" class="tsd-kind-icon">DBAPICourse</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#dbapifile" class="tsd-kind-icon">DBAPIFile</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#dbapirolepermission" class="tsd-kind-icon">DBAPIRole<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#dbapisnippet" class="tsd-kind-icon">DBAPISnippet</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#dbapisubmission" class="tsd-kind-icon">DBAPISubmission</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#dbapithread" class="tsd-kind-icon">DBAPIThread</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#feeditem" class="tsd-kind-icon">Feed<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#feedbackcontent" class="tsd-kind-icon">Feedback<wbr>Content</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#feedbacktype" class="tsd-kind-icon">Feedback<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#filecommenthandler" class="tsd-kind-icon">File<wbr>Comment<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#fileuploadrequest" class="tsd-kind-icon">File<wbr>Upload<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#fileish" class="tsd-kind-icon">Fileish</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#id64" class="tsd-kind-icon">ID64</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#loadingfunc" class="tsd-kind-icon">Loading<wbr>Func</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#permissionsproperties" class="tsd-kind-icon">Permissions<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#pluginhookinput" class="tsd-kind-icon">Plugin<wbr>Hook<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#uuid" class="tsd-kind-icon">UUID</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#pgdb" class="tsd-kind-icon">pgDB</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#authsecretkey" class="tsd-kind-icon">AUTHSECRETKEY</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#codefile_extensions" class="tsd-kind-icon">CODEFILE_<wbr>EXTENSIONS</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#debugging" class="tsd-kind-icon">DEBUGGING</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#env" class="tsd-kind-icon">ENV</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#file" class="tsd-kind-icon">FILE</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fastpriorityqueue" class="tsd-kind-icon">Fast<wbr>Priority<wbr>Queue</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#large_snippet_lines_above" class="tsd-kind-icon">LARGE_<wbr>SNIPPET_<wbr>LINES_<wbr>ABOVE</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#large_snippet_lines_below" class="tsd-kind-icon">LARGE_<wbr>SNIPPET_<wbr>LINES_<wbr>BELOW</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#max_file_size" class="tsd-kind-icon">MAX_<wbr>FILE_<wbr>SIZE</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#max_project_size" class="tsd-kind-icon">MAX_<wbr>PROJECT_<wbr>SIZE</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#minimized_lines" class="tsd-kind-icon">MINIMIZED_<wbr>LINES</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#small_snippet_lines" class="tsd-kind-icon">SMALL_<wbr>SNIPPET_<wbr>LINES</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#small_snippet_lines_above" class="tsd-kind-icon">SMALL_<wbr>SNIPPET_<wbr>LINES_<wbr>ABOVE</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#small_snippet_lines_below" class="tsd-kind-icon">SMALL_<wbr>SNIPPET_<wbr>LINES_<wbr>BELOW</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#token_expiration" class="tsd-kind-icon">TOKEN_<wbr>EXPIRATION</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uploads_path" class="tsd-kind-icon">UPLOADS_<wbr>PATH</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#version" class="tsd-kind-icon">VERSION</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#all" class="tsd-kind-icon">all</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#app" class="tsd-kind-icon">app</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#authkey" class="tsd-kind-icon">auth<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#authrouter" class="tsd-kind-icon">auth<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#cachecontext" class="tsd-kind-icon">cache<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#columnvalues" class="tsd-kind-icon">column<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#commentrouter" class="tsd-kind-icon">comment<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#commentthreadrouter" class="tsd-kind-icon">comment<wbr>Thread<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#containspermission" class="tsd-kind-icon">contains<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#courserouter" class="tsd-kind-icon">course<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#createtablequeries" class="tsd-kind-icon">create<wbr>Table<wbr>Queries</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#createviewqueries" class="tsd-kind-icon">create<wbr>View<wbr>Queries</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#droptablequeries" class="tsd-kind-icon">drop<wbr>Table<wbr>Queries</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#dropviewqueries" class="tsd-kind-icon">drop<wbr>View<wbr>Queries</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#end" class="tsd-kind-icon">end</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#env" class="tsd-kind-icon">env</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#errors" class="tsd-kind-icon">errors</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fail" class="tsd-kind-icon">fail</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#feedrouter" class="tsd-kind-icon">feed<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#file" class="tsd-kind-icon">file</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#filerouter" class="tsd-kind-icon">file<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fileviewers" class="tsd-kind-icon">file<wbr>Viewers</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#getclient" class="tsd-kind-icon">get<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#indexrouter" class="tsd-kind-icon">index<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#inviterouter" class="tsd-kind-icon">invite<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#json" class="tsd-kind-icon">json</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#keyfilepath" class="tsd-kind-icon">key<wbr>File<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#loginrouter" class="tsd-kind-icon">login<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#managepermissionbits" class="tsd-kind-icon">manage<wbr>Permission<wbr>Bits</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#managepermissions" class="tsd-kind-icon">manage<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#mentionsrouter" class="tsd-kind-icon">mentions<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#nativesupportbigint" class="tsd-kind-icon">native<wbr>Support<wbr>Big<wbr>Int</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#ok" class="tsd-kind-icon">ok</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#permissionbits" class="tsd-kind-icon">permission<wbr>Bits</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#permissionrouter" class="tsd-kind-icon">permission<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#permissiontype" class="tsd-kind-icon">permission<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#pluginrouter" class="tsd-kind-icon">plugin<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#pool" class="tsd-kind-icon">pool</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#projectstorageengine" class="tsd-kind-icon">project<wbr>Storage<wbr>Engine</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rolerouter" class="tsd-kind-icon">role<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#searchrouter" class="tsd-kind-icon">search<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#stored" class="tsd-kind-icon">stored</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#submissionrouter" class="tsd-kind-icon">submission<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#timecontext" class="tsd-kind-icon">time<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uploadmiddleware" class="tsd-kind-icon">upload<wbr>Middleware</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#userrouter" class="tsd-kind-icon">user<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid0" class="tsd-kind-icon">uuid0</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid1" class="tsd-kind-icon">uuid1</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid2" class="tsd-kind-icon">uuid2</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid3" class="tsd-kind-icon">uuid3</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid4" class="tsd-kind-icon">uuid4</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid5" class="tsd-kind-icon">uuid5</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid6" class="tsd-kind-icon">uuid6</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#viewpermissionbits" class="tsd-kind-icon">view<wbr>Permission<wbr>Bits</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#viewpermissions" class="tsd-kind-icon">view<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#activity" class="tsd-kind-icon">Activity</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#app" class="tsd-kind-icon">App</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#area" class="tsd-kind-icon">Area</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#authenticatedroute" class="tsd-kind-icon">Authenticated<wbr>Route</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#block" class="tsd-kind-icon">Block</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#bootstrap" class="tsd-kind-icon">Bootstrap</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#breadcrumbs" class="tsd-kind-icon">Breadcrumbs</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#buttonbar" class="tsd-kind-icon">Button<wbr>Bar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#buttonmultistate" class="tsd-kind-icon">Button<wbr>Multistate</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cacheprovider" class="tsd-kind-icon">Cache<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#cached" class="tsd-kind-icon">Cached</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#checkboxinput" class="tsd-kind-icon">Checkbox<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#code" class="tsd-kind-icon">Code</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#codeviewer" class="tsd-kind-icon">Code<wbr>Viewer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#comment" class="tsd-kind-icon">Comment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#commentcreator" class="tsd-kind-icon">Comment<wbr>Creator</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#commentselector" class="tsd-kind-icon">Comment<wbr>Selector</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#commenttab" class="tsd-kind-icon">Comment<wbr>Tab</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#commentthread" class="tsd-kind-icon">Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#content" class="tsd-kind-icon">Content</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursecreator" class="tsd-kind-icon">Course<wbr>Creator</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursefeed" class="tsd-kind-icon">Course<wbr>Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseinvite" class="tsd-kind-icon">Course<wbr>Invite</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseoverview" class="tsd-kind-icon">Course<wbr>Overview</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursepermissions" class="tsd-kind-icon">Course<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursesettings" class="tsd-kind-icon">Course<wbr>Settings</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursesettingsdelete" class="tsd-kind-icon">Course<wbr>Settings<wbr>Delete</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursesettingsdisenrollment" class="tsd-kind-icon">Course<wbr>Settings<wbr>Disenrollment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursesettingsenrollment" class="tsd-kind-icon">Course<wbr>Settings<wbr>Enrollment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursesettingsgeneral" class="tsd-kind-icon">Course<wbr>Settings<wbr>General</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursesettingsinvites" class="tsd-kind-icon">Course<wbr>Settings<wbr>Invites</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursetab" class="tsd-kind-icon">Course<wbr>Tab</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#courseusertoapi" class="tsd-kind-icon">Course<wbr>User<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#courseusertouser" class="tsd-kind-icon">Course<wbr>User<wbr>ToUser</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseusersview" class="tsd-kind-icon">Course<wbr>Users<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseusersviewall" class="tsd-kind-icon">Course<wbr>Users<wbr>View<wbr>All</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursesview" class="tsd-kind-icon">Courses<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#crumb" class="tsd-kind-icon">Crumb</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbcommenttest" class="tsd-kind-icon">DBcomment<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbcoursestest" class="tsd-kind-icon">DBcourses<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbfiletest" class="tsd-kind-icon">DBfile<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbmentiontest" class="tsd-kind-icon">DBmention<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbplugintest" class="tsd-kind-icon">DBplugin<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbrolestest" class="tsd-kind-icon">DBroles<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbsnippettest" class="tsd-kind-icon">DBsnippet<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbsubmissiontest" class="tsd-kind-icon">DBsubmission<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dbuserstest" class="tsd-kind-icon">DBusers<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#datablock" class="tsd-kind-icon">Data<wbr>Block</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#datablocklist" class="tsd-kind-icon">Data<wbr>Block<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dataitem" class="tsd-kind-icon">Data<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dataitemlist" class="tsd-kind-icon">Data<wbr>Item<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#datalist" class="tsd-kind-icon">Data<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#datatrigger" class="tsd-kind-icon">Data<wbr>Trigger</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#directorynode" class="tsd-kind-icon">Directory<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#directoryviewer" class="tsd-kind-icon">Directory<wbr>Viewer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fakebutton" class="tsd-kind-icon">Fake<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fakereadonlyinput" class="tsd-kind-icon">Fake<wbr>Read<wbr>Only<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#feed" class="tsd-kind-icon">Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#feedblock" class="tsd-kind-icon">Feed<wbr>Block</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#feedback" class="tsd-kind-icon">Feedback</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#feedbackerror" class="tsd-kind-icon">Feedback<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#feedbacksuccess" class="tsd-kind-icon">Feedback<wbr>Success</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fileinput" class="tsd-kind-icon">File<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fileoverview" class="tsd-kind-icon">File<wbr>Overview</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filterbox" class="tsd-kind-icon">Filter<wbr>Box</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#floater" class="tsd-kind-icon">Floater</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#frame" class="tsd-kind-icon">Frame</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#globalpermissions" class="tsd-kind-icon">Global<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#header" class="tsd-kind-icon">Header</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#headerbutton" class="tsd-kind-icon">Header<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#heading" class="tsd-kind-icon">Heading</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#highlightedcode" class="tsd-kind-icon">Highlighted<wbr>Code</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#homepage" class="tsd-kind-icon">Homepage</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#imageviewer" class="tsd-kind-icon">Image<wbr>Viewer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#invite" class="tsd-kind-icon">Invite</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#label" class="tsd-kind-icon">Label</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#labeledinput" class="tsd-kind-icon">Labeled<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#loading" class="tsd-kind-icon">Loading</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#loadingicon" class="tsd-kind-icon">Loading<wbr>Icon</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#login" class="tsd-kind-icon">Login</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#logo" class="tsd-kind-icon">Logo</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#logout" class="tsd-kind-icon">Logout</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#managerestrictedbuttons" class="tsd-kind-icon">Manage<wbr>Restricted<wbr>Buttons</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#maybeinput" class="tsd-kind-icon">Maybe<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#maybetextarea" class="tsd-kind-icon">Maybe<wbr>Textarea</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mentionsuggestions" class="tsd-kind-icon">Mention<wbr>Suggestions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mentionsview" class="tsd-kind-icon">Mentions<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nonempty" class="tsd-kind-icon">Non<wbr>Empty</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#optionallink" class="tsd-kind-icon">Optional<wbr>Link</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#overlay" class="tsd-kind-icon">Overlay</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#panel" class="tsd-kind-icon">Panel</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#permissions" class="tsd-kind-icon">Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#permissionscrumb" class="tsd-kind-icon">Permissions<wbr>Crumb</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#personalfeed" class="tsd-kind-icon">Personal<wbr>Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#plugininput" class="tsd-kind-icon">Plugin<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pluginsettings" class="tsd-kind-icon">Plugin<wbr>Settings</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#qrcode" class="tsd-kind-icon">QRCode</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#radioinput" class="tsd-kind-icon">Radio<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#researchinfopopup" class="tsd-kind-icon">Research<wbr>Info<wbr>Popup</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#researchpermissioninformation" class="tsd-kind-icon">Research<wbr>Permission<wbr>Information</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#researchpermissionoverlay" class="tsd-kind-icon">Research<wbr>Permission<wbr>Overlay</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#researchpermissionwrapper" class="tsd-kind-icon">Research<wbr>Permission<wbr>Wrapper</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#responsive" class="tsd-kind-icon">Responsive</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#searchoverview" class="tsd-kind-icon">Search<wbr>Overview</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#searchquery" class="tsd-kind-icon">Search<wbr>Query</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#searchresultsection" class="tsd-kind-icon">Search<wbr>Result<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#searchresults" class="tsd-kind-icon">Search<wbr>Results</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#settings" class="tsd-kind-icon">Settings</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sharetab" class="tsd-kind-icon">Share<wbr>Tab</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sharing" class="tsd-kind-icon">Sharing</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sidebar" class="tsd-kind-icon">Sidebar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sidebarentry" class="tsd-kind-icon">Sidebar<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#snippet" class="tsd-kind-icon">Snippet</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#submissionoverview" class="tsd-kind-icon">Submission<wbr>Overview</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#submissionshare" class="tsd-kind-icon">Submission<wbr>Share</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#submissiontab" class="tsd-kind-icon">Submission<wbr>Tab</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#systemsettings" class="tsd-kind-icon">System<wbr>Settings</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tdbhreadtest" class="tsd-kind-icon">TDBhread<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tabbar" class="tsd-kind-icon">Tab<wbr>Bar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tabbutton" class="tsd-kind-icon">Tab<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tag" class="tsd-kind-icon">Tag</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tagsuggestions" class="tsd-kind-icon">Tag<wbr>Suggestions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tagsview" class="tsd-kind-icon">Tags<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timeprovider" class="tsd-kind-icon">Time<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#unsupportedviewer" class="tsd-kind-icon">Unsupported<wbr>Viewer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#uploader" class="tsd-kind-icon">Uploader</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usercourseoverview" class="tsd-kind-icon">User<wbr>Course<wbr>Overview</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#userinfo" class="tsd-kind-icon">User<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#useroverview" class="tsd-kind-icon">User<wbr>Overview</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#userroles" class="tsd-kind-icon">User<wbr>Roles</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usersearch" class="tsd-kind-icon">User<wbr>Search</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usersettings" class="tsd-kind-icon">User<wbr>Settings</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usersettingsgeneral" class="tsd-kind-icon">User<wbr>Settings<wbr>General</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usersettingspermissions" class="tsd-kind-icon">User<wbr>Settings<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usersettingspermissionssection" class="tsd-kind-icon">User<wbr>Settings<wbr>Permissions<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usersettingsroles" class="tsd-kind-icon">User<wbr>Settings<wbr>Roles</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#viewtab" class="tsd-kind-icon">View<wbr>Tab</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#_containspermissionwith" class="tsd-kind-icon">_contains<wbr>Permission<wbr>With</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#_containspermissionwithout" class="tsd-kind-icon">_contains<wbr>Permission<wbr>Without</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#_insert" class="tsd-kind-icon">_insert</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#acceptablefiles" class="tsd-kind-icon">acceptable<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#acceptsfile" class="tsd-kind-icon">accepts<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#acceptstype" class="tsd-kind-icon">accepts<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#additem" class="tsd-kind-icon">add<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#archiveproject" class="tsd-kind-icon">archive<wbr>Project</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#assertnever" class="tsd-kind-icon">assert<wbr>Never</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#before" class="tsd-kind-icon">before</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#bigand" class="tsd-kind-icon">big<wbr>And</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#candisplayfile" class="tsd-kind-icon">can<wbr>Display<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#candisplaytype" class="tsd-kind-icon">can<wbr>Display<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#capture" class="tsd-kind-icon">capture</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#capturenext" class="tsd-kind-icon">capture<wbr>Next</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#checkavailable" class="tsd-kind-icon">check<wbr>Available</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#checkenum" class="tsd-kind-icon">check<wbr>Enum</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cleartokencookie" class="tsd-kind-icon">clear<wbr>Token<wbr>Cookie</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#commentthreadowner" class="tsd-kind-icon">comment<wbr>Thread<wbr>Owner</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#commentthreadview" class="tsd-kind-icon">comment<wbr>Thread<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#commenttoapi" class="tsd-kind-icon">comment<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#commentsview" class="tsd-kind-icon">comments<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#containsnocodefiles" class="tsd-kind-icon">contains<wbr>NoCode<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#containspermissionall" class="tsd-kind-icon">contains<wbr>Permission<wbr>All</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#containspermissionany" class="tsd-kind-icon">contains<wbr>Permission<wbr>Any</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertcomment" class="tsd-kind-icon">convert<wbr>Comment</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertcourse" class="tsd-kind-icon">convert<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertcourseinvite" class="tsd-kind-icon">convert<wbr>Course<wbr>Invite</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertcourseuser" class="tsd-kind-icon">convert<wbr>Course<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertfile" class="tsd-kind-icon">convert<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertmention" class="tsd-kind-icon">convert<wbr>Mention</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertplugin" class="tsd-kind-icon">convert<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertpluginhook" class="tsd-kind-icon">convert<wbr>Plugin<wbr>Hook</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertrolepermission" class="tsd-kind-icon">convert<wbr>Role<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertsnippet" class="tsd-kind-icon">convert<wbr>Snippet</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertsubmission" class="tsd-kind-icon">convert<wbr>Submission</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#converttag" class="tsd-kind-icon">convert<wbr>Tag</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertthread" class="tsd-kind-icon">convert<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#convertuser" class="tsd-kind-icon">convert<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursedisenrolluser" class="tsd-kind-icon">course<wbr>Disenroll<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseenrolluser" class="tsd-kind-icon">course<wbr>Enroll<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseidbnvitetest" class="tsd-kind-icon">courseIDBnvite<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#coursepartialtoapi" class="tsd-kind-icon">course<wbr>Partial<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursepermission" class="tsd-kind-icon">course<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseregistrationdbtest" class="tsd-kind-icon">course<wbr>RegistrationDBTest</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#coursetoapi" class="tsd-kind-icon">course<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#coursetoapipartial" class="tsd-kind-icon">course<wbr>ToAPIPartial</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#courseusertouser" class="tsd-kind-icon">course<wbr>User<wbr>ToUser</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#create" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createallowedmentions" class="tsd-kind-icon">create<wbr>Allowed<wbr>Mentions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createcomment" class="tsd-kind-icon">create<wbr>Comment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createcommentthread" class="tsd-kind-icon">create<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createcourse" class="tsd-kind-icon">create<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createfilecommentthread" class="tsd-kind-icon">create<wbr>File<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#creatementions" class="tsd-kind-icon">create<wbr>Mentions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createplugin" class="tsd-kind-icon">create<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createsubmission" class="tsd-kind-icon">create<wbr>Submission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createsubmissioncommentthread" class="tsd-kind-icon">create<wbr>Submission<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createtags" class="tsd-kind-icon">create<wbr>Tags</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#createwebhookrequest" class="tsd-kind-icon">create<wbr>Webhook<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#currentbreakpoint" class="tsd-kind-icon">current<wbr>Breakpoint</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#databasesamples" class="tsd-kind-icon">database<wbr>Samples</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#decodetoken" class="tsd-kind-icon">decode<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#defaulthandler" class="tsd-kind-icon">default<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#defaultvalidation" class="tsd-kind-icon">default<wbr>Validation</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deletecomment" class="tsd-kind-icon">delete<wbr>Comment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deletecommentthread" class="tsd-kind-icon">delete<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deletecourse" class="tsd-kind-icon">delete<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deletefile" class="tsd-kind-icon">delete<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deletefolder" class="tsd-kind-icon">delete<wbr>Folder</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deleteinvitelink" class="tsd-kind-icon">delete<wbr>Invite<wbr>Link</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#deleteitem" class="tsd-kind-icon">delete<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deleteplugin" class="tsd-kind-icon">delete<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deletesubmission" class="tsd-kind-icon">delete<wbr>Submission</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#doif" class="tsd-kind-icon">do<wbr>If</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#editcomment" class="tsd-kind-icon">edit<wbr>Comment</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#emptycacheitem" class="tsd-kind-icon">empty<wbr>Cache<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#equalstart" class="tsd-kind-icon">equal<wbr>Start</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#error" class="tsd-kind-icon">error</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#extract" class="tsd-kind-icon">extract</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#filetoapi" class="tsd-kind-icon">file<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filesview" class="tsd-kind-icon">files<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filtercommentthread" class="tsd-kind-icon">filter<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filtercomments" class="tsd-kind-icon">filter<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filtercourse" class="tsd-kind-icon">filter<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#filternullfiles" class="tsd-kind-icon">filter<wbr>Null<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#filternullsnippet" class="tsd-kind-icon">filter<wbr>Null<wbr>Snippet</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filtersubmission" class="tsd-kind-icon">filter<wbr>Submission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filteruser" class="tsd-kind-icon">filter<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#frombig" class="tsd-kind-icon">from<wbr>Big</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#funmap" class="tsd-kind-icon">funmap</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#funmap2" class="tsd-kind-icon">funmap2</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#funmap3" class="tsd-kind-icon">funmap3</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getallusers" class="tsd-kind-icon">get<wbr>All<wbr>Users</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcommonqueryparams" class="tsd-kind-icon">get<wbr>Common<wbr>Query<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#getcontextlines" class="tsd-kind-icon">get<wbr>Context<wbr>Lines</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcourse" class="tsd-kind-icon">get<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcoursefeed" class="tsd-kind-icon">get<wbr>Course<wbr>Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcoursementions" class="tsd-kind-icon">get<wbr>Course<wbr>Mentions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcoursepermissions" class="tsd-kind-icon">get<wbr>Course<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcoursesubmissions" class="tsd-kind-icon">get<wbr>Course<wbr>Submissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcourseuser" class="tsd-kind-icon">get<wbr>Course<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcourseusercomments" class="tsd-kind-icon">get<wbr>Course<wbr>User<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcourseusersubmissions" class="tsd-kind-icon">get<wbr>Course<wbr>User<wbr>Submissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcourses" class="tsd-kind-icon">get<wbr>Courses</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcurrentrole" class="tsd-kind-icon">get<wbr>Current<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcurrentuser" class="tsd-kind-icon">get<wbr>Current<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcurrentuserid" class="tsd-kind-icon">get<wbr>Current<wbr>UserID</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcurrentversion" class="tsd-kind-icon">get<wbr>Current<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#getenum" class="tsd-kind-icon">get<wbr>Enum</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfile" class="tsd-kind-icon">get<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfilecomments" class="tsd-kind-icon">get<wbr>File<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfilecontents" class="tsd-kind-icon">get<wbr>File<wbr>Contents</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfilepathondisk" class="tsd-kind-icon">get<wbr>File<wbr>Path<wbr>OnDisk</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfileurl" class="tsd-kind-icon">get<wbr>File<wbr>Url</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfileviewer" class="tsd-kind-icon">get<wbr>File<wbr>Viewer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfiles" class="tsd-kind-icon">get<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfolderforfile" class="tsd-kind-icon">get<wbr>Folder<wbr>For<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getglobalpermissions" class="tsd-kind-icon">get<wbr>Global<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getglobalrole" class="tsd-kind-icon">get<wbr>Global<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getinvite" class="tsd-kind-icon">get<wbr>Invite</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getinvitelink" class="tsd-kind-icon">get<wbr>Invite<wbr>Link</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getinvitelinks" class="tsd-kind-icon">get<wbr>Invite<wbr>Links</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getloginproviders" class="tsd-kind-icon">get<wbr>Login<wbr>Providers</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getmentions" class="tsd-kind-icon">get<wbr>Mentions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getmostpopulartags" class="tsd-kind-icon">get<wbr>Most<wbr>Popular<wbr>Tags</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpaginationqueryparams" class="tsd-kind-icon">get<wbr>Pagination<wbr>Query<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpermissionnumber" class="tsd-kind-icon">get<wbr>Permission<wbr>Number</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpermissions" class="tsd-kind-icon">get<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpersonalcoursefeed" class="tsd-kind-icon">get<wbr>Personal<wbr>Course<wbr>Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpersonalfeed" class="tsd-kind-icon">get<wbr>Personal<wbr>Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getplugins" class="tsd-kind-icon">get<wbr>Plugins</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpossiblementions" class="tsd-kind-icon">get<wbr>Possible<wbr>Mentions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpossibletags" class="tsd-kind-icon">get<wbr>Possible<wbr>Tags</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getprojectcomments" class="tsd-kind-icon">get<wbr>Project<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpropertype" class="tsd-kind-icon">get<wbr>Proper<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#getpropsforsubkey" class="tsd-kind-icon">get<wbr>Props<wbr>For<wbr>Sub<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getranges" class="tsd-kind-icon">get<wbr>Ranges</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getrecentcomments" class="tsd-kind-icon">get<wbr>Recent<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getroleforpossiblemention" class="tsd-kind-icon">get<wbr>Role<wbr>For<wbr>Possible<wbr>Mention</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getsamlrouter" class="tsd-kind-icon">get<wbr>Saml<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getsearchparams" class="tsd-kind-icon">get<wbr>Search<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getsubmission" class="tsd-kind-icon">get<wbr>Submission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getsubscribedplugins" class="tsd-kind-icon">get<wbr>Subscribed<wbr>Plugins</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#gettoken" class="tsd-kind-icon">get<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getuser" class="tsd-kind-icon">get<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getusercomments" class="tsd-kind-icon">get<wbr>User<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getusercourses" class="tsd-kind-icon">get<wbr>User<wbr>Courses</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getuserforpossiblemention" class="tsd-kind-icon">get<wbr>User<wbr>For<wbr>Possible<wbr>Mention</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getusersubmissions" class="tsd-kind-icon">get<wbr>User<wbr>Submissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getusersbycourse" class="tsd-kind-icon">get<wbr>Users<wbr>ByCourse</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#getvalue" class="tsd-kind-icon">get<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#invalidprojectname" class="tsd-kind-icon">invalid<wbr>Project<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#isnotnullfile" class="tsd-kind-icon">is<wbr>Not<wbr>Null<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#isnotnullsnippet" class="tsd-kind-icon">is<wbr>Not<wbr>Null<wbr>Snippet</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ispool" class="tsd-kind-icon">is<wbr>Pool</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ispostgreserror" class="tsd-kind-icon">is<wbr>Postgres<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#istablename" class="tsd-kind-icon">is<wbr>Table<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#issuetoken" class="tsd-kind-icon">issue<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#jitter" class="tsd-kind-icon">jitter</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#jsonbody" class="tsd-kind-icon">json<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#keyinmap" class="tsd-kind-icon">key<wbr>InMap</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#log" class="tsd-kind-icon">log</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#logger" class="tsd-kind-icon">logger</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#main" class="tsd-kind-icon">main</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#makedb" class="tsd-kind-icon">makeDB</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#map" class="tsd-kind-icon">map</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#mentiontoapi" class="tsd-kind-icon">mention<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mergestate" class="tsd-kind-icon">merge<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#nonull" class="tsd-kind-icon">no<wbr>Null</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nonemptyrange" class="tsd-kind-icon">non<wbr>Empty<wbr>Range</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#one" class="tsd-kind-icon">one</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#onlycomment" class="tsd-kind-icon">only<wbr>Comment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pagerefreshed" class="tsd-kind-icon">page<wbr>Refreshed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parsepostgreserrorcode" class="tsd-kind-icon">parse<wbr>Postgres<wbr>Error<wbr>Code</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#permission" class="tsd-kind-icon">permission</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#postjson" class="tsd-kind-icon">post<wbr>Json</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#postwebhook" class="tsd-kind-icon">post<wbr>Webhook</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#preparepublickey" class="tsd-kind-icon">prepare<wbr>Public<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#projecttoolarge" class="tsd-kind-icon">project<wbr>Too<wbr>Large</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#promise" class="tsd-kind-icon">promise</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#prop" class="tsd-kind-icon">prop</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#putjson" class="tsd-kind-icon">put<wbr>Json</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#raisewebhookevent" class="tsd-kind-icon">raise<wbr>Webhook<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#rangesort" class="tsd-kind-icon">range<wbr>Sort</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#rangetostring" class="tsd-kind-icon">range<wbr>ToString</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#rangestostring" class="tsd-kind-icon">ranges<wbr>ToString</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readfile" class="tsd-kind-icon">read<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readfileasstring" class="tsd-kind-icon">read<wbr>File<wbr>AsString</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#refreshcollection" class="tsd-kind-icon">refresh<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#refreshcomments" class="tsd-kind-icon">refresh<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#refreshfeedwithcomments" class="tsd-kind-icon">refresh<wbr>Feed<wbr>With<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#refreshitem" class="tsd-kind-icon">refresh<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#removeitem" class="tsd-kind-icon">remove<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissions" class="tsd-kind-icon">remove<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionscomment" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Comment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionscommentthread" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionscoursepartial" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Course<wbr>Partial</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionscourseuser" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Course<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionsmention" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Mention</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionssearchresultcomments" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Search<wbr>Result<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionssearchresultsnippets" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Search<wbr>Result<wbr>Snippets</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionssubmission" class="tsd-kind-icon">remove<wbr>Permissions<wbr>Submission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removepermissionsuser" class="tsd-kind-icon">remove<wbr>Permissions<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#renamepath" class="tsd-kind-icon">rename<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#requirepermission" class="tsd-kind-icon">require<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#requirepermissions" class="tsd-kind-icon">require<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#requireregistered" class="tsd-kind-icon">require<wbr>Registered</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#requireregisteredcommentthreadid" class="tsd-kind-icon">require<wbr>Registered<wbr>Comment<wbr>ThreadID</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#requireregisteredfileid" class="tsd-kind-icon">require<wbr>Registered<wbr>FileID</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#requireregisteredsubmissionid" class="tsd-kind-icon">require<wbr>Registered<wbr>SubmissionID</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#returncollection" class="tsd-kind-icon">return<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#rolepermtoapi" class="tsd-kind-icon">role<wbr>Perm<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#run" class="tsd-kind-icon">run</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#runmigration" class="tsd-kind-icon">run<wbr>Migration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#search" class="tsd-kind-icon">search</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#searchusers" class="tsd-kind-icon">search<wbr>Users</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#searchify" class="tsd-kind-icon">searchify</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#setcommentthreadvisibility" class="tsd-kind-icon">set<wbr>Comment<wbr>Thread<wbr>Visibility</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#setpermissioncourse" class="tsd-kind-icon">set<wbr>Permission<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#setpermissionglobal" class="tsd-kind-icon">set<wbr>Permission<wbr>Global</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#settokencookie" class="tsd-kind-icon">set<wbr>Token<wbr>Cookie</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#setuser" class="tsd-kind-icon">set<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#setversion" class="tsd-kind-icon">set<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#snippettoapi" class="tsd-kind-icon">snippet<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#snippetsview" class="tsd-kind-icon">snippets<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#submissiontoapi" class="tsd-kind-icon">submission<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#submissionsview" class="tsd-kind-icon">submissions<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#tagtoapi" class="tsd-kind-icon">tag<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#threadtoapi" class="tsd-kind-icon">thread<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#tobig" class="tsd-kind-icon">to<wbr>Big</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tobin" class="tsd-kind-icon">to<wbr>Bin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#todec" class="tsd-kind-icon">to<wbr>Dec</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#transaction" class="tsd-kind-icon">transaction</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#update" class="tsd-kind-icon">update</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updatecourse" class="tsd-kind-icon">update<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updatecourserole" class="tsd-kind-icon">update<wbr>Course<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updateglobalrole" class="tsd-kind-icon">update<wbr>Global<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#updateitem" class="tsd-kind-icon">update<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#updatemodel" class="tsd-kind-icon">update<wbr>Model</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updateplugin" class="tsd-kind-icon">update<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#upgradedatabase" class="tsd-kind-icon">upgrade<wbr>Database</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usecachecollection" class="tsd-kind-icon">use<wbr>Cache<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usecacheitem" class="tsd-kind-icon">use<wbr>Cache<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usecollectionassingle" class="tsd-kind-icon">use<wbr>Collection<wbr>AsSingle</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usecollectioncombined" class="tsd-kind-icon">use<wbr>Collection<wbr>Combined</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecommentthread" class="tsd-kind-icon">use<wbr>Comment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecomments" class="tsd-kind-icon">use<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecourse" class="tsd-kind-icon">use<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecoursefeed" class="tsd-kind-icon">use<wbr>Course<wbr>Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecoursementions" class="tsd-kind-icon">use<wbr>Course<wbr>Mentions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecoursepermission" class="tsd-kind-icon">use<wbr>Course<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecoursesubmissions" class="tsd-kind-icon">use<wbr>Course<wbr>Submissions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecourses" class="tsd-kind-icon">use<wbr>Courses</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecurrentuser" class="tsd-kind-icon">use<wbr>Current<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecurrentuserdirect" class="tsd-kind-icon">use<wbr>Current<wbr>User<wbr>Direct</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usefile" class="tsd-kind-icon">use<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usefilebody" class="tsd-kind-icon">use<wbr>File<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usefilecomments" class="tsd-kind-icon">use<wbr>File<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usefiles" class="tsd-kind-icon">use<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usementions" class="tsd-kind-icon">use<wbr>Mentions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usepermission" class="tsd-kind-icon">use<wbr>Permission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usepersonalfeed" class="tsd-kind-icon">use<wbr>Personal<wbr>Feed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#useprojectcomments" class="tsd-kind-icon">use<wbr>Project<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#userawcache" class="tsd-kind-icon">use<wbr>Raw<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#userecentcomments" class="tsd-kind-icon">use<wbr>Recent<wbr>Comments</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usesubmission" class="tsd-kind-icon">use<wbr>Submission</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetime" class="tsd-kind-icon">use<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#userpartofcommentthread" class="tsd-kind-icon">user<wbr>Part<wbr>OfComment<wbr>Thread</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#usertoapi" class="tsd-kind-icon">user<wbr>ToAPI</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usersview" class="tsd-kind-icon">users<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#validateprojectclient" class="tsd-kind-icon">validate<wbr>Project<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#validateprojectinternal" class="tsd-kind-icon">validate<wbr>Project<wbr>Internal</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#validateprojectserver" class="tsd-kind-icon">validate<wbr>Project<wbr>Server</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#verifytoken" class="tsd-kind-icon">verify<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#windowheight" class="tsd-kind-icon">window<wbr>Height</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#windowsize" class="tsd-kind-icon">window<wbr>Size</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#windowwidth" class="tsd-kind-icon">window<wbr>Width</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#breakpointvalues" class="tsd-kind-icon">breakpoint<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#config" class="tsd-kind-icon">config</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#defaultoptions" class="tsd-kind-icon">default<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#emptycacheproperties" class="tsd-kind-icon">empty<wbr>Cache<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#fileviewer" class="tsd-kind-icon">file<wbr>Viewer</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#migrations" class="tsd-kind-icon">migrations</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-external">
+						<a href="globals.html#noposition" class="tsd-kind-icon">no<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-external">
+						<a href="globals.html#noselection" class="tsd-kind-icon">no<wbr>Selection</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-external">
+						<a href="globals.html#permissionssectionmanage" class="tsd-kind-icon">permissions<wbr>Section<wbr>Manage</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-external">
+						<a href="globals.html#permissionssectionview" class="tsd-kind-icon">permissions<wbr>Section<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#rolenames" class="tsd-kind-icon">role<wbr>Names</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-external">
+						<a href="globals.html#sortingnames" class="tsd-kind-icon">sorting<wbr>Names</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
