@@ -8,13 +8,15 @@ import {FeedbackContent} from "../../feedback/Feedback";
 import {useCourses} from "../../../helpers/api/APIHooks";
 import {FeedbackError} from "../../feedback/FeedbackError";
 import {LabeledInput} from "../../input/LabeledInput";
+import CanvasCourseList from "./CanvasCourseList";
+
 
 export function CourseCreator() {
 	const [courseName, setCourseName] = useState("");
 	const [error, setError] = useState(false as FeedbackContent);
 	const courses = useCourses();
 	const history = useHistory();
-	
+
 	// Create course
 	async function handleSubmission(courseName: string) {
 		try {
@@ -40,5 +42,6 @@ export function CourseCreator() {
 			<Button onClick={() => handleSubmission(courseName)}>Create Course</Button>
 		</LabeledInput>
 		<FeedbackError close={setError}>{error}</FeedbackError>
+		<CanvasCourseList/>
 	</Form>;
 }
