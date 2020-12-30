@@ -3,7 +3,8 @@ import {isPostgresError} from "../../helpers/DatabaseErrorHelper";
 import {pool, end, permissionBits, pgDB} from "../HelperDB";
 
 /**
- * most exported functions in this file, contain the query string for some view of the database
+ * Generating scripts for sample data.
+ * Most exported functions in this file, contain the query string for some view of the database
  * By calling these functions, the respective query can be inserted into some string at the callee's end.
  * parameters given to these functions replace tables `FROM` which data is pulled.
  * this can be used to allow the data from an insert or update to be utilized in the respective view

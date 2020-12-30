@@ -105,7 +105,7 @@
 					<div class="tsd-signature tsd-kind-icon">refresh<wbr>Cookie<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RequestHandler</span><span class="tsd-signature-symbol"> = captureNext(async(request, response, next) &#x3D;&gt; {if (request.cookies.atelierToken) {try {const token &#x3D; await verifyToken&lt;{userID: string}&gt;(request.cookies.atelierToken);// The JWT expiration is stored in seconds, Date.now() in millisecondsif (token.iat * 1000 + 600000 &lt; Date.now()) {await setTokenCookie(response, token.userID);}} catch (err) {// Ignore AuthErrors, if auth is required for the route,// it will be handled in requireAuthif (!(err instanceof AuthError)) {throw err;}}}next();})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/creativeprogrammingatelier/atelier/blob/13d1453c/api/src/middleware/AuthMiddleware.ts#L12">home/andrew/git/atelier/api/src/middleware/AuthMiddleware.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/creativeprogrammingatelier/atelier/blob/797c53c1/api/src/middleware/AuthMiddleware.ts#L12">home/andrew/git/atelier/api/src/middleware/AuthMiddleware.ts:12</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -120,7 +120,7 @@
 					<div class="tsd-signature tsd-kind-icon">require<wbr>Auth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RequestHandler</span><span class="tsd-signature-symbol"> = captureNext(async(request, _response, next) &#x3D;&gt; {const token &#x3D; getToken(request);if (!token) {next(new AuthError(&quot;token.notProvided&quot;, &quot;No token was provided with this request. You&#x27;re probably not logged in.&quot;));} else {await verifyToken(token);next();}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/creativeprogrammingatelier/atelier/blob/13d1453c/api/src/middleware/AuthMiddleware.ts#L32">home/andrew/git/atelier/api/src/middleware/AuthMiddleware.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/creativeprogrammingatelier/atelier/blob/797c53c1/api/src/middleware/AuthMiddleware.ts#L32">home/andrew/git/atelier/api/src/middleware/AuthMiddleware.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

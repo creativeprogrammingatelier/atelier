@@ -3,7 +3,7 @@ import {UUIDHelper} from "../helpers/UUIDHelper";
 import {pool, extract, map, checkAvailable, one, pgDB} from "./HelperDB";
 
 /**
- * inviteID, userID, courseID, type, joinRole
+ * Class with methods for providing course invites. 
  */
 export class CourseInviteDB {
 	static async filterInvite(invite: CourseInvite) {

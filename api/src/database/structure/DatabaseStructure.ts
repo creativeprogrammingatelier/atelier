@@ -6,6 +6,10 @@ import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, TagsView, CourseUsersViewAll} from "../ViewsDB";
 import {databaseSamples} from "./DatabaseSamples";
 
+/**
+ * Contains Script to generate database structure
+ */
+
 // IMPORTANT
 // If you make any changes to the database schema, please upgrade the version number
 // and create a migration in the DatabaseMigrations file to update running Atelier 

@@ -8,6 +8,7 @@ import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTo
 import {commentsView} from "./ViewsDB";
 
 /**
+ * Method attached to select statements to get information regarding comments from the database. 
  * commentID, commentThreadID, userID, created, edited, body
  * @Author Rens Leendertz
  */
@@ -47,7 +48,7 @@ export class CommentDB {
 	}
 
 	/**
-	 * all functions below are for a this table only
+	 * All functions below are for this table (comments) only
 	 */
 	static async getAllComments(params: DBTools = {}) {
 		return CommentDB.filterComment(params);

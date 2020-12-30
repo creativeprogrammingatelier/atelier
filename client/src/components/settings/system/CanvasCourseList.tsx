@@ -1,5 +1,5 @@
 import React from "react"
-import { Form } from "react-bootstrap"
+import { Button, Form } from "react-bootstrap"
 import { LabeledInput } from "../../input/LabeledInput"
 
 
@@ -25,14 +25,39 @@ export default class CanvasCourseList extends React.Component<any, IStateCanvasC
     }
     this.setState({
       options: newOptions
-    })
+    })  
   }
+  getDataTest(){
+    const https = require('https');
 
+    const httpsAgent = new https.Agent({ keepAlive: true });
+
+    const axios = require('axios');
+    const config = {
+    
+      httpsAgent,
+      headers: {"Access-Control-Allow-Origin": "*"},
+  
+    }
+    axios.get(  'https://utwente-dev.instructure.com/api/v1/courses/117/users',config)
+  .then(function (response) {
+    // handle success
+    console.log(response);
+  })
+  .catch(function (error) {
+    // handle error
+    console.log(error);
+  })
+
+  }
   render() {  
     return 	<LabeledInput label ="Canvas Course Link">
     <Form.Control as="select" custom>
       {(this.state.options!= null)? this.state.options : ""}
     </Form.Control>
+    <Button onClick={() => this.getDataTest()}/>
+
   </LabeledInput>
+
   }
 }

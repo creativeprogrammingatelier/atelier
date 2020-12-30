@@ -5,7 +5,7 @@ import {removeItem, addItem} from "../../../helpers/EnumHelper";
 import {pool, extract, map, one, toBin, pgDB} from "./HelperDB";
 
 /**
- * interface for interacting with role permissions
+ * Interface for interacting with role permissions
  * @Author Rens Leendertz
  */
 export class CourseRoleDB {

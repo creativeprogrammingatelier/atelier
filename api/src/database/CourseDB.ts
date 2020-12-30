@@ -9,6 +9,7 @@ import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify, toBin
 import {CoursesView} from "./ViewsDB";
 
 /**
+ * Methods for accessing and altering the course table in the database. 
  * @Author Rens Leendertz
  */
 export class CourseDB {
@@ -21,12 +22,16 @@ export class CourseDB {
 	}
 	
 	/**
-	 * One
+	 * fetches a single course with a given id 
 	 */
 	static async getCourseByID(courseID: string, client: pgDB = pool) {
 		return CourseDB.filterCourse({courseID, client}).then(one);
 	}
 	
+	/**
+	 * Selects a course from the course view using a course and a user object to check access.
+	 * @param course 
+	 */
 	static async filterCourse(course: Course & User) {
 		const {
 			courseID = undefined,
@@ -73,7 +78,7 @@ export class CourseDB {
 	}
 	
 	/**
-	 * One
+	 * Adds a single course to the course table.
 	 */
 	static async addCourse(course: Course) {
 		checkAvailable(["courseName", "state", "creatorID"], course);
@@ -99,7 +104,9 @@ export class CourseDB {
 			});
 	}
 	
-	/** @TODO instead of being registered, check the permissions of a user
+	/** 
+	 * Searches for a course given a search string. 
+	 * @TODO instead of being registered, check the permissions of a user
 	 */
 	static async searchCourse(searchString: string, extras: Course & User) {
 		const {
@@ -163,7 +170,7 @@ export class CourseDB {
 	}
 	
 	/**
-	 * One
+	 * Deletes a single course from the database using a course id
 	 */
 	static async deleteCourseByID(courseID: string, client: pgDB = pool) {
 		const courseid = UUIDHelper.toUUID(courseID);
@@ -179,7 +186,7 @@ export class CourseDB {
 	}
 	
 	/**
-	 * One
+	 * updates a single course
 	 */
 	static async updateCourse(course: Course) {
 		checkAvailable(["courseID"], course);

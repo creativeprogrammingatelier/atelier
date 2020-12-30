@@ -1,11 +1,17 @@
 import { MetadataDB } from "../MetadataDB";
 import { pgDB, transaction } from "../HelperDB";
 import { dropViewQueries, createViewQueries } from "./DatabaseStructure";
+/**
+ * Database Migrations - Contains function for permforming database migrations including upgrading of the database.
+ */
 
 interface Migrations { 
     [version: number]: (client: pgDB) => Promise<void> 
 }
 
+/**
+ * Defined migrations
+ */
 const migrations: Migrations = {
     // Adds automated and sharedBy fields to CommentThread, to distinguish automated
     // comments and add the ability to show the user that made such a comment public
@@ -47,7 +53,9 @@ const migrations: Migrations = {
         // There is no previous version, so this should never run
     }
 }
-
+/**
+ * Upgrades the database to newer version
+ */
 export async function upgradeDatabase() {
     const version = await getCurrentVersion();
     const migrationVersions =
@@ -71,6 +79,11 @@ export async function upgradeDatabase() {
     });
 }
 
+/**
+ * Allows for the performing of migrations based on the previously defined possible migrations
+ * @param version 
+ * @param client 
+ */
 async function runMigration(version: number, client: pgDB) {
     const migrate = migrations[version];
     if (migrate !== undefined) {
@@ -86,12 +99,19 @@ async function runMigration(version: number, client: pgDB) {
         throw new Error(`Database migration to version ${version} does not exist.`);
     }
 }
-
+/**
+ * 
+ * @param client Getter for current version
+ */
 async function getCurrentVersion(client?: pgDB) {
     const version = await MetadataDB.get("version", client);
     return Number(version);
 }
-
+/**
+ * Setter for version 
+ * @param version 
+ * @param client 
+ */
 async function setVersion(version: number, client: pgDB) {
     await MetadataDB.set("version", version.toFixed(0), client);
 }
