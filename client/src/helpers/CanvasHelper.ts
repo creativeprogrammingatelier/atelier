@@ -15,4 +15,9 @@ export class CanvasHelper {
         return response.json();
     }
 
+    static async createLink(){
+        const response = await Fetch.fetch("/api/canvas/link");
+        return response.json();
+    }
+
 }

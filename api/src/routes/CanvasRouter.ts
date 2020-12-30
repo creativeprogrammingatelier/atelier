@@ -9,7 +9,6 @@ import { UserDB } from "../database/UserDB";
 import { User } from "../../../models/database/User";
 import { Fetch } from "../../../client/src/helpers/api/FetchHelper";
 
-
 export const canvasRouter = express.Router();
 canvasRouter.use(AuthMiddleware.requireAuth);
 
@@ -30,5 +29,17 @@ canvasRouter.delete("/link", capture(async (request: Request, response: Response
    Fetch.fetch("https://utwente-dev.instructure.com/login/oauth2/token",{method:"delete"});
    response.status(200).send(res)
 }));
+
+canvasRouter.get("/link", capture(async (request: Request, response: Response) => {
+    let client_id = "182170000000000107";
+    response.redirect(`https:///utwente-dev.instructure.com/login/oauth2/auth?client_id=${client_id}&response_type=code&state=YYY&redirect_uri=https://localhost/api/canvas/oauth_complete`)
+
+ }));
+
+ canvasRouter.get("/oauth_complete", capture(async (request: Request, response: Response) => {
+    console.log("returned");
+    response.redirect('/account');
+ }));
+ 
 
 

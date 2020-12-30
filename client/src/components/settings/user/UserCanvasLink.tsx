@@ -45,7 +45,7 @@ export default class UserCanvasLink extends React.Component<any, any> {
 	}
 
 	private linkCanvas = () => { 
-		
+		CanvasHelper.createLink().then(res => this.setState({linked: res.linked	}))
 	}
 
 	/**
