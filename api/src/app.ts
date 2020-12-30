@@ -32,6 +32,7 @@ import {submissionRouter} from './routes/SubmissionRouter';
 import {permissionRouter} from './routes/PermissionRouter';
 import {pluginRouter} from './routes/PluginRouter';
 import {userRouter} from './routes/UserRouter';
+import { canvasRouter } from './routes/CanvasRouter';
 
 /**
  * The main file of express.js app
@@ -92,6 +93,7 @@ app.use('/api/role', roleRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/user', userRouter);
+app.use('/api/canvas', canvasRouter)
 
 // Give a 404 in case the API route does not exist
 app.all('/api/*', (_, response) => response.status(404).send({

@@ -132,16 +132,6 @@ pluginRouter.delete("/:userID", capture(async(request, response) => {
 	response.send(user);
 }));
 
-/** Canvas plugin should be moved.  TODO Need to request changed to API enpoint on canvas */
 
-pluginRouter.get("/canvas/openid", capture(async (request, response) => {
-	response.send({"message": "test_route_openid"})
-}));
-
-
-
-pluginRouter.get("/canvas/redirect", capture(async (request, response) => {
-	response.send({"message": "test_redirect"})
-}));
 
 

@@ -141,7 +141,8 @@ CREATE TABLE "Users" (
 	email          text NOT NULL UNIQUE CHECK (email <> ''),
 	globalRole     text NOT NULL REFERENCES "GlobalRolePermissions"(globalRoleID) DEFAULT 'unregistered',
 	permission     bit(${permissionBits}) NOT NULL,
-    hash           char(60) NOT NULL,
+	hash           char(60) NOT NULL,
+	canvas_refresh text UNIQUE,
     researchAllowed boolean -- can be null, if the user has not responded yet
 );
 
