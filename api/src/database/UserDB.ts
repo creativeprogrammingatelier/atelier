@@ -185,7 +185,7 @@ export class UserDB {
 			permission = undefined,
             userName = undefined,
             researchAllowed = undefined,
-			
+			canvasrefresh = undefined,
 			client = pool
 		} = user;
 		const userid = UUIDHelper.toUUID(userID);
@@ -200,12 +200,13 @@ export class UserDB {
 			userName = COALESCE($4, userName),
 			globalRole = COALESCE($5, globalRole),
             permission = COALESCE($6, permission),
-            researchAllowed = COALESCE($7, researchAllowed)
+			researchAllowed = COALESCE($7, researchAllowed),
+			canvasrefresh = COALESCE($8, canvasrefresh)
 			WHERE userID = $1
 			RETURNING *
 		)
 		${usersView("update")}
-			`, [userid, email, hash, userName, role, binPerm, researchAllowed])
+			`, [userid, email, hash, userName, role, binPerm, researchAllowed, canvasrefresh])
 			.then(extract).then(map(userToAPI)).then(one)
 	}
 	

@@ -1,12 +1,13 @@
 import { capture } from "../helpers/ErrorHelper";
 import express, {Request, Response} from "express";
-import {User} from "../../../models/api/User";
 
 
 
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import { getCurrentUserID } from "../helpers/AuthenticationHelper";
 import { UserDB } from "../database/UserDB";
+import { User } from "../../../models/database/User";
+import { Fetch } from "../../../client/src/helpers/api/FetchHelper";
 
 
 export const canvasRouter = express.Router();
@@ -14,10 +15,20 @@ canvasRouter.use(AuthMiddleware.requireAuth);
 
 canvasRouter.get("/linked", capture(async (request: Request, response: Response) => {
     const userID: string = await getCurrentUserID(request);
-    const user: User = await UserDB.getUserByID(userID);
-    let linked: boolean = (user.canvasrefresh != null)? true : false;
-    response.status(200).send(linked);
+    const user: any = await UserDB.getUserByID(userID);
+    let linked: boolean = (user.canvasrefresh != null && user.canvasrefresh != "")? true : false;
+    response.json({linked: linked});
 }));
 
+canvasRouter.delete("/link", capture(async (request: Request, response: Response) => {
+   console.log("deletion requested")
+   const userID: string = await getCurrentUserID(request);
+   const user: any = await UserDB.getUserByID(userID);
+   let newUser = {userID:userID, canvasrefresh:""}
+   let res = await UserDB.updateUser(newUser);
+   //TODO check this works
+   Fetch.fetch("https://utwente-dev.instructure.com/login/oauth2/token",{method:"delete"});
+   response.status(200).send(res)
+}));
 
 

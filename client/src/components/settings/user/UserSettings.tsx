@@ -14,6 +14,7 @@ export function UserSettings() {
 		</Jumbotron>
 		<DataList header="User Details">
 			<UserSettingsGeneral/>
+			<br/>
 			<UserCanvasLink/>
 		</DataList>
 

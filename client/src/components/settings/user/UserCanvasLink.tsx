@@ -1,5 +1,5 @@
 import React, {useState, Fragment, useEffect} from "react";
-import {Button, Form} from "react-bootstrap";
+import {Button, Form, FormLabel} from "react-bootstrap";
 
 import {CourseUser} from "../../../../../models/api/CourseUser";
 import {User} from "../../../../../models/api/User";
@@ -45,27 +45,29 @@ export default class UserCanvasLink extends React.Component<any, any> {
 	}
 
 	private linkCanvas = () => { 
-		//Check has Refresh token
+		
 	}
 
+	/**
+	 * Remove Link to canvas
+	 */
 	private unlinkCanvas = () => { 
-		//Check has Refresh token
+		CanvasHelper.removeLink().then(res => this.setState({linked: false}))
 	}
 
 	/**
 	 * Check if account has already been linked
 	 */
 	private checkLinkedCanvas() { 
-		
-		CanvasHelper.getLinked().then(res => {console.log(res);this.setState({linked: res.body})})
+		CanvasHelper.getLinked().then(res => this.setState({linked: res.linked	}))
 	}
 	render(){
 		return (
 			<Form>
-				<LabeledInput label="Canvas Link">
+				<FormLabel><p className="label">Canvas Link</p></FormLabel> <br/>
+					Linking Allows Atelier to Access your canvas data.<br/>
 					<Button onClick={this.linkCanvas} disabled={this.state.linked} >Link</Button>
-					<Button onClick={this.unlinkCanvas} disabled={this.state.linked}>Unlink</Button>
-				</LabeledInput>
+					<Button onClick={this.unlinkCanvas} disabled={!this.state.linked}>Unlink</Button>
 			</Form>
 		);
 	}
