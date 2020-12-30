@@ -34,6 +34,8 @@ export interface DBCourseUser {
 	globalrole: string,
 	courserole: string,
 	permission: string,
+
+	canvasrefresh: string
 }
 
 export function convertCourseUser(db: DBCourseUser): CourseUserOutput {
@@ -59,7 +61,8 @@ export function CourseUserToAPI(db: DBCourseUser): APICourseUser {
 			globalRole: getEnum(GlobalRole, db.globalrole),
 			courseRole: getEnum(CourseRole, db.courserole),
 			permissions: toDec(db.permission)
-		}
+		},
+		canvasrefresh: db.canvasrefresh
 	};
 }
 export function CourseUserToUser(cu: APICourseUser): User {
@@ -67,6 +70,7 @@ export function CourseUserToUser(cu: APICourseUser): User {
 		ID: cu.userID,
 		name: cu.userName,
 		email: cu.email,
-		permission: cu.permission
+		permission: cu.permission,
+		canvasrefresh: cu.canvasrefresh
 	};
 }

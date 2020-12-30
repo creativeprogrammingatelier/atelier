@@ -5,5 +5,6 @@ export interface User {
 	name: string,
 	email: string,
     permission: Permission,
-    researchAllowed?: boolean
+	researchAllowed?: boolean,
+	canvasrefresh: string
 }

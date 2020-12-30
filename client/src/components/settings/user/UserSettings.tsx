@@ -3,6 +3,7 @@ import {Jumbotron} from "react-bootstrap";
 
 import {DataList} from "../../data/DataList";
 import {Frame} from "../../frame/Frame";
+import UserCanvasLink from "./UserCanvasLink";
 import {UserSettingsGeneral} from "./UserSettingsGeneral";
 
 export function UserSettings() {
@@ -13,6 +14,8 @@ export function UserSettings() {
 		</Jumbotron>
 		<DataList header="User Details">
 			<UserSettingsGeneral/>
+			<UserCanvasLink/>
 		</DataList>
+
 	</Frame>;
 }

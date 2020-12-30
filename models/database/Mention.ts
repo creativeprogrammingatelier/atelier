@@ -64,7 +64,7 @@ export interface DBMention {
 	globalrole: string | undefined,
 	courserole: string | undefined,
 	permission: string | undefined,
-	
+	canvasrefresh: string,
 	cmuuserid: string,
 	cmuusername: string,
 	cmuemail: string,
@@ -130,7 +130,8 @@ export function mentionToAPI(db: DBMention): APIMention {
 				globalRole: getEnum(GlobalRole, noNull(db.globalrole)),
 				courseRole: getEnum(CourseRole, noNull(db.courserole)),
 				permissions: toDec(noNull(db.permission))
-			}
+			},
+			canvasrefresh: db.canvasrefresh,
 		};
 	}
 	const dbcommentObject: DBAPIComment = {
@@ -139,6 +140,7 @@ export function mentionToAPI(db: DBMention): APIMention {
 		username: db.cmuusername,
 		email: db.cmuemail,
 		globalrole: db.cmuglobalrole,
+		canvasrefresh: db.canvasrefresh,
 		permission: db.cmupermission,
 		body: db.body,
 		created: db.created,

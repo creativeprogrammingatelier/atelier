@@ -6,7 +6,8 @@ export interface CourseUser {
 	courseID: string,
 	userName: string,
 	email: string,
-	permission: Permission
+    permission: Permission,
+    canvasrefresh: string
 }
 
 export function courseUserToUser(cu: CourseUser): User {
@@ -14,6 +15,7 @@ export function courseUserToUser(cu: CourseUser): User {
         ID: cu.userID,
         name: cu.userName,
         email: cu.email,
-        permission: cu.permission
+        permission: cu.permission,
+        canvasrefresh: cu.canvasrefresh
     }
 }

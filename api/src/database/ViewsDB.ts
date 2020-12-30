@@ -13,7 +13,8 @@ export function usersView(userTable = `"Users"`) {
 			userName, 
 			email,
             globalRole,
-            researchAllowed,
+			researchAllowed,
+			canvasrefresh,
 			permission | (
 				SELECT permission 
 				FROM "GlobalRolePermissions" 

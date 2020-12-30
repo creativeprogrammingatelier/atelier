@@ -41,7 +41,7 @@ export interface DBTag {
 	cmuemail: string,
 	cmuglobalrole: string,
 	cmupermission: string,
-
+	cmucanvasrefresh: string,
 	submtitle: string,
 	coursename: string
 }
@@ -69,6 +69,7 @@ export function tagToAPI(db: DBTag): APITag {
 		userid: db.cmuuserid,
 		username: db.cmuusername,
 		email: db.cmuemail,
+		canvasrefresh: db.cmucanvasrefresh,
 		globalrole: db.cmuglobalrole,
 		permission: db.cmupermission,
 		body: db.body,

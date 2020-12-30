@@ -49,6 +49,7 @@ export interface DBThread {
     sharedByGlobalRole?: string,
     sharedByCourseRole?: string,
     sharedByPermission?: string,
+    sharedBycanvasrefresh?: string
 }
 
 export {APIThread};
@@ -96,13 +97,13 @@ export function threadToAPI(db: DBAPIThread): APIThread {
                 globalRole: getEnum(GlobalRole, db.sharedByGlobalRole!),
                 courseRole: getEnum(CourseRole, db.sharedByCourseRole!),
                 permissions: toDec(db.sharedByPermission!)
-            }
+            },
+            canvasrefresh : db.sharedBycanvasrefresh!
         },
 		comments: [],
 		references: {
 			courseID: UUIDHelper.fromUUID(db.courseid),
 			submissionID: UUIDHelper.fromUUID(db.submissionid)
-			
 		}
 	};
 	if (!isNotNullSnippet(obj.snippet)) {
