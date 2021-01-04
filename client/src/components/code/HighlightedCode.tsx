@@ -88,8 +88,6 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 			}
 			if (topPriority) {
 				topPriority.onClick();
-				hasMoved = false
-				topPriority = undefined;
 			}
 		}
 	};
