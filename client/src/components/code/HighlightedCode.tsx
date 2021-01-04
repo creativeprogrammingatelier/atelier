@@ -20,7 +20,6 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 	const [click, setClick] = useState(noPosition);
 	let hasMoved: Boolean = false;
-	let topPriority: SnippetHighlight | undefined = undefined;
 	
 	/**
 	 * Highlights comments passed to the code viewer.
@@ -68,8 +67,17 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 	useEffect(setCommentHighlights, [codeMirror, snippets]);
 	
 	const handleDown = () => {
-		if (snippets && !selecting && click !== noPosition) {
-			
+		hasMoved = false;	
+	};
+
+	const handleMove  = () => {
+		hasMoved = true
+	};
+
+	const handleUp = () => {
+		if (!hasMoved && snippets && !selecting && click !== noPosition) {
+			let topPriority: SnippetHighlight | undefined = undefined;
+
 			// Find the topPriority snippet matching the click location
 			for (const snippet of snippets) {
 				if (SelectionHelper.in(snippet, click)) {
@@ -78,15 +86,6 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 					}
 				}
 			}
-		}
-	};
-
-	const handleMove  = () => {
-		hasMoved = true
-	};
-
-	const handleUp = () => {
-		if (!hasMoved) {
 			if (topPriority) {
 				topPriority.onClick();
 				hasMoved = false
