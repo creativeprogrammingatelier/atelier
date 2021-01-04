@@ -30,6 +30,10 @@ export function CourseCreator() {
 			setError(`Failed to create new course: ${error}`);
 		}
 	}
+
+	function linkCanvasCourse(courseId: string) { 
+		console.log(courseId)
+	}
 	
 	return <Form>
 		<LabeledInput label="Course name">
@@ -42,6 +46,6 @@ export function CourseCreator() {
 			<Button onClick={() => handleSubmission(courseName)}>Create Course</Button>
 		</LabeledInput>
 		<FeedbackError close={setError}>{error}</FeedbackError>
-		<CanvasCourseList/>
+		<CanvasCourseList onLinkCanvasCourse = {linkCanvasCourse}	/>
 	</Form>;
 }
