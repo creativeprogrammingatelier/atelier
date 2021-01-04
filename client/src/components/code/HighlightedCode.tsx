@@ -1,4 +1,4 @@
-import React, {useEffect, useState, MouseEvent} from "react";
+import React, {useEffect, useState} from "react";
 import {Controlled as CodeMirror} from "react-codemirror2";
 
 import {noPosition, Snippet} from "../../../../models/api/Snippet";
