@@ -45,7 +45,12 @@ export default class UserCanvasLink extends React.Component<any, any> {
 	}
 
 	private linkCanvas = () => { 
-		CanvasHelper.createLink().then(res => this.setState({linked: res.linked	}))
+		CanvasHelper.createLink().then(res => {
+			window.location.href = res.redirect;
+			this.setState({linked: res.linked	})
+			
+			
+		})
 	}
 
 	/**
@@ -59,7 +64,9 @@ export default class UserCanvasLink extends React.Component<any, any> {
 	 * Check if account has already been linked
 	 */
 	private checkLinkedCanvas() { 
-		CanvasHelper.getLinked().then(res => this.setState({linked: res.linked	}))
+		CanvasHelper.getLinked().then(res => 
+			this.setState({linked: res.linked})
+			)
 	}
 	render(){
 		return (

@@ -69,7 +69,7 @@ export async function getCurrentUserID(request: Request) {
 export async function setTokenCookie(response: Response, userID: string) {
 	const options: CookieOptions = {
 		secure: config.env === "production",
-		sameSite: "strict"
+		sameSite: "lax"
 	};
 	const token = issueToken(userID);
 	const exp = (await verifyToken(token)).exp;

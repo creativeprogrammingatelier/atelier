@@ -16,7 +16,7 @@ export class CanvasHelper {
     }
 
     static async createLink(){
-        const response = await Fetch.fetch("/api/canvas/link");
+        const response = await Fetch.fetch("/api/canvas/link",{redirect: 'follow'});
         return response.json();
     }
 
