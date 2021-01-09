@@ -4,9 +4,9 @@ import {CourseInvite} from "../../../models/api/Invite";
 import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {requirePermission} from "../helpers/PermissionHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {requirePermission} from "../database/helpers/PermissionHelper";
 
 import {CourseInviteDB} from "../database/CourseInviteDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";

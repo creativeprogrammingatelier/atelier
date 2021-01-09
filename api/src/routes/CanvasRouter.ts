@@ -1,11 +1,11 @@
-import { capture } from "../helpers/ErrorHelper";
+import { capture } from "../database/helpers/ErrorHelper";
 import express, {Request, Response} from "express";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import { getCurrentUserID } from "../helpers/AuthenticationHelper";
+import { getCurrentUserID } from "../database/helpers/AuthenticationHelper";
 import { UserDB } from "../database/UserDB";
 import { User } from "../../../models/database/User";
 import { Fetch } from "../../../client/src/helpers/api/FetchHelper";
-import {createRefreshToken, deleteCanvasLink, getAccessToken, getCourses, getRefreshToken, setUpCanvasLinkJson} from "../helpers/CanvasHelper";
+import {createRefreshToken, deleteCanvasLink, getAccessToken, getCourses, getRefreshToken, setUpCanvasLinkJson} from "../database/helpers/CanvasHelper";
 //Move all fetches to helper
 
 export const canvasRouter = express.Router();

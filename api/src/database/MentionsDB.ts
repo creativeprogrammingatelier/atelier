@@ -1,6 +1,6 @@
 import {Mention, mentionToAPI} from "../../../models/database/Mention";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {MissingFieldDatabaseError} from "./DatabaseErrors";
 import {pool, DBTools, extract, map, one, checkAvailable} from "./HelperDB"

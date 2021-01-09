@@ -1,4 +1,4 @@
-import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
+import {UUIDHelper} from "../../api/src/database/helpers/UUIDHelper";
 import {DBTools} from "../../api/src/database/HelperDB";
 
 export interface PluginHook {

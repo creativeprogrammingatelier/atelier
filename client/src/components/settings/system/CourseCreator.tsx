@@ -13,16 +13,18 @@ import CanvasCourseList from "./CanvasCourseList";
 
 export function CourseCreator() {
 	const [courseName, setCourseName] = useState("");
+	const [canvasCourseId, setCanvasCourseId] = useState("");
 	const [error, setError] = useState(false as FeedbackContent);
 	const courses = useCourses();
 	const history = useHistory();
 
 	// Create course
-	async function handleSubmission(courseName: string) {
+	async function handleSubmission(courseName: string, canvasCourseId: string) {
 		try {
 			const course = await courses.create({
 				name: courseName,
-				state: CourseState.open
+				state: CourseState.open,
+				canvasCourseId:  canvasCourseId
 			});
 			setCourseName("");
 			history.push(`/course/${course.ID}/settings`);
@@ -32,7 +34,7 @@ export function CourseCreator() {
 	}
 
 	function linkCanvasCourse(courseId: string) { 
-		console.log(courseId)
+		setCanvasCourseId(courseId)
 	}
 	
 	return <Form>
@@ -41,9 +43,9 @@ export function CourseCreator() {
 				type="text"
 				placeholder="Course name"
 				value={courseName}
-				onChange={(event: React.ChangeEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value)}
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value,)}
 			/>
-			<Button onClick={() => handleSubmission(courseName)}>Create Course</Button>
+			<Button onClick={() => handleSubmission(courseName, canvasCourseId)}>Create Course</Button>
 		</LabeledInput>
 		<FeedbackError close={setError}>{error}</FeedbackError>
 		<CanvasCourseList onLinkCanvasCourse = {linkCanvasCourse}	/>

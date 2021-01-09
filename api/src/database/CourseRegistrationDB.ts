@@ -4,7 +4,7 @@ import {coursePartialToAPI} from "../../../models/database/Course";
 import {APICourseUser, CourseUser, CourseUserToAPI} from "../../../models/database/CourseUser";
 import {User} from "../../../models/database/User";
 
-import {ID64, UUIDHelper} from "../helpers/UUIDHelper";
+import {ID64, UUIDHelper} from "./helpers/UUIDHelper";
 
 import {InvalidDatabaseResponseError} from "./DatabaseErrors";
 import {checkAvailable, DBTools, extract, map, noNull, one, permissionBits, pool, searchify, toBin} from "./HelperDB";

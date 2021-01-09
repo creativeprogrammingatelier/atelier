@@ -1,6 +1,6 @@
 import {RequestHandler} from "express";
-import {verifyToken, getToken, AuthError, setTokenCookie} from "../helpers/AuthenticationHelper";
-import {captureNext} from "../helpers/ErrorHelper";
+import {verifyToken, getToken, AuthError, setTokenCookie} from "../database/helpers/AuthenticationHelper";
+import {captureNext} from "../database/helpers/ErrorHelper";
 
 /**
  * Middleware for checking user authentication and authorization

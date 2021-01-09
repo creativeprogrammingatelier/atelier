@@ -349,7 +349,7 @@ function useCurrentUserDirect(): () => User {
 
 // API Hooks
 ////////////
-export function useCourses(): Refresh<Course> & Create<[{ name: string, state: CourseState }], Course> {
+export function useCourses(): Refresh<Course> & Create<[{ name: string, state: CourseState, canvasCourseId: string }], Course> {
 	const courses = useCacheCollection<Course>("courses", {
 		sort: (a, b) =>
 			// Sort by open first, then by name
@@ -363,15 +363,15 @@ export function useCourses(): Refresh<Course> & Create<[{ name: string, state: C
 		observable: courses.observable,
 		refresh: () => refreshCollection(API.getCourses(), courses),
 		defaultTimeout: 2 * 3600,
-		create: ({name, state}: { name: string, state: CourseState }) =>
+		create: ({name, state, canvasCourseId}: { name: string, state: CourseState, canvasCourseId: string }) =>
 			create(
-				API.createCourse({name, state}),
-				{ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission},
+				API.createCourse({name, state, canvasCourseId}),
+				{ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission, canvasCourseId: canvasCourseId},
 				courses
 			)
 	};
 }
-export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: string, state?: CourseState }], Course> & Delete<[], Course> {
+export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: string, state?: CourseState, canvasCourseId?: string }], Course> & Delete<[], Course> {
 	const courses = useCacheCollection<Course>("courses", {
 		subKey: courseID,
 		filter: course => course?.ID === courseID
@@ -381,9 +381,9 @@ export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: 
 		observable: course,
 		defaultTimeout: 0,
 		refresh: () => refreshCollection(API.getCourse(courseID), courses),
-		update: ({name, state}: { name?: string, state?: CourseState }) =>
+		update: ({name, state, canvasCourseId}: { name?: string, state?: CourseState, canvasCourseId?: string }) =>
 			update(
-				API.updateCourse(courseID, {name, state}),
+				API.updateCourse(courseID, {name, state, canvasCourseId}),
 				{ID: courseID, name, state},
 				courses
 			),

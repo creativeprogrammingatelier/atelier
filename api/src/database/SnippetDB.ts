@@ -4,7 +4,7 @@ import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet} from '../../..
 import {submissionToAPI} from "../../../models/database/Submission";
 import {Sorting} from "../../../models/enums/SortingEnum";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, searchify, doIf} from "./HelperDB";
 import {snippetsView} from "./ViewsDB";

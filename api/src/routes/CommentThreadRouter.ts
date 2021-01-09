@@ -4,13 +4,13 @@ import {CommentThread, CreateCommentThread} from "../../../models/api/CommentThr
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {ThreadState} from "../../../models/enums/ThreadStateEnum";
 
-import {filterCommentThread, removePermissionsCommentThread} from "../helpers/APIFilterHelper";
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {filterCommentThread, removePermissionsCommentThread} from "../database/helpers/APIFilterHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
 import {commentThreadOwner} from "../../../helpers/CommentThreadHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {getFilePathOnDisk, readFileAsString} from '../helpers/FilesystemHelper';
-import {createMentions} from '../helpers/MentionsHelper';
-import {requirePermission, requireRegisteredCommentThreadID, requireRegisteredFileID, requireRegisteredSubmissionID, requireRegistered} from "../helpers/PermissionHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {getFilePathOnDisk, readFileAsString} from '../database/helpers/FilesystemHelper';
+import {createMentions} from '../database/helpers/MentionsHelper';
+import {requirePermission, requireRegisteredCommentThreadID, requireRegisteredFileID, requireRegisteredSubmissionID, requireRegistered} from "../database/helpers/PermissionHelper";
 import {getContextLines} from '../../../helpers/SnippetHelper';
 
 import {CommentDB} from "../database/CommentDB";
@@ -19,8 +19,8 @@ import {pgDB, transaction} from "../database/HelperDB";
 import {SnippetDB} from "../database/SnippetDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {createTags} from "../helpers/TagsHelper";
-import { getCommonQueryParams } from "../helpers/ParamsHelper";
+import {createTags} from "../database/helpers/TagsHelper";
+import { getCommonQueryParams } from "../database/helpers/ParamsHelper";
 
 /**
  * Api routes relating to comment threads

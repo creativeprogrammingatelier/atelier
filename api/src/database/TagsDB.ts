@@ -1,6 +1,6 @@
 import {Tag, tagToAPI} from "../../../models/database/Tag";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {pool, extract, map, one, checkAvailable} from "./HelperDB"
 import {TagsView} from "./ViewsDB";

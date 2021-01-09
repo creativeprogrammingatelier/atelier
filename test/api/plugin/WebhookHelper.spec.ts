@@ -3,7 +3,7 @@ import crypto from "crypto";
 import "mocha";
 
 import {WebhookEvent} from "../../../models/enums/WebhookEventEnum";
-import {createWebhookRequest} from "../../../api/src/helpers/WebhookHelper";
+import {createWebhookRequest} from "../../../api/src/database/helpers/WebhookHelper";
 import {plugin} from "./Plugin";
 
 describe("WebhookHelper.createWebhookRequest", () => {

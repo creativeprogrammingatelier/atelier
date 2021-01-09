@@ -2,7 +2,7 @@ import {File} from "../../../models/database/File";
 import {Snippet} from "../../../models/database/Snippet";
 import {Thread, convertThread, APIThread, threadToAPI} from "../../../models/database/Thread";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {CommentDB} from "./CommentDB";
 import {pool, extract, map, one, pgDB, checkAvailable, keyInMap, DBTools} from "./HelperDB";

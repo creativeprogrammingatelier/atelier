@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import {User, DBUser, userToAPI} from '../../../models/database/User';
 import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {pool, extract, map, one, searchify, pgDB, checkAvailable, DBTools, toBin, permissionBits} from "./HelperDB";
 import {usersView} from "./ViewsDB";

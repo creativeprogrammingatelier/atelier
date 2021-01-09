@@ -2,7 +2,7 @@ import {expect} from "chai";
 import {Request, Response, NextFunction} from "express";
 import "mocha";
 
-import {issueToken} from "../../../api/src/helpers/AuthenticationHelper";
+import {issueToken} from "../../../api/src/database/helpers/AuthenticationHelper";
 import {AuthMiddleware} from "../../../api/src/middleware/AuthMiddleware";
 
 describe("AuthMiddleware.requireAuth", () => {

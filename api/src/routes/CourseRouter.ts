@@ -4,10 +4,10 @@ import {CoursePartial} from "../../../models/api/Course";
 import {CourseUser} from "../../../models/api/CourseUser";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
-import {filterCourse, removePermissionsCoursePartial, removePermissionsCourseUser} from "../helpers/APIFilterHelper";
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
+import {filterCourse, removePermissionsCoursePartial, removePermissionsCourseUser} from "../database/helpers/APIFilterHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {requirePermission, requireRegistered} from "../database/helpers/PermissionHelper";
 
 import {CourseDB} from "../database/CourseDB";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
@@ -87,6 +87,7 @@ courseRouter.get("/:courseID", capture(async (request: Request, response: Respon
 courseRouter.post('/', capture(async (request: Request, response: Response) => {
 	const name: string = request.body.name;
 	const state: CourseState = request.body.state;
+	const canvasCourseID: string = request.body.canvasCourseId;
 	const currentUserID: string = await getCurrentUserID(request);
 	
 	// Requires addCourses permission
@@ -97,6 +98,7 @@ courseRouter.post('/', capture(async (request: Request, response: Response) => {
 			courseName: name,
 			state,
 			creatorID: currentUserID,
+			canvasCourseID: canvasCourseID,
 			client
 		});
 		
@@ -123,6 +125,7 @@ courseRouter.put('/:courseID', capture(async (request: Request, response: Respon
 	const courseID: string = request.params.courseID;
 	const currentUserID: string = await getCurrentUserID(request);
 	const name: string | undefined = request.body.name;
+	const canvasCourseID: string = request.body.canvasCourseId;
 	const state: CourseState | undefined = request.body.state as CourseState;
 	
 	// Require manageCourses permission
@@ -131,6 +134,7 @@ courseRouter.put('/:courseID', capture(async (request: Request, response: Respon
 	const course: CoursePartial = await CourseDB.updateCourse({
 		courseID,
 		courseName: name,
+		canvasCourseID,
 		state
 	});
 	

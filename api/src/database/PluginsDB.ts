@@ -1,6 +1,6 @@
 import {PluginInput, convertPlugin, Plugin} from "../../../models/database/Plugin";
 import {convertPluginHook, PluginHookInput} from "../../../models/database/PluginHook";
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 import {checkAvailable, pool, pgDB, extract, map, one} from "./HelperDB";
 
 export class PluginsDB {

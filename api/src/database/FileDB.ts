@@ -3,7 +3,7 @@ import {File, DBFile, fileToAPI, APIFile, filterNullFiles, isNotNullFile} from "
 import {submissionToAPI} from "../../../models/database/Submission";
 import {Sorting} from "../../../models/enums/SortingEnum";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {pool, extract, map, one, pgDB, checkAvailable, DBTools, doIf, searchify} from "./HelperDB";
 import {filesView} from "./ViewsDB";

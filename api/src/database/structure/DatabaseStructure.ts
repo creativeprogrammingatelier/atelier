@@ -1,6 +1,6 @@
 import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
-import {isPostgresError} from "../../helpers/DatabaseErrorHelper";
+import {isPostgresError} from "../helpers/DatabaseErrorHelper";
 
 import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
 import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, TagsView, CourseUsersViewAll} from "../ViewsDB";
@@ -164,7 +164,8 @@ CREATE TABLE "Courses" (
 	courseID    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	courseName  text NOT NULL CHECK (courseName <> ''),
 	state       text NOT NULL DEFAULT 'open',
-	creator     uuid REFERENCES "Users" (userID)
+	creator     uuid REFERENCES "Users" (userID),
+	canvasCourseID text 
 );
 
 CREATE TABLE "CourseRegistration" (

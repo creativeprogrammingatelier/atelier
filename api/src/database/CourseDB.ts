@@ -3,7 +3,7 @@ import {User} from "../../../models/database/User";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {pool, extract, map, one, checkAvailable, pgDB, DBTools, searchify, toBin} from "./HelperDB";
 import {CoursesView} from "./ViewsDB";
@@ -81,22 +81,23 @@ export class CourseDB {
 	 * Adds a single course to the course table.
 	 */
 	static async addCourse(course: Course) {
-		checkAvailable(["courseName", "state", "creatorID"], course);
+		checkAvailable(["courseName", "state", "creatorID", "canvasCourseID"], course);
 		const {
 			courseName,
 			state,
 			creatorID,
+			canvasCourseID,
 			client = pool
 		} = course;
 		const creatorid = UUIDHelper.toUUID(creatorID);
 		return client.query(`
 		WITH insert as (
 			INSERT INTO "Courses" 
-			VALUES (DEFAULT, $1, $2, $3) 
+			VALUES (DEFAULT, $1, $2, $3, $4) 
 			RETURNING *
 		)
 		${CoursesView("insert")}
-		`, [courseName, state, creatorid])
+		`, [courseName, state, creatorid, canvasCourseID])
 			.then(extract).then(map(courseToAPIPartial)).then(one)
 			.then(res => {
 				

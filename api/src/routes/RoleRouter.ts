@@ -6,10 +6,10 @@ import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
 import {getEnum} from "../../../helpers/EnumHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {requirePermission} from "../helpers/PermissionHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {requirePermission} from "../database/helpers/PermissionHelper";
 
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {UserDB} from "../database/UserDB";

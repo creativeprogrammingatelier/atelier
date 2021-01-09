@@ -1,4 +1,4 @@
-import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
+import {UUIDHelper} from "../../api/src/database/helpers/UUIDHelper";
 import {DBTools, checkAvailable, toDec} from "../../api/src/database/HelperDB";
 
 import {getEnum} from "../../helpers/EnumHelper";
@@ -15,13 +15,15 @@ export interface Course extends DBTools {
 	courseID?: string,
 	courseName?: string,
 	creatorID?: string,
-	state?: CourseState
+	state?: CourseState,
+	canvasCourseID?: string,
 }
 export interface DBCourse {
 	courseid: string,
 	coursename: string,
 	creatorid: string,
-	state: string
+	state: string,
+	canvascourseid: string
 }
 
 export {APICourse};

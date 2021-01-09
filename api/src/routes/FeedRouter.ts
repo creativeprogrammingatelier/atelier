@@ -1,13 +1,13 @@
 import express from "express";
 
-import {removePermissionsMention, removePermissionsCommentThread, removePermissionsComment, removePermissionsSubmission, filterCommentThread, filterComments} from "../helpers/APIFilterHelper";
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {getCommonQueryParams} from "../helpers/ParamsHelper";
+import {removePermissionsMention, removePermissionsCommentThread, removePermissionsComment, removePermissionsSubmission, filterCommentThread, filterComments} from "../database/helpers/APIFilterHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {getCommonQueryParams} from "../database/helpers/ParamsHelper";
 
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import { map, DBTools } from "../database/HelperDB";
-import { requireRegistered, requirePermission } from "../helpers/PermissionHelper";
+import { requireRegistered, requirePermission } from "../database/helpers/PermissionHelper";
 import { PermissionEnum } from "../../../models/enums/PermissionEnum";
 import { FeedItem } from "../../../models/api/FeedItem";
 

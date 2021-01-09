@@ -1,5 +1,5 @@
 import {CourseInvite, convertCourseInvite} from "../../../models/database/CourseInvites";
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 import {pool, extract, map, checkAvailable, one, pgDB} from "./HelperDB";
 
 /**

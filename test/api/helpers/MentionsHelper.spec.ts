@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import "mocha";
 
-import * as MentionsHelper from "../../../api/src/helpers/MentionsHelper";
+import * as MentionsHelper from "../../../api/src/database/helpers/MentionsHelper";
 
 describe("MentionsHelper", () => {
 	describe("getPossibleMentions", () => {

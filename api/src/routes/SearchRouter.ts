@@ -6,11 +6,11 @@ import {User} from "../../../models/database/User";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {Sorting} from "../../../models/enums/SortingEnum";
 
-import {removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets, removePermissionsSubmission} from "../helpers/APIFilterHelper";
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {PermissionError, requirePermissions, requireRegistered} from "../helpers/PermissionHelper";
-import {getCommonQueryParams, InvalidParamsError} from "../helpers/ParamsHelper";
+import {removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets, removePermissionsSubmission} from "../database/helpers/APIFilterHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {PermissionError, requirePermissions, requireRegistered} from "../database/helpers/PermissionHelper";
+import {getCommonQueryParams, InvalidParamsError} from "../database/helpers/ParamsHelper";
 
 import {CourseDB} from "../database/CourseDB";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";

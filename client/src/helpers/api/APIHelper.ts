@@ -48,10 +48,10 @@ export const getCourses = () => {
 export const getUserCourses = (userId: string) => {
 	return Fetch.fetchJson<Course[]>(`/api/course/user/${userId}`);
 };
-export const createCourse = (course: {name: string, state: string}) => {
+export const createCourse = (course: {name: string, state: string, canvasCourseId: string}) => {
 	return Fetch.fetchJson<Course>("/api/course", postJson(course));
 };
-export const updateCourse = (courseID: string, update: {name?: string, state?: CourseState}) => {
+export const updateCourse = (courseID: string, update: {name?: string, state?: CourseState, canvasCourseId?: string}) => {
 	return Fetch.fetchJson<CoursePartial>(`/api/course/${courseID}`, putJson(update));
 };
 export const courseEnrollUser = (courseID: string, userID: string, role: CourseRole) => {

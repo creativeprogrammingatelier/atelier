@@ -1,9 +1,9 @@
 import express from "express";
 
-import {removePermissionsMention} from "../helpers/APIFilterHelper";
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {getCommonQueryParams} from "../helpers/ParamsHelper";
+import {removePermissionsMention} from "../database/helpers/APIFilterHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {getCommonQueryParams} from "../database/helpers/ParamsHelper";
 
 import {MentionsDB} from "../database/MentionsDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";

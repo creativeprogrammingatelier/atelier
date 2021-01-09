@@ -4,9 +4,9 @@ import {CourseUser} from "../../../models/api/CourseUser";
 import {User} from "../../../models/api/User";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
-import {getCurrentUserID} from "../helpers/AuthenticationHelper";
-import {capture} from "../helpers/ErrorHelper";
-import {requirePermission, requirePermissions} from "../helpers/PermissionHelper";
+import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
+import {capture} from "../database/helpers/ErrorHelper";
+import {requirePermission, requirePermissions} from "../database/helpers/PermissionHelper";
 
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {UserDB} from "../database/UserDB";

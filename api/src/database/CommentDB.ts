@@ -2,7 +2,7 @@ import {SearchResultComment} from "../../../models/api/SearchResult";
 import {Comment, commentToAPI, DBAPIComment} from "../../../models/database/Comment";
 import {submissionToAPI, DBAPISubmission} from "../../../models/database/Submission";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {pool, extract, map, one, searchify, checkAvailable, pgDB, keyInMap, DBTools} from "./HelperDB";
 import {commentsView} from "./ViewsDB";

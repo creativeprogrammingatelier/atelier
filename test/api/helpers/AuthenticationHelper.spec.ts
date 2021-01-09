@@ -4,7 +4,7 @@ import {randomBytes} from "crypto";
 import {Request} from "express";
 import "mocha";
 
-import * as auth from "../../../api/src/helpers/AuthenticationHelper";
+import * as auth from "../../../api/src/database/helpers/AuthenticationHelper";
 
 chai.use(chaiAsPromised);
 

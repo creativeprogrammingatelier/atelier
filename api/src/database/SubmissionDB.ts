@@ -4,7 +4,7 @@ import {User} from "../../../models/database/User";
 import {Sorting} from "../../../models/enums/SortingEnum";
 import {SubmissionStatus} from "../../../models/enums/SubmissionStatusEnum";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {FileDB} from "./FileDB";
 import {extract, map, one, pool, pgDB, checkAvailable, DBTools, searchify} from "./HelperDB";

@@ -1,4 +1,4 @@
-import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
+import {UUIDHelper} from "../../api/src/database/helpers/UUIDHelper";
 import {DBTools, checkAvailable} from "../../api/src/database/HelperDB";
 
 import {File as APIFile} from "../api/File";

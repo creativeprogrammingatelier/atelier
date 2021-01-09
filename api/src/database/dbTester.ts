@@ -12,7 +12,7 @@ import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
 import {SubmissionStatus} from "../../../models/enums/SubmissionStatusEnum";
 import {ThreadState} from "../../../models/enums/ThreadStateEnum";
 
-import {UUIDHelper} from "../helpers/UUIDHelper";
+import {UUIDHelper} from "./helpers/UUIDHelper";
 
 import {CommentDB as C} from "./CommentDB";
 import {CourseDB as CH} from "./CourseDB";

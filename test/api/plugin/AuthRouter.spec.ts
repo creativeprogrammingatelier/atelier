@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import "mocha";
 
 import {app} from "../../../api/src/app";
-import {decodeToken} from "../../../api/src/helpers/AuthenticationHelper";
+import {decodeToken} from "../../../api/src/database/helpers/AuthenticationHelper";
 import {privateKey, plugin} from "./Plugin";
 
 chai.use(chaiHttp);

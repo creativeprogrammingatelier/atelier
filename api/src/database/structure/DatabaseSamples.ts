@@ -1,4 +1,4 @@
-import {isPostgresError} from "../../helpers/DatabaseErrorHelper";
+import {isPostgresError} from "../helpers/DatabaseErrorHelper";
 
 import {pool, end, permissionBits, pgDB} from "../HelperDB";
 
