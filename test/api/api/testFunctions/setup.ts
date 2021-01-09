@@ -5,7 +5,7 @@ import {CoursePartial} from "../../../../models/api/Course";
 import {User} from "../../../../models/api/User";
 
 import {UserDB} from "../../../../api/src/database/UserDB";
-import {issueToken} from "../../../../api/src/database/helpers/AuthenticationHelper";
+import {issueToken} from "../../../../api/src/helpers/AuthenticationHelper";
 
 import {instanceOfCoursePartial, instanceOfUser} from "../../../InstanceOf";
 import {

@@ -5,21 +5,21 @@ import {Submission} from "../../../models/api/Submission";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {WebhookEvent} from "../../../models/enums/WebhookEventEnum";
 
-import {filterSubmission, removePermissionsSubmission} from "../database/helpers/APIFilterHelper";
-import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
-import {capture} from "../database/helpers/ErrorHelper";
-import {getProperType} from "../database/helpers/FileHelper";
-import {archiveProject, deleteFolder, FileUploadRequest, readFile, renamePath, uploadMiddleware} from "../database/helpers/FilesystemHelper";
-import {requirePermission, requireRegistered} from "../database/helpers/PermissionHelper";
+import {filterSubmission, removePermissionsSubmission} from "../helpers/APIFilterHelper";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {capture} from "../helpers/ErrorHelper";
+import {getProperType} from "../helpers/FileHelper";
+import {archiveProject, deleteFolder, FileUploadRequest, readFile, renamePath, uploadMiddleware} from "../helpers/FilesystemHelper";
+import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 import {validateProjectServer} from "../../../helpers/ProjectValidationHelper";
-import {raiseWebhookEvent} from "../database/helpers/WebhookHelper";
+import {raiseWebhookEvent} from "../helpers/WebhookHelper";
 
 import {FileDB} from "../database/FileDB";
 import {transaction} from "../database/HelperDB";
 import {SubmissionDB} from "../database/SubmissionDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {UPLOADS_PATH} from "../lib/constants";
-import { getPaginationQueryParams } from "../database/helpers/ParamsHelper";
+import { getPaginationQueryParams } from "../helpers/ParamsHelper";
 
 /**
  * Api routes relating to submission information

@@ -1,4 +1,4 @@
-import {UUIDHelper} from "../../api/src/database/helpers/UUIDHelper";
+import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
 import {DBTools, checkAvailable} from "../../api/src/database/HelperDB";
 
 import {Comment as APIComment} from "../api/Comment";

@@ -5,11 +5,11 @@ import logger from 'morgan';
 import path from 'path';
 import socketio, {Socket} from 'socket.io';
 
-import {AuthError} from './database/helpers/AuthenticationHelper';
-import {config} from './database/helpers/ConfigurationHelper';
-import {parsePostgresErrorCode, isPostgresError, PostgresError} from './database/helpers/DatabaseErrorHelper';
-import {InvalidParamsError} from './database/helpers/ParamsHelper';
-import {PermissionError} from "./database/helpers/PermissionHelper";
+import {AuthError} from './helpers/AuthenticationHelper';
+import {config} from './helpers/ConfigurationHelper';
+import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/DatabaseErrorHelper';
+import {InvalidParamsError} from './helpers/ParamsHelper';
+import {PermissionError} from "./helpers/PermissionHelper";
 import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
 
 import {upgradeDatabase} from './database/structure/DatabaseMigrations';

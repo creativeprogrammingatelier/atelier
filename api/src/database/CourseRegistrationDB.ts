@@ -11,7 +11,7 @@ import {checkAvailable, DBTools, extract, map, noNull, one, permissionBits, pool
 import {CourseUsersView} from "./ViewsDB";
 
 /**
- * Course registration information
+ * Course registration informationconsole.log
  * courseID, userID, role, permission
  * @Author Rens Leendertz
  */

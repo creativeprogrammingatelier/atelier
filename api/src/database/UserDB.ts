@@ -14,6 +14,7 @@ import {usersView} from "./ViewsDB";
  * @Author Rens Leendertz
  */
 export class UserDB {
+
 	/**
 	 * calls onSuccess() with all known users that have the global role 'user', except password hash
 	 */
@@ -102,6 +103,19 @@ export class UserDB {
 		`, [userid, username, email, role, binPerm, researchAllowed, limit, offset])
 			.then(extract).then(map(userToAPI))
 	}
+
+	static async getUserByEmail(client: any, email: String) {
+		return client.query(`
+		SELECT *
+		FROM "UsersView"
+		WHERE email = $1
+		ORDER BY email --email is unique, so unique ordering
+		`, [email])
+			.then(extract).then(map(userToAPI))
+	}
+
+
+
 	static async filterUserInCourse(user: User & { courseID?: string }) {
 		const {
 			userID = undefined,
@@ -158,6 +172,7 @@ export class UserDB {
 		} = user;
 		const hash = password === undefined ? undefined : UserDB.hashPassword(password),
 			binPerm = toBin(permission);
+		
 		return client.query(`
 			WITH insert AS (
 				INSERT INTO "Users" 

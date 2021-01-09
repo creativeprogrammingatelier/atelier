@@ -1,7 +1,7 @@
 import express from "express";
 
-import {issueToken, AuthError} from "../../database/helpers/AuthenticationHelper";
-import {capture} from "../../database/helpers/ErrorHelper";
+import {issueToken, AuthError} from "../../helpers/AuthenticationHelper";
+import {capture} from "../../helpers/ErrorHelper";
 
 import {UserDB} from "../../database/UserDB";
 

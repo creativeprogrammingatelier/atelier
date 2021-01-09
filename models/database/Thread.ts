@@ -1,4 +1,4 @@
-import {UUIDHelper} from "../../api/src/database/helpers/UUIDHelper";
+import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
 import {DBTools, checkAvailable, toDec} from "../../api/src/database/HelperDB";
 import {getEnum} from "../../helpers/EnumHelper";
 

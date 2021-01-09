@@ -6,11 +6,11 @@ import * as validator from "@authenio/samlify-node-xmllint";
 
 import {GlobalRole} from "../../../../models/enums/GlobalRoleEnum";
 
-import {AuthError, setTokenCookie} from "../../database/helpers/AuthenticationHelper";
-import {config, SamlLoginConfiguration} from "../../database/helpers/ConfigurationHelper";
+import {AuthError, setTokenCookie} from "../../helpers/AuthenticationHelper";
+import {config, SamlLoginConfiguration} from "../../helpers/ConfigurationHelper";
 import {checkEnum, getEnum} from "../../../../helpers/EnumHelper";
-import {capture} from "../../database/helpers/ErrorHelper";
-import {readFileAsString} from "../../database/helpers/FilesystemHelper";
+import {capture} from "../../helpers/ErrorHelper";
+import {readFileAsString} from "../../helpers/FilesystemHelper";
 
 import {NotFoundDatabaseError} from "../../database/DatabaseErrors";
 import {UserDB} from "../../database/UserDB";

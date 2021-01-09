@@ -1,4 +1,4 @@
-import {UUIDHelper} from "../../api/src/database/helpers/UUIDHelper";
+import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
 import {InvalidDatabaseResponseError} from "../../api/src/database/DatabaseErrors";
 import {DBTools, checkAvailable, toDec, noNull} from "../../api/src/database/HelperDB";
 

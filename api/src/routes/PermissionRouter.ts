@@ -5,9 +5,9 @@ import {Permission, Permissions} from "../../../models/api/Permission";
 import {User} from "../../../models/api/User";
 import {containsPermission, managePermissionBits, PermissionEnum, viewPermissionBits} from "../../../models/enums/PermissionEnum";
 
-import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {getEnum} from "../../../helpers/EnumHelper";
-import {capture} from "../database/helpers/ErrorHelper";
+import {capture} from "../helpers/ErrorHelper";
 
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {UserDB} from "../database/UserDB";

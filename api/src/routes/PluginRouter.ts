@@ -4,9 +4,9 @@ import {Plugin} from "../../../models/api/Plugin";
 import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
-import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
-import {capture, captureNext} from "../database/helpers/ErrorHelper";
-import {requirePermission} from "../database/helpers/PermissionHelper";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {capture, captureNext} from "../helpers/ErrorHelper";
+import {requirePermission} from "../helpers/PermissionHelper";
 
 import {transaction, one, map} from "../database/HelperDB";
 import {PluginsDB} from "../database/PluginsDB";

@@ -4,10 +4,10 @@ import {CoursePartial} from "../../../models/api/Course";
 import {CourseUser} from "../../../models/api/CourseUser";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
-import {filterCourse, removePermissionsCoursePartial, removePermissionsCourseUser} from "../database/helpers/APIFilterHelper";
-import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
-import {capture} from "../database/helpers/ErrorHelper";
-import {requirePermission, requireRegistered} from "../database/helpers/PermissionHelper";
+import {filterCourse, removePermissionsCoursePartial, removePermissionsCourseUser} from "../helpers/APIFilterHelper";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {capture} from "../helpers/ErrorHelper";
+import {requirePermission, requireRegistered} from "../helpers/PermissionHelper";
 
 import {CourseDB} from "../database/CourseDB";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
@@ -15,6 +15,11 @@ import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {CourseState} from "../../../models/enums/CourseStateEnum";
 import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import { getAccessToken, getCourseUsers, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken } from "../helpers/CanvasHelper";
+import { CourseInviteDB } from "../database/CourseInviteDB";
+import { UserDB } from "../database/UserDB";
+import { User } from "../../../models/database/User";
+import { GlobalRole } from "../../../models/enums/GlobalRoleEnum";
 
 /**
  * Api routes relating to a course
@@ -89,7 +94,11 @@ courseRouter.post('/', capture(async (request: Request, response: Response) => {
 	const state: CourseState = request.body.state;
 	const canvasCourseID: string = request.body.canvasCourseId;
 	const currentUserID: string = await getCurrentUserID(request);
-	
+
+	/**
+	 * Once creation of course and adding users via canvas has been stressed tested the transaction could be merged
+	 */
+
 	// Requires addCourses permission
 	await requirePermission(currentUserID, PermissionEnum.addCourses);
 	
@@ -111,6 +120,76 @@ courseRouter.post('/', capture(async (request: Request, response: Response) => {
 		
 		return course;
 	});
+
+	/** Add all users in canvas */
+	/**
+	 * User canvas helper to pass course ID and get users
+	 */
+	if(canvasCourseID != ""){ 
+		let students = await getCourseUsersStudents(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
+		let tas = await getCourseUsersTAs(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
+
+		await transaction(async client => {
+			/**
+			 * Refactor
+			 */
+			for (let student of students){
+				let userDB: User[]  = await UserDB.getUserByEmail(client, student.email)
+				if (userDB != [] && userDB[0] != undefined){
+					await CourseRegistrationDB.addEntry({
+						courseID: course.ID,
+						userID: userDB[0].userID,
+						courseRole: CourseRole.student,
+						client
+					});
+				} else if ( student.email != undefined ) { 
+					let createdUser: any = await UserDB.createUser({ userName: student.name , email: student.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client })
+					await CourseRegistrationDB.addEntry({
+						courseID: course.ID,
+						userID: createdUser.ID,
+						courseRole: CourseRole.student,
+						client
+					});
+				} else { 
+			
+					console.log("No email found for user cannot link: ", student.name)
+				}
+			}
+			for (let ta of tas){
+				let userDB: User[]  = await UserDB.getUserByEmail(client, ta.email)
+				if (userDB != [] && userDB[0] != undefined){
+					await CourseRegistrationDB.addEntry({
+						courseID: course.ID,
+						userID: userDB[0].userID,
+						courseRole: CourseRole.TA,
+						client
+					});
+				} else if ( ta.email != undefined ) { 
+					let createdUser: any = await UserDB.createUser({ userName: ta.name , email: ta.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client })
+					await CourseRegistrationDB.addEntry({
+						courseID: course.ID,
+						userID: createdUser.ID,
+						courseRole: CourseRole.student,
+						client
+					});
+				} else { 
+			
+					console.log("No email found for user cannot link: ", ta.name)
+				}
+			}
+			/** 
+			 * If user exists add to course.
+			 * If not creatte user and add to course.
+			 * 
+			 * 
+			 */
+	
+			
+			return course;
+		});
+	}
+
+
 	response.status(200).send(removePermissionsCoursePartial(course));
 }));
 

@@ -3,8 +3,8 @@ import path from 'path'
 
 import {File} from '../../../models/api/File';
 
-import {capture} from '../database/helpers/ErrorHelper';
-import {readFile, getFilePathOnDisk} from '../database/helpers/FilesystemHelper';
+import {capture} from '../helpers/ErrorHelper';
+import {readFile, getFilePathOnDisk} from '../helpers/FilesystemHelper';
 
 import {FileDB} from '../database/FileDB';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';

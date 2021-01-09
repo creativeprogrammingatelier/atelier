@@ -9,9 +9,9 @@ import {
 	AuthError,
 	verifyToken,
 	issueToken
-} from '../../database/helpers/AuthenticationHelper';
-import {config} from '../../database/helpers/ConfigurationHelper';
-import {capture} from '../../database/helpers/ErrorHelper';
+} from '../../helpers/AuthenticationHelper';
+import {config} from '../../helpers/ConfigurationHelper';
+import {capture} from '../../helpers/ErrorHelper';
 
 import {NotFoundDatabaseError} from '../../database/DatabaseErrors';
 import {one} from '../../database/HelperDB';

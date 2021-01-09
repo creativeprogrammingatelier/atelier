@@ -2,17 +2,17 @@ import express from "express";
 
 import {Comment} from "../../../models/api/Comment";
 
-import {removePermissionsComment, removePermissions, filterComments} from "../database/helpers/APIFilterHelper";
-import {getCurrentUserID} from "../database/helpers/AuthenticationHelper";
-import {capture} from "../database/helpers/ErrorHelper";
-import {createMentions} from "../database/helpers/MentionsHelper";
-import {PermissionError, requireRegisteredCommentThreadID, requireRegistered, requirePermission} from "../database/helpers/PermissionHelper";
+import {removePermissionsComment, removePermissions, filterComments} from "../helpers/APIFilterHelper";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {capture} from "../helpers/ErrorHelper";
+import {createMentions} from "../helpers/MentionsHelper";
+import {PermissionError, requireRegisteredCommentThreadID, requireRegistered, requirePermission} from "../helpers/PermissionHelper";
 
 import {CommentDB} from "../database/CommentDB";
 import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import {createTags} from "../database/helpers/TagsHelper";
-import { getCommonQueryParams } from "../database/helpers/ParamsHelper";
+import {createTags} from "../helpers/TagsHelper";
+import { getCommonQueryParams } from "../helpers/ParamsHelper";
 import { PermissionEnum } from "../../../models/enums/PermissionEnum";
 
 /**
