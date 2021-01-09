@@ -150,7 +150,7 @@ courseRouter.put('/:courseID', capture(async (request: Request, response: Respon
 	const courseID: string = request.params.courseID;
 	const currentUserID: string = await getCurrentUserID(request);
 	const name: string | undefined = request.body.name;
-	const canvasCourseID: string = request.body.canvasCourseId;
+	const canvasCourseID: string = (request.body.canvasCourseId == "") ? undefined: request.body.canvasCourseId ;
 	const state: CourseState | undefined = request.body.state as CourseState;
 	
 	// Require manageCourses permission

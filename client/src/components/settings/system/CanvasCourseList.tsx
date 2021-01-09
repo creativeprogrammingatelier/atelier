@@ -37,7 +37,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
         newOptions.push(<option key = {course["id"]} value = {course["id"]} >{course["name"]}</option>) 
       }
       // Ensuring default is sent to out component
-      this.state.onLinkCanvasCourse(this.state.data[0]["id"])
+      this.state.onLinkCanvasCourse("")
       return newOptions;
     } else { 
       return [<option key = {"no-link"} >{"You have not linked Atelier to your canvas please do so the setting page."}</option>]
