@@ -104,17 +104,16 @@ export class UserDB {
 			.then(extract).then(map(userToAPI))
 	}
 
-	static async getUserByEmail(client: any, email: String) {
+	static async getUserByEmail(email: String, client?: pgDB) {
+		client = (client) ? client : pool;
 		return client.query(`
 		SELECT *
 		FROM "UsersView"
 		WHERE email = $1
 		ORDER BY email --email is unique, so unique ordering
 		`, [email])
-			.then(extract).then(map(userToAPI))
+			.then(extract).then(map(userToAPI)).then(one)
 	}
-
-
 
 	static async filterUserInCourse(user: User & { courseID?: string }) {
 		const {

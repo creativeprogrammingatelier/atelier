@@ -20,6 +20,7 @@ import { CourseInviteDB } from "../database/CourseInviteDB";
 import { UserDB } from "../database/UserDB";
 import { User } from "../../../models/database/User";
 import { GlobalRole } from "../../../models/enums/GlobalRoleEnum";
+import { addUsersFromCanvas } from "../helpers/CourseHelper";
 
 /**
  * Api routes relating to a course
@@ -121,71 +122,16 @@ courseRouter.post('/', capture(async (request: Request, response: Response) => {
 		return course;
 	});
 
-	/** Add all users in canvas */
-	/**
-	 * User canvas helper to pass course ID and get users
-	 */
+	/** 
+	 * Adds all users in canvas linked course
+	 * */
+
 	if(canvasCourseID != ""){ 
 		let students = await getCourseUsersStudents(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
 		let tas = await getCourseUsersTAs(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
-
 		await transaction(async client => {
-			/**
-			 * Refactor
-			 */
-			for (let student of students){
-				let userDB: User[]  = await UserDB.getUserByEmail(client, student.email)
-				if (userDB != [] && userDB[0] != undefined){
-					await CourseRegistrationDB.addEntry({
-						courseID: course.ID,
-						userID: userDB[0].userID,
-						courseRole: CourseRole.student,
-						client
-					});
-				} else if ( student.email != undefined ) { 
-					let createdUser: any = await UserDB.createUser({ userName: student.name , email: student.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client })
-					await CourseRegistrationDB.addEntry({
-						courseID: course.ID,
-						userID: createdUser.ID,
-						courseRole: CourseRole.student,
-						client
-					});
-				} else { 
-			
-					console.log("No email found for user cannot link: ", student.name)
-				}
-			}
-			for (let ta of tas){
-				let userDB: User[]  = await UserDB.getUserByEmail(client, ta.email)
-				if (userDB != [] && userDB[0] != undefined){
-					await CourseRegistrationDB.addEntry({
-						courseID: course.ID,
-						userID: userDB[0].userID,
-						courseRole: CourseRole.TA,
-						client
-					});
-				} else if ( ta.email != undefined ) { 
-					let createdUser: any = await UserDB.createUser({ userName: ta.name , email: ta.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client })
-					await CourseRegistrationDB.addEntry({
-						courseID: course.ID,
-						userID: createdUser.ID,
-						courseRole: CourseRole.student,
-						client
-					});
-				} else { 
-			
-					console.log("No email found for user cannot link: ", ta.name)
-				}
-			}
-			/** 
-			 * If user exists add to course.
-			 * If not creatte user and add to course.
-			 * 
-			 * 
-			 */
-	
-			
-			return course;
+			addUsersFromCanvas(students, client, CourseRole.student, course);
+			addUsersFromCanvas(tas, client, CourseRole.TA, course);
 		});
 	}
 

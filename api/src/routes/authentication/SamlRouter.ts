@@ -14,6 +14,8 @@ import {readFileAsString} from "../../helpers/FilesystemHelper";
 
 import {NotFoundDatabaseError} from "../../database/DatabaseErrors";
 import {UserDB} from "../../database/UserDB";
+import { getUsersByCourse, getUserSearch } from "../../../../test/api/api/APIRequestHelper";
+import { User } from "../../../../models/api/User";
 
 setSchemaValidator(validator);
 
@@ -64,56 +66,68 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 	
 	/** Post back the SAML response to finish logging in */
 	samlRouter.post("/login", capture(async(request, response) => {
+
+
 		const {extract: result} = await sp.parseLoginResponse(idp, "post", request);
 		const extID = extIDPrefix + result.nameID;
 		// TODO: remove temporary logging
 		console.log("SAML response extract: ", result);
-		let user = undefined;
+
+		// Get email from SAML attributes
+		// TODO: find a better default value for email
+		let email = extID + "@example.com";
+		if (samlConfig.attributes?.email !== undefined) {
+			email = result.attributes[samlConfig.attributes.email] || email;
+		}
+
+
+		let user:any = undefined;
 		try {
 			user = await UserDB.getUserBySamlID(extID);
 		} catch (err) {
 			if (err instanceof NotFoundDatabaseError) {
-				// Get name from SAML attributes
-				let userName = result.nameID;
-				if (samlConfig.attributes?.name !== undefined) {
-					if (typeof samlConfig.attributes.name === "string") {
-						userName = result.attributes[samlConfig.attributes.name] || userName;
-					} else {
-						const lastname = result.attributes[samlConfig.attributes.name.lastname];
-						const firstname = result.attributes[samlConfig.attributes.name.firstname];
-						if (lastname !== undefined && firstname !== undefined) {
-							userName = firstname + " " + lastname;
-						} else if (lastname !== undefined) {
-							userName = lastname;
-						} else if (firstname !== undefined) {
-							userName = firstname;
+
+				//Check if already exists 
+				user = await UserDB.getUserByEmail(email)
+				if(user != null && user != undefined){
+					UserDB.updateUser({...user, samlID: extID})
+				} else { 
+					// Create new user from SAML
+
+					// Get name from SAML attributes
+					let userName = result.nameID;
+					if (samlConfig.attributes?.name !== undefined) {
+						if (typeof samlConfig.attributes.name === "string") {
+							userName = result.attributes[samlConfig.attributes.name] || userName;
+						} else {
+							const lastname = result.attributes[samlConfig.attributes.name.lastname];
+							const firstname = result.attributes[samlConfig.attributes.name.firstname];
+							if (lastname !== undefined && firstname !== undefined) {
+								userName = firstname + " " + lastname;
+							} else if (lastname !== undefined) {
+								userName = lastname;
+							} else if (firstname !== undefined) {
+								userName = firstname;
+							}
+						}
+					}			
+					// Get role from SAML attributes
+					let role = GlobalRole.user;
+					if (samlConfig.attributes?.role !== undefined) {
+						let samlRole = result.attributes[samlConfig.attributes.role] || role;
+						if (samlConfig.attributes.roleMapping !== undefined) {
+							samlRole = samlConfig.attributes.roleMapping[role] || role;
+						}
+						if (checkEnum(GlobalRole, samlRole)) {
+							role = getEnum(GlobalRole, samlRole);
 						}
 					}
+					
+					user = await UserDB.createUser({
+						samlID: extID, userName, email, globalRole: role,
+						password: UserDB.invalidPassword()
+					});
 				}
-				
-				// Get email from SAML attributes
-				// TODO: find a better default value for email
-				let email = extID + "@example.com";
-				if (samlConfig.attributes?.email !== undefined) {
-					email = result.attributes[samlConfig.attributes.email] || email;
-				}
-				
-				// Get role from SAML attributes
-				let role = GlobalRole.user;
-				if (samlConfig.attributes?.role !== undefined) {
-					let samlRole = result.attributes[samlConfig.attributes.role] || role;
-					if (samlConfig.attributes.roleMapping !== undefined) {
-						samlRole = samlConfig.attributes.roleMapping[role] || role;
-					}
-					if (checkEnum(GlobalRole, samlRole)) {
-						role = getEnum(GlobalRole, samlRole);
-					}
-				}
-				
-				user = await UserDB.createUser({
-					samlID: extID, userName, email, globalRole: role,
-					password: UserDB.invalidPassword()
-				});
 			} else {
 				throw err;
 			}
