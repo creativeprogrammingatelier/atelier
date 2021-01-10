@@ -111,6 +111,7 @@ export class UserDB {
 		FROM "UsersView"
 		WHERE email = $1
 		ORDER BY email --email is unique, so unique ordering
+		LIMIT 1
 		`, [email])
 			.then(extract).then(map(userToAPI)).then(one)
 	}
