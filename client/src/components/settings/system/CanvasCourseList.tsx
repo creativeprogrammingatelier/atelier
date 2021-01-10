@@ -7,7 +7,8 @@ import { LabeledInput } from "../../input/LabeledInput"
 
 interface IStateCanvasCourseList { 
   data: any
-  onLinkCanvasCourse: Function
+  onLinkCanvasCourse: Function,
+  selectedCourseId: string
 }
 
 interface IPropsCanvasCourseList { 
@@ -19,6 +20,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
     super(props)
     this.state = { 
       data: null,
+      selectedCourseId: "",
       onLinkCanvasCourse: props.onLinkCanvasCourse
     }
   }
@@ -26,8 +28,13 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
   componentDidMount(){
     Fetch.fetch("/api/canvas/courses").then(res =>  res.json().then(res =>  this.setState({data:  res})))
   }
+
+  componentDidUpdate(){
+    this.state.onLinkCanvasCourse(this.state.selectedCourseId)
+
+  }
   handleSelect = (event : any) => {
-    this.state.onLinkCanvasCourse(event.target.value)
+   this.setState({selectedCourseId: event.target.value})
   }
 
   getOptions(){

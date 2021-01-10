@@ -10,7 +10,7 @@ import { UserDB } from "../database/UserDB";
 
 export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole: CourseRole, course: CoursePartial){
     for (let user of users){
-        let userDB: User[]  = await UserDB.getUserByEmail(user.email, client)
+        let userDB: any  = await UserDB.getUserByEmail(user.email, client)
         if (userDB != [] && userDB[0] != undefined){
             await CourseRegistrationDB.addEntry({
                 courseID: course.ID,

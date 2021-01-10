@@ -15,7 +15,7 @@ import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {CourseState} from "../../../models/enums/CourseStateEnum";
 import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import { getAccessToken, getCourseUsers, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken } from "../helpers/CanvasHelper";
+import { getAccessToken, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken } from "../helpers/CanvasHelper";
 import { CourseInviteDB } from "../database/CourseInviteDB";
 import { UserDB } from "../database/UserDB";
 import { User } from "../../../models/database/User";
@@ -125,7 +125,6 @@ courseRouter.post('/', capture(async (request: Request, response: Response) => {
 	/** 
 	 * Adds all users in canvas linked course
 	 * */
-
 	if(canvasCourseID != ""){ 
 		let students = await getCourseUsersStudents(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
 		let tas = await getCourseUsersTAs(canvasCourseID, await getAccessToken(await getRefreshToken(request)));

@@ -44,13 +44,26 @@ export async function getCourses(access_token: String){
 
 
 export async function getCourseUsersTAs(course_id: String, access_token: String){
-    let result = await requestPromise(`${url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=ta`)
+    let result = await requestPromise(`${url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=ta?per_page parameter=${100}`)
     return  JSON.parse(result);
 
 }
 
 export async function getCourseUsersStudents(course_id: String, access_token: String){
-    let result = await requestPromise(`${url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=student`)
+    console.log("jere")
+    let result = await requestPromise(`${url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=student?per_page=${100}` ,{resolveWithFullResponse: true})
+    console.log(result)
+    
+
     return  JSON.parse(result);
 
+}
+
+
+export async function handlePagination(url: String){
+    // do{
+    //     let results = []
+    //     let result = await requestPromise(url)
+    //     let nextPage = 
+    // }while()
 }

@@ -34,6 +34,7 @@
 		"express": "^4.17.1",
 		"fastpriorityqueue": "^0.6.3",
 		"http-errors": "^1.8.0",
+		"http-link-header": "^1.0.3",
 		"js-file-download": "^0.4.12",
 		"jsonwebtoken": "^8.5.1",
 		"jwt-decode": "^2.2.0",
