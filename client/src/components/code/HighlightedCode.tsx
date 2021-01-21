@@ -14,11 +14,12 @@ export interface SnippetHighlight extends Snippet {
 }
 export interface HighlightedCodeProperties extends CodeProperties {
     snippets: SnippetHighlight[],
-    selecting: boolean
+	selecting: boolean
 }
 export function HighlightedCode({code, options, snippets, selecting, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
 	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 	const [click, setClick] = useState(noPosition);
+	let hasMoved: Boolean = false;
 	
 	/**
 	 * Highlights comments passed to the code viewer.
@@ -62,32 +63,36 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 	 * Loops through the comments to check whether a comment was clicked. If this is
 	 * the case the first comment will have its onClick method called.
 	 */
-	const clickComment = () => {
-		if (snippets && !selecting && click !== noPosition) {
+
+	useEffect(setCommentHighlights, [codeMirror, snippets]);
+	
+	const handleDown = () => {
+		hasMoved = false;	
+	};
+
+	const handleMove  = () => {
+		hasMoved = true
+	};
+
+	const handleUp = () => {
+		if (!hasMoved && snippets && !selecting && click !== noPosition) {
 			let topPriority: SnippetHighlight | undefined = undefined;
-			
+
 			// Find the topPriority snippet matching the click location
 			for (const snippet of snippets) {
-				console.log("Checking snippet");
-				console.log(snippet);
 				if (SelectionHelper.in(snippet, click)) {
 					if (SelectionHelper.priority(snippet, topPriority)) {
 						topPriority = snippet;
 					}
 				}
 			}
-			
-			// Call on click for comment
 			if (topPriority) {
 				topPriority.onClick();
 			}
 		}
 	};
 	
-	useEffect(setCommentHighlights, [codeMirror, snippets]);
-	useEffect(clickComment, [click]);
-	
-	return <Code
+	return <div onMouseUp={handleUp} onMouseDown={handleDown} onTouchStart={handleDown} onTouchEnd={handleUp} onMouseMove={handleMove} onTouchMove={handleMove}><Code
 		code={code}
 		options={options}
 		handleInitialize={
@@ -104,5 +109,5 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 			}
 		}}
 		handleChange={handleChange}
-	/>;
+	/></div>;
 }

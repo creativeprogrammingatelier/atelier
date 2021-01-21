@@ -114,9 +114,9 @@ export function Cached<T>(
                                             + 3 * 24 * 60 * 60 * 1000
                                         ).then(res => { if (res === 0) setLoadMoreEnabled(false); })
                                     }}>
-                                    Load more
+                                    Load More
                                 </Button>
-                            ) : <p>Nothing more to load.</p>
+                            ) : <Button> Nothing More to Load</Button>
                         )
                     }
                 </Fragment>
