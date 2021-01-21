@@ -38,13 +38,10 @@ export function setUpCanvasLinkJson(){
     return {redirect:`${url_root}/login/oauth2/auth?client_id=${client_id}&scope=url:GET|/api/v1/courses url:GET|/api/v1/courses/:course_id/users &response_type=code&state=YYY&redirect_uri=${redirect_uri}`}
 }
 
-/**
- * We shall assume that a person cannot have more then 100 courses on canvas (can be easily changed to support using pagination helper below)
- * @param access_token 
- */
+
 export async function getCourses(access_token: String){
-     let result = await requestPromise(`${url_root}/api/v1/courses?access_token=${access_token}&per_page=${100}`)
-     return  JSON.parse(result);
+    let url = (`${url_root}/api/v1/courses?access_token=${access_token}&per_page=${100}`)
+     return  handlePagination(url);
 }
 
 
