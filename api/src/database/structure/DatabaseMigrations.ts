@@ -13,6 +13,15 @@ interface Migrations {
  * Defined migrations
  */
 const migrations: Migrations = {
+    5: async client => {
+        client.query(`
+            ALTER TABLE "Users"
+                ADD COLUMN canvasrefresh text UNIQUE;
+            ALTER TABLE "Courses"
+                ADD COLUMN canvasCourseID text;
+        `);
+    },
+
     // Adds automated and sharedBy fields to CommentThread, to distinguish automated
     // comments and add the ability to show the user that made such a comment public
     4: async client => {

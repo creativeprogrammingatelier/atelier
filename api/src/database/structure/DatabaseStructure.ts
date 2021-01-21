@@ -18,7 +18,7 @@ import {databaseSamples} from "./DatabaseSamples";
 // This does not apply to views, as those are recreated on every start of Atelier anyway,
 // whether they are changed or not. If a view changes because of a schema change, you don't
 // have to include those views in the migration.
-const VERSION = 4;
+const VERSION = 5;
 
 if (require.main === module) {
 	//args without node & path name
