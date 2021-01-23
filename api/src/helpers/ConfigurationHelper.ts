@@ -41,6 +41,18 @@ export interface Configuration {
 			/** Time to wait before disconnecting a client when it sits idle */
 			idleTimeoutMillis?: number
 		}
+	},
+	/**
+	Canvas API integration 
+	**/
+	canvas: { 
+		client_id: string,
+		client_secret: string,
+		//the path after the base URL
+		redirect_uri: string,
+		// URL of canvas instance
+		canvas_url_root: string
+
 	}
 }
 
@@ -159,6 +171,12 @@ export const config: Configuration = {
 				connectionTimeoutMillis: json.database.pool.connectionTimeoutMillis,
 				idleTimeoutMillis: json.database.pool.idleTimeoutMillis
 			}
+		},
+		canvas: { 
+			client_id: json.canvas.client_id,
+			client_secret: json.canvas.client_secret,
+			redirect_uri: json.baseUrl + json.canvas.redirect_uri,
+			canvas_url_root: json.canvas.canvas_url_root
 		}
 	};
 

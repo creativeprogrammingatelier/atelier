@@ -13,6 +13,8 @@ interface Migrations {
  * Defined migrations
  */
 const migrations: Migrations = {
+
+    //Add Canvas Course Migration
     // Adds automated and sharedBy fields to CommentThread, to distinguish automated
     // comments and add the ability to show the user that made such a comment public
     4: async client => {
