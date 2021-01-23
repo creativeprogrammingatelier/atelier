@@ -14,8 +14,6 @@ import {readFileAsString} from "../../helpers/FilesystemHelper";
 
 import {NotFoundDatabaseError} from "../../database/DatabaseErrors";
 import {UserDB} from "../../database/UserDB";
-import { getUsersByCourse, getUserSearch } from "../../../../test/api/api/APIRequestHelper";
-import { User } from "../../../../models/api/User";
 
 setSchemaValidator(validator);
 
