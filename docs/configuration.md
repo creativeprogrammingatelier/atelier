@@ -133,6 +133,26 @@ Atelier uses a connection pool for the database, which can also be configured us
 
 To learn more about these settings, please refer to the [node-postgres documentation](https://node-postgres.com/api/pool). Please note that for development environments, it is recommended to set the `max` field to allow 1 concurrent connection to the database. This way, it's easy to spot when you forget to release a client or try to use multiple clients within a transaction. On production servers this value should be set to scale with the number of concurrent users and the capacity of the database server.
 
+## Canvas API Integration
+
+Atelier can integrate with Canvas to import courses and automatically add all users. If you want to enable this integration, you need to add a `canvas` field to your integration:
+
+```json
+"canvas": {
+    "client_id": "18217000xxxxxxxx",
+    "client_secret": "XWQdS65BrQyurxxxxxxxxxxxxx",
+    "canvas_url_root": "https://utwente-dev.instructure.com"
+}
+```
+
+The three fields are all required and should be configured with the values received from your Canvas administrator:
+
+- `client_id`: the client id of the Atelier application as configured in Canvas
+- `client_secret`: the client secret of the Atelier application as configured in Canvas
+- `client_url_root`: the base URL of the Canvas instance to connect to, without a trailing slash
+
+While the three fields are all required when including the `canvas` block, the integration can be disabled by removing the entire block or setting `canvas` to undefined.
+
 ## Using environment variables or files
 
 Atelier can also read configuration values from your environment variables or files on disk. This can be useful when the values are also needed by other processes, for example in the case of a database password. 

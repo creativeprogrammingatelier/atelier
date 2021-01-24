@@ -38,9 +38,11 @@ export default class UserCanvasLink extends React.Component<any, any> {
 	
 	constructor(props: any){
 		super(props);
-		this.state = { 
+		this.state = {
+            enabled: false,
 			linked: false
-		}
+        }
+        this.checkEnabled();
 		this.checkLinkedCanvas();
 	}
 
@@ -67,9 +69,16 @@ export default class UserCanvasLink extends React.Component<any, any> {
 		CanvasHelper.getLinked().then(res => 
 			this.setState({linked: res.linked})
 			)
-	}
+    }
+    
+    /** Check if Canvas integration is enabled */
+    private checkEnabled() {
+        CanvasHelper.isEnabled().then(res => this.setState({ enabled: res }));
+    }
+
 	render(){
 		return (
+            this.state.enabled &&
 			<Form>
 				<FormLabel><p className="label">Canvas Link</p></FormLabel> <br/>
 					Linking Allows Atelier to Access your canvas data.<br/>

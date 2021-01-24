@@ -2,6 +2,11 @@ import { response } from "express";
 import { Fetch } from "./api/FetchHelper";
 
 export class CanvasHelper {
+    static async isEnabled() {
+        const response = await Fetch.fetchJson<{enabled : boolean}>("/api/canvas/enabled");
+        return response.enabled;
+    }
+
 	static async removeLink() {
         let options ={ 
             method:"delete"

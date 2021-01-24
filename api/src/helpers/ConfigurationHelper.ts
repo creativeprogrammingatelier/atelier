@@ -42,18 +42,13 @@ export interface Configuration {
 			idleTimeoutMillis?: number
 		}
 	},
-	/**
-	Canvas API integration 
-	**/
+	/** Canvas API integration connection information, or undefined if the integration is not enabled */
 	canvas: { 
 		client_id: string,
 		client_secret: string,
-		//the path after the base URL
-		redirect_uri: string,
-		// URL of canvas instance
+		/** Base URL of the Canvas instance */
 		canvas_url_root: string
-
-	}
+	} | undefined
 }
 
 interface LoginConfiguration {
@@ -172,12 +167,12 @@ export const config: Configuration = {
 				idleTimeoutMillis: json.database.pool.idleTimeoutMillis
 			}
 		},
-		canvas: { 
-			client_id: json.canvas.client_id,
-			client_secret: json.canvas.client_secret,
-			redirect_uri: json.baseUrl + json.canvas.redirect_uri,
-			canvas_url_root: json.canvas.canvas_url_root
-		}
+        canvas: 
+            json.canvas ? { 
+                client_id: prop("canvas.client_id", json.canvas.client_id),
+                client_secret: prop("canvas.client_secret", json.canvas.client_secret),
+                canvas_url_root: prop("canvas.canvas_url_root", json.canvas.canvas_url_root)
+            } : undefined
 	};
 
 // Configuration is immutable

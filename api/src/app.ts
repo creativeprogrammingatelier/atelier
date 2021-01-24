@@ -11,6 +11,7 @@ import {parsePostgresErrorCode, isPostgresError, PostgresError} from './helpers/
 import {InvalidParamsError} from './helpers/ParamsHelper';
 import {PermissionError} from "./helpers/PermissionHelper";
 import {ProjectValidationError} from '../../helpers/ProjectValidationHelper';
+import { IntegrationNotEnabledError } from './helpers/CanvasHelper';
 
 import {upgradeDatabase} from './database/structure/DatabaseMigrations';
 import {NotFoundDatabaseError} from './database/DatabaseErrors';
@@ -119,6 +120,8 @@ app.use((error: Error, request: Request, response: Response, next: NextFunction)
         response.status(400).send({error: error.reason, message: error.message});
     } else if (error instanceof ProjectValidationError) {
         response.status(400).send({error: "project.invalid", message: error.message});
+    } else if (error instanceof IntegrationNotEnabledError) {
+        response.status(400).send({error: `integrationNotEnabled.${error.integration}`, message: error.message});
     } else if (error instanceof Error && isPostgresError(error)) {
         const code = parsePostgresErrorCode(error as PostgresError);
         response.status(500).send({error: code, message: "Something went wrong while connecting to the database."});

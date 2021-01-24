@@ -36,5 +36,10 @@
         "pool": {
             "max": 1
         }
+    },
+    "canvas": {
+        "client_id": "182170000000000110",
+        "client_secret": "XWQdS65BrQyur2LCugFlmigNpNEfjLSLCnPx9SINAnX9pojYI8lrefoeFdSLJQXD",
+        "canvas_root_url": "https://utwente-dev.instructure.com"
     }
 }
