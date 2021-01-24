@@ -22,7 +22,7 @@ database/log
 database/data
 **/.DS_Store
 
-config/
+config/*
 !config/example.json
 
 
