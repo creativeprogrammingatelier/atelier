@@ -55,7 +55,9 @@ interface LoginConfiguration {
 	/** A unique internal identifier to use for this login method */
 	id: string,
 	/** A name to be displayed to the user */
-	name: string,
+    name: string,
+    /** Determines if this login method should be shown in the list of login providers */
+    hidden: boolean
 }
 
 /** Use an external SAML Identity Provider to login */
@@ -126,7 +128,8 @@ export const config: Configuration = {
 					const base = {
 						type: prop(`loginProvider[${i}].type`, provider.type),
 						id: prop(`loginProvider[${i}].id`, provider.id),
-						name: prop(`loginProvider[${i}].name`, provider.name)
+                        name: prop(`loginProvider[${i}].name`, provider.name),
+                        hidden: prop(`loginProviders[${i}].hidden`, provider.hidden, false)
 					};
 					switch (base.type) {
 						case "saml":
@@ -155,7 +158,8 @@ export const config: Configuration = {
 				[{
 					type: "builtin",
 					id: "atelier",
-					name: "Atelier",
+                    name: "Atelier",
+                    hidden: false,
 					register: true
 				}],
 		database: {

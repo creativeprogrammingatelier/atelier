@@ -67,7 +67,12 @@ This setting is especially useful if Atelier is used with programming languages 
 
 Atelier supports the use of multiple ways to log in. There are currently two types of login: using the SAML system (for example linked to the university SSO system) or by using the built in email/password system. You can also choose to allow both types of sign in, or link multiple SAML systems to your instance of Atelier.
 
-In the example above, there are configurations for two systems: a SAML connection to the Samling client-side testing service and the built in email/password system. All types have three fields in common: `type` specifying the type of provider, `id` specifying a unique internal identifier for the system (also used in URLs) and `name` specifying the name of the provider that is shown to the user.
+In the example above, there are configurations for two systems: a SAML connection to the Samling client-side testing service and the built in email/password system. All types have four fields in common: 
+
+- `type`: the type of provider, either `"saml"` or `"builtin"`
+- `id`: a unique internal identifier for the system (also used in URLs) 
+- `name`: the name of the provider that is shown to the user
+- `hidden` (optional): set to `true` if this provider should not be listed on the login screen. Note that it will still be possible to use this provider if the id is known by directly navigating to the login URL. Default value is `false`
 
 If multiple providers are specified, the users is presented with a choice for the provider they want to use to log in. If only one is given, the user is automatically redirected.
 
