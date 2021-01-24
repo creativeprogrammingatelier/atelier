@@ -91,6 +91,8 @@ Optionally, you can also specify which attributes from a SAML response will be u
 
 All of these fields are optional. If they are not set, default values will be assigned to the users signing in. For the name and email, it will be derived from the SAML `NameID` field, the role will default to user. The user can then change their name and email in the user settings.
 
+For complicated deployments, Atelier supports serving a SAML authentication endpoint on a different base URL. This URL is then used in the SAML metadata file to identify the Atelier Service Provider and for the redirect URLs. It can be set using the `altBaseUrl` field on a SAML login provider configuration. If this is not set, the global application `baseUrl` will be used, which is recommended for most deployments. If you want to use this functionality, you are responsible for ensuring that proper redirects are set up for all URLs on a proxy server. You'll likely want to redirect all user traffic on the alternate URLs to your normal base URL, but the authentication endpoints should be directly accessible on the alternate urls. This means that the locations `/api/auth/*` (or `/api/auth/providerName/*` for a more specific setup) should not be redirected.
+
 If your SAML provider uses different role names than Atelier, you can add a `roleMapping` field to the `attributes` object. The keys of this object are the values provided in the SAML attribute, the value assigned to the key is the role in Atelier. If a value in the SAML attribute is not defined in the `roleMapping`, it will be assumed that no mapping is required and the given role is a valid role in Atelier.
 
 ### Built in

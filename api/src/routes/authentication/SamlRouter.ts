@@ -29,7 +29,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 	);
 	
 	// Create the SAML SP metadata for our application
-	const urlBase = `${config.baseUrl}/api/auth/${samlConfig.id}`;
+	const urlBase = `${samlConfig.altBaseUrl || config.baseUrl}/api/auth/${samlConfig.id}`;
 	const sp = ServiceProvider({
 		entityID: urlBase,
 		nameIDFormat: [
