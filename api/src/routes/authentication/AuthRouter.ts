@@ -8,7 +8,9 @@ import {
 	getToken,
 	AuthError,
 	verifyToken,
-	issueToken
+	issueToken,
+    verifyTemporaryToken,
+    setTokenCookie
 } from '../../helpers/AuthenticationHelper';
 import {config} from '../../helpers/ConfigurationHelper';
 import {capture} from '../../helpers/ErrorHelper';
@@ -62,6 +64,13 @@ authRouter.get('/providers', capture(async (request, response) => {
 	const providers: LoginProvider[] =
 		config.loginProviders.map(lc => ({name: lc.name, url: `/api/auth/${lc.id}/login`}));
 	response.status(200).send(providers);
+}));
+
+/** Elevate to cookie autentication using a temporary token */
+authRouter.get('/login', capture(async (request, response) => {
+    const token = request.query.token as string;
+    const userID = await verifyTemporaryToken(token);
+    (await setTokenCookie(response, userID)).redirect('/');
 }));
 
 /** Log out from the session */

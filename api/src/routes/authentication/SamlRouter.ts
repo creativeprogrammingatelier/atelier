@@ -6,7 +6,7 @@ import * as validator from "@authenio/samlify-node-xmllint";
 
 import {GlobalRole} from "../../../../models/enums/GlobalRoleEnum";
 
-import {AuthError, setTokenCookie} from "../../helpers/AuthenticationHelper";
+import {AuthError, issueTemporaryToken, setTokenCookie} from "../../helpers/AuthenticationHelper";
 import {config, SamlLoginConfiguration} from "../../helpers/ConfigurationHelper";
 import {checkEnum, getEnum} from "../../../../helpers/EnumHelper";
 import {capture} from "../../helpers/ErrorHelper";
@@ -129,8 +129,14 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 			} else {
 				throw err;
 			}
-		}
-		(await setTokenCookie(response, user.ID)).redirect("/");
+        }
+        
+        if (!samlConfig.altBaseUrl) {
+            (await setTokenCookie(response, user.ID)).redirect("/");
+        } else {
+            const temporaryToken = issueTemporaryToken(user.ID);
+            response.redirect(`${config.baseUrl}/api/auth/login?token=${temporaryToken}`)
+        }
 	}));
 	
 	// /** Initiate Single Logout with a logout request to the IDP */
@@ -145,7 +151,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 	// /** Parse the logout response */
 	// samlRouter.post('/logout', capture(async (request, response) => {
 	//     await sp.parseLogoutResponse(idp, 'post', request);
-	//     clearTokenCookie(response).redirect('/');
+	//     clearTokenCookie(response).redirect("/");
 	// }));
 	
 	/** Handle some SAML specific errors */
