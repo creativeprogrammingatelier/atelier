@@ -10,15 +10,23 @@ import {databaseSamples} from "./DatabaseSamples";
  * Contains Script to generate database structure
  */
 
-// IMPORTANT
-// If you make any changes to the database schema, please upgrade the version number
-// and create a migration in the DatabaseMigrations file to update running Atelier 
-// applications. Please make sure that this schema results in the same database structure
-// as applying the migration on the previous version does.
-// This does not apply to views, as those are recreated on every start of Atelier anyway,
-// whether they are changed or not. If a view changes because of a schema change, you don't
-// have to include those views in the migration.
-const VERSION = 5;
+//////////////////////////////////////////////////////////////////////////////////////////////
+// ___ __  __ ____   ___  ____ _____  _    _   _ _____                                      //
+// |_ _|  \/  |  _ \ / _ \|  _ |_   _|/ \  | \ | |_   __                                    //
+//  | || |\/| | |_) | | | | |_) || | / _ \ |  \| | | |(_)                                   //
+//  | || |  | |  __/| |_| |  _ < | |/ ___ \| |\  | | | _                                    //
+// |___|_|  |_|_|    \___/|_| \_\|_/_/   \_|_| \_| |_|(_)                                   //
+//                                                                                          //
+// If you make any changes to the database schema, please upgrade the version number        //
+// and create a migration in the DatabaseMigrations file to update running Atelier          //
+// applications. Please make sure that this schema results in the same database structure   //
+// as applying the migration on the previous version does.                                  //
+// This does not apply to views, as those are recreated on every start of Atelier anyway,   //
+// whether they are changed or not. If a view changes because of a schema change, you don't //
+// have to include those views in the migration.                                            //
+//                                                                                          //
+/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/ const VERSION = 5; /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+////////////////////////////////////|--------------------|////////////////////////////////////
 
 if (require.main === module) {
 	//args without node & path name

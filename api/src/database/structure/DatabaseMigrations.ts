@@ -13,6 +13,7 @@ interface Migrations {
  * Defined migrations
  */
 const migrations: Migrations = {
+    // Add fields to users and courses for Canvas integration
     5: async client => {
         client.query(`
             ALTER TABLE "Users"
