@@ -10,6 +10,7 @@ import { CheckboxInput } from "../input/CheckboxInput";
 import { useObservable, pluckFirst } from "observable-hooks";
 import { map } from "rxjs/operators";
 import { combineLatest } from "rxjs";
+import { Announcement } from "../Announcement";
 
 /**
  * Button for Switching Between Public and Private Feed
@@ -47,6 +48,7 @@ interface FeedProperties {
 function Feed({ feed, type, global, buttons }: FeedProperties) {
     const [filtersExpanded, setFiltersExpanded] = useState(false);
     const [filtered, setFiltered] = useState([ "submission", "mention", "commentThread" ].concat(...(type === "personal" ? [ "comment" ] : [])));
+    const [count, setCount] = useState(0);
     const filteredObservable = useObservable(pluckFirst, [filtered]);
     const filteredFeedObservable = useObservable(() => 
         combineLatest([feed.observable, filteredObservable]).pipe(
@@ -83,7 +85,10 @@ function Feed({ feed, type, global, buttons }: FeedProperties) {
                     <FilterBox tag="comment" name="Replies" filtered={filtered} setFiltered={setFiltered} />
                 </div>
             }
-            <Cached cache={filteredFeed} extractDate={item => new Date(item.timestamp)}>
+            <div>
+                {count === 0 && <Announcement msg="No Submissions Yet"/>}
+            </div>
+            <Cached cache={filteredFeed} extractDate={item => new Date(item.timestamp)} updateCount={setCount}>
                 {item => <FeedBlock key={item.ID} data={item} global={global} />}
             </Cached>
         </div>
