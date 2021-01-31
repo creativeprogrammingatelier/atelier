@@ -14,10 +14,12 @@ import "../styles/login.scss";
 
 interface LoginRedirectProperties {
 	state: {
+		/** String representation of the source of the redirect. */
 		from: string
 	}
 }
 interface LoginProperties {
+	/** Origin location of the login request. */
 	location?: LoginRedirectProperties
 }
 export function Login({location}: LoginProperties) {

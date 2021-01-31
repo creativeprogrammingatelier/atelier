@@ -24,6 +24,9 @@ interface MentionSuggestionsProperties {
 	onSelected: (user: string) => void
 }
 
+/**
+ * Function for generating the mentions suggestions based ont the properties passed.
+ */
 export function MentionSuggestions({prefix, suggestionBase, round, courseID, onSelected}: MentionSuggestionsProperties) {
 	const [suggestions, setSuggestions] = useState({options: [] as string[], base: suggestionBase});
 	const displayPrefix: string = prefix === undefined ? "" : prefix;

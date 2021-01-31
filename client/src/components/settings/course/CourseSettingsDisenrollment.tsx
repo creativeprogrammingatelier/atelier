@@ -12,12 +12,19 @@ import {UserSearch} from "../user/UserSearch";
 import {UserInfo} from "../user/UserInfo";
 
 interface CourseSettingsDisenrollmentProperties {
+	/** Course ID withing database */
 	courseID: string
 }
+/**
+ * Component for disenrolling user from a course. 
+ */
 export function CourseSettingsDisenrollment({courseID}: CourseSettingsDisenrollmentProperties) {
 	const [user, setUser] = useState(undefined as User | undefined);
 	const [success, setSuccess] = useState(false as FeedbackContent);
 	
+	/**
+	 * Disenrolls user from course.
+	 */
 	function disenrollUser() {
 		if (user) {
 			courseDisenrollUser(courseID, user.ID)

@@ -7,8 +7,12 @@ import {canDisplayType} from "../submission/FileOverview";
 import {Node, TopLevelNode} from "./DirectoryViewer";
 
 interface DirectoryNodeProperties {
+	/** Node of the directory. */
 	node: Node
 }
+/**
+ * Returns the directory in the form of a DataTrigger component and a DataItem list.
+ */
 export function DirectoryNode({node}: DirectoryNodeProperties) {
 	const [opened, setOpened] = useState(true);
 	

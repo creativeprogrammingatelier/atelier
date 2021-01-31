@@ -23,10 +23,14 @@ import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 interface SubmissionOverviewProperties {
 	match: {
 		params: {
+			/** Submission ID within database */
 			submissionId: string
 		}
 	}
 }
+/**
+ * Component for viewing a submission overview, given a submission ID.
+ */
 export function SubmissionOverview({match: {params: {submissionId}}}: SubmissionOverviewProperties) {
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [error, setError] = useState(false as FeedbackContent);
@@ -39,6 +43,9 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 	
 	const submissionPath = "/submission/" + submissionId;
 	
+	/** 
+	 * Handles addition of a new comment.
+	 */
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
 		const commentBody = comment.trim();
 		if (commentBody === "") {
@@ -58,6 +65,11 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
 		setCreatingComment(false);
 		return createdComment;
 	};
+	/**
+	 * Handles the deletion of the submission for a given courseID
+	 * 
+	 * @param courseID Course ID for which submission will be deleted.
+	 */
 	const handleDelete = (courseID: string) => {
 		submission.delete().then(() => history.push(`/course/${courseID}`));
 	};

@@ -3,6 +3,9 @@ import {ParentalProperties} from "../../helpers/ParentHelper";
 
 const timeContext = createContext(new Date());
 
+/**
+ * Component used to provide the current time to any children component.
+ */
 export function TimeProvider({children}: ParentalProperties) {
 	const [currentTime, setCurrentTime] = useState(new Date());
 	
@@ -16,6 +19,9 @@ export function TimeProvider({children}: ParentalProperties) {
 	return <timeContext.Provider value={currentTime} children={children}/>;
 }
 
+/**
+ * Passes the timeContext constant to the useContext hook.
+ */
 export function useTime() {
 	return useContext(timeContext);
 }

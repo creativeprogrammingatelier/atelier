@@ -20,12 +20,19 @@ import { CourseUser, courseUserToUser } from "../../../../models/api/CourseUser"
 interface UserOverviewProperties {
 	match: {
 		params: {
+			/** Course ID within database */
 			courseId: string,
+			/** User ID within database */
 			userId: string,
+			/** Current active tab. */
 			tab: string
 		}
 	}
 }
+/** 
+ * Component for retrieving, and rendering, the contents of the current active tab based in the user 
+ * given and specified course.
+ */
 export function UserCourseOverview({match: {params: {courseId, userId, tab}}}: UserOverviewProperties) {
 	const [activeTab, setActiveTab] = useState(tab);
 	

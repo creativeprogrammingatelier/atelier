@@ -8,18 +8,29 @@ import {SearchResult} from "../../../../models/api/SearchResult";
 import {SearchResults} from "./SearchResults";
 
 export interface SearchProperties {
+	/** Search Query */
 	query?: string,
+	/** Variable denoting the way the data is sorted.*/
 	sorting?: Sorting
+	/** Course ot search in.*/
 	course?: string,
+	/** Used for to search for.*/
 	user?: string,
+	/** Submission to search for.*/
 	submission?: string
 }
 interface SearchOverviewProperties {
+	/** Variable for storing a search query */
 	location: {
+		/** Search Properties */
 		state: SearchProperties,
+		/** Search String */
 		search: string
 	}
 }
+/**
+ * Component for executing a an returning a search query.
+ */
 export function SearchOverview({location: {state={}, search}}: SearchOverviewProperties) {
     const [selectedCourse, setSelectedCourse] = useState(state.course);
 	const [searchResults, setSearchResults] = useState(undefined as unknown as SearchResult);

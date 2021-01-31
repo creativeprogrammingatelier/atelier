@@ -21,11 +21,16 @@ import { Area } from "./general/Area";
 interface CourseOverviewProperties {
 	match: {
 		params: {
+            /** Course ID within database */
             courseId: string,
+            /** Current active tab */
             tab?: string
 		}
 	}
 }
+/**
+ * Component retrieves all submission for a given course.
+ */
 export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: CourseOverviewProperties) {
 	const [uploading, setUploading] = useState(false);
 	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);

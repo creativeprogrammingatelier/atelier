@@ -20,8 +20,14 @@ export type Children =
 export type ChildrenConstructor =
 	| null
 	| JSX.Element
-
 export class Parent {
+	/**
+	 * Counts the children of the parent.
+	 * 
+	 * @param children Children of the parent object.
+	 * @returns Returns the number of children; 
+	 * 		one if only one child is passed, zero if children is a boolean, undefined or has a length of one.
+	 */
 	static countChildren(children: Children) {
 		if (children === undefined || children === null || Object.keys(children).length === 0) {
 			return 0;
@@ -33,7 +39,12 @@ export class Parent {
 			return 1;
 		}
 	}
-	
+	/**
+	 * Constructs the children of the parent withing a Fragment component.
+	 * 
+	 * @param children Children of the parent object.
+	 * @returns Fragment component containing the child.
+	 */
 	static constructChildren(children: Children): ChildrenConstructor {
 		if (
 			children === undefined ||

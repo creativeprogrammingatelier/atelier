@@ -26,6 +26,9 @@ interface CommentThreadProperties {
 	/** The id for the CommentThread in the databaseRoutes */
 	thread: CommentThread
 }
+/**
+ * Adds the specified comment thread within the comment Block component.
+ */
 export function CommentThread({thread}: CommentThreadProperties) {
 	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
 	const [success, setSuccess] = useState(false as FeedbackContent);
@@ -103,10 +106,18 @@ export function CommentThread({thread}: CommentThreadProperties) {
 }
 
 interface ManageRestrictedButtonsProperties {
+	/** Thread ID for the CommentThread in the database. */
 	thread: CommentThread,
+	/** Callback for when the CommentThread is discarded */
 	onDiscard: () => void,
+	/** Callback when the CommentThread's visibility is toggled. */
 	onToggle: () => void
 }
+/**
+ * Function manages visibility permissions for comment, if the user.
+ * 
+ * @return Returns the comment if the user has permission to see it and an empty Fragment component if not.
+ */
 function ManageRestrictedButtons({thread, onDiscard, onToggle}: ManageRestrictedButtonsProperties) {
 	const permission = useCoursePermission(thread.references.courseID);
 	const user = useCurrentUser();

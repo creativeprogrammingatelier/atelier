@@ -6,10 +6,20 @@ import {RoleHelper} from "../../../helpers/RoleHelper";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface UserRolesProperties<T> {
+	/** key-value pair of all roles within Atelier */
 	roles: T,
+	/** Function to resolve selection event. */
 	onSelected: (role: T | undefined) => void
 }
+/**
+ * Component to manage roles of a user.
+ */
 export function UserRoles<T>({roles, onSelected}: UserRolesProperties<T>) {
+	/**
+	 * Hook for resolving a select event.
+	 * 
+	 * @param role Role to be parse by resolver.
+	 */
 	const handleSelected = (role: T) => {
 		onSelected(role);
 	};

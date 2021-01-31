@@ -21,11 +21,16 @@ import { Breadcrumbs, Crumb } from "../../general/Breadcrumbs";
 
 interface CourseSettingsProperties {
 	match: {
+		/** Parameters of course */
 		params: {
+			/** Id of the course in the database */
 			courseId: string
 		}
 	}
 }
+/**
+ * Component for managing settings of a given course, course given via courseID.
+ */
 export function CourseSettings({match: {params: {courseId}}}: CourseSettingsProperties) {
 	const course = useCourse(courseId);
 	
@@ -52,8 +57,12 @@ export function CourseSettings({match: {params: {courseId}}}: CourseSettingsProp
 }
 
 interface SettingsProperties {
+	/** ID of course within database */
 	courseID: string
 }
+/**
+ * Course settings for the given course.
+ */
 function Settings({courseID}: SettingsProperties) {
 	return <Fragment>
 		<Permissions single={PermissionEnum.manageCourses} course={courseID}>

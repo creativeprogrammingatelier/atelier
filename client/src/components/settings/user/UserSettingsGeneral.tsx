@@ -17,9 +17,13 @@ import {Overlay} from "../../general/Overlay";
 import {ResearchPermissionInformation} from "../../ResearchPermissionWrapper";
 
 interface ResearchInfoPopupProperties {
+    /** Function to handle close of the popup. */
     close: () => void
 }
 
+/**
+ * Component for the popup for the research info.
+ */
 function ResearchInfoPopup({ close }: ResearchInfoPopupProperties) {
     return <Overlay>
         <Area className="p-4 mx-auto my-5 col-12 col-sm-10 col-md-8">
@@ -33,6 +37,9 @@ function ResearchInfoPopup({ close }: ResearchInfoPopupProperties) {
     </Overlay>
 }
 
+/**
+ * Component to the manage the settings of a given user.
+ */
 export function UserSettingsGeneral() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -52,6 +59,9 @@ export function UserSettingsGeneral() {
         setLoading(course.state !== CacheState.Loaded);
     });
     
+    /**
+     * Updates the user settings.
+     */
     const handleUpdate = () => {
         setSuccess(false);
         setError(false);
@@ -60,6 +70,9 @@ export function UserSettingsGeneral() {
             .catch(error => setError(`Failed to update course: ${error}`));
     };
 
+    /**
+     * Function to handle the user setting the research information permission.
+     */
     const handleResearchInformationClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         event.preventDefault();
         setShowResearchInfo(true);

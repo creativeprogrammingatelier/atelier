@@ -8,6 +8,9 @@ import {FeedbackError} from "./feedback/FeedbackError";
 import {useRawCache} from "./general/loading/CacheProvider";
 import {LoadingIcon} from "./general/loading/LoadingIcon";
 
+/**
+ * Component that handles user logout.
+ */
 export function Logout() {
 	const [loggedOut, setLoggedOut] = useState(false);
 	const [error, setError] = useState(false as FeedbackContent);

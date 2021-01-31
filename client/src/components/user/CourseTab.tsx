@@ -10,8 +10,12 @@ import {Loading} from "../general/loading/Loading";
 import {Panel} from "../general/Panel";
 
 interface CourseTabProperties {
+	/** User to be queried. */
 	user: User
 }
+/**
+ * Component that retrieves all courses the user is part of.
+ */
 export function CourseTab({user}: CourseTabProperties) {
 	return <div className="contentTab">
 		<DataList header="Courses">

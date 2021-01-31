@@ -11,21 +11,36 @@ import {ScrollHelper} from "../../helpers/ScrollHelper";
 // TODO: Resolve inconsistent naming around Controlled, CodeMirror and codemirror
 
 export interface CodeSelection {
+	/** Range of code within code selection */
 	ranges: Array<{
+		/** Starting position of code selection */
 		head: CodeMirror.Position,
+		/** End position of code selection */
 		anchor: CodeMirror.Position
 	}>
 }
 
 export interface CodeProperties {
+	/** Code in string format */
 	code: string,
+	/** Options for configuring CodeMirror */
 	options?: codemirror.EditorConfiguration,
+	/** Initialization Handler */
 	handleInitialize?: (editor: codemirror.Editor) => void,
+	/** Handler for onSelect */
 	handleSelect?: (editor: codemirror.Editor, data: CodeSelection) => void | boolean,
+	/** Handler for onMouseDown */
 	handleClick?: (editor: codemirror.Editor, event: Event) => void | boolean,
+	/** Handler for onChange */
 	handleChange?: (editor: codemirror.Editor, data: codemirror.EditorChange, value: string) => void | boolean
 }
 
+/**
+ * Returns the CodeMirror with the code inside.
+ * 
+ * @param code Code to be passed into CodeMirror 
+ * @param options Options for configuring CodeMirror
+ */
 export function Code({code, options = {}, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: CodeProperties) {
 	useEffect(ScrollHelper.scrollToHash, []);
 	
@@ -62,6 +77,9 @@ export function Code({code, options = {}, handleInitialize = defaultHandler, han
 	/>;
 }
 
+/**
+ * Default configuration for CodeMirror
+ */
 export const defaultOptions = {
 	mode: "text/x-java",
 	theme: "atelyay",
@@ -70,5 +88,8 @@ export const defaultOptions = {
 	indentUnit: 4,
 	indentWithTabs: true
 };
+/**
+ * Default Handler
+ */
 export const defaultHandler = () => {
 };

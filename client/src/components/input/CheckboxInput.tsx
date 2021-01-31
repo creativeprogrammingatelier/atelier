@@ -3,9 +3,13 @@ import React, {useEffect, useState} from "react";
 import {ParentalProperties} from "../../helpers/ParentHelper";
 
 interface CheckboxInputProperties extends ParentalProperties {
+	/**  Value of the checkbox */
 	value: string,
+	/** Is selected boolean  */
 	selected?: boolean,
+	/** Boolean for whether the checkbox is disabled */
 	disabled?: boolean,
+	/** Function for resolving a change of the checkbox */
 	onChange: (state: boolean) => void
 }
 export function CheckboxInput({children, value, selected, disabled, onChange}: CheckboxInputProperties) {

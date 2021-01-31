@@ -11,10 +11,19 @@ import {FeedbackContent} from "../../feedback/Feedback";
 import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
 import {FileViewer, FileViewerProperties} from "../FileOverview";
 
+/**
+ * Component for viewing images.
+ */
 export function ImageViewer({file, sendComment}: FileViewerProperties) {
 	const [success, setSuccess] = useState(false as FeedbackContent);
 	const [error, setError] = useState(false as FeedbackContent);
 	
+	/**
+	 * Function to handle comment creation.
+	 * 
+	 * @param comment Text of comment to be created.
+	 * @param restricted Whether comment visibility is restricted, i.e. ony teachers and TAs can see it.
+	 */
 	const handleCommentSend = async(comment: string, restricted: boolean) => {
 		return sendComment(comment, restricted).then(feedback => {
 			if (feedback.type === "success") {
@@ -36,9 +45,20 @@ export function ImageViewer({file, sendComment}: FileViewerProperties) {
 	</Fragment>;
 }
 
+/**
+ * Function to resolve whether viewer accepts given type.
+ * 
+ * @param type File type to be parsed.
+ */
 function acceptsType(type: string) {
 	return type.startsWith("image/");
 }
+
+/**
+ * Function to resolve whether viewer accepts given file.
+ * 
+ * @param file File to be parsed.
+ */
 function acceptsFile(file: File) {
 	return acceptsType(file.type);
 }

@@ -9,13 +9,21 @@ import {useCourses} from "../../../helpers/api/APIHooks";
 import {FeedbackError} from "../../feedback/FeedbackError";
 import {LabeledInput} from "../../input/LabeledInput";
 
+/**
+ * Component for creating courses.
+ */
 export function CourseCreator() {
 	const [courseName, setCourseName] = useState("");
 	const [error, setError] = useState(false as FeedbackContent);
 	const courses = useCourses();
 	const history = useHistory();
 	
-	// Create course
+	/**
+	 * Function for creating a course given the course name.
+	 * 
+	 * @param courseName Course name of the given course.
+	 * @throws Error when new course has failed to be created.
+	 */
 	async function handleSubmission(courseName: string) {
 		try {
 			const course = await courses.create({

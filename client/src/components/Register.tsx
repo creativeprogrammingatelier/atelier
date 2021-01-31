@@ -3,11 +3,17 @@ import {Redirect, Link} from "react-router-dom";
 import {User} from "../../../models/api/User";
 import {Form} from "react-bootstrap";
 
+/**
+ * Register class to handler registration of new users.
+ */
 class Register extends Component {
 	
 	state: {email: string, password: string, passwordConfirmation: string, role: string, user: User | null, response: string, redirectToReferrer: boolean};
 	props: any;
 	
+	/**
+	 * Constructor initializes all state variables.
+	 */
 	constructor(props: any) {
 		super(props);
 		this.state = {
@@ -21,6 +27,10 @@ class Register extends Component {
 		};
 	}
 	
+	/**
+	* Validation for the user input; Email length, 
+	* password length and password confirmation
+	*/
 	validateForm() {
 		return (
 			this.state.email.length > 0 &&
@@ -29,6 +39,10 @@ class Register extends Component {
 		);
 	}
 	
+	/**
+	 * Method handling submission of new registration, if the input is valid registration goes through
+	 * if not then method is cut prematurely.
+	 */
 	onSubmit = (event: {preventDefault: () => void;}) => {
 		event.preventDefault();
 		if (!this.validateForm()) {
@@ -43,6 +57,9 @@ class Register extends Component {
 		// }, () => alert('Registeration has failed, Do you already have an account ? '));
 	};
 	
+	/**
+	 * Handle change within the input field.
+	 */
 	handleChange = (event: {target: {value: string; name: string;};}) => {
 		const {value, name} = event.target;
 		this.setState({
@@ -50,6 +67,9 @@ class Register extends Component {
 		});
 	};
 	
+	/** 
+	 * Renders registration form.
+	 */
 	render() {
 		if (this.state.redirectToReferrer) {
 			return (

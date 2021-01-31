@@ -9,6 +9,9 @@ import {Loading} from "../../general/loading/Loading";
 import {Block} from "../../general/Block";
 import {PluginInput} from "./PluginInput";
 
+/**
+ * Component for managing plugin settings.
+ */
 export function PluginSettings() {
 	const [creating, updateCreating] = useState(false);
 	

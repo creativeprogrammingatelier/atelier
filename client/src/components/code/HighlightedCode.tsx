@@ -10,12 +10,23 @@ import {SelectionHelper} from "../../helpers/SelectionHelper";
 import {Code, CodeProperties, defaultHandler} from "./Code";
 
 export interface SnippetHighlight extends Snippet {
+	/** Function to be called onClick event */
 	onClick: Function,
 }
 export interface HighlightedCodeProperties extends CodeProperties {
-    snippets: SnippetHighlight[],
+	/** Snippets included in the highlighted code.  */
+	snippets: SnippetHighlight[],
+	/** Boolean for whether not the highlighted code is selected. */
 	selecting: boolean
 }
+/**
+ * Returns a Code component with the highlighted code that was selected
+ * 
+ * @param code Code selected.
+ * @param options Configuration options for CodeMirror .
+ * @param snippets Code snippets contained in the highlighted code.
+ * @param selecting Whether it is selected.
+ */
 export function HighlightedCode({code, options, snippets, selecting, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
 	const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
 	const [click, setClick] = useState(noPosition);
@@ -57,6 +68,8 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 			}
 		}
 	};
+
+	useEffect(setCommentHighlights, [codeMirror, snippets]);
 	
 	/**
 	 * Handle click in the code canvas.
@@ -64,16 +77,25 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 	 * the case the first comment will have its onClick method called.
 	 */
 
-	useEffect(setCommentHighlights, [codeMirror, snippets]);
-	
+	/**
+	 * Records a mouse down event.
+	 */
 	const handleDown = () => {
 		hasMoved = false;	
 	};
 
+	/**
+	 * Record whether the mouse has moved.
+	 */
 	const handleMove  = () => {
 		hasMoved = true
 	};
 
+	/**
+	 * On mouse up event checks whether the mouse has moved, if so it checks if the 
+	 * position of the click corresponds to a comment, if so executes the click 
+	 * function of the comment.
+	 */
 	const handleUp = () => {
 		if (!hasMoved && snippets && !selecting && click !== noPosition) {
 			let topPriority: SnippetHighlight | undefined = undefined;
@@ -92,7 +114,8 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 		}
 	};
 	
-	return <div onMouseUp={handleUp} onMouseDown={handleDown} onTouchStart={handleDown} onTouchEnd={handleUp} onMouseMove={handleMove} onTouchMove={handleMove}><Code
+	return <div onMouseUp={handleUp} onMouseDown={handleDown} onTouchStart={handleDown} onTouchEnd={handleUp} onMouseMove={handleMove} onTouchMove={handleMove}>
+		<Code
 		code={code}
 		options={options}
 		handleInitialize={
@@ -109,5 +132,6 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
 			}
 		}}
 		handleChange={handleChange}
-	/></div>;
+		/>
+	</div>;
 }

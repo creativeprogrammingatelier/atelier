@@ -30,12 +30,19 @@ import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 interface FileOverviewProperties {
 	match: {
 		params: {
+			/** Submission ID within database */
 			submissionId: string,
+			/** Filed ID within file */
 			fileId: string,
+			/** Current tav opened. */
 			tab: string
 		}
 	}
 }
+/**
+ * Component that, given a file and opened tab, renders the appropriate information from the 
+ * database.
+ */
 export function FileOverview({match: {params: {submissionId, fileId, tab}}}: FileOverviewProperties) {
 	const submission = useSubmission(submissionId);
 	const file = useFile(submissionId, fileId);

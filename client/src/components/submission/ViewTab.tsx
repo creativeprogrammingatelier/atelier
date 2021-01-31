@@ -11,12 +11,24 @@ import {FeedbackMessage} from "../feedback/Feedback";
 import {FileCommentHandler, FileViewerProperties} from "./FileOverview";
 
 interface ViewTabProperties {
+	/** File to be viewed */
 	file: File,
+	/** Viewer to be used for file */
 	viewer: (properties: FileViewerProperties) => JSX.Element,
 }
+/**
+ * Component for viewing a given file with a given viewer.
+ */
 export function ViewTab({file, viewer: viewer}: ViewTabProperties) {
 	const fileComments = useFileComments(file.references.submissionID, file.ID);
 	
+	/**
+	 * Handles comment creation.
+	 * 
+	 * @param comment Comment text of new comment.
+	 * @param restricted Whether visibility is retroacted, i.e. only teachers and TAs can see it.
+	 * @param selection The source selection of the new comment.
+	 */
 	const sendComment: FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => {
 		const commentBody = comment.trim();
 		if (commentBody === "") {

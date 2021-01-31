@@ -7,9 +7,14 @@ import {Tag} from "../../general/Tag";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface UserSearchProperties {
+	/** Course ID within the database */
 	courseID?: string,
+	/** Function to resolve a selection event. */
 	onSelected: (user: User | undefined) => void
 }
+/**
+ * Component to search a user within a given course.
+ */
 export function UserSearch({courseID, onSelected}: UserSearchProperties) {
 	const [search, setSearch] = useState("");
 	const [users, setUsers] = useState([] as User[]);

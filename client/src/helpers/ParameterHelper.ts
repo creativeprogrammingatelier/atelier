@@ -1,8 +1,16 @@
 import {Sorting} from "../../../models/enums/SortingEnum";
 
+/**
+ * Object for handling parameters.
+ */
 export class ParameterHelper {
+	/**
+	 * Convert a query parameter string into a key-value object
+	 * 
+	 * @param parameters Parameter string to be converted
+	 * @returns Key-Value object representation of string.
+	 */
 	static getQueryParameters(parameters: string) {
-		// Convert a query parameter string into a key-value object
 		const query: {[key: string]: string} = {};
 		const pairs = (parameters[0] === '?' ? parameters.substr(1) : parameters).split('&');
 		for (let i = 0; i < pairs.length; i++) {
@@ -11,8 +19,13 @@ export class ParameterHelper {
 		}
 		return query;
 	}
-	static createQueryParameters(parameters: {[key: string]: string | number | boolean | undefined}) {
-		// Convert a key-value object into a string of query parameters
+	/**
+	 * Convert a key-value object into a string of query parameters
+	 * 
+	 * @param parameters Key-Value object to be converted to string. 
+	 * @returns String representation of key-value object.
+	 */
+	static createQueryParameters(parameters: {[key: string]: string | number | boolean | undefined}) { 
 		if (!parameters) {
 			return "";
 		}
@@ -25,9 +38,22 @@ export class ParameterHelper {
 			return "";
 		}
 	}
+	/**
+	 * Convert key-value object into a string of query parameters.
+	 * 
+	 * @param parameters Key-value object to be converted.
+	 * @returns String of query parameters.
+	 */
 	static createSearchParameters(parameters: SearchParameters) {
 		return ParameterHelper.createQueryParameters(parameters);
 	}
+	/**
+	 * Inserts the keys from one key-value object into another.
+	 * 
+	 * @param parameters The key-value object to be populated.
+	 * @param names The key-value object to be inserted.
+	 * @returns key-value object with the keys from the 'name' object inserted into params.
+	 */
 	static nameParameters(parameters: {[key: string]: string}, names: {[key: string]: string}) {
 		const result: {[key: string]: string} = {};
 		for (const [parameter, value] of Object.entries(parameters)) {
@@ -41,19 +67,30 @@ export class ParameterHelper {
 	}
 }
 interface SearchParameters {
+	/** Key-Value object containing query parameters*/
 	[key: string]: string | number | Sorting | undefined,
 	q: string,
+	/** Search Limit */
 	limit?: number,
+	/** Search Offset */
 	offset?: number,
+	/** Which order Search must be sorted*/
 	sorting?: Sorting,
+	/** CourseID of Search */
 	courseID?: string,
+	/** UserID of Search */
 	userID?: string,
+	/** SubmissionID of Search */
 	submissionID?: string
 }
 
 export interface PaginationParameters {
-    limit?: number,
-    offset?: number,
-    after?: number,
+	/** Pagination Limit */
+	limit?: number,
+	/** Pagination Offset */
+	offset?: number,
+	/** Space after pagination */
+	after?: number,
+	/** Space before pagination */
     before?: number
 }
