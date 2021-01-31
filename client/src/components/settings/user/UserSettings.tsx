@@ -6,6 +6,9 @@ import {Frame} from "../../frame/Frame";
 import UserCanvasLink from "./UserCanvasLink";
 import {UserSettingsGeneral} from "./UserSettingsGeneral";
 
+/**
+ * Component for listing the user settings of a user.
+ */
 export function UserSettings() {
 	return <Frame title="Settings" sidebar search>
 		<Jumbotron>

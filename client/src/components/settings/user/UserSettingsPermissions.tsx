@@ -16,27 +16,43 @@ import {UserInfo} from "./UserInfo";
 import {UserSearch} from "./UserSearch";
 
 interface PermissionDisplay {
+	/** Permissions of the user */
 	[key: string]: string
 }
 interface PermissionState {
+	/** State of the permission of the user, whether active or not */
 	[key: string]: boolean
 }
 interface UserSettingsPermissionsProperties {
+	/** Course ID within the database */
 	courseID?: string
 }
 interface UserSettingsPermissionsSectionProperties {
+	/** Label of permissions settings */
 	header: string,
+	/** Current user permissions */
 	display: PermissionDisplay,
+	/** State of user permissions */
 	state: PermissionState,
+	/** Function for setting the changing the state of a user permission */
 	setState: (permission: string, state: boolean) => void
 }
+/** 
+ * Component managing the permission of a given user, in the specified course.
+ */
 export function UserSettingsPermissions({courseID}: UserSettingsPermissionsProperties) {
 	const [user, setUser] = useState(undefined as User | undefined);
 	const [permissions, setPermissions] = useState({} as PermissionState);
 	
+	/**
+	 * Sets the new permission given. 
+	 */
 	const setPermission = (permission: string, state: boolean) => {
 		setPermissions(permissions => ({...permissions, [permission]: state}));
 	};
+	/**
+	 * Function to handle updates to the permissions of the user.
+	 */
 	const handleUpdate = () => {
 		if (user) {
 			// Send local / global permission request
@@ -84,6 +100,10 @@ export function UserSettingsPermissions({courseID}: UserSettingsPermissionsPrope
 	</Form>;
 }
 
+/**
+ * Component for displaying and changing the permissions of a user. Permissions are changed 
+ * via a checkbox input for every permission in "display". 
+ */
 function UserSettingsPermissionsSection({header, display, state, setState}: UserSettingsPermissionsSectionProperties) {
 	return <LabeledInput label={header}>
 		<Area className="ml-2">

@@ -1,3 +1,6 @@
+/**
+ * Roles within defined within Atelier
+ */
 const roleNames: {[key: string]: string} = {
 	admin: "Admin",
 	staff: "Staff",
@@ -11,6 +14,12 @@ const roleNames: {[key: string]: string} = {
 };
 
 export class RoleHelper {
+	/**
+	 * Displays the role value associated with the role key passed.
+	 * 
+	 * @param role Role key passed in.
+	 * @returns The value corresponding to the key passed or unregistered if role is not found.
+	 */
 	static displayName(role: string): string {
 		if (role in roleNames) {
 			return roleNames[role];

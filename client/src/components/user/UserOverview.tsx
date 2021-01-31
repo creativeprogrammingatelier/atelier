@@ -17,11 +17,16 @@ import {SubmissionTab} from "./SubmissionTab";
 interface UserOverviewProperties {
 	match: {
 		params: {
+			/** User ID within database */
 			userId: string,
+			/** Current active tab */
 			tab: string
 		}
 	}
 }
+/**
+ * Component for retrieving user information for the current active tab
+ */
 export function UserOverview({match: {params: {userId, tab}}}: UserOverviewProperties) {
 	const [activeTab, setActiveTab] = useState(tab);
 	const userPath = "/user/" + userId;
@@ -35,6 +40,11 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
 		}
 	});
 	
+	/**
+	 * Render the contents of the tab based on the user given.
+	 * 
+	 * @param user User to be queried.
+	 */
 	const renderTabContents = (user: User) => {
 		if (activeTab === "courses") {
 			return <CourseTab user={user}/>;

@@ -13,15 +13,19 @@ import {FeedbackError} from "../../feedback/FeedbackError";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface CourseSettingsGeneralProperties {
+	/** Course ID within database */
 	courseID: string
 }
+/**
+ * Component to manage the general setting for the given course.
+ */
 export function CourseSettingsGeneral({courseID}: CourseSettingsGeneralProperties) {
 	const [name, setName] = useState("");
 	const [state, setState] = useState(undefined as CourseState | undefined);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false as FeedbackContent);
 	const course = useCourse(courseID);
-	
+
 	useSubscription(course.observable, course => {
 		const c = (course as CacheItem<Course>).value;
 		setName(c?.name || "");
@@ -29,6 +33,11 @@ export function CourseSettingsGeneral({courseID}: CourseSettingsGeneralPropertie
 		setLoading(course.state !== CacheState.Loaded);
 	});
 	
+	/**
+	 * Function for updating the course settings. 
+	 * 
+	 * @throws Error when it fails to update the course.
+	 */
 	const handleUpdate = async() => {
 		course.update({name, state})
 			.catch(error => setError(`Failed to update course: ${error}`));

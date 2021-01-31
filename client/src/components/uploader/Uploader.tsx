@@ -51,15 +51,27 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 	
 	let inputElement = null as HTMLInputElement | null;
 	
+	/**
+	 * Function to validate the upload.
+	 */
 	const uploadPrevented = () => validation.containsNoCodeFiles || validation.invalidProjectName;
 	
+	/**
+	 * Rests the validation for files.
+	 */
 	const resetValidation = () => {
 		updateValidation(defaultValidation<File>([]));
 	};
+	/**
+	 * Resets upload errors. 
+	 */
 	const resetErrors = () => {
 		updateErrors({upload: false as false | string});
 	};
 	
+	/**
+	 * Function for handling file selection.
+	 */
 	const handleFilesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files) {
 			console.log("Selected some files");
@@ -69,6 +81,11 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 			updateSelectedFiles(Array.from(event.target.files));
 		}
 	};
+	/**
+	 * Function for handling successful uploads.
+	 * 
+	 * @param result Success result.
+	 */
 	const handleUploadComplete = (result: Submission) => {
 		updateUploading(false);
 		updateErrors(prev => ({...prev, upload: false}));
@@ -78,6 +95,11 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 		updateSelectedFiles([]);
 		onUploadComplete(result);
 	};
+	/**
+	 * Handler upload error.
+	 * 
+	 * @param error Upload Error 
+	 */
 	const handleUploadError = (error: JsonFetchError) => {
 		console.log(`Error uploading folder: ${error.message}`);
 		updateErrors(prev => ({...prev, upload: error.message}));

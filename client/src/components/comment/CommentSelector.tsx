@@ -12,12 +12,17 @@ import {Floater} from "../general/Floater";
 import {CommentCreator} from "./CommentCreator";
 
 interface MentionProperties {
+	/** CourseID of Mention */
 	courseID: string
 }
 interface CommentSelectorProperties<T> {
+	/** Code Viewer function */
 	codeViewer: (properties: T) => JSX.Element,
+	/** Code properties */
 	codeProperties: T,
+	/** Mentions */
 	mentions?: MentionProperties,
+	/** Function that handles sending comments */
 	sendHandler: (comment: string, restricted: boolean, selection: Selection) => Promise<boolean>
 }
 export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHandler}: CommentSelectorProperties<T>) {

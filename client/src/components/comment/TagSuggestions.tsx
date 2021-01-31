@@ -13,6 +13,9 @@ interface TagSuggestionsProperties {
 	onSelected: (tag: string) => void
 }
 
+/**
+ * Returns a list of suggestions when setting a tag, based on the properties supplied.
+ */
 export function TagSuggestions({prefix, tagIndex, round, onSelected}: TagSuggestionsProperties) {
 	const [suggestions, setSuggestions] = useState( [] as string[]);
 	const displayPrefix: string = prefix === undefined ? "" : prefix;

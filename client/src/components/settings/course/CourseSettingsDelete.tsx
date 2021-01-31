@@ -8,11 +8,16 @@ import {ButtonMultistate} from "../../input/button/ButtonMultistate";
 import {FeedbackError} from "../../feedback/FeedbackError";
 
 interface CourseSettingsDeleteProperties {
+	/** Course ID within the database */
 	courseID: string
 }
+/**
+ * Component for deleting a course.
+ */
 export function CourseSettingsDelete({courseID}: CourseSettingsDeleteProperties) {
 	const history = useHistory();
 	const course = useCourse(courseID);
+	/** Do deletion of the course. */
 	const handleDelete = () => {
 		course.delete().then(() => history.push("/"));
 	};

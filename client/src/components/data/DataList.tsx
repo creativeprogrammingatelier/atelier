@@ -10,17 +10,25 @@ import {Heading} from "../general/Heading";
 import {NonEmpty} from "../general/NonEmpty";
 
 export interface DataListOptional {
+	/** Icon of DataList */
 	icon: IconType,
+	/** Function to be called when list is clicked. */
 	click: () => void,
+	/** Child component(s) of DataList */
 	component: Children
 }
 export interface DataListProperties extends ParentalProperties {
 	header: string,
+	/** Optional data of DataList */
 	optional?: DataListOptional,
+	/** Boolean for whether the list is collapsed or not */
 	collapse?: boolean,
+	/** Function to be called when user wants to load more items from list. */
 	more?: (limit: number, offset: number) => Children
+	/** Size of DataList */
 	size?: number,
 	empty?: Children,
+	/** NUmber of children of the DataList */
 	childCount?: number
 }
 export function DataList({header, optional, collapse, more, size = 5, empty, children, childCount}: DataListProperties) {
@@ -30,6 +38,11 @@ export function DataList({header, optional, collapse, more, size = 5, empty, chi
 	const [complete, setComplete] = useState(countChildren(children) < size);
 	const [loadingMore, setLoadingMore] = useState(false);
 	
+	/**
+	 * Counts the children of the list.
+	 * 
+	 * @param children Children of the DataList
+	 */
 	function countChildren(children: Children) {
 		if (childCount !== undefined) {
 			return childCount;
@@ -37,6 +50,9 @@ export function DataList({header, optional, collapse, more, size = 5, empty, chi
 		return Parent.countChildren(children);
 	}
 	
+	/**
+	 * Loads more children from list.
+	 */
 	const loadMore = async() => {
 		if (more && !loadingMore) {
 			setLoadingMore(true);

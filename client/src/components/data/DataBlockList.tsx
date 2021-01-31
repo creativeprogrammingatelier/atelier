@@ -7,6 +7,7 @@ import {DataList, DataListProperties} from "./DataList";
 
 export interface DataListEntryProperties {
 	key: string,
+	/** All properties are the same as the DataBlockProperties */
 	transport?: string,
 	title: string,
 	text: string,
@@ -14,8 +15,12 @@ export interface DataListEntryProperties {
 	tags?: TagProperties[]
 }
 interface DataBlockListProperties extends DataListProperties {
+	/** List of DataBlockProperties for all DataBlocks within the list. */
 	list: DataListEntryProperties[]
 }
+/**
+ * Returns the DataBlockList from the DataBlockListProperties passed in.
+ */
 export function DataBlockList({list, ...properties}: DataBlockListProperties) {
 	return <DataList {...properties}>
 		{list.map((block) =>

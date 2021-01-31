@@ -8,6 +8,9 @@ import { Overlay } from "./general/Overlay";
 import { CheckboxInput } from "./input/CheckboxInput";
 import { ParentalProperties } from "../helpers/ParentHelper";
 
+/**
+ * Component used to warp the research permissions.
+ */
 export function ResearchPermissionWrapper({ children }: ParentalProperties) {
     const currentUser = useCurrentUser();
     return <Cached cache={currentUser} wrapper={() => children}>
@@ -24,6 +27,9 @@ export function ResearchPermissionWrapper({ children }: ParentalProperties) {
     </Cached>
 }
 
+/** 
+ * Component used to store and retrieve the research permissions information.
+ */
 export function ResearchPermissionInformation() {
     return <Fragment>
         <p>You have been invited to use a research prototype of Atelier. This platform aims to improve the process of providing feedback to students on their programming assignments in a tutorial setting.</p>
@@ -35,6 +41,9 @@ export function ResearchPermissionInformation() {
     </Fragment>;
 }
 
+/**
+ * Research permission overlay for denoting whether you permission is allowed or declined.
+ */
 function ResearchPermissionOverlay() {
     const currentUser = useCurrentUser();
     const [researchAllowed, setResearchAllowed] = useState(false);

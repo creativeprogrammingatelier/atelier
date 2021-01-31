@@ -8,9 +8,14 @@ import {CommentThread} from "../comment/CommentThread";
 import {Cached} from "../general/loading/Cached";
 
 interface CommentTabProperties {
+	/** Source file, comment is associated with. */
 	file: File,
+	/** Submission comment was made in.*/
 	submissionID: string
 }
+/**
+ * Component that retrieves the comments threads from a file and displays them.
+ */
 export function CommentTab({file}: CommentTabProperties) {
 	const fileComments = useFileComments(file.references.submissionID, file.ID);
 	// TODO sort threads once new interface is implemented. Useful for switch between code and comment threads.

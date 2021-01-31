@@ -10,9 +10,14 @@ import {UserInfo} from "./UserInfo";
 import {UserRoles} from "./UserRoles";
 
 interface UserSettingsRolesProperties<T> {
+	/** roles within Atelier */
 	roles: T,
+	/** Course ID within database */
 	courseID?: string
 }
+/**
+ * Component for managing roles for a given user, within a specified course.
+ */
 export function UserSettingsRoles<T>({roles, courseID}: UserSettingsRolesProperties<T>) {
 	const [user, setUser] = useState(undefined as User | undefined);
 	const [role, setRole] = useState(undefined as T | undefined);

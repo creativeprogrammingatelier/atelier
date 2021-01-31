@@ -8,12 +8,20 @@ import {useTime} from "./TimeProvider";
 import { ParentalProperties } from "../../helpers/ParentHelper";
 
 interface DataBlockProperties extends ParentalProperties {
+	/** Destination of OptionalLink component */
 	transport?: string,
+	/** Title of component */
 	title: string,
+	/** Data of DataBlock */
 	text?: string,
+	/** Timestamp*/
 	time: Date | string,
+	/** Tags associated with DataBlock  */
 	tags?: TagProperties[]
 }
+/**
+ * Returns the DataBlock component from specified parameters.
+ */
 export function DataBlock({transport, title, text, time, tags, children}: DataBlockProperties) {
 	const currentTime = useTime();
 	return <div className="dataBlock">

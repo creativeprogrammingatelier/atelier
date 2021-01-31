@@ -14,9 +14,14 @@ import {Logo} from "./Logo";
 import {SidebarEntry} from "./SidebarEntry";
 
 interface SidebarProperties {
+	/** Position of sidebar on the screen */
 	position: string,
+	/** Callback function for closing the sidebar */
 	close: React.MouseEventHandler
 }
+/**
+ * Component that defines the sidebar of the website.
+ */
 export function Sidebar({position, close}: SidebarProperties) {
 	const user = useCurrentUser();
 	
@@ -40,9 +45,14 @@ export function Sidebar({position, close}: SidebarProperties) {
 }
 
 interface ContentProperties {
-    user: Refresh<User>,
+	/** Refreshabable cache object tied to the User of the client, this can be refreshed via the API.  */
+	user: Refresh<User>,
+	/** Function callback handling closing of the Content comp.*/
     close: React.MouseEventHandler
 }
+/**
+ * Component that defines the content of the sidebar, this component also created all the entry components of the sidebar.
+ */
 function Content({user, close}: ContentProperties) {
 	return <div className="sidebarContent p-0">
 		<Logo/>

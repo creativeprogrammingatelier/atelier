@@ -1,28 +1,68 @@
 import React, {Fragment} from "react";
 import {DirectoryNode} from "./DirectoryNode";
 
+/**
+ * File class for representing files in code.
+ */
 class File {
+	/** Name of file */
 	name: string;
+	/** File type */
 	type?: string;
+	/** Path to file */
 	transport?: string;
 	
+	/**
+	 * Constructs a file object with the given parameters.
+	 * 
+	 * @param name Name of file
+	 * @param type File Type
+	 * @param transport File path
+	 */
 	constructor(name: string, type?: string, transport?: string) {
 		this.name = name;
 		this.type = type;
 		this.transport = transport;
 	}
 }
+/**
+ * Node class for representing files.
+ */
 export class Node extends File {
+	/**
+	 * Children of given file.
+	 */
 	children: Node[];
 	
+	/**
+	 * Constructs a Node object from given parameters.
+	 * 
+	 * @param name Name of node.
+	 * @param children Children of node.
+	 * @param type Node type, same as File type.
+	 * @param transport Node path.
+	 */
 	constructor(name: string, children: Node[], type?: string, transport?: string) {
 		super(name, type, transport);
 		this.children = children;
 	}
 }
+/**
+ * Class representing a root node, such as a directory. 
+ */
 export class TopLevelNode extends Node {
+	/** Paths to children of node, such as the files of a directory */
 	paths: File[];
 	
+	/**
+	 * Constructs the TopLevelNode based on the params given.
+	 * 
+	 * @param name Name of node.
+	 * @param children Children of node.
+	 * @param paths Paths of descendant files. 
+	 * @param type Type of node.
+	 * @param transport Path to node.
+	 */
 	constructor(name: string, children: Node[], paths: File[], type?: string, transport?: string) {
 		super(name, children, type, transport);
 		this.paths = paths;
@@ -33,6 +73,9 @@ interface DirectoryViewerProperties {
 	/** List of file consisting of a path and possibly a location as given by `webkitRelativePath` */
 	filePaths: File[]
 }
+/**
+ * Function returning a list of DirectoryNodes from the filePaths specified.
+ */
 export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 	if (filePaths.length === 0) {
 		return null;

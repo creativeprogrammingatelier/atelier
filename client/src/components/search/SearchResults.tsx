@@ -10,10 +10,15 @@ import {DataItem} from "../data/DataItem";
 import {DataList} from "../data/DataList";
 
 interface SearchResultProperties {
-    results: SearchResult,
+	/** Results of search query */
+	results: SearchResult,
+	/** Course results belong to. */
     course?: string
 	// More stuff to support the load more functionality
 }
+/**
+ * Component representing the search results of a search query.
+ */
 export function SearchResults({results, course}: SearchResultProperties) {
 	return <Fragment>
 		{
@@ -103,9 +108,15 @@ export function SearchResults({results, course}: SearchResultProperties) {
 }
 
 interface SearchResultSectionProperties extends ParentalProperties {
+	/** Header of search section */
 	header: string,
+	/** Search query */
 	query: string
 }
+/**
+ * Component representing a section of search results, this component also handles loading of more 
+ * of the search results within the section. 
+ */
 function SearchResultSection({header, query, children}: SearchResultSectionProperties) {
 	const loadMore = (limit: number, offset: number) => <p>Loaded more</p>; // TODO: Finish and actually load more
 	

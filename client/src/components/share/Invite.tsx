@@ -9,12 +9,17 @@ import {CourseUser} from "../../../../models/api/CourseUser";
 
 interface InviteProperties {
     match: {
+        /** Invite parameters */
         params: {
+            /** Invite ID */
             inviteId: string
         }
     }
 }
 
+/**
+ * Invite component that handles resolving invites and adding users.
+ */
 export function Invite({match: {params: {inviteId}}}: InviteProperties) {
     const history = useHistory();
 

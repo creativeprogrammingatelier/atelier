@@ -7,6 +7,9 @@ interface SnippetProperties {
 	snippet: Snippet,
 	expanded?: boolean
 }
+/**
+ * Returns Code component with the snippet code
+ */
 export function Snippet({snippet, expanded}: SnippetProperties) {
 	const completeSnippet: string[] = snippet.body.split("\r").join("").split("\n");
 	

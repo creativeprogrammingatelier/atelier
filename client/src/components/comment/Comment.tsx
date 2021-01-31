@@ -15,9 +15,19 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {Cached} from "../general/loading/Cached";
 import {Tag} from "../general/Tag";
 
+
+/**
+ * Interface defining the properties of a comment. 
+ */
 interface CommentProperties {
 	comment: Comment
 }
+/**
+ * Function that constructs a Comment based on the CommentProperties supplied, returning the component 
+ * at the end.
+ * 
+ * @param comment Comment representation of the comment object.
+ */
 export function Comment({comment}: CommentProperties) {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [deleteError, setDeleteError] = useState(false as FeedbackContent);

@@ -12,6 +12,9 @@ import {UserSettingsPermissions} from "../user/UserSettingsPermissions";
 import {PluginSettings} from "./PluginSettings";
 import {CourseCreator} from "./CourseCreator";
 
+/**
+ * Component for managing Atelier settings.
+ */
 export function SystemSettings() {
 	return <Frame title="Settings" sidebar search>
 		<Jumbotron>

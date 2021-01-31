@@ -11,9 +11,14 @@ import {DataBlockList} from "../data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 
 interface SubmissionTabProperties {
+	/** User to be queried */
 	user: User,
+	/** Query Target */
 	course?: Course
 }
+/**
+ * A tab component that retrieves all of the submission of given within a specified course.
+ */
 export function SubmissionTab({user, course}: SubmissionTabProperties) {
 	return <div className="contentTab">
 		<Loading<Submission[]>

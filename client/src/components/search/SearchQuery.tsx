@@ -21,10 +21,16 @@ import {LabeledInput} from "../input/LabeledInput";
 import {SearchProperties} from "./SearchOverview";
 
 interface SearchQueryProperties {
-    state: SearchProperties,
-    onCourseChange?: (course?: string) => void,
+	/** SearchProperties of query*/
+	state: SearchProperties,
+	/** Functioning on handling changing of courses */
+	onCourseChange?: (course?: string) => void,
+	/** Function for handling responses. */
 	handleResponse?: (results: SearchResult) => void
 }
+/**
+ * Component for handling a search query.
+ */
 export function SearchQuery({state, onCourseChange, handleResponse}: SearchQueryProperties) {
 	const [query, setQuery] = useState(state.query ? state.query : "");
 	const [course, setCourse] = useState(state.course as string | undefined);
@@ -37,6 +43,11 @@ export function SearchQuery({state, onCourseChange, handleResponse}: SearchQuery
     
     useEffect(() => onCourseChange && onCourseChange(course), [course]);
 	
+	/** 
+	 * Handles keyDown events, checks whether shift is pressed. 
+	 * If shes then a new lines is added on pressing "Enter", 
+	 * of not the search is performed.
+	 */
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Shift") {
 			setShift(true);
@@ -54,11 +65,18 @@ export function SearchQuery({state, onCourseChange, handleResponse}: SearchQuery
 			}
 		}
 	};
+	/**
+	 * Handles keyUp event. Used to check whether "shift" had 
+	 * been de-pressed.
+	 */
 	const handleKeyUp = (event: React.KeyboardEvent) => {
 		if (event.key === "Shift") {
 			setShift(false);
 		}
 	};
+	/**
+	 * Executes the search query.
+	 */
 	const handleSearch = async() => {
 		setError(false);
 		try {

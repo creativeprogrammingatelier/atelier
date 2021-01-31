@@ -12,11 +12,20 @@ import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 import { ThreadState } from "../../../../models/enums/ThreadStateEnum";
 import { assertNever } from "../../../../helpers/Never";
 
+/**
+ * Interface defining properties of a FeedBlock
+ */
 interface FeedBlockProperties {
     global: boolean,
     data: FeedItem
 }
 
+/**
+ * Function for constructing a FeedBlock based on the props passed, returning Block at the end.
+ * 
+ * @param data Data of the FeedBlock, be it a submission comment or something else.
+ * @param global Boolean setting if the FeedBlock is global or course specific.
+ */
 export function FeedBlock({ data, global }: FeedBlockProperties) {
     const currentTime = useTime();
     switch (data.type) {

@@ -7,9 +7,11 @@ import {MentionSuggestions} from "./MentionSuggestions";
 import {TagSuggestions} from "./TagSuggestions";
 
 interface MentionProperties {
+	/** Course ID within database */
 	courseID: string
 }
 interface CommentCreatorProperties {
+	/** PLaceholder string when creating comment */
 	placeholder?: string,
 	transparent?: boolean,
 	large?: boolean,
@@ -17,8 +19,12 @@ interface CommentCreatorProperties {
 	allowRestricted?: boolean,
 	code?: CodeMirror.Editor,
 	mentions?: MentionProperties
+	/** Function used for sending the new comment to the database */
 	sendHandler: (comment: string, restricted: boolean) => Promise<boolean>
 }
+/**
+ * Handles the CommentCreator component; input, sending and functionality.
+ */
 export function CommentCreator({placeholder = "Write a comment", transparent, large, round, allowRestricted, mentions, sendHandler}: CommentCreatorProperties) {
 	const [comment, setComment] = useState("");
 	const [restricted, setRestricted] = useState(false);

@@ -11,11 +11,18 @@ import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 interface SubmissionShareProperties {
 	match: {
+		/** Params of submission share */
 		params: {
+			/** Submission ID within database */
 			submissionId: string
 		}
 	}
 }
+/**
+ * Component for sharing submissions. Submissions are retrieved from the cache and 
+ * BreadCrumbs are created of the given permission. The submission URL is then extracted and 
+ * added to a sharing component.  
+ */
 export function SubmissionShare({match: {params: {submissionId}}}: SubmissionShareProperties) {
 	const submission = useSubmission(submissionId);
 	const submissionPath = "/submission/" + submissionId;
