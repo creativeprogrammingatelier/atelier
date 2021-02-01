@@ -2,7 +2,7 @@
     <img src="./logo.png" alt="Atelier" height="200" align="center" />
 </h1>
 
-Atelier is an online environment to assist with programming tutorials. It facilitates interactions between students and teaching assistants to help them with their programming projects, allowing students to easily share and discuss their code with teaching assistants. Atelier is part of a [research project](https://www.utwente.nl/en/eemcs/fmt/research/projects/atelier/) of the FMT group at the University of Twente.
+Atelier is an online environment to assist with programming tutorials. It facilitates interactions between students and teaching assistants to help them with their programming projects, allowing students to easily share and discuss their code with teaching assistants. Atelier is part of a [research project](https://www.utwente.nl/en/eemcs/fmt/research/projects/atelier/) of the FMT group at [The University of Twente](https://www.utwente.nl/en/).
 
 ## Developing Atelier
 
