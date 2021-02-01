@@ -58,7 +58,7 @@
 		"request-promise": "^4.2.6",
 		"rxjs": "^6.6.3",
 		"samlify": "2.7.3",
-		"socket.io": "^2.3.0"
+		"socket.io": "^2.4.0"
 	},
 	"resolutions": {
 		"node-forge": "0.10.0",
