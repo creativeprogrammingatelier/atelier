@@ -171,8 +171,12 @@ docker exec atelier_atelier_1 node api/src/database/structure/DatabaseStructure.
 ```
 
 where you replace `atelier_atelier_1` with the name of your Atelier container.
+
+## Documentation 
+
+Documentation is inline but has been created in line with the [Type Doc](https://typedoc.org/) , generated version of the docs can be created using:
 ```
-// TODO: create an admin account
+typedoc
 ```
 ## Design Guidelines
 
