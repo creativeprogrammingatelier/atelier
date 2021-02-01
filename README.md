@@ -171,9 +171,9 @@ docker exec atelier_atelier_1 node api/src/database/structure/DatabaseStructure.
 ```
 
 where you replace `atelier_atelier_1` with the name of your Atelier container.
-
+```
 // TODO: create an admin account
-
+```
 ## Design Guidelines
 
 The Atelier design is based on Bootstrap, with additional custom styling for the distinctive Atelier look.
