@@ -7,8 +7,8 @@
         {
             "type": "saml",
             "id": "samling",
-            "name": "Samling",
-            "metadata": { "url": "https://capriza.github.io/samling/public/metadata.xml" },
+            "name": "Sustainsys Stub IDP",
+            "metadata": { "url": "https://stubidp.sustainsys.com/Metadata" },
             "attributes": {
                 "name": "name",
                 "email": "email",
