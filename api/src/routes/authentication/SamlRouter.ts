@@ -84,48 +84,51 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
 			user = await UserDB.getUserBySamlID(extID);
 		} catch (err) {
 			if (err instanceof NotFoundDatabaseError) {
-
-				//Check if already exists 
-				user = await UserDB.getUserByEmail(email)
-				if(user != null && user != undefined){
-					UserDB.updateUser({...user, samlID: extID})
-				} else { 
-					// Create new user from SAML
-
-					// Get name from SAML attributes
-					let userName = result.nameID;
-					if (samlConfig.attributes?.name !== undefined) {
-						if (typeof samlConfig.attributes.name === "string") {
-							userName = result.attributes[samlConfig.attributes.name] || userName;
-						} else {
-							const lastname = result.attributes[samlConfig.attributes.name.lastname];
-							const firstname = result.attributes[samlConfig.attributes.name.firstname];
-							if (lastname !== undefined && firstname !== undefined) {
-								userName = firstname + " " + lastname;
-							} else if (lastname !== undefined) {
-								userName = lastname;
-							} else if (firstname !== undefined) {
-								userName = firstname;
-							}
-						}
-					}			
-					// Get role from SAML attributes
-					let role = GlobalRole.user;
-					if (samlConfig.attributes?.role !== undefined) {
-						let samlRole = result.attributes[samlConfig.attributes.role] || role;
-						if (samlConfig.attributes.roleMapping !== undefined) {
-							samlRole = samlConfig.attributes.roleMapping[role] || role;
-						}
-						if (checkEnum(GlobalRole, samlRole)) {
-							role = getEnum(GlobalRole, samlRole);
-						}
-					}
-					
-					user = await UserDB.createUser({
-						samlID: extID, userName, email, globalRole: role,
-						password: UserDB.invalidPassword()
-					});
-				}
+                try {
+                    // If the user doesn't exist by ID, try to find them by email (in case they were added via an integration)
+                    user = await UserDB.getUserByEmail(email)
+                    // If the user was found, update it to include the ID
+                    UserDB.updateUser({...user, samlID: extID})
+                } catch (err) {
+                    if (err instanceof NotFoundDatabaseError) {
+                        // Create new user from SAML
+                        // Get name from SAML attributes
+                        let userName = result.nameID;
+                        if (samlConfig.attributes?.name !== undefined) {
+                            if (typeof samlConfig.attributes.name === "string") {
+                                userName = result.attributes[samlConfig.attributes.name] || userName;
+                            } else {
+                                const lastname = result.attributes[samlConfig.attributes.name.lastname];
+                                const firstname = result.attributes[samlConfig.attributes.name.firstname];
+                                if (lastname !== undefined && firstname !== undefined) {
+                                    userName = firstname + " " + lastname;
+                                } else if (lastname !== undefined) {
+                                    userName = lastname;
+                                } else if (firstname !== undefined) {
+                                    userName = firstname;
+                                }
+                            }
+                        }			
+                        // Get role from SAML attributes
+                        let role = GlobalRole.user;
+                        if (samlConfig.attributes?.role !== undefined) {
+                            let samlRole = result.attributes[samlConfig.attributes.role] || role;
+                            if (samlConfig.attributes.roleMapping !== undefined) {
+                                samlRole = samlConfig.attributes.roleMapping[role] || role;
+                            }
+                            if (checkEnum(GlobalRole, samlRole)) {
+                                role = getEnum(GlobalRole, samlRole);
+                            }
+                        }
+                        
+                        user = await UserDB.createUser({
+                            samlID: extID, userName, email, globalRole: role,
+                            password: UserDB.invalidPassword()
+                        });
+                    } else {
+                        throw err;
+                    }
+                }
 			} else {
 				throw err;
 			}
