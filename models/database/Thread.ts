@@ -65,7 +65,7 @@ export function convertThread(db: DBThread): Thread {
 		fileID: UUIDHelper.fromUUID(db.fileid),
         snippetID: UUIDHelper.fromUUID(db.snippetid),
         submissionName: db.submissionname,
-        submissionUserID: db.submissionuserid,
+        submissionUserID: UUIDHelper.fromUUID(db.submissionuserid),
         submissionUserName: db.submissionusername,
         visibilityState: getEnum(ThreadState, db.visibilitystate),
         automated: db.automated,
@@ -87,10 +87,13 @@ export function threadToAPI(db: DBAPIThread): APIThread {
         automated: db.automated,
         submission: {
             name: db.submissionname,
-            user: { ID: db.submissionuserid, userName: db.submissionusername }
+            user: { 
+                ID: UUIDHelper.fromUUID(db.submissionuserid), 
+                userName: db.submissionusername 
+            }
         },
         sharedBy: db.sharedByID === undefined ? undefined : {
-            ID: db.sharedByID!,
+            ID: UUIDHelper.fromUUID(db.sharedByID!),
             name: db.sharedByName!,
             email: db.sharedByEmail!,
             permission: {
