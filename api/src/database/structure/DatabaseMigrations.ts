@@ -13,6 +13,40 @@ interface Migrations {
  * Defined migrations
  */
 const migrations: Migrations = {
+    // Let's do some indexing on these tables, shall we?
+    // If you're new to indexing, go read https://use-the-index-luke.com. I can highly recommend it.
+    6: async client => {
+        client.query(`
+            -- We need to get submissions by course for the feed, which is sorted by date
+            CREATE INDEX submission_courseid_sorted_idx ON "Submissions" (courseid, date);
+            -- Threads are often filtered on visibility, then sometimes on automatedness (for the feeds)
+            -- Joining on the submission is then done in a hash join, so that doesn't require an index
+            CREATE INDEX commentthread_visibility_idx ON "CommentThread" (visibilitystate, automated);
+            -- Threads are also queried by submissionid, then per visibility
+            CREATE INDEX commentthread_submissionid_visibility_idx ON "CommentThread" (submissionid, visibilitystate);
+            -- Comments are almost always grouped by the thread they're in, then sorted by date (and id, for some reason)
+            CREATE INDEX comments_threadid_sorted_idx ON "Comments" (commentthreadid, created, commentid);
+            -- Files are often queried by submissionid
+            CREATE INDEX files_submissionid_idx ON "Files" (submissionid);
+            -- Mentions are queried by userid or usergroup
+            CREATE INDEX mentions_userid_idx ON "Mentions" (userid);
+            CREATE INDEX mentions_usergroup_idx ON "Mentions" (usergroup);
+            -- Course registrations may occasionaly be filtered by role, after the courseid
+            CREATE INDEX courseregistration_courseid_role_userid_idx ON "CourseRegistration" (courseid, courserole, userid);
+
+            -- Users are queried by samlid, username and email
+            CREATE INDEX users_samlid_idx ON "Users" (samlid);
+            CREATE INDEX users_username_idx ON "Users" (username);
+            CREATE INDEX users_email_idx ON "Users" (email);
+            -- Invites are in the settings queried by course and creator
+            CREATE INDEX courseinvites_courseid_creatorid_idx ON "CourseInvites" (courseid, creatorid);
+            -- Course registrations are also queried for a user
+            CREATE INDEX courseregistration_userid_idx ON "CourseRegistration" (userid);
+            -- Submissions can also be queried by user in a course
+            CREATE INDEX submission_courseid_user_sorted_idx ON "Submissions" (courseid, userid, date);
+        `);
+    },
+
     // Add fields to users and courses for Canvas integration
     5: async client => {
         client.query(`

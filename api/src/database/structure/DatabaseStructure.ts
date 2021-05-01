@@ -25,7 +25,7 @@ import {databaseSamples} from "./DatabaseSamples";
 // whether they are changed or not. If a view changes because of a schema change, you don't //
 // have to include those views in the migration.                                            //
 //                                                                                          //
-/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/ const VERSION = 5; /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/ const VERSION = 6; /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 ////////////////////////////////////|--------------------|////////////////////////////////////
 
 if (require.main === module) {
@@ -58,7 +58,7 @@ if (require.main === module) {
 }
 
 async function makeDB(client: pgDB = pool) {
-	const query = dropViewQueries + dropTableQueries + createTableQueries + createViewQueries;
+	const query = dropViewQueries + dropTableQueries + createTableQueries + createViewQueries + createIndexQueries;
 	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
 	//  console.log(singles)
 	//  for (const item of singles){
@@ -104,6 +104,36 @@ DROP TABLE IF EXISTS
 	"CommentThread", "Comments", 
 	"Mentions", "Tags", "CourseInvites",
     "Plugins", "PluginHooks";
+`;
+
+const createIndexQueries = `
+-- We need to get submissions by course for the feed, which is sorted by date
+CREATE INDEX submission_courseid_sorted_idx ON "Submissions" (courseid, date);
+-- Threads are often filtered on visibility, then sometimes on automatedness (for the feeds)
+-- Joining on the submission is then done in a hash join, so that doesn't require an index
+CREATE INDEX commentthread_visibility_idx ON "CommentThread" (visibilitystate, automated);
+-- Threads are also queried by submissionid, then per visibility
+CREATE INDEX commentthread_submissionid_visibility_idx ON "CommentThread" (submissionid, visibilitystate);
+-- Comments are almost always grouped by the thread they're in, then sorted by date (and id, for some reason)
+CREATE INDEX comments_threadid_sorted_idx ON "Comments" (commentthreadid, created, commentid);
+-- Files are often queried by submissionid
+CREATE INDEX files_submissionid_idx ON "Files" (submissionid);
+-- Mentions are queried by userid or usergroup
+CREATE INDEX mentions_userid_idx ON "Mentions" (userid);
+CREATE INDEX mentions_usergroup_idx ON "Mentions" (usergroup);
+-- Course registrations may occasionaly be filtered by role, after the courseid
+CREATE INDEX courseregistration_courseid_role_userid_idx ON "CourseRegistration" (courseid, courserole, userid);
+
+-- Users are queried by samlid, username and email
+CREATE INDEX users_samlid_idx ON "Users" (samlid);
+CREATE INDEX users_username_idx ON "Users" (username);
+CREATE INDEX users_email_idx ON "Users" (email);
+-- Invites are in the settings queried by course and creator
+CREATE INDEX courseinvites_courseid_creatorid_idx ON "CourseInvites" (courseid, creatorid);
+-- Course registrations are also queried for a user
+CREATE INDEX courseregistration_userid_idx ON "CourseRegistration" (userid);
+-- Submissions can also be queried by user in a course
+CREATE INDEX submission_courseid_user_sorted_idx ON "Submissions" (courseid, userid, date);
 `;
 
 const createTableQueries = `
