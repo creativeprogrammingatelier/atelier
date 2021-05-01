@@ -4,6 +4,13 @@
 
 The structure of the database is defined in [DatabaseStructure.ts](/api/src/database/structure/DatabaseStructure.ts), which contains all SQL queries required to create the tables and views in the database.
 
+This structure results in the following database schema. This diagram is for version **5** of the schema, please check in DatabaseStructure.ts if that is still the most recent version.
+
+![Diagram of the database schema](assets/database/schema.png)
+
+*Note for future documentation writers: this diagram was generated using [SchemaCrawler](https://www.schemacrawler.com/).*
+`schemacrawler --command=schema --output-format=png --output-file=schema.png --server=postgresql --host=localhost --database=atelier --info-level=standard --no-info --grep-tables=.*View.* --invert-match`
+
 ### Views
 
 To allow for somewhat complex return types from the database, a number of `TableNameView` views are set up in [ViewDB.ts](/api/src/database/ViewDB.ts). They contain more data than just the table itself, allowing to create the API models with just one query.
@@ -50,7 +57,7 @@ NB: the permissions actually come back as a string of 40 binary digits, which ar
 
 ### Transactions
 
-To perform transactions, you have to pass in the optional `client` argument to the functions that are part of the transaction. When this is passed, instead of starting a new connection, it uses that existing client to perform the query. The easiest way to perform a transaction then involves the `transaction` function in HelperDB.ts. It receives a callback function: the function that contains all transaction query. This callback receives as its first (and only) argument, the client you need to pass to all database calls. the transaction function will take care of the transactional stuff such as BEGIN, COMMIT and ROLLBACK. (ROLLBACK will be run if the callback throws an error.)
+To perform transactions, you have to pass in the optional `client` argument to the functions that are part of the transaction. When this is passed, instead of starting a new connection, it uses that existing client to perform the query. The easiest way to perform a transaction then involves the `transaction` function in HelperDB.ts. It receives a callback function: the function that contains all transaction query. This callback receives as its first (and only) argument the client you need to pass to all database calls. The transaction function will take care of the transactional stuff such as BEGIN, COMMIT and ROLLBACK. (ROLLBACK will be run if the callback throws an error.)
 
 Example usage:
 
