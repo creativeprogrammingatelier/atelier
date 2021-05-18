@@ -66,7 +66,7 @@ export function SearchResults({results, course}: SearchResultProperties) {
 						key={comment.comment.ID}
 						title={`${comment.comment.user.name} on ${comment.submission.name} by ${comment.submission.user.name}`}
 						text={comment.comment.text}
-						transport={comment.comment.references.fileID === "" ?
+						transport={comment.comment.references.fileID === undefined || comment.comment.references.fileID === "" ?
 							`/submission/${comment.submission.ID}#${comment.comment.references.commentThreadID}`
 							:
 							`/submission/${comment.submission.ID}/${comment.comment.references.fileID}/comments#${comment.comment.references.commentThreadID}`
