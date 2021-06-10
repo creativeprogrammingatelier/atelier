@@ -19,27 +19,16 @@
                     "student": "user"
                 }
             }
-        },
-        {
-            "type": "builtin",
-            "id": "atelier",
-            "name": "Atelier",
-            "register": true
         }
     ],
     "database": {
-        "user": "assistantassistant",
-        "host": "localhost",
-        "database": "assistantassistant",
-        "password": "0disabled-Dusky-lags-Nursery4-Nods-2Floss-Coat-Butte-4Ethel-Hypnosis-bel",
+        "user": "atelier",
+        "host": "postgres",
+        "database": "atelier",
+        "password": "AtelierP@ssw0rd",
         "port": 5432,
         "pool": {
             "max": 1
         }
-    },
-    "canvas": {
-        "client_id": "182170000000000110",
-        "client_secret": "XWQdS65BrQyur2LCugFlmigNpNEfjLSLCnPx9SINAnX9pojYI8lrefoeFdSLJQXD",
-        "canvas_url_root": "https://utwente-dev.instructure.com"
     }
 }
