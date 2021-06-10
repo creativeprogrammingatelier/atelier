@@ -1,6 +1,6 @@
-import React, {createContext, useContext} from "react";
-import {debounceTime} from "rxjs/operators";
-import {Cache, GetCacheCollectionOptions} from "../../../helpers/api/Cache";
+import React, {createContext, useContext} from 'react';
+import {debounceTime} from 'rxjs/operators';
+import {Cache, GetCacheCollectionOptions} from '../../../helpers/api/Cache';
 
 /**
  * A React context for the cache. By using a context we can allow any component
@@ -11,16 +11,16 @@ const cacheContext = createContext<Cache>(new Cache());
 
 /** Detect if the page was reloaded, tested to work with IE5 */
 function pageRefreshed() {
-	if (typeof (performance.getEntriesByType) === "function") {
-		const entry = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
-		if (entry !== undefined && entry.type !== undefined) {
-			return entry.type === "reload";
-		}
-	}
-	// type === 1 means the page was refreshed, using TYPE_RELOAD breaks IE7
-	// It's deprecated, but we only try it if the newer version is not available
-	// tslint:disable-next-line: deprecation
-	return performance.navigation.type === 1;
+  if (typeof (performance.getEntriesByType) === 'function') {
+    const entry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    if (entry !== undefined && entry.type !== undefined) {
+      return entry.type === 'reload';
+    }
+  }
+  // type === 1 means the page was refreshed, using TYPE_RELOAD breaks IE7
+  // It's deprecated, but we only try it if the newer version is not available
+  // tslint:disable-next-line: deprecation
+  return performance.navigation.type === 1;
 }
 
 /**
@@ -30,33 +30,33 @@ function pageRefreshed() {
  * the cache.
  */
 export function CacheProvider({children}: {children: React.ReactNode}) {
-	let cache: Cache;
-	if (pageRefreshed()) {
-		cache = new Cache();
-	} else {
-		cache = Cache.load("cache");
-	}
-	
-	cache.getExport()
-		.pipe(debounceTime(750))
-		.subscribe(exported => Cache.save("cache", exported));
-	
-	return <cacheContext.Provider value={cache} children={children}/>;
+  let cache: Cache;
+  if (pageRefreshed()) {
+    cache = new Cache();
+  } else {
+    cache = Cache.load('cache');
+  }
+
+  cache.getExport()
+      .pipe(debounceTime(750))
+      .subscribe((exported) => Cache.save('cache', exported));
+
+  return <cacheContext.Provider value={cache} children={children}/>;
 }
 
 /** Hook to get access to specific CacheCollection */
 export function useCacheCollection<T extends {ID: string}>(key: string, options?: GetCacheCollectionOptions<T>) {
-	const cache = useContext(cacheContext);
-	return cache.getCollection<T>(key, options);
+  const cache = useContext(cacheContext);
+  return cache.getCollection<T>(key, options);
 }
 
 /** Hook to get access to a specific CacheItem */
 export function useCacheItem<T>(key: string, defaultValue?: T) {
-	const cache = useContext(cacheContext);
-	return cache.getItem<T>(key, defaultValue);
+  const cache = useContext(cacheContext);
+  return cache.getItem<T>(key, defaultValue);
 }
 
 /** Hook to get access to the raw cache context */
 export function useRawCache() {
-	return useContext(cacheContext);
+  return useContext(cacheContext);
 }

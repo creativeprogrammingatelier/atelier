@@ -1,8 +1,8 @@
-import React from "react";
-import {Nav} from "react-bootstrap";
-import {IconType} from "react-icons";
+import React from 'react';
+import {Nav} from 'react-bootstrap';
+import {IconType} from 'react-icons';
 
-import {TabButton} from "./TabButton";
+import {TabButton} from './TabButton';
 
 interface TabProperties {
 	/** Tab ID */
@@ -24,15 +24,15 @@ interface TabBarProperties {
  * Component for navigating between different tabs.
  */
 export function TabBar({active, tabs}: TabBarProperties) {
-	return <Nav fill justify variant="pills" className="fixed-bottom position-sticky">
-		{tabs.map((tab) =>
-			<TabButton
-				key={tab.id || tab.text}
-				icon={tab.icon}
-				text={tab.text}
-				location={tab.location}
-				active={tab.id === active}
-			/>
-		)}
-	</Nav>;
+  return <Nav fill justify variant="pills" className="fixed-bottom position-sticky">
+    {tabs.map((tab) =>
+      <TabButton
+        key={tab.id || tab.text}
+        icon={tab.icon}
+        text={tab.text}
+        location={tab.location}
+        active={tab.id === active}
+      />,
+    )}
+  </Nav>;
 }

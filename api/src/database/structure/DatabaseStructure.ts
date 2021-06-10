@@ -1,16 +1,16 @@
-import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
+import {PermissionEnum} from '../../../../models/enums/PermissionEnum';
 
-import {isPostgresError} from "../helpers/DatabaseErrorHelper";
+import {isPostgresError} from '../helpers/DatabaseErrorHelper';
 
-import {end, pool, permissionBits, getClient, pgDB, toBin} from "../HelperDB";
-import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, TagsView, CourseUsersViewAll} from "../ViewsDB";
-import {databaseSamples} from "./DatabaseSamples";
+import {end, pool, permissionBits, getClient, pgDB, toBin} from '../HelperDB';
+import {usersView, CourseUsersView, CoursesView, submissionsView, filesView, snippetsView, commentsView, commentThreadView, MentionsView, TagsView, CourseUsersViewAll} from '../ViewsDB';
+import {databaseSamples} from './DatabaseSamples';
 
 /**
  * Contains Script to generate database structure
  */
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////
 // ___ __  __ ____   ___  ____ _____  _    _   _ _____                                      //
 // |_ _|  \/  |  _ \ / _ \|  _ |_   _|/ \  | \ | |_   __                                    //
 //  | || |\/| | |_) | | | | |_) || | / _ \ |  \| | | |(_)                                   //
@@ -25,62 +25,61 @@ import {databaseSamples} from "./DatabaseSamples";
 // whether they are changed or not. If a view changes because of a schema change, you don't //
 // have to include those views in the migration.                                            //
 //                                                                                          //
-/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/ const VERSION = 6; /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
-////////////////////////////////////|--------------------|////////////////////////////////////
+/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/ const VERSION = 6; /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+// //////////////////////////////////|--------------------|////////////////////////////////////
 
 if (require.main === module) {
-	//args without node & path name
-	const args = process.argv.splice(2);
-	//check if the 'insert' option is specified
-	const insertToo = args.find((el) => el === "-i");
-	//create the database
-	(async() => {
-		const client = await getClient();
-		try {
-			await client.query("BEGIN");
-			await makeDB(client);
-			//if inserting too, then do insert as well
-			if (insertToo) {
-				await databaseSamples(client);
-			}
-			await client.query("COMMIT");
-		} catch (e) {
-			await client.query("ROLLBACK");
-			throw e;
-		} finally {
-
-			await client.release();
-			end();
-		}
-	})();
+  // args without node & path name
+  const args = process.argv.splice(2);
+  // check if the 'insert' option is specified
+  const insertToo = args.find((el) => el === '-i');
+  // create the database
+  (async () => {
+    const client = await getClient();
+    try {
+      await client.query('BEGIN');
+      await makeDB(client);
+      // if inserting too, then do insert as well
+      if (insertToo) {
+        await databaseSamples(client);
+      }
+      await client.query('COMMIT');
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      await client.release();
+      end();
+    }
+  })();
 } else {
-	// makeDB(()=>{console.log("made the database")}, console.error)
+  // makeDB(()=>{console.log("made the database")}, console.error)
 }
 
 async function makeDB(client: pgDB = pool) {
-	const query = dropViewQueries + dropTableQueries + createTableQueries + createViewQueries + createIndexQueries;
-	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
-	//  console.log(singles)
-	//  for (const item of singles){
-	// 	 await client.query(item).then(()=>
-	// 	 		console.log('database creation successful')
-	// 		).catch((e : Error) =>{
-	// 			if (isPostgresError(e) && e.position!==undefined){
-	// 				console.log(item.substring(Number(e.position)-60, Number(e.position)+60))
-	// 			}
-	// 			throw e
-	// 		});
-	//  };
-	//  return;
-	return client.query(query
-	).then(() =>
-		console.log("database creation successful")
-	).catch((e: Error) => {
-		if (isPostgresError(e) && e.position !== undefined) {
-			console.log(query.substring(Number(e.position) - 60, Number(e.position) + 60));
-		}
-		throw e;
-	});
+  const query = dropViewQueries + dropTableQueries + createTableQueries + createViewQueries + createIndexQueries;
+  //  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
+  //  console.log(singles)
+  //  for (const item of singles){
+  // 	 await client.query(item).then(()=>
+  // 	 		console.log('database creation successful')
+  // 		).catch((e : Error) =>{
+  // 			if (isPostgresError(e) && e.position!==undefined){
+  // 				console.log(item.substring(Number(e.position)-60, Number(e.position)+60))
+  // 			}
+  // 			throw e
+  // 		});
+  //  };
+  //  return;
+  return client.query(query,
+  ).then(() =>
+    console.log('database creation successful'),
+  ).catch((e: Error) => {
+    if (isPostgresError(e) && e.position !== undefined) {
+      console.log(query.substring(Number(e.position) - 60, Number(e.position) + 60));
+    }
+    throw e;
+  });
 }
 
 export const dropViewQueries = `

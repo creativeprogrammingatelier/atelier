@@ -10,12 +10,12 @@ declare global {
 	interface File {
 		webkitRelativePath: string
 	}
-	
+
 	// Attribute to enable folder upload
 	interface HTMLInputElement {
 		webkitdirectory: boolean
 	}
-	
+
 	interface Array<T> {
 		/**
 		 * Iterate over the array, skipping elements until one matches the predicate. When an
@@ -28,9 +28,9 @@ declare global {
 }
 
 Array.prototype.skipWhile = function <T>(this: T[], predicate: (elem: T) => boolean) {
-	let i = 0;
-	while (i < this.length && predicate(this[i])) {
-		i++;
-	}
-	return this.slice(i);
+  let i = 0;
+  while (i < this.length && predicate(this[i])) {
+    i++;
+  }
+  return this.slice(i);
 };

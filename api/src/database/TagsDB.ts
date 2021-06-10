@@ -1,24 +1,24 @@
-import {Tag, tagToAPI} from "../../../models/database/Tag";
+import {Tag, tagToAPI} from '../../../models/database/Tag';
 
-import {UUIDHelper} from "./helpers/UUIDHelper";
+import {UUIDHelper} from './helpers/UUIDHelper';
 
-import {pool, extract, map, one, checkAvailable} from "./HelperDB"
-import {TagsView} from "./ViewsDB";
+import {pool, extract, map, one, checkAvailable} from './HelperDB';
+import {TagsView} from './ViewsDB';
 
 export class TagsDB {
-	/**
+  /**
 	 * Adds a Tag to the database
 	 * @param tag
 	 */
-	static async addTag(tag: Tag) {
-		checkAvailable(["commentID", "tagbody"], tag);
-		const {
-			commentID,
-			tagbody,
-			client = pool
-		} = tag;
-		const commentid = UUIDHelper.toUUID(commentID);
-		return client.query(`
+  static async addTag(tag: Tag) {
+    checkAvailable(['commentID', 'tagbody'], tag);
+    const {
+      commentID,
+      tagbody,
+      client = pool,
+    } = tag;
+    const commentid = UUIDHelper.toUUID(commentID);
+    return client.query(`
 		WITH insert AS (
 			INSERT INTO "Tags"
 			VALUES (DEFAULT, $1, $2)
@@ -26,15 +26,15 @@ export class TagsDB {
 		)
 		${TagsView('insert')}
 		`, [commentid, tagbody])
-			.then(extract).then(map(tagToAPI)).then(one)
-	}
+        .then(extract).then(map(tagToAPI)).then(one);
+  }
 
-	/**
+  /**
 	 * gets the most used tags from the database
 	 * @param amount
 	 */
-	static async getMostUsedTags(amount: number) {
-		return pool.query(`
+  static async getMostUsedTags(amount: number) {
+    return pool.query(`
 		SELECT g.*
 		FROM (
    			SELECT  f.* ,
@@ -55,6 +55,6 @@ export class TagsDB {
 		ORDER BY count DESC
 		LIMIT $1
         `, [amount])
-			.then(extract).then(map(tagToAPI))
-	}
+        .then(extract).then(map(tagToAPI));
+  }
 }

@@ -1,5 +1,5 @@
 import express from 'express';
-import path from 'path'
+import path from 'path';
 
 import {File} from '../../../models/api/File';
 
@@ -18,16 +18,16 @@ fileRouter.use(AuthMiddleware.requireAuth);
 
 /** Get information of type `File` about a file */
 fileRouter.get('/:fileID', capture(async (request, response) => {
-	const fileID: string = request.params.fileID;
-	const file: File = await FileDB.getFileByID(fileID);
-	response.status(200).send(file);
+  const fileID: string = request.params.fileID;
+  const file: File = await FileDB.getFileByID(fileID);
+  response.status(200).send(file);
 }));
 
 /** Get a list of files related to a submission */
 fileRouter.get('/submission/:submissionID', capture(async (request, response) => {
-	const submissionID: string = request.params.submissionID;
-	const files: File[] = await FileDB.getFilesBySubmission(submissionID);
-	response.status(200).send(files);
+  const submissionID: string = request.params.submissionID;
+  const files: File[] = await FileDB.getFilesBySubmission(submissionID);
+  response.status(200).send(files);
 }));
 
 /**
@@ -35,10 +35,10 @@ fileRouter.get('/submission/:submissionID', capture(async (request, response) =>
  * the Content-Type will be equivalent to the type of the file
  */
 fileRouter.get('/:fileID/body', capture(async (request, response) => {
-	const fileID: string = request.params.fileID;
-	const file: File = await FileDB.getFileByID(fileID);
-	const fileBody: Buffer = await readFile(getFilePathOnDisk(file));
-	response.status(200).set("Content-Type", file.type).send(fileBody);
+  const fileID: string = request.params.fileID;
+  const file: File = await FileDB.getFileByID(fileID);
+  const fileBody: Buffer = await readFile(getFilePathOnDisk(file));
+  response.status(200).set('Content-Type', file.type).send(fileBody);
 }));
 
 /**
@@ -46,11 +46,11 @@ fileRouter.get('/:fileID/body', capture(async (request, response) => {
  * so the browser will know to present a Save dialog
  */
 fileRouter.get('/:fileID/download', capture(async (request, response) => {
-	const fileID: string = request.params.fileID;
-	const file: File = await FileDB.getFileByID(fileID);
-	const fileBody: Buffer = await readFile(getFilePathOnDisk(file));
-	response.status(200)
-		.set("Content-Type", file.type!)
-		.set("Content-Disposition", `attachment; filename="${path.basename(file.name!)}"`)
-		.send(fileBody);
+  const fileID: string = request.params.fileID;
+  const file: File = await FileDB.getFileByID(fileID);
+  const fileBody: Buffer = await readFile(getFilePathOnDisk(file));
+  response.status(200)
+      .set('Content-Type', file.type!)
+      .set('Content-Disposition', `attachment; filename="${path.basename(file.name!)}"`)
+      .send(fileBody);
 }));

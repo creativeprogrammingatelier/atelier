@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
-import {TagProperties} from "../general/Tag";
+import {TagProperties} from '../general/Tag';
 
-import {DataBlock} from "./DataBlock";
-import {DataList, DataListProperties} from "./DataList";
+import {DataBlock} from './DataBlock';
+import {DataList, DataListProperties} from './DataList';
 
 export interface DataListEntryProperties {
 	key: string,
@@ -22,16 +22,16 @@ interface DataBlockListProperties extends DataListProperties {
  * Returns the DataBlockList from the DataBlockListProperties passed in.
  */
 export function DataBlockList({list, ...properties}: DataBlockListProperties) {
-	return <DataList {...properties}>
-		{list.map((block) =>
-			<DataBlock
-				key={block.key}
-				transport={block.transport}
-				title={block.title}
-				text={block.text}
-				time={block.time}
-				tags={block.tags}
-			/>
-		)}
-	</DataList>;
+  return <DataList {...properties}>
+    {list.map((block) =>
+      <DataBlock
+        key={block.key}
+        transport={block.transport}
+        title={block.title}
+        text={block.text}
+        time={block.time}
+        tags={block.tags}
+      />,
+    )}
+  </DataList>;
 }
