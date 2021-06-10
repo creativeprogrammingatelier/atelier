@@ -1,0 +1,34 @@
+{
+    "baseUrl": "http://localhost:5000",
+    "hostname": "127.0.0.1",
+    "port": 5000,
+    "openUnknownFiles": true,
+    "loginProviders": [
+        {
+            "type": "saml",
+            "id": "samling",
+            "name": "Sustainsys Stub IDP",
+            "metadata": { "url": "https://stubidp.sustainsys.com/Metadata" },
+            "attributes": {
+                "name": "name",
+                "email": "email",
+                "role": "role",
+                "roleMapping": {
+                    "admin": "admin",
+                    "user": "user",
+                    "student": "user"
+                }
+            }
+        }
+    ],
+    "database": {
+        "user": "atelier",
+        "host": "postgres",
+        "database": "atelier",
+        "password": "AtelierP@ssw0rd",
+        "port": 5432,
+        "pool": {
+            "max": 1
+        }
+    }
+}

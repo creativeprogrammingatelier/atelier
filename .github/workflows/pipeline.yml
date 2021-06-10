@@ -1,0 +1,88 @@
+# This is the main CI pipeline. It runs on almost anything, with specific jobs
+# for publishing restricted to the main branch.
+name: pipeline
+
+# Run when a commit is pushed, a pull request is started or updated and
+# when asked to run manually using the Actions tab
+on: [ push, pull_request, workflow_dispatch ]
+
+jobs:
+  # Build and test the application
+  build_test:
+    runs-on: ubuntu-latest
+    # Run on the LTS version of Node in a container
+    container: node:lts
+
+    env:
+      # Set the env to 'ci', will run with the ci.json configuration file
+      NODE_ENV: ci
+
+    services:
+      # Include a Postgres service container to use when running the tests.
+      # The connection information is provided to Atelier in config/ci.json.
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: atelier
+          POSTGRES_USER: atelier
+          POSTGRES_PASSWORD: AtelierP@ssw0rd
+        # Set health checks to make sure Postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+        # Check out the repository in the $GITHUB_WORKSPACE folder
+      - uses: actions/checkout@v2
+        # Install build dependencies
+      - run: npm install -g typescript webpack
+        # Restore all dependencies (ci is the install command recommended for CI environments)
+      - run: npm ci
+        # TODO: Run ESLint
+      # - run: npx eslint .
+        # Compile the backend
+      - run: npm run compile
+        # Initialize the database for testing
+      - run: npm run database-dev
+        # Run backend tests with coverage
+      - run: npm run test-backend-nyc
+        # Compile the frontend
+      - run: npm run compile-frontend
+        # Run frontend tests
+      - run: npm run test-frontend
+
+  # Build and push the Docker image to the GitHub Container Registry
+  build_push:
+    runs-on: ubuntu-latest
+
+    # Only run after build_test ran succesfully
+    needs: build_test
+    # Only run on the master branch
+    if: ${{ github.ref == 'refs/heads/master' }}
+
+    steps:
+        # Check out the repository in the $GITHUB_WORKSPACE folder
+      - uses: actions/checkout@v2
+        # Get the short hash for the current commit (to use later)
+      - id: git_sha
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        # Login to the GitHub Container Registry, so that we can push the image
+      - name: Login to ghcr
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        # Build and push the image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2.3.0
+        with:
+          pull: true # Always pull for the latest base images
+          push: true # Push the image after building
+          tags: 
+              # Push to the latest tag
+            - ghcr.io/creativeprogrammingatelier/atelier:latest
+              # and to a tag that is the commit hash
+            - ghcr.io/creativeprogrammingatelier/atelier:${{ steps.git_sha.outputs.sha_short }}

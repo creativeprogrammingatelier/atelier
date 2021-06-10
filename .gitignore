@@ -24,6 +24,7 @@ database/data
 
 config/*
 !config/example.json
+!config/ci.json
 
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
