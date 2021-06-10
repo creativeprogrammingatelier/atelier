@@ -81,8 +81,7 @@ jobs:
         with:
           pull: true # Always pull for the latest base images
           push: true # Push the image after building
-          tags: 
-              # Push to the latest tag
-            - ghcr.io/creativeprogrammingatelier/atelier:latest
-              # and to a tag that is the commit hash
-            - ghcr.io/creativeprogrammingatelier/atelier:${{ steps.git_sha.outputs.sha_short }}
+          # Push to the latest tag and to a tag that is the commit hash
+          tags: |
+            ghcr.io/creativeprogrammingatelier/atelier:latest
+            ghcr.io/creativeprogrammingatelier/atelier:${{ steps.git_sha.outputs.sha_short }}
