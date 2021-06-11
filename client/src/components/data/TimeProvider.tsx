@@ -17,7 +17,7 @@ export function TimeProvider({children}: ParentalProperties) {
   }, []);
   return (
     <timeContext.Provider value={currentTime}>
-        children
+      {children}
     </timeContext.Provider>
   );
   // return <timeContext.Provider value={currentTime} children={children}/>;

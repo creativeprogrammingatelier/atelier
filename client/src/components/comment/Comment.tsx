@@ -73,8 +73,8 @@ export function Comment({comment}: CommentProperties) {
 			  <Cached cache={user}>
 			    {(user) => user.ID === comment.user.ID &&
 						<ButtonMultistate variant="danger" className="mt-2 mb-2" states={[
-						  <Fragment>Delete <FiTrash/></Fragment>,
-						  <Fragment>Confirm <FiTrash/></Fragment>,
+						  <Fragment key={comment.ID + 'Delete'}>Delete <FiTrash/></Fragment>,
+						  <Fragment key={comment.ID + 'Confirm'}>Confirm <FiTrash/></Fragment>,
 						]} finish={handleDelete}/>
 			    }
 			  </Cached>
