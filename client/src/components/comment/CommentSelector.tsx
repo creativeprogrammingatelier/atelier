@@ -1,5 +1,5 @@
 import React, {useState, Fragment} from 'react';
-import {FiTag, FiPlus} from 'react-icons/all';
+import {FiPlus} from 'react-icons/all';
 import {Button} from 'react-bootstrap';
 import {Editor} from 'codemirror';
 import {Controlled as CodeMirror} from 'react-codemirror2';

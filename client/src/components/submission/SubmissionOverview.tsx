@@ -5,7 +5,7 @@ import {FiPlus, FiTrash, FiX} from 'react-icons/all';
 
 import {ThreadState} from '../../../../models/enums/ThreadStateEnum';
 
-import {useSubmission, useFiles, useProjectComments, useRecentComments, useCourse, useCurrentUser} from '../../helpers/api/APIHooks';
+import {useSubmission, useFiles, useProjectComments, useRecentComments, useCurrentUser} from '../../helpers/api/APIHooks';
 import {TimeHelper} from '../../helpers/TimeHelper';
 
 import {CommentCreator} from '../comment/CommentCreator';
