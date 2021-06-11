@@ -75,7 +75,7 @@ export interface SearchParameters {
 
 /** Ping to check if live */
 export const ping = () => chai.request(app)
-	.get("/ping");
+    .get('/ping');
 
 /** Comment requests */
 export const getCommentsUser = () => chai.request(app)

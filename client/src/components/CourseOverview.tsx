@@ -1,7 +1,7 @@
-import React, {useState, Fragment} from 'react';
+import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {Button, Jumbotron} from 'react-bootstrap';
-import {FiPlus, FiX, FiInbox, FiList, FiUpload} from 'react-icons/all';
+import {FiX, FiInbox, FiList, FiUpload} from 'react-icons/all';
 
 import {PermissionEnum} from '../../../models/enums/PermissionEnum';
 

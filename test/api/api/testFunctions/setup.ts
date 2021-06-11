@@ -9,17 +9,17 @@ import {issueToken} from '../../../../api/src/helpers/AuthenticationHelper';
 
 import {instanceOfCoursePartial, instanceOfUser} from '../../../InstanceOf';
 import {
-	setAPITestUserValues,
-	adminSetPermissions,
-	adminCoursesToUnregister,
-	adminUnregisterCourse,
-	adminSetRoleCourse,
-	adminSetRoleGlobal,
-	getOwnUser1,
-	getCourses,
-	DEFAULT_GLOBAL_PERMISSIONS,
-	ping
-} from "../APIRequestHelper";
+  setAPITestUserValues,
+  adminSetPermissions,
+  adminCoursesToUnregister,
+  adminUnregisterCourse,
+  adminSetRoleCourse,
+  adminSetRoleGlobal,
+  getOwnUser1,
+  getCourses,
+  DEFAULT_GLOBAL_PERMISSIONS,
+  ping,
+} from '../APIRequestHelper';
 
 export function setup() {
   /**
@@ -28,30 +28,30 @@ export function setup() {
 	 * Wait for the server to start
 	 */
 
-	before(async function() {
-		// Increase the timeout for setting up te server.
-		// This requires the `function` syntax to work, doesn't work with => functions.
-		this.timeout(5000);
+  before(async function() {
+    // Increase the timeout for setting up te server.
+    // This requires the `function` syntax to work, doesn't work with => functions.
+    this.timeout(5000);
 
-		// Get test user and set token
-		const USER_ID = (await UserDB.filterUser({userName: "test user", limit: 1}))[0].ID;
-		const USER_AUTHORIZATION_KEY = issueToken(USER_ID);
-		setAPITestUserValues(USER_ID, USER_AUTHORIZATION_KEY);
-		
-		// Wait running the tests until the server has started
-		let response;
-		do {
-			// Wait for 500 ms
-			await new Promise(resolve => setTimeout(resolve, 500));
-			console.log("[Test Setup] Pinging server...")
-			// Ping the server and see if it is up
-			response = await ping();
-			console.log(`[Test Setup] Got ${response.status}: ${response.text}`);
-		} while (response.status != 204);
-		console.log("[Test Setup] Server is up.")
-	});
-	
-	/**
+    // Get test user and set token
+    const USER_ID = (await UserDB.filterUser({userName: 'test user', limit: 1}))[0].ID;
+    const USER_AUTHORIZATION_KEY = issueToken(USER_ID);
+    setAPITestUserValues(USER_ID, USER_AUTHORIZATION_KEY);
+
+    // Wait running the tests until the server has started
+    let response;
+    do {
+      // Wait for 500 ms
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('[Test Setup] Pinging server...');
+      // Ping the server and see if it is up
+      response = await ping();
+      console.log(`[Test Setup] Got ${response.status}: ${response.text}`);
+    } while (response.status != 204);
+    console.log('[Test Setup] Server is up.');
+  });
+
+  /**
 	 * Reset user permissions & course registrations before each test.
 	 * If a single test fails, permissions are not set back automatically in the test.
 	 * Thus they are reset before each test so that future tests do not fail.

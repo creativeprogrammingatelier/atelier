@@ -16,10 +16,6 @@ import {CourseState} from '../../../models/enums/CourseStateEnum';
 import {transaction} from '../database/HelperDB';
 import {AuthMiddleware} from '../middleware/AuthMiddleware';
 import {getAccessToken, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken} from '../helpers/CanvasHelper';
-import {CourseInviteDB} from '../database/CourseInviteDB';
-import {UserDB} from '../database/UserDB';
-import {User} from '../../../models/database/User';
-import {GlobalRole} from '../../../models/enums/GlobalRoleEnum';
 import {addUsersFromCanvas} from '../helpers/CourseHelper';
 
 /**
