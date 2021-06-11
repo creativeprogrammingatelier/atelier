@@ -21,6 +21,12 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "max-len" : "warn",
+        "no-tabs": "warn",
+        "no-mixed-spaces-and-tabs": "warn",
+        "valid-jsdoc": "warn",
+        "require-jsdoc": "warn"
+
     },
     "settings": {
         "react": {
