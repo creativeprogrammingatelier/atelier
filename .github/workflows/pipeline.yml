@@ -43,7 +43,7 @@ jobs:
         # Install build dependencies
       - run: npm install -g typescript webpack
         # Restore all dependencies (ci is the install command recommended for CI environments)
-      - run: npm ci
+      - run: npm ci --ignore-scripts
         # Run ESLint
       - run: npx eslint "api/**" "client/**" "helpers/**" "test/**" --quiet
         continue-on-error: true
@@ -53,10 +53,19 @@ jobs:
       - run: npm run compile-frontend
         # Initialize the database for testing
       - run: npm run database-dev
+        # Install a reporter to enable Mocha output in GitHub Actions
+      - run: npm install mocha-github-actions-reporter --no-save
         # Run backend tests with coverage
       - run: npm run test-backend-nyc
+        env:
+          MOCHA_REPORTER: mocha-github-actions-reporter
+        # Get a coverage report from nyc and add a comment to the commit or pull-request
+      - run: npx nyc report --reporter=lcov
+      - uses: romeovs/lcov-reporter-action@v0.2.16
         # Run frontend tests
       - run: npm run test-frontend
+        env:
+          MOCHA_REPORTER: mocha-github-actions-reporter
 
   # Build and push the Docker image to the GitHub Container Registry
   build_push:
