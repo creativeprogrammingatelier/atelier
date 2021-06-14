@@ -43,7 +43,7 @@ jobs:
         # Install build dependencies
       - run: npm install -g typescript webpack
         # Restore all dependencies (ci is the install command recommended for CI environments)
-      - run: npm ci --ignore-scripts
+      - run: npm ci
         # Run ESLint
       - run: npx eslint "api/**" "client/**" "helpers/**" "test/**" --quiet
         continue-on-error: true
