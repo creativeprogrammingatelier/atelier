@@ -1,5 +1,4 @@
 import {CoursePartial} from '../../../models/api/Course';
-import {User} from '../../../models/database/User';
 import {CourseRole} from '../../../models/enums/CourseRoleEnum';
 import {GlobalRole} from '../../../models/enums/GlobalRoleEnum';
 import {CourseRegistrationDB} from '../database/CourseRegistrationDB';

@@ -1,12 +1,11 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import {Link} from 'react-router-dom';
 import {Jumbotron} from 'react-bootstrap';
 import {FiMessageSquare, FiPackage} from 'react-icons/all';
 
 import {Course} from '../../../../models/api/Course';
 import {User} from '../../../../models/api/User';
 
-import {getUser, getCourse, getCourseUser} from '../../helpers/api/APIHelper';
+import {getCourse, getCourseUser} from '../../helpers/api/APIHelper';
 
 import {Frame} from '../frame/Frame';
 import {Loading} from '../general/loading/Loading';

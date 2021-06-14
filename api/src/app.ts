@@ -61,55 +61,55 @@ upgradeDatabase().then(() => {
   // Add morgan request logger if this file is ran as the main program
   if (require.main === module) {
     app.use(logger('dev'));
-}
+  }
 
-// Use express json and url parsing
-app.use(express.json());
-app.use(express.urlencoded({
-    extended: false
-}));
+  // Use express json and url parsing
+  app.use(express.json());
+  app.use(express.urlencoded({
+    extended: false,
+  }));
 
-// Use the cookieParser middleware to parse cookies
-app.use(cookieParser());
+  // Use the cookieParser middleware to parse cookies
+  app.use(cookieParser());
 
-// Refresh token cookies when they are provided and getting old
-app.use(AuthMiddleware.refreshCookieToken);
+  // Refresh token cookies when they are provided and getting old
+  app.use(AuthMiddleware.refreshCookieToken);
 
-// Serve static files from the client directory
-app.use(express.static(path.join(__dirname, '../../client/')));
+  // Serve static files from the client directory
+  app.use(express.static(path.join(__dirname, '../../client/')));
 
-// Define all API endpoints
-app.use('/api/auth', authRouter);
-app.use('/api/comment', commentRouter);
-app.use('/api/commentThread', commentThreadRouter);
-app.use('/api/course', courseRouter);
-app.use('/api/feed', feedRouter);
-app.use('/api/file', fileRouter);
-app.use('/api/invite', inviteRouter);
-app.use('/api/mentions', mentionsRouter);
-app.use('/api/permission', permissionRouter);
-app.use('/api/plugin', pluginRouter);
-app.use('/api/role', roleRouter);
-app.use('/api/search', searchRouter);
-app.use('/api/submission', submissionRouter);
-app.use('/api/user', userRouter);
-app.use('/api/canvas', canvasRouter);
+  // Define all API endpoints
+  app.use('/api/auth', authRouter);
+  app.use('/api/comment', commentRouter);
+  app.use('/api/commentThread', commentThreadRouter);
+  app.use('/api/course', courseRouter);
+  app.use('/api/feed', feedRouter);
+  app.use('/api/file', fileRouter);
+  app.use('/api/invite', inviteRouter);
+  app.use('/api/mentions', mentionsRouter);
+  app.use('/api/permission', permissionRouter);
+  app.use('/api/plugin', pluginRouter);
+  app.use('/api/role', roleRouter);
+  app.use('/api/search', searchRouter);
+  app.use('/api/submission', submissionRouter);
+  app.use('/api/user', userRouter);
+  app.use('/api/canvas', canvasRouter);
 
-// Give a 404 in case the API route does not exist
-app.all('/api/*', (_, response) => response.status(404).send({
-    error: "route.notfound",
-    message: "This is not a valid API endpoint."
-}));
+  // Give a 404 in case the API route does not exist
+  app.all('/api/*', (_, response) => response.status(404).send({
+    error: 'route.notfound',
+    message: 'This is not a valid API endpoint.',
+  }));
 
-// Add a small endpoint to simply check that the server is live and responding
-// Used to wait running tests until the server has fully started
-app.get("/ping", (_, response) => response.status(204).send())
+  // Add a small endpoint to simply check that the server is live and responding
+  // Used to wait running tests until the server has fully started
+  app.get('/ping', (_, response) => response.status(204).send());
 
-// The index router catches all other request, serving the frontend
-app.use('/', indexRouter);
+  // The index router catches all other request, serving the frontend
+  app.use('/', indexRouter);
 
-// Handle all errors thrown in the pipeline
-app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
+  // Handle all errors thrown in the pipeline
+  app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
     // Log the full error to the console, we want to see what went wrong...
     console.log('\x1b[31m', error);
 

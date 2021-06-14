@@ -23,14 +23,14 @@ interface DataBlockListProperties extends DataListProperties {
  */
 export function DataBlockList({list, ...properties}: DataBlockListProperties) {
   return <DataList {...properties}>
-    {list.map((block) =>
-      <DataBlock
-        key={block.key}
-        transport={block.transport}
-        title={block.title}
-        text={block.text}
-        time={block.time}
-        tags={block.tags}
+	  {list.map((block) =>
+		  <DataBlock
+			  key={block.key}
+			  transport={block.transport}
+			  title={block.title}
+			  text={block.text}
+			  time={block.time}
+			  tags={block.tags}
       />,
     )}
   </DataList>;

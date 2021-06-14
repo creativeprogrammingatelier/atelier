@@ -1,5 +1,4 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
 import {Button, Jumbotron} from 'react-bootstrap';
 import {IconType} from 'react-icons';
 import {FiMessageSquare, FiShare2} from 'react-icons/all';

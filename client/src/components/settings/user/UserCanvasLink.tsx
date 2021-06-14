@@ -1,19 +1,6 @@
-import React, {useState, Fragment, useEffect} from 'react';
+import React from 'react';
 import {Button, Form, FormLabel} from 'react-bootstrap';
 
-import {CourseUser} from '../../../../../models/api/CourseUser';
-import {User} from '../../../../../models/api/User';
-import {PermissionEnum, containsPermission, permissionsSectionView, permissionsSectionManage} from '../../../../../models/enums/PermissionEnum';
-
-import {setPermissionCourse, setPermissionGlobal} from '../../../helpers/api/APIHelper';
-import {getEnum} from '../../../../../helpers/EnumHelper';
-
-import {Area} from '../../general/Area';
-import {Permissions} from '../../general/Permissions';
-import {CheckboxInput} from '../../input/CheckboxInput';
-import {LabeledInput} from '../../input/LabeledInput';
-import {UserInfo} from './UserInfo';
-import {UserSearch} from './UserSearch';
 import {CanvasHelper} from '../../../helpers/CanvasHelper';
 
 interface PermissionDisplay {

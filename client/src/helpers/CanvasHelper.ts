@@ -1,4 +1,3 @@
-import {response} from 'express';
 import {Fetch} from './api/FetchHelper';
 
 export class CanvasHelper {

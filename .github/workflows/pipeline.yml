@@ -10,8 +10,6 @@ jobs:
   # Build and test the application
   build_test:
     runs-on: ubuntu-latest
-    # Run on the LTS version of Node in a container
-    container: node:lts
 
     env:
       # Set the env to 'ci', will run with the ci.json configuration file
@@ -32,26 +30,42 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
         # Check out the repository in the $GITHUB_WORKSPACE folder
       - uses: actions/checkout@v2
+        # Set up Node.js LTS, enable matchers on the eslint and tsc output
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
         # Install build dependencies
       - run: npm install -g typescript webpack
         # Restore all dependencies (ci is the install command recommended for CI environments)
       - run: npm ci
-        # TODO: Run ESLint
-      # - run: npx eslint .
+        # Run ESLint
+      - run: npx eslint "api/**" "client/**" "helpers/**" "test/**" --quiet
+        continue-on-error: true
         # Compile the backend
       - run: npm run compile
-        # Initialize the database for testing
-      - run: npm run database-dev
-        # Run backend tests with coverage
-      - run: npm run test-backend-nyc
         # Compile the frontend
       - run: npm run compile-frontend
+        # Initialize the database for testing
+      - run: npm run database-dev
+        # Install a reporter to enable Mocha output in GitHub Actions
+      - run: npm install mocha-github-actions-reporter --no-save
+        # Run backend tests with coverage
+      - run: npm run test-backend-nyc
+        env:
+          MOCHA_REPORTER: mocha-github-actions-reporter
+        # Get a coverage report from nyc and add a comment to the commit or pull-request
+      - run: npx nyc report --reporter=lcov
+      - uses: romeovs/lcov-reporter-action@v0.2.16
         # Run frontend tests
       - run: npm run test-frontend
+        env:
+          MOCHA_REPORTER: mocha-github-actions-reporter
 
   # Build and push the Docker image to the GitHub Container Registry
   build_push:

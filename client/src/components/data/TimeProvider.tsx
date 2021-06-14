@@ -15,8 +15,12 @@ export function TimeProvider({children}: ParentalProperties) {
     }, 1000);
     return () => clearInterval(handle);
   }, []);
-
-  return <timeContext.Provider value={currentTime} children={children}/>;
+  return (
+    <timeContext.Provider value={currentTime}>
+      {children}
+    </timeContext.Provider>
+  );
+  // return <timeContext.Provider value={currentTime} children={children}/>;
 }
 
 /**

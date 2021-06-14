@@ -1,6 +1,5 @@
-import {FetchError} from 'node-fetch';
 import React from 'react';
-import {Button, Form} from 'react-bootstrap';
+import {Form} from 'react-bootstrap';
 import {Fetch} from '../../../helpers/api/FetchHelper';
 import {CanvasHelper} from '../../../helpers/CanvasHelper';
 import {LabeledInput} from '../../input/LabeledInput';
