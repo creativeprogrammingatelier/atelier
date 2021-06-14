@@ -40,8 +40,8 @@ jobs:
       - run: npm install -g typescript webpack
         # Restore all dependencies (ci is the install command recommended for CI environments)
       - run: npm ci
-        # TODO: Run ESLint
-      # - run: npx eslint .
+        # Run ESLint
+      - run: npx eslint "api/**" "client/**" "helpers/**" "test/**" --quiet
         # Compile the backend
       - run: npm run compile
         # Initialize the database for testing
