@@ -62,7 +62,6 @@ export function commentTest() {
            ['trailing whitespace   ', 'trailing whitespace'],
            ['\t mixed spaces and tabs \t  \t', 'mixed spaces and tabs']
        ];
-       assert(false);
        for (const test of testComments) {
            const comment = test[0];
            const expected = test[1];
