@@ -10,8 +10,6 @@ jobs:
   # Build and test the application
   build_test:
     runs-on: ubuntu-latest
-    # Run on the LTS version of Node in a container
-    container: node:lts
 
     env:
       # Set the env to 'ci', will run with the ci.json configuration file
@@ -32,13 +30,16 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
         # Check out the repository in the $GITHUB_WORKSPACE folder
       - uses: actions/checkout@v2
-        # Set up node to enable matchers on the eslint and tsc output
-        # Does not try to install Node, as it's already there and no version is specified
+        # Set up Node.js LTS, enable matchers on the eslint and tsc output
       - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
         # Install build dependencies
       - run: npm install -g typescript webpack
         # Restore all dependencies (ci is the install command recommended for CI environments)
