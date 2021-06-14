@@ -36,20 +36,24 @@ jobs:
     steps:
         # Check out the repository in the $GITHUB_WORKSPACE folder
       - uses: actions/checkout@v2
+        # Set up node to enable matchers on the eslint and tsc output
+        # Does not try to install Node, as it's already there and no version is specified
+      - uses: actions/setup-node@v2
         # Install build dependencies
       - run: npm install -g typescript webpack
         # Restore all dependencies (ci is the install command recommended for CI environments)
       - run: npm ci
         # Run ESLint
       - run: npx eslint "api/**" "client/**" "helpers/**" "test/**" --quiet
+        continue-on-error: true
         # Compile the backend
       - run: npm run compile
+        # Compile the frontend
+      - run: npm run compile-frontend
         # Initialize the database for testing
       - run: npm run database-dev
         # Run backend tests with coverage
       - run: npm run test-backend-nyc
-        # Compile the frontend
-      - run: npm run compile-frontend
         # Run frontend tests
       - run: npm run test-frontend
 
