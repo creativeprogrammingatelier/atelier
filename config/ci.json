@@ -23,7 +23,7 @@
     ],
     "database": {
         "user": "atelier",
-        "host": "postgres",
+        "host": "localhost",
         "database": "atelier",
         "password": "AtelierP@ssw0rd",
         "port": 5432,
