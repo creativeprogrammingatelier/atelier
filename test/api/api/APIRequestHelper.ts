@@ -88,6 +88,10 @@ export const putComment = () => chai.request(app)
     .put(`/api/comment/${COMMENT_THREAD_ID}`)
     .send({comment: 'this is a comment used for testing'})
     .set({'Authorization': USER_AUTHORIZATION_KEY});
+export const putComment2 = (comment: string) => chai.request(app)
+    .put(`/api/comment/${COMMENT_THREAD_ID}`)
+    .send({comment})
+    .set({'Authorization': USER_AUTHORIZATION_KEY});
 
 /** Comment thread requests */
 export const getCommentThread = () => chai.request(app)
