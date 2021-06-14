@@ -1,23 +1,5 @@
 import path from 'path';
-import fs from 'fs';
-import crypto from 'crypto';
-
-// Private helpers
-function generateKey(filePath: string) {
-  if (!fs.existsSync(filePath)) {
-    fs.mkdirSync(path.dirname(filePath), {recursive: true});
-    console.log('Generating keys for signing JWT tokens.');
-    const {publicKey, privateKey} = crypto.generateKeyPairSync('rsa', {
-      modulusLength: 4096,
-    });
-    const key = privateKey.export({format: 'pem', type: 'pkcs1'});
-    fs.writeFileSync(filePath, key);
-    fs.writeFileSync(filePath + '.pub', publicKey.export({format: 'pem', type: 'pkcs1'}));
-    return key;
-  } else {
-    return fs.readFileSync(filePath, 'utf8');
-  }
-}
+import {generateKey} from "../helpers/KeyGeneration";
 
 const authKey = generateKey(path.join(__dirname, '../../keys/jwtRS256.key'));
 const tempKey = generateKey(path.join(__dirname, '../../keys/tempKey.key'));
