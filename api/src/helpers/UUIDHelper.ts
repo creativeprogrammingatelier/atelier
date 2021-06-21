@@ -23,8 +23,13 @@ export class UUIDHelper {
 
     const buffer = Buffer.from(id.replace(/_/g, '/').replace(/-/g, '+'), 'base64');
     const hex = buffer.toString('hex');
+    const result = hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
 
-    return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+    if (this.fromUUID(result) !== id){
+      console.log(98765, id);
+      throw new UUIDError(id);
+    }
+    return result;
   }
 
   /**
