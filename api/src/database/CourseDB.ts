@@ -81,7 +81,7 @@ export class CourseDB {
 	 * Adds a single course to the course table.
 	 */
   static async addCourse(course: Course) {
-    checkAvailable(['courseName', 'state', 'creatorID', 'canvasCourseID'], course);
+    checkAvailable(['courseName', 'state', 'creatorID'], course);
     const {
       courseName,
       state,
