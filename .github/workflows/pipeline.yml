@@ -68,7 +68,7 @@ jobs:
       - uses: actions/github-script@v4
         with:
           script: |
-            fs.readFile("./coverage/report.txt", "utf8", (error, data) => {
+            require("fs").readFile("./coverage/report.txt", "utf8", (error, data) => {
               if (error) {
                 console.log(error);
               } else if (context.eventName === "pull_request") {
