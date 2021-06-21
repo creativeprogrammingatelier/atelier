@@ -60,9 +60,10 @@ jobs:
         env:
           MOCHA_REPORTER: mocha-github-actions-reporter
         # Get a coverage report from nyc and add a comment to the commit or pull-request
-      - run: echo "```\n" > ./coverage/report.txt
+      - run: echo "\`\`\`" > ./coverage/report.txt
       - run: npx nyc report --reporter=text-summary >> ./coverage/report.txt
-      - run: echo "```\n\n" >> ./coverage/report.txt
+      - run: echo "\`\`\`" >> ./coverage/report.txt
+      - run: echo "" >> ./coverage/report.txt
       - run: npx nyc report --reporter=text >> ./coverage/report.txt
       - uses: actions/github-script@v4
         with:
