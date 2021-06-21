@@ -61,7 +61,7 @@ jobs:
           MOCHA_REPORTER: mocha-github-actions-reporter
         # Get a coverage report from nyc and add a comment to the commit or pull-request
       - run: npx nyc report --reporter=lcov
-      - uses: romeovs/lcov-reporter-action@v0.2.16
+      - uses: romeovs/lcov-reporter-action@v0.2.21
         # Run frontend tests
       - run: npm run test-frontend
         env:
