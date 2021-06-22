@@ -101,10 +101,6 @@ upgradeDatabase().then(() => {
     message: 'This is not a valid API endpoint.',
   }));
 
-  // Add a small endpoint to simply check that the server is live and responding
-  // Used to wait running tests until the server has fully started
-  app.get('/ping', (_, response) => response.status(204).send());
-
   // The index router catches all other request, serving the frontend
   app.use('/', indexRouter);
 
