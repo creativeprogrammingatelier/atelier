@@ -73,6 +73,10 @@ export interface SearchParameters {
 	offset?: number
 }
 
+/** Ping to check if live */
+export const ping = () => chai.request(app)
+    .get('/ping');
+
 /** Comment requests */
 export const getCommentsUser = () => chai.request(app)
     .get(`/api/comment/user/${USER_ID}`)
