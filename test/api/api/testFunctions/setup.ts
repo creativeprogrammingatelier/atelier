@@ -18,25 +18,40 @@ import {
   getOwnUser1,
   getCourses,
   DEFAULT_GLOBAL_PERMISSIONS,
+  ping,
 } from '../APIRequestHelper';
 
 export function setup() {
   /**
-	 * Set user to set user, and receive a token for the API
-	 * Unregister user from default course, and remove permissions.
-	 */
-  before(async () => {
+   * Set user to set user, and receive a token for the API
+   * Unregister user from default course, and remove permissions.
+   * Wait for the server to start
+   */
+
+  before(async function() {
     // Get test user and set token
     const USER_ID = (await UserDB.filterUser({userName: 'test user', limit: 1}))[0].ID;
     const USER_AUTHORIZATION_KEY = issueToken(USER_ID);
     setAPITestUserValues(USER_ID, USER_AUTHORIZATION_KEY);
+
+    // Wait running the tests until the server has started
+    let response;
+    do {
+      // Wait for 100 ms
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      console.log('[Test Setup] Pinging server...');
+      // Ping the server and see if it is up
+      response = await ping();
+      console.log(`[Test Setup] Got ${response.status}: ${response.text}`);
+    } while (response.status != 204);
+    console.log('[Test Setup] Server is up.');
   });
 
   /**
-	 * Reset user permissions & course registrations before each test.
-	 * If a single test fails, permissions are not set back automatically in the test.
-	 * Thus they are reset before each test so that future tests do not fail.
-	 */
+   * Reset user permissions & course registrations before each test.
+   * If a single test fails, permissions are not set back automatically in the test.
+   * Thus they are reset before each test so that future tests do not fail.
+   */
   beforeEach(async () => {
     await removeAllPermissions();
     await removeAllRegistrations();
@@ -81,9 +96,9 @@ export function setup() {
   }
 
   /**
-	 * Check permissions of the user at the start of the test. User should not have
-	 * any permissions.
-	 */
+   * Check permissions of the user at the start of the test. User should not have
+   * any permissions.
+   */
   it('Should have default permissions at the start of the test', async () => {
     const response = await getOwnUser1();
     expect(response).to.have.status(200);
@@ -94,8 +109,8 @@ export function setup() {
   });
 
   /**
-	 * Check that user is not registered in any courses prior to the rest of the tests.
-	 */
+   * Check that user is not registered in any courses prior to the rest of the tests.
+   */
   it('Should have no course registrations at the start of the test', async () => {
     let response = await getCourses();
     expect(response).to.have.status(200);
