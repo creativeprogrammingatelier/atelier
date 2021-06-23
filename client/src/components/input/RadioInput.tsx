@@ -1,5 +1,5 @@
-import React, {Fragment} from "react";
-import {Form} from "react-bootstrap";
+import React, {Fragment} from 'react';
+import {Form} from 'react-bootstrap';
 
 interface RadioInputProperties {
 	/** Possible options for the input component */
@@ -10,25 +10,24 @@ interface RadioInputProperties {
 	onChange: (name: string) => void
 }
 export function RadioInput({options, selected, onChange}: RadioInputProperties) {
-	return options.length > 0 ?
+  return options.length > 0 ?
 		<Fragment>
-			{options.map(({value, name}) =>
-				<Form.Check
-					custom
-					type="radio"
-					key={value}
-					id={value}
-				>
-					<Form.Check.Input
-						type="radio"
-						value={value}
-						checked={selected === value}
-						onChange={() => onChange(value)}
-					/>
-					<Form.Check.Label htmlFor={value}>{name}</Form.Check.Label>
-				</Form.Check>
-			)}
-		</Fragment>
-		:
+		  {options.map(({value, name}) =>
+		    <Form.Check
+		      custom
+		      type="radio"
+		      key={value}
+		      id={value}
+		    >
+		      <Form.Check.Input
+		        type="radio"
+		        value={value}
+		        checked={selected === value}
+		        onChange={() => onChange(value)}
+		      />
+		      <Form.Check.Label htmlFor={value}>{name}</Form.Check.Label>
+		    </Form.Check>,
+		  )}
+		</Fragment>		:
 		null;
 }

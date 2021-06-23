@@ -24,29 +24,29 @@ export interface PostgresError extends Error {
 /** A small categorization of errors thrown by Postgres */
 export enum PostgresErrorCode {
 	/** The unique constraint was violated, this data already exists */
-	UNIQUE = "db.unique",
+	UNIQUE = 'db.unique',
 	/** A constraint was violated */
-	INTEGRITY = "db.integrity",
+	INTEGRITY = 'db.integrity',
 	/** An error related to data provided in the query */
-	DATA = "db.data",
+	DATA = 'db.data',
 	/** Some other error relating to the database */
-	OTHER = "db.other"
+	OTHER = 'db.other'
 }
 
 /** Check if an error is thrown by Postgres */
 export function isPostgresError(err: Error): err is PostgresError {
-	return "name" in err && "code" in err;
+  return 'name' in err && 'code' in err;
 }
 
 /** Parse the error code of a `PostgresError` */
 export function parsePostgresErrorCode(err: PostgresError) {
-	if (err.code === "23505") {
-		return PostgresErrorCode.UNIQUE;
-	} else if (err.code.startsWith("23")) {
-		return PostgresErrorCode.INTEGRITY;
-	} else if (err.code.startsWith("22")) {
-		return PostgresErrorCode.DATA;
-	} else {
-		return PostgresErrorCode.OTHER;
-	}
+  if (err.code === '23505') {
+    return PostgresErrorCode.UNIQUE;
+  } else if (err.code.startsWith('23')) {
+    return PostgresErrorCode.INTEGRITY;
+  } else if (err.code.startsWith('22')) {
+    return PostgresErrorCode.DATA;
+  } else {
+    return PostgresErrorCode.OTHER;
+  }
 }

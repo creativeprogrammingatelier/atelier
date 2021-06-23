@@ -1,4 +1,4 @@
-require.extensions[".css"] = () => {
+require.extensions['.css'] = () => {
 };
-require.extensions[".scss"] = () => {
+require.extensions['.scss'] = () => {
 };

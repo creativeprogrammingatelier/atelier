@@ -1,13 +1,13 @@
-import React, {useEffect, Fragment, useState} from "react";
-import {useObservableState} from "observable-hooks";
+import React, {useEffect, Fragment, useState} from 'react';
+import {useObservableState} from 'observable-hooks';
 
-import {APICache, Refresh, LoadMore} from "../../../helpers/api/APIHooks";
-import {CacheState} from "../../../helpers/api/Cache";
+import {APICache, Refresh, LoadMore} from '../../../helpers/api/APIHooks';
+import {CacheState} from '../../../helpers/api/Cache';
 
-import {LoadingIcon} from "./LoadingIcon";
-import { Button } from "react-bootstrap";
-import { FeedbackContent } from "../../feedback/Feedback";
-import { FeedbackError } from "../../feedback/FeedbackError";
+import {LoadingIcon} from './LoadingIcon';
+import {Button} from 'react-bootstrap';
+import {FeedbackContent} from '../../feedback/Feedback';
+import {FeedbackError} from '../../feedback/FeedbackError';
 
 interface CachedProperties<T> {
 	/** Interface to the cached data and optional refresh */
@@ -38,89 +38,91 @@ interface CachedProperties<T> {
 
 /** Helper function to spread request delays proportional to the timeout time */
 function jitter(time: number) {
-	return time + (Math.random() * time * 0.2) - (time * 0.1);
+  return time + (Math.random() * time * 0.2) - (time * 0.1);
 }
 
 export function Cached<T>(
-	{
-		cache, timeout, extractDate, wrapper, onError,
-		updateCount = count => {},
-		children
-	}: CachedProperties<T>
+    {
+      cache, timeout, extractDate, wrapper, onError,
+      updateCount = (count) => {},
+      children,
+    }: CachedProperties<T>,
 ) {
-    const cached = useObservableState(cache.observable)!;
-    const [loadMoreEnabled, setLoadMoreEnabled] = useState(true);
-    const [error, setError] = useState(false as FeedbackContent);
-	
-	useEffect(() => {
-		if ("refresh" in cache && cache.refresh) {
-			const actualTimeout = timeout !== undefined ? timeout : cache.defaultTimeout;
-			if (cached.state === CacheState.Uninitialized) {
-				cache.refresh().catch((err: Error) => {
-                    if (onError !== undefined) onError(err.message);
-                    setError(err.message);
-                });
-			} else if (actualTimeout !== 0) {
-				const expiration = Math.max(0, cached.updatedAt + actualTimeout * 1000 - Date.now());
-				const handle = setTimeout(() => cache.refresh(), jitter(expiration));
-				return () => clearTimeout(handle);
-			}
-		}
-	}, [timeout, cached.updatedAt]);
-	useEffect(() => {
-		if (cached.state === CacheState.Loaded) {
-			if ("value" in cached) {
-				updateCount(1);
-			} else {
-				updateCount(cached.items.length);
-			}
-		} else {
-			updateCount(1);
-		}
-	}, [cached]);
-	
-	if (cached.state !== CacheState.Loaded) {
-        const content = (
-            <Fragment>
-                { onError === undefined && <FeedbackError children={error} close={setError} /> }
-                <LoadingIcon />
-            </Fragment>
-        );
-		if (wrapper) {
-			return <Fragment children={wrapper(content)}/>;
-		} else {
-			return content;
-		}
-	} else {
-		if ("value" in cached) {
-			return (
-                <Fragment>
-                    { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
-                    {children(cached.value, cached.state)}
-                </Fragment> 
-            );
-		} else {
-			return (
-                <Fragment>
-                    { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
-                    {cached.items.map(item => children(item.value, item.state))}
-                    {   
-                        "loadMore" in cache && cache.loadMore && extractDate && (
-                            loadMoreEnabled
-                            ? (
+  const cached = useObservableState(cache.observable)!;
+  const [loadMoreEnabled, setLoadMoreEnabled] = useState(true);
+  const [error, setError] = useState(false as FeedbackContent);
+
+  useEffect(() => {
+    if ('refresh' in cache && cache.refresh) {
+      const actualTimeout = timeout !== undefined ? timeout : cache.defaultTimeout;
+      if (cached.state === CacheState.Uninitialized) {
+        cache.refresh().catch((err: Error) => {
+          if (onError !== undefined) onError(err.message);
+          setError(err.message);
+        });
+      } else if (actualTimeout !== 0) {
+        const expiration = Math.max(0, cached.updatedAt + actualTimeout * 1000 - Date.now());
+        const handle = setTimeout(() => cache.refresh(), jitter(expiration));
+        return () => clearTimeout(handle);
+      }
+    }
+  }, [timeout, cached.updatedAt]);
+  useEffect(() => {
+    if (cached.state === CacheState.Loaded) {
+      if ('value' in cached) {
+        updateCount(1);
+      } else {
+        updateCount(cached.items.length);
+      }
+    } else {
+      updateCount(1);
+    }
+  }, [cached]);
+
+  if (cached.state !== CacheState.Loaded) {
+    const content = (
+      <Fragment>
+        { onError === undefined && <FeedbackError children={error} close={setError} /> }
+        <LoadingIcon />
+      </Fragment>
+    );
+    if (wrapper) {
+      return <Fragment children={wrapper(content)}/>;
+    } else {
+      return content;
+    }
+  } else {
+    if ('value' in cached) {
+      return (
+        <Fragment>
+          { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
+          {children(cached.value, cached.state)}
+        </Fragment>
+      );
+    } else {
+      return (
+        <Fragment>
+          { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
+          {cached.items.map((item) => children(item.value, item.state))}
+          {
+            'loadMore' in cache && cache.loadMore && extractDate && (
+                            loadMoreEnabled ?
+                            (
                                 <Button onClick={() => {
-                                        cache.loadMore(
-                                            Math.max(...cached.items.map(item => extractDate(item.value).getTime())) 
-                                            + 3 * 24 * 60 * 60 * 1000
-                                        ).then(res => { if (res === 0) setLoadMoreEnabled(false); })
-                                    }}>
+                                  cache.loadMore(
+                                      Math.max(...cached.items.map((item) => extractDate(item.value).getTime())) +
+                                            3 * 24 * 60 * 60 * 1000,
+                                  ).then((res) => {
+                                    if (res === 0) setLoadMoreEnabled(false);
+                                  });
+                                }}>
                                     Load More
                                 </Button>
                             ) : <Button> Nothing More to Load</Button>
-                        )
-                    }
-                </Fragment>
-            );
-		}
-	}
+            )
+          }
+        </Fragment>
+      );
+    }
+  }
 }
