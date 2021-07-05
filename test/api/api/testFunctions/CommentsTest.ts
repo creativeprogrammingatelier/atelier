@@ -5,12 +5,12 @@ import {Comment} from '../../../../models/api/Comment';
 
 import {instanceOfComment} from '../../../InstanceOf';
 import {
-  getCommentsUser,
-  USER_ID,
-  getCommentsByUserAndCourse,
-  COURSE_ID,
-  putComment,
-  adminRegisterCourse,
+    getCommentsUser,
+    USER_ID,
+    getCommentsByUserAndCourse,
+    COURSE_ID,
+    putComment,
+    adminRegisterCourse,
 } from '../APIRequestHelper';
 
 export function commentTest() {
@@ -46,10 +46,34 @@ export function commentTest() {
 
     it('Should be possible to post a comment', async () => {
       await adminRegisterCourse();
-      const response = await putComment();
+      const response = await putComment('this is a comment used for testing');
       expect(response).to.have.status(200);
       const comment = response.body;
       assert(instanceOfComment(comment), 'Body should be comment, but was' + comment);
+    });
+
+    it('Should trim white space on comments', async() => {
+       await  adminRegisterCourse();
+       const testComments = [
+           [' single starting space', 'single starting space'],
+           ['test comment', 'test comment'],
+           ['\tindenting tab', 'indenting tab'],
+           ['\t \t \n', ''],
+           ['trailing whitespace   ', 'trailing whitespace'],
+           ['\t mixed spaces and tabs \t  \t', 'mixed spaces and tabs']
+       ];
+       for (const test of testComments) {
+           const comment = test[0];
+           const expected = test[1];
+
+           const response = await putComment(comment);
+           expect(response).to.have.status(200);
+           assert(instanceOfComment(response.body), 'Body should be comment, but was' + response.body);
+           const result : Comment = response.body;
+           assert(result.text === expected, 'Result comment should be "' + expected + '", but was "' +result.text + '".');
+
+
+       }
     });
   });
 }
