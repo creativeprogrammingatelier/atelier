@@ -84,11 +84,7 @@ export const getCommentsUser = () => chai.request(app)
 export const getCommentsByUserAndCourse = () => chai.request(app)
     .get(`/api/comment/course/${COURSE_ID}/user/${USER_ID}`)
     .set({'Authorization': USER_AUTHORIZATION_KEY});
-export const putComment = () => chai.request(app)
-    .put(`/api/comment/${COMMENT_THREAD_ID}`)
-    .send({comment: 'this is a comment used for testing'})
-    .set({'Authorization': USER_AUTHORIZATION_KEY});
-export const putComment2 = (comment: string) => chai.request(app)
+export const putComment = (comment: string) => chai.request(app)
     .put(`/api/comment/${COMMENT_THREAD_ID}`)
     .send({comment})
     .set({'Authorization': USER_AUTHORIZATION_KEY});

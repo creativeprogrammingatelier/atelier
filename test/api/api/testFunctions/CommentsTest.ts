@@ -10,7 +10,7 @@ import {
     getCommentsByUserAndCourse,
     COURSE_ID,
     putComment,
-    adminRegisterCourse, putComment2,
+    adminRegisterCourse,
 } from '../APIRequestHelper';
 
 export function commentTest() {
@@ -46,7 +46,7 @@ export function commentTest() {
 
     it('Should be possible to post a comment', async () => {
       await adminRegisterCourse();
-      const response = await putComment();
+      const response = await putComment('this is a comment used for testing');
       expect(response).to.have.status(200);
       const comment = response.body;
       assert(instanceOfComment(comment), 'Body should be comment, but was' + comment);
@@ -66,7 +66,7 @@ export function commentTest() {
            const comment = test[0];
            const expected = test[1];
 
-           const response = await putComment2(comment);
+           const response = await putComment(comment);
            expect(response).to.have.status(200);
            assert(instanceOfComment(response.body), 'Body should be comment, but was' + response.body);
            const result : Comment = response.body;
