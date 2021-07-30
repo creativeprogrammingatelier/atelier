@@ -8,9 +8,6 @@ FROM base AS build
 # Fix for Webpack running out of memory
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Install build tools
-RUN npm install -g typescript webpack
-
 # Install dependencies separately, so they can be cached
 COPY package.json ./
 COPY package-lock.json ./
