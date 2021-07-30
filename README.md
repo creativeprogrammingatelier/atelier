@@ -10,14 +10,13 @@ To run and debug Atelier in your local development environment, you'll need the 
 
 - [Node.js](https://nodejs.org/): to run the backend server and development tools (the LTS version is recommended, but other versions might work too)
 - [PostgreSQL](https://www.postgresql.org/): to run a local database (but you can also use a remote database, if you prefer)
-- TypeScript and webpack: `npm install -g typescript webpack`
 - Some editor that supports TypeScript (e.g. [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm/))
 
 Once you've got the tooling set up, we can start with getting Atelier running:
 
 1. Clone the repo and switch to the atelier directory
 
-2. Run `npm install` to install the dependencies
+2. Run `npm install` to install the dependencies. If this command changed the *package-lock.json* file, you may want to run it again.
 
 3. Create a development configuration:
 
@@ -34,16 +33,14 @@ Once you've got the tooling set up, we can start with getting Atelier running:
 
 8. Navigate to <http://localhost:5000>
 
-9. You will be shown the login page. Click on the *Samling* button to log in. In the *Name Identifier* field, fill in one of the following user identifiers:
+9. You will be shown the login page. Click on the *Sustainsys Stub IDP* button to log in. In the *Subject NameId* field, fill in one of the following user identifiers:
 
    - `admin` - a global admin user, who is allowed to do anything in the system
    - `user` - a global 'user' user, who is enrolled in a course as a student
    - `teacher` - a global staff user, who is enrolled in a course as a teacher 
    - `TA` - a global 'user' user, who is enrolled in a course as a teaching assistant
 
-   Then click *Next* and *Post Response!* to log in.
-
-   (*Note:* there is known issue with using Samling and Firefox or Safari. After logging in, you'll be redirected back to http://localhost:5000/login. Simply change the address in your address bar back to http://localhost:5000 to proceed.)
+   Leave all other fields as they are and click the *Log in* button to log in.
 
 Now you are ready to start developing Atelier further. Also take a look at the [*/docs/dev*](/docs/dev) folder for more information about developing all parts of the Atelier system.
 
