@@ -22,6 +22,8 @@ database/log
 database/data
 **/.DS_Store
 
+docs/typedoc
+
 config/*
 !config/example.json
 !config/ci.json

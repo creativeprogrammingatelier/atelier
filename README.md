@@ -75,6 +75,10 @@ In *package.json*, a couple scripts are defined to do common operations while de
 - `database-samples` - Add sample data to an existing database structure
 - `database-dev` - Set up the database for development, including sample data
 
+**Documentation**
+
+- `generate-docs` - Generate a typedoc documentation website from the inline code documentation
+
 ### Optional Tools for Development
 
 These are some useful tools you might want to use when working on Atelier:
@@ -171,18 +175,18 @@ where you replace `atelier_atelier_1` with the name of your Atelier container.
 
 ## Documentation 
 
-Documentation is inline but has been created in line with the [Type Doc](https://typedoc.org/) , generated version of the docs can be created using:
-```
-typedoc
-```
+The above should help you get started with running and developing Atelier. More specific documentation is available in the [*/docs*](/docs) folder: this is mainly conceptual documentation about the whole structure of the project. Most files (and they really all should) include inline JSDoc documentation describing specific functionalities. If you prefer, you can also run the `npm run generate-docs` command to create a TypeDoc website based on this inline documentation. The website files can then be found in the [*/docs/typedoc*](/docs/typedoc) folder.
+
 ## Design Guidelines
 
 The Atelier design is based on Bootstrap, with additional custom styling for the distinctive Atelier look.
 
 ### Icons 
+
 The project is using [React Icon package](https://react-icons.netlify.com/#/), which contains a number of icon packs. Preference should be given to the [Feather](https://react-icons.netlify.com/#/icons/fi) Icon pack.
 
 ## Contributing
+
 If you wish to contribute, please first make a branch named after yourself or the features you are implementing. If you plan to do a larger amount of work, please first open an issue to discuss your plans. This prevents double work and other forms of disappointment.
 
 ## Contributors
