@@ -3,7 +3,6 @@ import express, {Request, Response, NextFunction} from 'express';
 import http from 'http';
 import logger from 'morgan';
 import path from 'path';
-import socketio, {Socket} from 'socket.io';
 
 import {AuthError} from './helpers/AuthenticationHelper';
 import {config} from './helpers/ConfigurationHelper';
@@ -49,14 +48,6 @@ upgradeDatabase().then(() => {
   // Set up server and start listening on configured port and hostname
   const server = http.createServer(app);
   server.listen(config.port, config.hostname);
-
-  // Set up Socket.io
-  const socket = socketio(server);
-  app.set('socket-io', socket);
-  socket.on('connect', (socket: Socket) => {
-    // send each client their socket id
-    socket.emit('id', socket.id);
-  });
 
   // Add morgan request logger if this file is ran as the main program
   if (require.main === module) {
