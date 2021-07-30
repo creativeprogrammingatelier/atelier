@@ -2,7 +2,7 @@ import {UserDB} from '../database/UserDB';
 import {getCurrentUserID} from './AuthenticationHelper';
 import {Request} from 'express';
 import LinkHeader from 'http-link-header';
-import requestPromise from 'request-promise';
+import fetch from 'node-fetch';
 import Link from 'http-link-header';
 import {config} from './ConfigurationHelper';
 
@@ -32,10 +32,9 @@ export function isCanvasIntegrationEnabled() {
 
 export async function getAccessToken(refreshToken: string) {
   const {canvas_url_root, client_id, client_secret, redirect_uri} = canvasConfig();
-  const requestPromise = require('request-promise');
   const grant_type = 'refresh_token';
-  const result = await requestPromise.post(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&refresh_token=${refreshToken}`);
-  const access_token: string = JSON.parse(result).access_token;
+  const result = await fetch(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&refresh_token=${refreshToken}`, { method: "POST" });
+  const { access_token } : { access_token: string } = await result.json();
   return access_token;
 }
 
@@ -47,15 +46,16 @@ export async function getRefreshToken(request: Request) {
 
 export async function deleteCanvasLink(access_token: String) {
   const {canvas_url_root} = canvasConfig();
-  await requestPromise.delete(`${canvas_url_root}/login/oauth2/token?access_token=${access_token}`);
+  await fetch(`${canvas_url_root}/login/oauth2/token?access_token=${access_token}`, { method: "DELETE" });
 }
 
 export async function createRefreshToken(request: Request) {
   const {canvas_url_root, client_id, client_secret, redirect_uri} = canvasConfig();
   const code = (request.query.code);
   const grant_type = 'authorization_code';
-  const result = await requestPromise.post(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&code=${code}`);
-  return JSON.parse(result).refresh_token;
+  const result = await fetch(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&code=${code}`, { method: "POST" });
+  const { refresh_token } : { refresh_token: string } = await result.json();
+  return refresh_token;
 }
 
 export function setUpCanvasLinkJson() {
@@ -88,9 +88,9 @@ export async function handlePagination(url: string): Promise<any> {
   let results: any = [];
   let next = false;
   do {
-    const response = await requestPromise(url, {resolveWithFullResponse: true});
-    const link: Link = LinkHeader.parse(response.caseless.dict.link);
-    const result = JSON.parse(response.body);
+    const response = await fetch(url);
+    const link: Link = LinkHeader.parse(response.headers.get("link") || "");
+    const result = await response.json();
     results = results.concat(result);
     if (link.has('rel', 'next')) {
       next = true;

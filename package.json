@@ -46,8 +46,6 @@
 		"react-dom": "^16.14.0",
 		"react-icons": "^3.11.0",
 		"react-router-dom": "^5.2.0",
-		"request": "^2.88.2",
-		"request-promise": "^4.2.6",
 		"rxjs": "^7.3.0",
 		"samlify": "2.7.3",
 		"socket.io": "^4.1.3"
