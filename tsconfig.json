@@ -8,8 +8,9 @@
         "jsx": "react",
         "strict": true,
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
-
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
     },
     "exclude": ["./client","./uploads"],
 
