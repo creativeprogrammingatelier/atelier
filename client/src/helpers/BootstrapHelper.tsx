@@ -1,18 +1,18 @@
 export type BootstrapVariant =
-	| "primary"
-	| "secondary"
-	| "success"
-	| "danger"
-	| "warning"
-	| "info"
-	| "light"
-	| "dark";
+    | "primary"
+    | "secondary"
+    | "success"
+    | "danger"
+    | "warning"
+    | "info"
+    | "light"
+    | "dark";
 export type Breakpoint =
-	| "extraSmall"
-	| "small"
-	| "medium"
-	| "large"
-	| "extraLarge"
+    | "extraSmall"
+    | "small"
+    | "medium"
+    | "large"
+    | "extraLarge"
 
 export const breakpointValues = {
     // Same breakpoints as Bootstrap, maybe find a way to merge declarations

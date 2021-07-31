@@ -6,7 +6,7 @@ import * as MentionsHelper from "../../../api/src/helpers/MentionsHelper";
 describe("MentionsHelper", () => {
     describe("getPossibleMentions", () => {
         const sut = MentionsHelper.getPossibleMentions;
-		
+
         it("should give no mentions for an empty string", () =>
             expect(sut("")).to.be.empty
         );

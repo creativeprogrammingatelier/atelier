@@ -7,22 +7,22 @@ import {Heading} from "../general/Heading";
 import {Responsive} from "../general/Responsive";
 
 interface HeaderProperties {
-	/** Header title */
-	title?: string,
-	transparent?: boolean,
-	fixed?: boolean,
-	/** Prop for defining the left button on the header */
-	leftButton?: {
-		/** Icon of button */
-		icon: IconType,
-		/** Function for resolving click on the button */
-		click: React.MouseEventHandler
-	},
-	/** Same as the left button, but for the right */
-	rightButton?: {
-		icon: IconType,
-		click: React.MouseEventHandler
-	}
+    /** Header title */
+    title?: string,
+    transparent?: boolean,
+    fixed?: boolean,
+    /** Prop for defining the left button on the header */
+    leftButton?: {
+        /** Icon of button */
+        icon: IconType,
+        /** Function for resolving click on the button */
+        click: React.MouseEventHandler
+    },
+    /** Same as the left button, but for the right */
+    rightButton?: {
+        icon: IconType,
+        click: React.MouseEventHandler
+    }
 }
 
 /**
@@ -30,16 +30,16 @@ interface HeaderProperties {
  */
 export function Header({title, leftButton, rightButton}: HeaderProperties) {
     const [position, setPosition] = useState(0);
-	
+
     const scrollListener = () => setPosition(window.pageYOffset);
-	
+
     useEffect(() => {
         window.addEventListener("scroll", scrollListener);
         return () => {
             window.removeEventListener("scroll", scrollListener);
         };
     });
-	
+
     return position < 100 ?
         <Heading
             large

@@ -3,11 +3,11 @@ import {ParentalProperties} from "../../../helpers/ParentHelper";
 
 interface FakeButtonProperties extends ParentalProperties {
 
-	/** Function for resolving mouse click */
-	onClick?: (event: React.MouseEvent) => void
+    /** Function for resolving mouse click */
+    onClick?: (event: React.MouseEvent) => void
 }
 /**
- * Component for a fake button, wrapping the children passed into a paragraph 
+ * Component for a fake button, wrapping the children passed into a paragraph
  * that has an onClick hook.
  */
 export function FakeButton({children, onClick}: FakeButtonProperties) {

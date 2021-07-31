@@ -119,13 +119,13 @@ export const createSubmission = (courseId: string, projectName: string, files: F
             return file;
         }
     };
-	
+
     const form = new FormData();
     form.append("project", projectName);
     for (const file of files.map(fixFilePath)) {
         form.append("files", file);
     }
-	
+
     return Fetch.fetchJson<Submission>(`/api/submission/course/${courseId}`, {
         method: "POST",
         body: form

@@ -65,12 +65,12 @@ function parseParams({query, courseID, submissionID, userID, limit, offset}: Sea
     return opts.join("&");
 }
 export interface SearchParameters {
-	query?: string,
-	courseID?: boolean,
-	userID?: boolean,
-	submissionID?: boolean,
-	limit?: number,
-	offset?: number
+    query?: string,
+    courseID?: boolean,
+    userID?: boolean,
+    submissionID?: boolean,
+    limit?: number,
+    offset?: number
 }
 
 /** Ping to check if live */

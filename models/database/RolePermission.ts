@@ -6,8 +6,8 @@ import {CoursePermission as APICoursePermission} from "../api/Permission";
 import {CourseRole} from "../enums/CourseRoleEnum";
 
 export interface DBRolePermission extends DBTools {
-	courseroleid: string,
-	permission: string
+    courseroleid: string,
+    permission: string
 }
 
 export {APICoursePermission};

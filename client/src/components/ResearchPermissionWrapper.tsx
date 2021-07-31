@@ -27,7 +27,7 @@ export function ResearchPermissionWrapper({ children }: ParentalProperties) {
     </Cached>;
 }
 
-/** 
+/**
  * Component used to store and retrieve the research permissions information.
  */
 export function ResearchPermissionInformation() {
@@ -50,7 +50,7 @@ function ResearchPermissionOverlay() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         currentUser.update({ researchAllowed });
-    }; 
+    };
 
     return <Overlay>
         <Area className="p-4 mx-auto my-5 col-12 col-sm-10 col-md-8">
@@ -61,7 +61,7 @@ function ResearchPermissionOverlay() {
                         value="researchAllowed"
                         selected={researchAllowed}
                         onChange={setResearchAllowed}>
-                        I understand above information, and consent for my comments and submissions to 
+                        I understand above information, and consent for my comments and submissions to
                         be used for research purposes, as described above.
                     </CheckboxInput>
                 </Form.Group>

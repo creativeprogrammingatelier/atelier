@@ -83,9 +83,9 @@ export const archiveProject = (reqFileLocation: string, projectName: string) =>
         const filesPath = getFolderForFile(reqFileLocation, projectName);
         const zipFileName = filesPath + ".zip";
         const output = fs.createWriteStream(zipFileName);
-		
+
         output.on("close", () => resolve(zipFileName));
-		
+
         archive.on("warning", err => {
             // ENOENT means that the file or folder could not be found
             if (err.code === "ENOENT") {
@@ -95,9 +95,9 @@ export const archiveProject = (reqFileLocation: string, projectName: string) =>
                 reject(err);
             }
         });
-		
+
         archive.on("error", err => reject(err));
-		
+
         archive.pipe(output);
         archive.directory(filesPath, false);
         archive.finalize();

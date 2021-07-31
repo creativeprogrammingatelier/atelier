@@ -30,8 +30,8 @@ import {
 import { FeedItem } from "../../../../models/api/FeedItem";
 import { PaginationParameters } from "../ParameterHelper";
 
-/** 
- * API Hooks for using data from the API in React 
+/**
+ * API Hooks for using data from the API in React
  */
 
 // Interfaces for API Hooks
@@ -39,26 +39,26 @@ import { PaginationParameters } from "../ParameterHelper";
  * A cached API endpoint
  */
 export interface APICache<T> {
-	/** Observable for the collection or item */
-	observable: Observable<CacheCollection<T> | CacheItem<T>>
+    /** Observable for the collection or item */
+    observable: Observable<CacheCollection<T> | CacheItem<T>>
 }
 
 /**
  * A refreshable cache can be refreshed with a request to the API.
  * When calling refresh, all data in the cache will be replaced with the results
  * returned by the API, which means that older data may be lost. On endpoints
- * with support for pagination, this should not be called too often. (Still should 
+ * with support for pagination, this should not be called too often. (Still should
  * be called once in a while to make sure deleted items get purged, since we have
  * no update mechanism for that.)
  */
 export interface Refresh<T> extends APICache<T> {
-    /** 
+    /**
      * Refresh the data in the cache, returning the number of refreshed items
      * if succesful, rejecting the promise if not
      */
-	refresh: () => Promise<number>,
-	/** The default time to wait before refreshing this type of data */
-	defaultTimeout: number
+    refresh: () => Promise<number>,
+    /** The default time to wait before refreshing this type of data */
+    defaultTimeout: number
 }
 
 /**
@@ -67,11 +67,11 @@ export interface Refresh<T> extends APICache<T> {
  */
 // tslint:disable-next-line: no-any
 export interface Create<Arg extends any[], T> extends APICache<T> {
-	/** 
-	 * Takes a generic set of arguments, returning the created 
-	 * item, or rejecting the promise if the API request fails
-	 */
-	create: (...args: Arg) => Promise<T>
+    /**
+     * Takes a generic set of arguments, returning the created
+     * item, or rejecting the promise if the API request fails
+     */
+    create: (...args: Arg) => Promise<T>
 }
 
 /**
@@ -80,11 +80,11 @@ export interface Create<Arg extends any[], T> extends APICache<T> {
  */
 // tslint:disable-next-line: no-any
 export interface Update<Arg extends any[], T> extends APICache<T> {
-	/** 
-	 * Takes a generic set of arguments, returning the updated
-	 * item, or rejecting the promise if the API request fails
-	 */
-	update: (...args: Arg) => Promise<T>
+    /**
+     * Takes a generic set of arguments, returning the updated
+     * item, or rejecting the promise if the API request fails
+     */
+    update: (...args: Arg) => Promise<T>
 }
 
 /**
@@ -93,11 +93,11 @@ export interface Update<Arg extends any[], T> extends APICache<T> {
  */
 // tslint:disable-next-line: no-any
 export interface Delete<Arg extends any[], T> extends APICache<T> {
-	/** 
-	 * Takes a generic set of arguments, returning the deleted
-	 * item, or rejecting the promise if the API request fails
-	 */
-	delete: (...args: Arg) => Promise<T>
+    /**
+     * Takes a generic set of arguments, returning the deleted
+     * item, or rejecting the promise if the API request fails
+     */
+    delete: (...args: Arg) => Promise<T>
 }
 
 /**
@@ -387,7 +387,7 @@ export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: 
                 {ID: courseID, name, state},
                 courses
             ),
-        delete: () => 
+        delete: () =>
             deleteItem(
                 API.deleteCourse(courseID).then(cp => ({ ...cp, currentUserPermission: {} as Permission })),
                 course => course.ID === courseID,
@@ -457,7 +457,7 @@ function refreshFeedWithComments(promise: Promise<FeedItem[]>, feed: CacheCollec
         }
     });
     return res;
-} 
+}
 export function usePersonalFeed(courseID?: string): Refresh<FeedItem> & LoadMore<FeedItem> {
     const cache = useRawCache();
     const feed = useCacheCollection<FeedItem>("personalFeed", {
@@ -618,12 +618,12 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
 }
 export function useCommentThread(submissionID: string, threadID: string, fileID?: string): Update<[ThreadState], CommentThread> & Delete<[], CommentThread> {
     const threads =
-		fileID !== undefined
-		    ? useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, {
-		        subKey: fileID,
-		        filter: thread => thread.ID === threadID
-		    })
-		    : useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`, {filter: thread => thread.ID === threadID});
+        fileID !== undefined
+            ? useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, {
+                subKey: fileID,
+                filter: thread => thread.ID === threadID
+            })
+            : useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/project`, {filter: thread => thread.ID === threadID});
     const thread = useCollectionAsSingle(threads.observable);
     return {
         observable: thread,

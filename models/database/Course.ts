@@ -12,26 +12,26 @@ import {CourseState} from "../enums/CourseStateEnum";
 import {userToAPI, DBUser} from "./User";
 
 export interface Course extends DBTools {
-	courseID?: string,
-	courseName?: string,
-	creatorID?: string,
-	state?: CourseState,
-	canvasCourseID?: string,
+    courseID?: string,
+    courseName?: string,
+    creatorID?: string,
+    state?: CourseState,
+    canvasCourseID?: string,
 }
 export interface DBCourse {
-	courseid: string,
-	coursename: string,
-	creatorid: string,
-	state: string,
-	canvascourseid: string
+    courseid: string,
+    coursename: string,
+    creatorid: string,
+    state: string,
+    canvascourseid: string
 }
 
 export {APICourse};
 export type DBAPICourse = DBCourse & DBUser
 export interface DBCourseExt extends DBAPICourse {
-	currentglobalrole: string,
-	currentcourserole: string,
-	currentpermission: string
+    currentglobalrole: string,
+    currentcourserole: string,
+    currentpermission: string
 }
 
 export function convertCourse(db: DBCourse): Course {

@@ -31,7 +31,7 @@ module.exports = {
                     entry: "main.js"
                 }
             }
-            
+
         })
     ],
     module: {

@@ -18,7 +18,7 @@ describe("Array.skipWhile", () => {
         const skipped = array.skipWhile(() => randomBool());
         expect(skipped).to.deep.equal(array.slice(array.length - skipped.length));
     });
-	
+
     it("should give the expected results", () => {
         expect([1, 2, 3, 4, 5, 6].skipWhile(x => x < 4)).to.deep.equal([4, 5, 6]);
         expect([1, 2, 3, 4, 5, 6].skipWhile(x => x < 0)).to.deep.equal([1, 2, 3, 4, 5, 6]);

@@ -14,15 +14,15 @@ import { Announcement } from "../Announcement";
 
 /**
  * Button for Switching Between Public and Private Feed
- * 
+ *
  * @param icon The icon to appear next to the button text.
  * @param text The text of the button.
  * @param onClick Function to be called when button is pressed, via onClick event
  */
 interface FeedButton {
-    icon: IconType, 
-    text: string, 
-    onClick: () => void 
+    icon: IconType,
+    text: string,
+    onClick: () => void
 }
 
 /**
@@ -36,10 +36,10 @@ interface FeedProperties {
 }
 
 /**
- * Construct a Feed with the given FeedProperties. This functions takes in a FeedProperties then 
- * retrieves the data from the cache, which conforms to the type and filters. It then packages this into 
- * a Cached object and warps it in the 'm-3' class along with the feed buttons passed in. 
- * 
+ * Construct a Feed with the given FeedProperties. This functions takes in a FeedProperties then
+ * retrieves the data from the cache, which conforms to the type and filters. It then packages this into
+ * a Cached object and warps it in the 'm-3' class along with the feed buttons passed in.
+ *
  * @param global Denotes whether feed is global or course specific.
  * @param type Denotes either private or public feed, used selecting which API path to call.
  * @param feed Feed of feed items that either support or do not support pagination, Refresh doesn't while LoadMore does.
@@ -50,11 +50,11 @@ function Feed({ feed, type, global, buttons }: FeedProperties) {
     const [filtered, setFiltered] = useState([ "submission", "mention", "commentThread" ].concat(...(type === "personal" ? [ "comment" ] : [])));
     const [count, setCount] = useState(0);
     const filteredObservable = useObservable(pluckFirst, [filtered]);
-    const filteredFeedObservable = useObservable(() => 
+    const filteredFeedObservable = useObservable(() =>
         combineLatest([feed.observable, filteredObservable]).pipe(
-            map(([col, filtered]) => 
+            map(([col, filtered]) =>
                 "items" in col
-                    ? { ...col, items: col.items.filter(item => filtered.includes(item.value.type)) } 
+                    ? { ...col, items: col.items.filter(item => filtered.includes(item.value.type)) }
                     : col
             ))
     );
@@ -100,9 +100,9 @@ function Feed({ feed, type, global, buttons }: FeedProperties) {
  */
 interface PersonalFeedProperties { courseID?: string, buttons?: FeedButton[] }
 /**
- * Retrieves the personal feed for a specific course and returns a Feed component 
+ * Retrieves the personal feed for a specific course and returns a Feed component
  * consisting of the feed items associated with the given feed.
- * 
+ *
  * @param courseID String representation of the course ID in string form.
  * @param buttons FeedButtons preserving their properties, like filtration tags.
  */
@@ -128,14 +128,14 @@ export function CourseFeed({ courseID, buttons = [] }: CourseFeedProperties) {
 
  */
 interface FilterBoxProperties {
-    tag: string, 
+    tag: string,
     name: string,
     filtered: string[],
     setFiltered: (update: (filtered: string[]) => string[]) => void
 }
 /**
  *  Function that calls the FilterBox with the given FilterBoxProperties
- * 
+ *
  * @param tag Tag used for filtering.
  * @param name Name of filtering option.
  * @param filtered Filtered feed.
@@ -149,7 +149,7 @@ function FilterBox({ tag, name, filtered, setFiltered }: FilterBoxProperties) {
             value={tag}
             selected={filtered.includes(tag)}
             onChange={state => {
-                state 
+                state
                     ? setFiltered(filtered => filtered.concat(tag))
                     : setFiltered(filtered => filtered.filter(f => f !== tag));
             }} />

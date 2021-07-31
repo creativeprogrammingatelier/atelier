@@ -10,7 +10,7 @@ import { UserDB } from "../database/UserDB";
 export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole: CourseRole, course: CoursePartial){
 
     for (let user of users){
-        try { 
+        try {
             let userDB: any  = await UserDB.getUserByEmail(user.email, client);
             console.log(userDB);
             if (userDB != undefined){
@@ -20,7 +20,7 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
                     courseRole: courseRole,
                     client
                 });
-            } else if ( user.email != undefined ) { 
+            } else if ( user.email != undefined ) {
                 let createdUser: any = await UserDB.createUser({ userName: user.name , email: user.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client });
                 await CourseRegistrationDB.addEntry({
                     courseID: course.ID,
@@ -28,13 +28,13 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
                     courseRole: courseRole,
                     client
                 });
-            } else { 
+            } else {
                 console.log("No email found for user cannot link: ", user.name);
             }
         } catch(e) {
             console.log("No email found for user cannot link: ", user.name);
             console.log(e);
         }
-       
+
     }
 }

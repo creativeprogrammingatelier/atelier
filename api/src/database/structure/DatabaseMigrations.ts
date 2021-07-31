@@ -5,8 +5,8 @@ import { dropViewQueries, createViewQueries } from "./DatabaseStructure";
  * Database Migrations - Contains function for permforming database migrations including upgrading of the database.
  */
 
-interface Migrations { 
-    [version: number]: (client: pgDB) => Promise<void> 
+interface Migrations {
+    [version: number]: (client: pgDB) => Promise<void>
 }
 
 /**
@@ -61,12 +61,12 @@ const migrations: Migrations = {
     // comments and add the ability to show the user that made such a comment public
     4: async client => {
         client.query(`
-            ALTER TABLE "CommentThread" 
+            ALTER TABLE "CommentThread"
                 ADD COLUMN automated boolean NOT NULL DEFAULT FALSE,
                 ADD COLUMN sharedBy uuid REFERENCES "Users"(userID) ON DELETE SET NULL;
             -- Set threads created by plugins as automated:
             UPDATE "CommentThread" AS ct SET automated = TRUE
-                FROM "Comments" as c, "Users" AS u 
+                FROM "Comments" as c, "Users" AS u
                 WHERE c.commentThreadID = ct.commentThreadID
                 AND c.userID = u.userID
                 AND c.created = (SELECT MIN(created) FROM "Comments" as c2 WHERE c2.commentThreadID = ct.commentThreadID)
@@ -78,9 +78,9 @@ const migrations: Migrations = {
     3: async client => {
         client.query(`
             CREATE TABLE "Tags" (
-	                tagID      		uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-	                commentID      	uuid NOT NULL REFERENCES "Comments"(commentID) ON DELETE CASCADE,
-	                tagbody         text NOT NULL
+                    tagID      		uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                    commentID      	uuid NOT NULL REFERENCES "Comments"(commentID) ON DELETE CASCADE,
+                    tagbody         text NOT NULL
             );
         `);
     },
@@ -125,8 +125,8 @@ export async function upgradeDatabase() {
 
 /**
  * Allows for the performing of migrations based on the previously defined possible migrations
- * @param version 
- * @param client 
+ * @param version
+ * @param client
  */
 async function runMigration(version: number, client: pgDB) {
     const migrate = migrations[version];
@@ -144,7 +144,7 @@ async function runMigration(version: number, client: pgDB) {
     }
 }
 /**
- * 
+ *
  * @param client Getter for current version
  */
 async function getCurrentVersion(client?: pgDB) {
@@ -152,9 +152,9 @@ async function getCurrentVersion(client?: pgDB) {
     return Number(version);
 }
 /**
- * Setter for version 
- * @param version 
- * @param client 
+ * Setter for version
+ * @param version
+ * @param client
  */
 async function setVersion(version: number, client: pgDB) {
     await MetadataDB.set("version", version.toFixed(0), client);

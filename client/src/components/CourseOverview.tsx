@@ -19,14 +19,14 @@ import { Overlay } from "./general/Overlay";
 import { Area } from "./general/Area";
 
 interface CourseOverviewProperties {
-	match: {
-		params: {
+    match: {
+        params: {
             /** Course ID within database */
             courseId: string,
             /** Current active tab */
             tab?: string
-		}
-	}
+        }
+    }
 }
 /**
  * Component retrieves all submission for a given course.
@@ -38,7 +38,7 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
     const url = `/course/${courseId}`;
 
     const uploadButton = { icon: FiUpload, text: "Upload", onClick: () => setUploading(true) };
-	
+
     return <Cached
         cache={course}
         wrapper={children => <Frame title="Course" sidebar search={{course: courseId}}>{children}</Frame>}

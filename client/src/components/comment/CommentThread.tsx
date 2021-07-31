@@ -23,8 +23,8 @@ import { useObservableState, useObservable } from "observable-hooks";
 import { map } from "rxjs/operators";
 
 interface CommentThreadProperties {
-	/** The id for the CommentThread in the databaseRoutes */
-	thread: CommentThread
+    /** The id for the CommentThread in the databaseRoutes */
+    thread: CommentThread
 }
 /**
  * Adds the specified comment thread within the comment Block component.
@@ -40,7 +40,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
     };
     const commentCountObservable = useObservable(() => commentsCombined.observable.pipe(map(item => item.value.length)));
     const commentCount = useObservableState(commentCountObservable, 0);
-	
+
     const handleCommentSend = async(comment: string) => {
         const commentBody = comment.trim();
         if (commentBody === "") {
@@ -64,7 +64,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
             .then(thread => setSuccess(`Visibility updated, now: ${thread.visibility}`))
             .catch((error: Error) => setError(`Changing visibility failed: ${error.message}`));
     };
-	
+
     return <div className="mb-3">
         <Block id={thread.ID}
             className={"commentThread" + (thread.visibility === ThreadState.private ? " restricted" : "")}>
@@ -86,14 +86,14 @@ export function CommentThread({thread}: CommentThreadProperties) {
                 <ManageRestrictedButtons thread={thread} onToggle={handleVisibility} onDiscard={handleDiscard}/>
                 {
                     thread.file && thread.snippet &&
-					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/view#${thread.snippet.start.line + 1}`}>
-					    <Button>
-					        <FiCode size={14} color="#FFFFFF"/>
-					    </Button>
-					</Link>
+                    <Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/view#${thread.snippet.start.line + 1}`}>
+                        <Button>
+                            <FiCode size={14} color="#FFFFFF"/>
+                        </Button>
+                    </Link>
                 }
                 <Button className="commentThreadExpand" onClick={() => setOpened(!opened)}>
-                    { opened 
+                    { opened
                         ? <FiChevronUp size={14} color="#FFFFFF"/>
                         : <FiChevronDown size={14} color="#FFFFFF"/> }
                     { commentCount > 0 ? " " + commentCount : "" }
@@ -106,28 +106,28 @@ export function CommentThread({thread}: CommentThreadProperties) {
 }
 
 interface ManageRestrictedButtonsProperties {
-	/** Thread ID for the CommentThread in the database. */
-	thread: CommentThread,
-	/** Callback for when the CommentThread is discarded */
-	onDiscard: () => void,
-	/** Callback when the CommentThread's visibility is toggled. */
-	onToggle: () => void
+    /** Thread ID for the CommentThread in the database. */
+    thread: CommentThread,
+    /** Callback for when the CommentThread is discarded */
+    onDiscard: () => void,
+    /** Callback when the CommentThread's visibility is toggled. */
+    onToggle: () => void
 }
 /**
  * Function manages visibility permissions for comment, if the user.
- * 
+ *
  * @return Returns the comment if the user has permission to see it and an empty Fragment component if not.
  */
 function ManageRestrictedButtons({thread, onDiscard, onToggle}: ManageRestrictedButtonsProperties) {
     const permission = useCoursePermission(thread.references.courseID);
     const user = useCurrentUser();
-	
+
     return <Cached cache={permission} wrapper={() => <Fragment/>}>
         {permission =>
             <Cached cache={user} wrapper={() => <Fragment/>}>
                 {user => {
                     if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions)
-						|| user.ID === commentThreadOwner(thread)) {
+                        || user.ID === commentThreadOwner(thread)) {
                         return (
                             <Fragment>
                                 <Button onClick={onDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>

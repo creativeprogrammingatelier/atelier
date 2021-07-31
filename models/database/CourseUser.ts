@@ -9,33 +9,33 @@ import {CourseRole} from "../enums/CourseRoleEnum";
 import {GlobalRole} from "../enums/GlobalRoleEnum";
 
 export interface CourseUserOutput {
-	userID: string,
-	courseID: string,
-	
-	userName: string,
-	email: string,
-	
-	globalRole: GlobalRole,
-	courseRole: CourseRole,
-	permission: number,
+    userID: string,
+    courseID: string,
+
+    userName: string,
+    email: string,
+
+    globalRole: GlobalRole,
+    courseRole: CourseRole,
+    permission: number,
 }
 export interface CourseUser extends Partial<CourseUserOutput>, DBTools {
-	registeredOnly?: boolean
+    registeredOnly?: boolean
 }
 
 export {APICourseUser};
 export interface DBCourseUser {
-	userid: string,
-	courseid: string,
-	
-	username: string,
-	email: string,
-	
-	globalrole: string,
-	courserole: string,
-	permission: string,
+    userid: string,
+    courseid: string,
 
-	canvasrefresh: string
+    username: string,
+    email: string,
+
+    globalrole: string,
+    courserole: string,
+    permission: string,
+
+    canvasrefresh: string
 }
 
 export function convertCourseUser(db: DBCourseUser): CourseUserOutput {

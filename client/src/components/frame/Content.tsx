@@ -3,11 +3,11 @@ import {ParentalProperties} from "../../helpers/ParentHelper";
 import {ErrorBoundary} from "../general/ErrorBoundary";
 
 interface ContentProperties extends ParentalProperties {
-	/** Callback function for when contents is clicked */
-	onClick?: MouseEventHandler
+    /** Callback function for when contents is clicked */
+    onClick?: MouseEventHandler
 }
 /**
- * Component used to populate the ErrorBoundary component, with the function callback 
+ * Component used to populate the ErrorBoundary component, with the function callback
  * passed in to the div and children passed in.
  */
 export function Content({children, onClick}: ContentProperties) {

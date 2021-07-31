@@ -11,42 +11,42 @@ import {ScrollHelper} from "../../helpers/ScrollHelper";
 // TODO: Resolve inconsistent naming around Controlled, CodeMirror and codemirror
 
 export interface CodeSelection {
-	/** Range of code within code selection */
-	ranges: Array<{
-		/** Starting position of code selection */
-		head: CodeMirror.Position,
-		/** End position of code selection */
-		anchor: CodeMirror.Position
-	}>
+    /** Range of code within code selection */
+    ranges: Array<{
+        /** Starting position of code selection */
+        head: CodeMirror.Position,
+        /** End position of code selection */
+        anchor: CodeMirror.Position
+    }>
 }
 
 export interface CodeProperties {
-	/** Code in string format */
-	code: string,
-	/** Options for configuring CodeMirror */
-	options?: codemirror.EditorConfiguration,
-	/** Initialization Handler */
-	handleInitialize?: (editor: codemirror.Editor) => void,
-	/** Handler for onSelect */
-	handleSelect?: (editor: codemirror.Editor, data: CodeSelection) => void | boolean,
-	/** Handler for onMouseDown */
-	handleClick?: (editor: codemirror.Editor, event: Event) => void | boolean,
-	/** Handler for onChange */
-	handleChange?: (editor: codemirror.Editor, data: codemirror.EditorChange, value: string) => void | boolean
+    /** Code in string format */
+    code: string,
+    /** Options for configuring CodeMirror */
+    options?: codemirror.EditorConfiguration,
+    /** Initialization Handler */
+    handleInitialize?: (editor: codemirror.Editor) => void,
+    /** Handler for onSelect */
+    handleSelect?: (editor: codemirror.Editor, data: CodeSelection) => void | boolean,
+    /** Handler for onMouseDown */
+    handleClick?: (editor: codemirror.Editor, event: Event) => void | boolean,
+    /** Handler for onChange */
+    handleChange?: (editor: codemirror.Editor, data: codemirror.EditorChange, value: string) => void | boolean
 }
 
 /**
  * Returns the CodeMirror with the code inside.
- * 
- * @param code Code to be passed into CodeMirror 
+ *
+ * @param code Code to be passed into CodeMirror
  * @param options Options for configuring CodeMirror
  */
 export function Code({code, options = {}, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: CodeProperties) {
     useEffect(ScrollHelper.scrollToHash, []);
-	
+
     /**
-	 * Add ID's to line in the code to allow #lineNumber in the url
-	 */
+     * Add ID's to line in the code to allow #lineNumber in the url
+     */
     function setLineIDs() {
         const codeLines = document.getElementsByClassName("CodeMirror-code")[0].childNodes;
         let lineNumber = 1;
@@ -54,10 +54,10 @@ export function Code({code, options = {}, handleInitialize = defaultHandler, han
             (codeLine as Element).id = `${lineNumber++}`;
         }
     }
-	
+
     // Define syntax highlighting for MIME types
     codemirror.defineMIME("text/x-processing", "text/x-java");
-	
+
     return <CodeMirror
         value={code}
         options={{...defaultOptions, ...options}}
@@ -65,7 +65,7 @@ export function Code({code, options = {}, handleInitialize = defaultHandler, han
             // Standard code viewer initialization
             editor.setSize("100%", "100%");
             setLineIDs();
-			
+
             // Given initialization
             handleInitialize(editor);
         }}

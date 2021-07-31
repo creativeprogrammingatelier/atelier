@@ -49,7 +49,7 @@ export function UserSettingsGeneral() {
     const [success, setSuccess] = useState(false as FeedbackContent);
     const [showResearchInfo, setShowResearchInfo] = useState(false);
     const user = useCurrentUser();
-    
+
     const userObservable = useObservable(() => user.observable);
     useSubscription(userObservable, course => {
         const user = (course as CacheItem<User>).value;
@@ -58,7 +58,7 @@ export function UserSettingsGeneral() {
         setResearchAllowed(user?.researchAllowed || false);
         setLoading(course.state !== CacheState.Loaded);
     });
-    
+
     /**
      * Updates the user settings.
      */
@@ -77,7 +77,7 @@ export function UserSettingsGeneral() {
         event.preventDefault();
         setShowResearchInfo(true);
     };
-    
+
     return <Fragment>
         {showResearchInfo && <ResearchInfoPopup close={() => setShowResearchInfo(false)} />}
         <Form>
@@ -104,7 +104,7 @@ export function UserSettingsGeneral() {
                         selected={researchAllowed}
                         onChange={setResearchAllowed}>
                         <p className="m-0 p-0">
-                            I consent to the use of my comments and submissions for research purposes, 
+                            I consent to the use of my comments and submissions for research purposes,
                             as described <a onClick={handleResearchInformationClick}>here</a>.
                         </p>
                     </CheckboxInput>

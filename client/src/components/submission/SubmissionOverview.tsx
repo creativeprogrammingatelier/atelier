@@ -21,12 +21,12 @@ import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
 import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 interface SubmissionOverviewProperties {
-	match: {
-		params: {
-			/** Submission ID within database */
-			submissionId: string
-		}
-	}
+    match: {
+        params: {
+            /** Submission ID within database */
+            submissionId: string
+        }
+    }
 }
 /**
  * Component for viewing a submission overview, given a submission ID.
@@ -40,12 +40,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
     const projectComments = useProjectComments(submissionId);
     const recentComments = useRecentComments(submissionId);
     const user = useCurrentUser();
-	
+
     const submissionPath = "/submission/" + submissionId;
-	
-    /** 
-	 * Handles addition of a new comment.
-	 */
+
+    /**
+     * Handles addition of a new comment.
+     */
     const handleCommentSend = async(comment: string, restricted: boolean) => {
         const commentBody = comment.trim();
         if (commentBody === "") {
@@ -66,14 +66,14 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
         return createdComment;
     };
     /**
-	 * Handles the deletion of the submission for a given courseID
-	 * 
-	 * @param courseID Course ID for which submission will be deleted.
-	 */
+     * Handles the deletion of the submission for a given courseID
+     *
+     * @param courseID Course ID for which submission will be deleted.
+     */
     const handleDelete = (courseID: string) => {
         submission.delete().then(() => history.push(`/course/${courseID}`));
     };
-	
+
     return <Cached
         cache={submission}
         wrapper={children => <Frame title="Submission" sidebar search={{submission: submissionId}}>{children}</Frame>}
@@ -83,7 +83,7 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
                 <Jumbotron>
                     <Breadcrumbs>
                         <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
-                        <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} 
+                        <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`}
                             course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} />
                     </Breadcrumbs>
                     <h1>{submission.name}</h1>
@@ -111,12 +111,12 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
                         click: () => setCreatingComment(!creatingComment),
                         component: (
                             creatingComment &&
-							<CommentCreator
-							    placeholder="Write a comment"
-							    allowRestricted
-							    mentions={{courseID: submission.references.courseID}}
-							    sendHandler={handleCommentSend}
-							/>
+                            <CommentCreator
+                                placeholder="Write a comment"
+                                allowRestricted
+                                mentions={{courseID: submission.references.courseID}}
+                                sendHandler={handleCommentSend}
+                            />
                         ) || <FeedbackError close={setError}>{error}</FeedbackError>
                     }}
                 >
@@ -131,16 +131,16 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
                 </DataList>
                 <Cached cache={user}>
                     {user => user.ID === submission.user.ID &&
-						<DataList header="Delete submission">
-						    <FeedbackError>Deleting a submissions is permanent, and can not be undone.</FeedbackError>
-						    <ButtonMultistate
-						        variant="danger"
-						        states={[
-						            <Fragment>Delete <FiTrash/></Fragment>,
-						            <Fragment>Confirm <FiTrash/></Fragment>
-						        ]}
-						        finish={() => handleDelete(submission.references.courseID)}/>
-						</DataList>
+                        <DataList header="Delete submission">
+                            <FeedbackError>Deleting a submissions is permanent, and can not be undone.</FeedbackError>
+                            <ButtonMultistate
+                                variant="danger"
+                                states={[
+                                    <Fragment>Delete <FiTrash/></Fragment>,
+                                    <Fragment>Confirm <FiTrash/></Fragment>
+                                ]}
+                                finish={() => handleDelete(submission.references.courseID)}/>
+                        </DataList>
                     }
                 </Cached>
             </Frame>

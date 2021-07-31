@@ -10,18 +10,18 @@ import {SelectionHelper} from "../../helpers/SelectionHelper";
 import {Code, CodeProperties, defaultHandler} from "./Code";
 
 export interface SnippetHighlight extends Snippet {
-	/** Function to be called onClick event */
-	onClick: Function,
+    /** Function to be called onClick event */
+    onClick: Function,
 }
 export interface HighlightedCodeProperties extends CodeProperties {
-	/** Snippets included in the highlighted code.  */
-	snippets: SnippetHighlight[],
-	/** Boolean for whether not the highlighted code is selected. */
-	selecting: boolean
+    /** Snippets included in the highlighted code.  */
+    snippets: SnippetHighlight[],
+    /** Boolean for whether not the highlighted code is selected. */
+    selecting: boolean
 }
 /**
  * Returns a Code component with the highlighted code that was selected
- * 
+ *
  * @param code Code selected.
  * @param options Configuration options for CodeMirror .
  * @param snippets Code snippets contained in the highlighted code.
@@ -31,14 +31,14 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
     const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
     const [click, setClick] = useState(noPosition);
     let hasMoved: Boolean = false;
-	
+
     /**
-	 * Highlights comments passed to the code viewer.
-	 */
+     * Highlights comments passed to the code viewer.
+     */
     const setCommentHighlights = () => {
         const color = "#3FDAC1";
         const opacityRange = ["00", "6F", "BF", "FF"];
-		
+
         // Highlight based on ranges
         if (codeMirror && snippets) {
             // Transform each snippet into a range of characters
@@ -51,13 +51,13 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
                     overlap: 1
                 };
             });
-			
+
             // Take care of overlap and things between the different ranges
             const highlightRanges: Range[] = getRanges(ranges);
-			
+
             for (const {startLine, startChar, endLine, endChar, overlap} of highlightRanges) {
                 const opacity = opacityRange[Math.min(overlap, opacityRange.length - 1)];
-				
+
                 codeMirror.markText({
                     line: startLine, ch: startChar
                 }, {
@@ -70,32 +70,32 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
     };
 
     useEffect(setCommentHighlights, [codeMirror, snippets]);
-	
-    /**
-	 * Handle click in the code canvas.
-	 * Loops through the comments to check whether a comment was clicked. If this is
-	 * the case the first comment will have its onClick method called.
-	 */
 
     /**
-	 * Records a mouse down event.
-	 */
+     * Handle click in the code canvas.
+     * Loops through the comments to check whether a comment was clicked. If this is
+     * the case the first comment will have its onClick method called.
+     */
+
+    /**
+     * Records a mouse down event.
+     */
     const handleDown = () => {
-        hasMoved = false;	
+        hasMoved = false;
     };
 
     /**
-	 * Record whether the mouse has moved.
-	 */
+     * Record whether the mouse has moved.
+     */
     const handleMove  = () => {
         hasMoved = true;
     };
 
     /**
-	 * On mouse up event checks whether the mouse has moved, if so it checks if the 
-	 * position of the click corresponds to a comment, if so executes the click 
-	 * function of the comment.
-	 */
+     * On mouse up event checks whether the mouse has moved, if so it checks if the
+     * position of the click corresponds to a comment, if so executes the click
+     * function of the comment.
+     */
     const handleUp = () => {
         if (!hasMoved && snippets && !selecting && click !== noPosition) {
             let topPriority: SnippetHighlight | undefined = undefined;
@@ -113,7 +113,7 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
             }
         }
     };
-	
+
     return <div onMouseUp={handleUp} onMouseDown={handleDown} onTouchStart={handleDown} onTouchEnd={handleUp} onMouseMove={handleMove} onTouchMove={handleMove}>
         <Code
             code={code}

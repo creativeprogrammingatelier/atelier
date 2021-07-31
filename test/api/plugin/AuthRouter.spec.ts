@@ -16,7 +16,7 @@ describe("GET /api/auth/token", () => {
             algorithm: "RS256"
         });
         const res = await chai.request(app).get("/api/auth/token").auth(reqToken, {type: "bearer"});
-		
+
         expect(res).to.have.status(200);
         expect(res.body.token).to.not.equal(undefined);
         expect(decodeToken<{userID: string}>(res.body.token).userID).to.equal(plugin.pluginID);

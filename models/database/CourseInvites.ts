@@ -8,18 +8,18 @@ import {CourseInvite as Invite} from "../api/Invite";
 import {CourseRole} from "../enums/CourseRoleEnum";
 
 export interface CourseInvite extends DBTools {
-	inviteID?: string,
-	creatorID?: string,
-	courseID?: string,
-	type?: string,
-	joinRole?: CourseRole,
+    inviteID?: string,
+    creatorID?: string,
+    courseID?: string,
+    type?: string,
+    joinRole?: CourseRole,
 }
 export interface DBCourseInvite {
-	inviteid: string,
-	creatorid: string,
-	courseid: string,
-	type: string,
-	joinrole: CourseRole,
+    inviteid: string,
+    creatorid: string,
+    courseid: string,
+    type: string,
+    joinrole: CourseRole,
 }
 
 export function convertCourseInvite(db: DBCourseInvite): Invite {

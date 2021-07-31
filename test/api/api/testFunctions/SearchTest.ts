@@ -28,38 +28,38 @@ import {
 
 export function searchTest() {
     /**
-	 * GET requests: @TODO
-	 * /api/search?q={string}[&limit={number}][&offset={number}][&courseID={id}]
-	 * - response should be {large object}
-	 * - when Q is not given: bad request
-	 * - when limit is given: all entries limited to that amount.
-	 * - when offset is given, receive a later part of the list.
-	 * - when course is given, allow items from within a course (submission, snippet, file, comment)
-	 * - when course is not given, allow course
-	 * - when having adequate permissions, receive a list of all users.
-	 * /api/search/courses? ...
-	 *
-	 * /api/search/users? ...
-	 *
-	 * /api/search/comments? ...
-	 *
-	 * /api/search/snippets? ...
-	 *
-	 * /api/search/submissions? ...
-	 *
-	 * /api/search/files? ...
-	 *
-	 *
-	 */
+     * GET requests: @TODO
+     * /api/search?q={string}[&limit={number}][&offset={number}][&courseID={id}]
+     * - response should be {large object}
+     * - when Q is not given: bad request
+     * - when limit is given: all entries limited to that amount.
+     * - when offset is given, receive a later part of the list.
+     * - when course is given, allow items from within a course (submission, snippet, file, comment)
+     * - when course is not given, allow course
+     * - when having adequate permissions, receive a list of all users.
+     * /api/search/courses? ...
+     *
+     * /api/search/users? ...
+     *
+     * /api/search/comments? ...
+     *
+     * /api/search/snippets? ...
+     *
+     * /api/search/submissions? ...
+     *
+     * /api/search/files? ...
+     *
+     *
+     */
     describe("Search", () => {
         beforeEach(async() => {
             await adminRegisterCourse();
         });
-		
+
         it("should be possible to search", async() => {
             await equalResults({query: "s"});
         });
-		
+
         it("should not give back every kind of item", async() => {
             const params = {query: "s", limit: 2};
             let result = await fetchAll(params);
@@ -67,17 +67,17 @@ export function searchTest() {
             equal(result.snippets.length, 0, "no snippets should be there when outside a course");
             equal(result.files.length, 0, "no files should be there when outside a course");
             equal(result.comments.length, 0, "no comments should be there when outside a course");
-			
+
             result = await fetchAll({query: "s", limit: 2, courseID: true});
             equal(result.courses.length, 0, "no courses should be there when inside a course");
         });
-		
+
         it("should throw on no query", async() => {
             const params: SearchParameters = {};
             await badAll(params);
             await badCourses(params);
             await badUsers(params);
-			
+
             params.courseID = true;
             await badAll(params);
             // await badUsers(params)
@@ -86,13 +86,13 @@ export function searchTest() {
             // await badSnippets(params)
             // await badSubmissions(params)
         });
-		
+
         it("should throw on empty request", async() => {
             const params: SearchParameters = {query: ""};
             await badAll(params);
             await badCourses(params);
             await badUsers(params);
-			
+
             params.courseID = true;
             await badAll(params);
             await badUsers(params);
@@ -101,7 +101,7 @@ export function searchTest() {
             await badSnippets(params);
             await badSubmissions(params);
         });
-		
+
         it("should throw when courseID is wrongly given", async() => {
             const params: SearchParameters = {query: "s", courseID: false};
             await badComments(params);
@@ -111,15 +111,15 @@ export function searchTest() {
             params.courseID = true;
             await badCourses(params);
         });
-		
+
         it("should be possible to add limit", async() => {
             await equalResults({query: "s", limit: 2});
         });
-		
+
         it("should be possible to add an offset", async() => {
             await equalResults({query: "s", limit: 2, offset: 1});
         });
-		
+
         it("should receive a maximum of limit items", async() => {
             const params = {query: "s", limit: 1};
             let result = await fetchAll(params);
@@ -129,7 +129,7 @@ export function searchTest() {
             expect(result.files).length.to.be.below(2);
             expect(result.courses.length).to.be.below(2);
             expect(result.comments.length).to.be.below(2);
-			
+
             result = await fetchAll({query: "s", limit: 1, courseID: true});
             expect(result.users.length).to.be.below(2);
             expect(result.submissions.length).to.be.below(2);
@@ -138,15 +138,15 @@ export function searchTest() {
             expect(result.courses.length).to.be.below(2);
             expect(result.comments.length).to.be.below(2);
         });
-		
+
         it("should be possible to search within a user", async() => {
             await fetchAll({query: "s", userID: true});
         });
-		
+
         it("should be possible to search within a submission", async() => {
             await fetchAll({query: "s", submissionID: true});
         });
-		
+
     });
 }
 

@@ -2,16 +2,16 @@ import React from "react";
 import {ParentalProperties} from "../../helpers/ParentHelper";
 
 interface FloaterProperties extends ParentalProperties {
-	/** Float location properties */
-	top?: number | string,
-	right?: number | string,
-	bottom?: number | string,
-	left?: number | string,
-	/** Size properties */
-	width?: number | string,
-	height?: number | string,
-	/** Class name of the floater */
-	className?: string
+    /** Float location properties */
+    top?: number | string,
+    right?: number | string,
+    bottom?: number | string,
+    left?: number | string,
+    /** Size properties */
+    width?: number | string,
+    height?: number | string,
+    /** Class name of the floater */
+    className?: string
 }
 /**
  * A floating component capable of wrapping it's children into a floating div.

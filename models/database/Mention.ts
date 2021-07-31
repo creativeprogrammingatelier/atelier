@@ -12,20 +12,20 @@ import {GlobalRole} from "../enums/GlobalRoleEnum";
 import {DBAPIComment, commentToAPI} from "./Comment";
 
 export interface Mention extends DBTools {
-	mentionID?: string,
-	mentionGroup?: CourseRole | null,
-	
-	userID?: string | null,
-	userName?: string | null,
-	email?: string | null,
-	courseRole?: string | null,
-	globalRole?: string | null,
-	permission?: number | null,
-	
-	commentID?: string,
-	commentThreadID?: string,
-	submissionID?: string,
-	courseID?: string,
+    mentionID?: string,
+    mentionGroup?: CourseRole | null,
+
+    userID?: string | null,
+    userName?: string | null,
+    email?: string | null,
+    courseRole?: string | null,
+    globalRole?: string | null,
+    permission?: number | null,
+
+    commentID?: string,
+    commentThreadID?: string,
+    submissionID?: string,
+    courseID?: string,
 }
 
 /**
@@ -38,41 +38,41 @@ export interface Mention extends DBTools {
  * cmu.permission as cmuPermission, subm.title as submTitle
  */
 export interface DBMention {
-	mentionid: string,
-	usergroup: string | undefined,
-	
-	commentid: string,
-	commentthreadid: string,
-	submissionid: string,
-	courseid: string,
-	fileid: string,
-	snippetid: string,
-	created: Date,
-	edited: Date,
+    mentionid: string,
+    usergroup: string | undefined,
+
+    commentid: string,
+    commentthreadid: string,
+    submissionid: string,
+    courseid: string,
+    fileid: string,
+    snippetid: string,
+    created: Date,
+    edited: Date,
     body: string,
     visibilitystate: string,
     automated: boolean,
     submissionname: string,
     submissionuserid: string,
     submissionusername: string,
-	linestart: number,
-	type: string,
-	
-	userid: string | undefined,
-	username: string | undefined,
-	email: string | undefined,
-	globalrole: string | undefined,
-	courserole: string | undefined,
-	permission: string | undefined,
-	canvasrefresh: string,
-	cmuuserid: string,
-	cmuusername: string,
-	cmuemail: string,
-	cmuglobalrole: string,
-	cmupermission: string,
-	
-	submtitle: string,
-	coursename: string
+    linestart: number,
+    type: string,
+
+    userid: string | undefined,
+    username: string | undefined,
+    email: string | undefined,
+    globalrole: string | undefined,
+    courserole: string | undefined,
+    permission: string | undefined,
+    canvasrefresh: string,
+    cmuuserid: string,
+    cmuusername: string,
+    cmuemail: string,
+    cmuglobalrole: string,
+    cmupermission: string,
+
+    submtitle: string,
+    coursename: string
 }
 
 export function convertMention(db: DBMention): Mention {
@@ -99,18 +99,18 @@ export function mentionToAPI(db: DBMention): APIMention {
         "coursename"
     ], db);
     /*m.mentionID, m.userGroup,
-	 cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID,
-	 cv.submissionID, cv.courseID, cv.created, cv.edited,
-	 cv.body, cv.type, cv.lineStart,
-	 cu.userID, cu.userName, cu.email, cu.globalRole,
-	 cu.courseRole, cu.permission,
-	 cmu.userID as cmuUserID,
-	 cmu.userName as cmuUserName, cmu.email as cmuEmail,
-	 cmu.globalRole as cmuGlobalRole,
-	 cmu.permission as cmuPermission,
-	 subm.title as submTitle,
-	 c.courseName
-	 */
+     cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID,
+     cv.submissionID, cv.courseID, cv.created, cv.edited,
+     cv.body, cv.type, cv.lineStart,
+     cu.userID, cu.userName, cu.email, cu.globalRole,
+     cu.courseRole, cu.permission,
+     cmu.userID as cmuUserID,
+     cmu.userName as cmuUserName, cmu.email as cmuEmail,
+     cmu.globalRole as cmuGlobalRole,
+     cmu.permission as cmuPermission,
+     subm.title as submTitle,
+     c.courseName
+     */
     //can be null or undefined, this is way more readable
     // tslint:disable-next-line: triple-equals
     if ((db.usergroup == undefined) === (db.userid == undefined)) {

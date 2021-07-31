@@ -44,7 +44,7 @@ export function Bootstrap() {
             <div>
                 <Alert dismissible>
                     <Alert.Heading>Attention!</Alert.Heading>
-					This is an alert with a <Alert.Link>link</Alert.Link>
+                    This is an alert with a <Alert.Link>link</Alert.Link>
                     <Button>There's even a button!</Button>
                 </Alert>
             </div>
@@ -54,7 +54,7 @@ export function Bootstrap() {
                     <Card>
                         <Card.Header>
                             <Accordion.Toggle as={Button} variant="link" eventKey="0">
-								Click me!
+                                Click me!
                             </Accordion.Toggle>
                         </Card.Header>
                         <Accordion.Collapse eventKey="0">
@@ -64,7 +64,7 @@ export function Bootstrap() {
                     <Card>
                         <Card.Header>
                             <Accordion.Toggle as={Button} variant="link" eventKey="1">
-								Click me!
+                                Click me!
                             </Accordion.Toggle>
                         </Card.Header>
                         <Accordion.Collapse eventKey="1">
@@ -130,7 +130,7 @@ export function Bootstrap() {
                         <Card.Title>Card Title</Card.Title>
                         <Card.Subtitle>Card Subtitle</Card.Subtitle>
                         <Card.Text>
-							Some quick example text to build on the card title and make up the bulk of the card's content.
+                            Some quick example text to build on the card title and make up the bulk of the card's content.
                         </Card.Text>
                         <Button variant="primary">Go somewhere</Button>
                     </Card.Body>
@@ -140,7 +140,7 @@ export function Bootstrap() {
                     <Card.Body>
                         <Card.Title>Card Title</Card.Title>
                         <Card.Text>
-							Some quick example text to build on the card title and make up the bulk of the card's content.
+                            Some quick example text to build on the card title and make up the bulk of the card's content.
                         </Card.Text>
                     </Card.Body>
                     <ListGroup>
@@ -159,7 +159,7 @@ export function Bootstrap() {
                     <Card.ImgOverlay>
                         <Card.Title>Card title</Card.Title>
                         <Card.Text>
-							This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                            This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
                         </Card.Text>
                         <Card.Text>Last updated 3 mins ago</Card.Text>
                     </Card.ImgOverlay>
@@ -171,7 +171,7 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                                This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -183,7 +183,7 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This card has supporting text below as a natural lead-in to additional content.
+                                This card has supporting text below as a natural lead-in to additional content.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -195,9 +195,9 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This is a wider card with supporting text below as a natural lead-in to
-								additional content. This card has even longer content than the first to
-								show that equal height action.
+                                This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This card has even longer content than the first to
+                                show that equal height action.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -211,7 +211,7 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                                This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -223,7 +223,7 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This card has supporting text below as a natural lead-in to additional content.
+                                This card has supporting text below as a natural lead-in to additional content.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -235,9 +235,9 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This is a wider card with supporting text below as a natural lead-in to
-								additional content. This card has even longer content than the first to
-								show that equal height action.
+                                This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This card has even longer content than the first to
+                                show that equal height action.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -251,18 +251,18 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title that wraps to a new line</Card.Title>
                             <Card.Text>
-								This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                                This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
                             </Card.Text>
                         </Card.Body>
                     </Card>
                     <Card className="p-3">
                         <blockquote className="blockquote mb-0 card-body">
                             <p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.
                             </p>
                             <footer className="blockquote-footer">
                                 <small className="text-muted">
-									Someone famous in <cite title="Source Title">Source Title</cite>
+                                    Someone famous in <cite title="Source Title">Source Title</cite>
                                 </small>
                             </footer>
                         </blockquote>
@@ -272,7 +272,7 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This card has supporting text below as a natural lead-in to additional content.
+                                This card has supporting text below as a natural lead-in to additional content.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -284,7 +284,7 @@ export function Bootstrap() {
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
                             <footer className="blockquote-footer">
                                 <small className="text-muted">
-									Someone famous in <cite title="Source Title">Source Title</cite>
+                                    Someone famous in <cite title="Source Title">Source Title</cite>
                                 </small>
                             </footer>
                         </blockquote>
@@ -293,8 +293,8 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This card has supporting text below as a natural lead-in to additional
-								content.{" "}
+                                This card has supporting text below as a natural lead-in to additional
+                                content.{" "}
                             </Card.Text>
                             <Card.Text>
                                 <small className="text-muted">Last updated 3 mins ago</small>
@@ -309,7 +309,7 @@ export function Bootstrap() {
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
                             <footer className="blockquote-footer">
                                 <small className="text-muted">
-									Someone famous in <cite title="Source Title">Source Title</cite>
+                                    Someone famous in <cite title="Source Title">Source Title</cite>
                                 </small>
                             </footer>
                         </blockquote>
@@ -318,9 +318,9 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-								This is a wider card with supporting text below as a natural lead-in to
-								additional content. This card has even longer content than the first to
-								show that equal height action.
+                                This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This card has even longer content than the first to
+                                show that equal height action.
                             </Card.Text>
                             <Card.Text>
                                 <small className="text-muted">Last updated 3 mins ago</small>
@@ -384,7 +384,7 @@ export function Bootstrap() {
                         <Form.Label>Email address</Form.Label>
                         <Form.Control type="email" placeholder="Enter email"/>
                         <Form.Text className="text-muted">
-							We'll never share your email with anyone else.
+                            We'll never share your email with anyone else.
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="formBasicPassword">
@@ -470,8 +470,8 @@ export function Bootstrap() {
                 <Jumbotron fluid>
                     <h1>Hello, world!</h1>
                     <p>
-						This is a simple hero unit, a simple jumbotron-style component for calling
-						extra attention to featured content or information.
+                        This is a simple hero unit, a simple jumbotron-style component for calling
+                        extra attention to featured content or information.
                     </p>
                     <p>
                         <Button>Learn more</Button>
@@ -602,8 +602,8 @@ export function Bootstrap() {
                 <Popover id="popover" style={{position: "relative"}}>
                     <Popover.Title>Popover right</Popover.Title>
                     <Popover.Content>
-						And here's some <strong>amazing</strong> content. It's very engaging.
-						right?
+                        And here's some <strong>amazing</strong> content. It's very engaging.
+                        right?
                     </Popover.Content>
                 </Popover>
             </div>

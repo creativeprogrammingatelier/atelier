@@ -14,7 +14,7 @@ describe("WebhookHelper.createWebhookRequest", () => {
             thing: 4
         }
     };
-	
+
     it("should set the user agent", () => {
         const req = createWebhookRequest(plugin, event, body);
         expect(req.headers.get("User-Agent"), "User-Agent").to.equal("Atelier");
@@ -23,13 +23,13 @@ describe("WebhookHelper.createWebhookRequest", () => {
         const req = createWebhookRequest(plugin, event, body);
         const reqBody = await req.text();
         const signature = crypto.createHmac("sha1", plugin.webhookSecret).update(reqBody).digest("base64");
-		
+
         expect(req.headers.get("X-Atelier-Signature"), "X-Atelier-Signature").to.equal(signature);
     });
     it("should set the correct event and payload", async() => {
         const req = createWebhookRequest(plugin, event, body);
         const reqBody = await req.json();
-		
+
         expect(reqBody.event).to.equal(event);
         expect(reqBody.payload).to.deep.equal(body);
     });

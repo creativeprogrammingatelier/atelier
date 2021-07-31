@@ -9,25 +9,25 @@ import {SubmissionStatus} from "../enums/SubmissionStatusEnum";
 import {DBAPIUser, userToAPI} from "./User";
 
 export interface Submission extends DBTools {
-	submissionID?: string;
+    submissionID?: string;
     courseID?: string;
     courseName?: string;
-	userID?: string;
-	title?: string;
-	date?: Date;
+    userID?: string;
+    title?: string;
+    date?: Date;
     state?: SubmissionStatus,
     fileCount?: number;
     threadCount?: number;
-	//requires extra database call
-	addFiles?: boolean,
+    //requires extra database call
+    addFiles?: boolean,
 }
 export interface DBSubmission {
-	submissionid: string;
+    submissionid: string;
     courseid: string;
     coursename: string;
-	userid: string;
-	title: string;
-	date: Date;
+    userid: string;
+    title: string;
+    date: Date;
     state: string;
     filecount: number;
     threadcount: number;
@@ -52,7 +52,7 @@ export function convertSubmission(db: DBSubmission): Submission {
 }
 export function submissionToAPI(db: DBAPISubmission): APISubmission {
     checkAvailable(["submissionid", "courseid", "title", "date", "state"], db);
-	
+
     return {
         ID: UUIDHelper.fromUUID(db.submissionid),
         name: db.title,

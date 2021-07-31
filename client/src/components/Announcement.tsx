@@ -7,7 +7,7 @@ interface AnnouncementProperties {
     msg: string
 }
 
-/** Announcement component used to display messages in 
+/** Announcement component used to display messages in
  *  a stylized way on the page, rather then using paragraphs.
  */
 export function Announcement({msg}: AnnouncementProperties) {

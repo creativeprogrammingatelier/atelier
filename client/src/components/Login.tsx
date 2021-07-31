@@ -13,14 +13,14 @@ import {Loading} from "./general/loading/Loading";
 import "../styles/login.scss";
 
 interface LoginRedirectProperties {
-	state: {
-		/** String representation of the source of the redirect. */
-		from: string
-	}
+    state: {
+        /** String representation of the source of the redirect. */
+        from: string
+    }
 }
 interface LoginProperties {
-	/** Origin location of the login request. */
-	location?: LoginRedirectProperties
+    /** Origin location of the login request. */
+    location?: LoginRedirectProperties
 }
 export function Login({location}: LoginProperties) {
     if (AuthHelper.loggedIn() && location && location.state && location.state.from) {
@@ -31,7 +31,7 @@ export function Login({location}: LoginProperties) {
         console.log("Login: " + location.state.from);
         localStorage.setItem("redirect", location.state.from);
     }
-	
+
     return <Jumbotron className="cover">
         <Logo/>
         <div className="text-center buttonList">
@@ -48,7 +48,7 @@ export function Login({location}: LoginProperties) {
                         return <p>Redirecting to {providers[0].name}</p>;
                     } else {
                         return <p>There are no login providers configured. If you are the administrator of this
-							installation, please configure a login provider in the configuration files.</p>;
+                            installation, please configure a login provider in the configuration files.</p>;
                     }
                 }}
             />

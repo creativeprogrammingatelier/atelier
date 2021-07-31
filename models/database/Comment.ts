@@ -7,27 +7,27 @@ import { ThreadState } from "../enums/ThreadStateEnum";
 import { getEnum } from "../../helpers/EnumHelper";
 
 export interface Comment extends DBTools {
-	commentID?: string,
-	commentThreadID?: string,
-	submissionID?: string,
-	courseID?: string,
-	fileID?: string,
-	snippetID?: string,
-	userID?: string,
-	created?: Date,
-	edited?: Date,
-	body?: string
+    commentID?: string,
+    commentThreadID?: string,
+    submissionID?: string,
+    courseID?: string,
+    fileID?: string,
+    snippetID?: string,
+    userID?: string,
+    created?: Date,
+    edited?: Date,
+    body?: string
 }
 export interface DBComment {
-	commentid: string,
-	commentthreadid: string,
-	submissionid: string,
-	courseid: string,
-	fileid: string,
-	snippetid: string,
-	userid: string,
-	created: Date,
-	edited: Date,
+    commentid: string,
+    commentthreadid: string,
+    submissionid: string,
+    courseid: string,
+    fileid: string,
+    snippetid: string,
+    userid: string,
+    created: Date,
+    edited: Date,
     body: string,
     //thread
     visibilitystate: string,
@@ -36,9 +36,9 @@ export interface DBComment {
     submissionname: string,
     submissionuserid: string,
     submissionusername: string,
-	//null checks
-	type: string,
-	linestart: number,
+    //null checks
+    type: string,
+    linestart: number,
 }
 
 export {APIComment};
@@ -54,7 +54,7 @@ export function convertComment(db: DBComment): Comment {
         userID: UUIDHelper.fromUUID(db.userid),
         created: db.created,
         edited: db.edited,
-		
+
         body: db.body
     };
 }

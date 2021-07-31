@@ -21,12 +21,12 @@ import {LabeledInput} from "../input/LabeledInput";
 import {SearchProperties} from "./SearchOverview";
 
 interface SearchQueryProperties {
-	/** SearchProperties of query*/
-	state: SearchProperties,
-	/** Functioning on handling changing of courses */
-	onCourseChange?: (course?: string) => void,
-	/** Function for handling responses. */
-	handleResponse?: (results: SearchResult) => void
+    /** SearchProperties of query*/
+    state: SearchProperties,
+    /** Functioning on handling changing of courses */
+    onCourseChange?: (course?: string) => void,
+    /** Function for handling responses. */
+    handleResponse?: (results: SearchResult) => void
 }
 /**
  * Component for handling a search query.
@@ -40,14 +40,14 @@ export function SearchQuery({state, onCourseChange, handleResponse}: SearchQuery
     const [error, setError] = useState(false as FeedbackContent);
     const [shift, setShift] = useState(false);
     const history = useHistory();
-    
+
     useEffect(() => onCourseChange && onCourseChange(course), [course]);
-	
-    /** 
-	 * Handles keyDown events, checks whether shift is pressed. 
-	 * If shes then a new lines is added on pressing "Enter", 
-	 * of not the search is performed.
-	 */
+
+    /**
+     * Handles keyDown events, checks whether shift is pressed.
+     * If shes then a new lines is added on pressing "Enter",
+     * of not the search is performed.
+     */
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === "Shift") {
             setShift(true);
@@ -66,17 +66,17 @@ export function SearchQuery({state, onCourseChange, handleResponse}: SearchQuery
         }
     };
     /**
-	 * Handles keyUp event. Used to check whether "shift" had 
-	 * been de-pressed.
-	 */
+     * Handles keyUp event. Used to check whether "shift" had
+     * been de-pressed.
+     */
     const handleKeyUp = (event: React.KeyboardEvent) => {
         if (event.key === "Shift") {
             setShift(false);
         }
     };
     /**
-	 * Executes the search query.
-	 */
+     * Executes the search query.
+     */
     const handleSearch = async() => {
         setError(false);
         try {
@@ -97,40 +97,40 @@ export function SearchQuery({state, onCourseChange, handleResponse}: SearchQuery
             setError(`Could not search for '${query}': ${error}`);
         }
     };
-	
+
     return <Form>
         {
             (user || course) &&
-			<Form.Group>
-			    {
-			        user &&
-					<Tag large round theme="primary" click={() => history.push(`/user/${user}`)}>
-						User: <Loading<User> loader={getUser} params={[user]} component={user => user.name}
-					        wrapper={() => null}/>
-					    <Button className="ml-1" onClick={(event: React.MouseEvent<HTMLElement>) => {
-					        setUser(undefined);
-					        event.stopPropagation();
-					        event.nativeEvent.stopImmediatePropagation();
-					    }}>
-					        <FiX/>
-					    </Button>
-					</Tag>
-			    }
-			    {
-			        submission &&
-					<Tag large round theme="primary" click={() => history.push(`/submission/${submission}`)}>
-						Submission: <Loading<Submission> loader={getSubmission} params={[submission]}
-					        component={submission => submission.name} wrapper={() => null}/>
-					    <Button className="ml-1" onClick={(event: React.MouseEvent<HTMLElement>) => {
-					        setSubmission(undefined);
-					        event.stopPropagation();
-					        event.nativeEvent.stopImmediatePropagation();
-					    }}>
-					        <FiX/>
-					    </Button>
-					</Tag>
-			    }
-			</Form.Group>
+            <Form.Group>
+                {
+                    user &&
+                    <Tag large round theme="primary" click={() => history.push(`/user/${user}`)}>
+                        User: <Loading<User> loader={getUser} params={[user]} component={user => user.name}
+                            wrapper={() => null}/>
+                        <Button className="ml-1" onClick={(event: React.MouseEvent<HTMLElement>) => {
+                            setUser(undefined);
+                            event.stopPropagation();
+                            event.nativeEvent.stopImmediatePropagation();
+                        }}>
+                            <FiX/>
+                        </Button>
+                    </Tag>
+                }
+                {
+                    submission &&
+                    <Tag large round theme="primary" click={() => history.push(`/submission/${submission}`)}>
+                        Submission: <Loading<Submission> loader={getSubmission} params={[submission]}
+                            component={submission => submission.name} wrapper={() => null}/>
+                        <Button className="ml-1" onClick={(event: React.MouseEvent<HTMLElement>) => {
+                            setSubmission(undefined);
+                            event.stopPropagation();
+                            event.nativeEvent.stopImmediatePropagation();
+                        }}>
+                            <FiX/>
+                        </Button>
+                    </Tag>
+                }
+            </Form.Group>
         }
         <LabeledInput label="Course" className="w-50 pr-1">
             <Loading<Course[]>

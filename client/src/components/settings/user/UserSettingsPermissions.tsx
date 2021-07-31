@@ -16,43 +16,43 @@ import {UserInfo} from "./UserInfo";
 import {UserSearch} from "./UserSearch";
 
 interface PermissionDisplay {
-	/** Permissions of the user */
-	[key: string]: string
+    /** Permissions of the user */
+    [key: string]: string
 }
 interface PermissionState {
-	/** State of the permission of the user, whether active or not */
-	[key: string]: boolean
+    /** State of the permission of the user, whether active or not */
+    [key: string]: boolean
 }
 interface UserSettingsPermissionsProperties {
-	/** Course ID within the database */
-	courseID?: string
+    /** Course ID within the database */
+    courseID?: string
 }
 interface UserSettingsPermissionsSectionProperties {
-	/** Label of permissions settings */
-	header: string,
-	/** Current user permissions */
-	display: PermissionDisplay,
-	/** State of user permissions */
-	state: PermissionState,
-	/** Function for setting the changing the state of a user permission */
-	setState: (permission: string, state: boolean) => void
+    /** Label of permissions settings */
+    header: string,
+    /** Current user permissions */
+    display: PermissionDisplay,
+    /** State of user permissions */
+    state: PermissionState,
+    /** Function for setting the changing the state of a user permission */
+    setState: (permission: string, state: boolean) => void
 }
-/** 
+/**
  * Component managing the permission of a given user, in the specified course.
  */
 export function UserSettingsPermissions({courseID}: UserSettingsPermissionsProperties) {
     const [user, setUser] = useState(undefined as User | undefined);
     const [permissions, setPermissions] = useState({} as PermissionState);
-	
+
     /**
-	 * Sets the new permission given. 
-	 */
+     * Sets the new permission given.
+     */
     const setPermission = (permission: string, state: boolean) => {
         setPermissions(permissions => ({...permissions, [permission]: state}));
     };
     /**
-	 * Function to handle updates to the permissions of the user.
-	 */
+     * Function to handle updates to the permissions of the user.
+     */
     const handleUpdate = () => {
         if (user) {
             // Send local / global permission request
@@ -73,36 +73,36 @@ export function UserSettingsPermissions({courseID}: UserSettingsPermissionsPrope
             }
         }
     };
-	
+
     useEffect(() => {
         Object.keys({...permissionsSectionView, ...permissionsSectionManage}).map(permission => {
             setPermission(permission, user ? containsPermission(getEnum(PermissionEnum, permission), user.permission.permissions) : false);
         });
     }, [user]);
-	
+
     return <Form>
         <UserSearch courseID={courseID} onSelected={setUser}/>
         {
             user &&
-			<Fragment>
-			    <UserInfo user={user}/>
-			    <Permissions course={courseID} single={PermissionEnum.manageUserPermissionsView}>
-			        <UserSettingsPermissionsSection header="Viewing permissions" display={permissionsSectionView}
-			            state={permissions} setState={setPermission}/>
-			    </Permissions>
-			    <Permissions course={courseID} single={PermissionEnum.manageUserPermissionsManager}>
-			        <UserSettingsPermissionsSection header="Managing permissions" display={permissionsSectionManage}
-			            state={permissions} setState={setPermission}/>
-			    </Permissions>
-			    <Button onClick={handleUpdate}>Update permissions</Button>
-			</Fragment>
+            <Fragment>
+                <UserInfo user={user}/>
+                <Permissions course={courseID} single={PermissionEnum.manageUserPermissionsView}>
+                    <UserSettingsPermissionsSection header="Viewing permissions" display={permissionsSectionView}
+                        state={permissions} setState={setPermission}/>
+                </Permissions>
+                <Permissions course={courseID} single={PermissionEnum.manageUserPermissionsManager}>
+                    <UserSettingsPermissionsSection header="Managing permissions" display={permissionsSectionManage}
+                        state={permissions} setState={setPermission}/>
+                </Permissions>
+                <Button onClick={handleUpdate}>Update permissions</Button>
+            </Fragment>
         }
     </Form>;
 }
 
 /**
- * Component for displaying and changing the permissions of a user. Permissions are changed 
- * via a checkbox input for every permission in "display". 
+ * Component for displaying and changing the permissions of a user. Permissions are changed
+ * via a checkbox input for every permission in "display".
  */
 function UserSettingsPermissionsSection({header, display, state, setState}: UserSettingsPermissionsSectionProperties) {
     return <LabeledInput label={header}>

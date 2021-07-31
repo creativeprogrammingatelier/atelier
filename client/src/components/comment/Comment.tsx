@@ -17,15 +17,15 @@ import {Tag} from "../general/Tag";
 
 
 /**
- * Interface defining the properties of a comment. 
+ * Interface defining the properties of a comment.
  */
 interface CommentProperties {
-	comment: Comment
+    comment: Comment
 }
 /**
- * Function that constructs a Comment based on the CommentProperties supplied, returning the component 
+ * Function that constructs a Comment based on the CommentProperties supplied, returning the component
  * at the end.
- * 
+ *
  * @param comment Comment representation of the comment object.
  */
 export function Comment({comment}: CommentProperties) {
@@ -33,9 +33,9 @@ export function Comment({comment}: CommentProperties) {
     const [deleteError, setDeleteError] = useState(false as FeedbackContent);
     const comments = useComments(comment.references.commentThreadID);
     const user = useCurrentUser();
-	
+
     let timer: NodeJS.Timeout;
-	
+
     const handleDown = () => {
         if (menuOpen) {
             setMenuOpen(false);
@@ -57,7 +57,7 @@ export function Comment({comment}: CommentProperties) {
             .then(() => setMenuOpen(false))
             .catch(error => setDeleteError(error.message));
     };
-	
+
     return <Fragment>
         <div className="comment px-2 py-1" onMouseDown={handleDown} onMouseUp={handleUp} onTouchStart={handleDown} onTouchEnd={handleUp}>
             <small><span>{comment.user.name}</span> at <span>{TimeHelper.toDateTimeString(TimeHelper.fromString(comment.created))}</span></small>
@@ -68,18 +68,18 @@ export function Comment({comment}: CommentProperties) {
         </div>
         {
             menuOpen &&
-			<ButtonBar transparent align="left">
-			    <Button className="m-2" onClick={handleCopy}>Copy <FiClipboard/></Button>
-			    <Cached cache={user}>
-			        {user => user.ID === comment.user.ID &&
-						<ButtonMultistate variant="danger" className="mt-2 mb-2" states={[
-						    <Fragment key={comment.ID + "Delete"}>Delete <FiTrash/></Fragment>,
-						    <Fragment key={comment.ID + "Confirm"}>Confirm <FiTrash/></Fragment>,
-						]} finish={handleDelete}/>
-			        }
-			    </Cached>
-			    <FeedbackError close={setDeleteError}>{deleteError}</FeedbackError>
-			</ButtonBar>
+            <ButtonBar transparent align="left">
+                <Button className="m-2" onClick={handleCopy}>Copy <FiClipboard/></Button>
+                <Cached cache={user}>
+                    {user => user.ID === comment.user.ID &&
+                        <ButtonMultistate variant="danger" className="mt-2 mb-2" states={[
+                            <Fragment key={comment.ID + "Delete"}>Delete <FiTrash/></Fragment>,
+                            <Fragment key={comment.ID + "Confirm"}>Confirm <FiTrash/></Fragment>,
+                        ]} finish={handleDelete}/>
+                    }
+                </Cached>
+                <FeedbackError close={setDeleteError}>{deleteError}</FeedbackError>
+            </ButtonBar>
         }
     </Fragment>;
 }

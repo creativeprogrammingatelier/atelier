@@ -20,13 +20,13 @@ export function CourseCreator() {
     const [error, setError] = useState(false as FeedbackContent);
     const courses = useCourses();
     const history = useHistory();
-	
+
     /**
-	 * Function for creating a course given the course name.
-	 * 
-	 * @param courseName Course name of the given course.
-	 * @throws Error when new course has failed to be created.
-	 */
+     * Function for creating a course given the course name.
+     *
+     * @param courseName Course name of the given course.
+     * @throws Error when new course has failed to be created.
+     */
     async function handleSubmission(courseName: string, canvasCourseId: string) {
         try {
             const course = await courses.create({
@@ -41,10 +41,10 @@ export function CourseCreator() {
         }
     }
 
-    function linkCanvasCourse(courseId: string) { 
+    function linkCanvasCourse(courseId: string) {
         setCanvasCourseId(courseId);
     }
-	
+
     return <Form>
         <LabeledInput label="Course name">
             <Form.Control

@@ -24,39 +24,39 @@ import {
 export function courseTest() {
     let createdCourseID: string | undefined = undefined;
     /**
-	 * GET requests:
-	 * /api/course
-	 * - response should be CoursePartial[]
-	 * - user should be enrolled or have permission to view all courses.
-	 * /api/course/user/:courseID
-	 * - response should be CoursePartial[]
-	 * - user should be self or have permission to view all courses
-	 * /api/course/:courseID
-	 * - response should be CoursePartial
-	 * - user should be registered in the course or have permission to view all courses
-	 *
-	 * PUT requests:
-	 * /api/course/:courseID
-	 * - response should be a CoursePartial
-	 * - user should be able to update a course name
-	 * - user should be able to update a course state
-	 * - user should have permission to manage courses
-	 * /api/course/:courseID/user/:userID
-	 * - response should be a CourseUser
-	 * - user should be able to register users in a course
-	 * - user should have permission to manage user registration
-	 *
-	 * DELETE requests:
-	 * /api/course/:courseID
-	 * - response should be a CoursePartial
-	 * - user should be able to delete a course
-	 * - user should have permission to manage courses
-	 * /api/course/:courseID/user/:userID
-	 * - response should be a CourseUser
-	 * - user should be able to remove a user from a course
-	 * - user should have permission to manage user registration
-	 *
-	 */
+     * GET requests:
+     * /api/course
+     * - response should be CoursePartial[]
+     * - user should be enrolled or have permission to view all courses.
+     * /api/course/user/:courseID
+     * - response should be CoursePartial[]
+     * - user should be self or have permission to view all courses
+     * /api/course/:courseID
+     * - response should be CoursePartial
+     * - user should be registered in the course or have permission to view all courses
+     *
+     * PUT requests:
+     * /api/course/:courseID
+     * - response should be a CoursePartial
+     * - user should be able to update a course name
+     * - user should be able to update a course state
+     * - user should have permission to manage courses
+     * /api/course/:courseID/user/:userID
+     * - response should be a CourseUser
+     * - user should be able to register users in a course
+     * - user should have permission to manage user registration
+     *
+     * DELETE requests:
+     * /api/course/:courseID
+     * - response should be a CoursePartial
+     * - user should be able to delete a course
+     * - user should have permission to manage courses
+     * /api/course/:courseID/user/:userID
+     * - response should be a CourseUser
+     * - user should be able to remove a user from a course
+     * - user should have permission to manage user registration
+     *
+     */
     describe("Courses", () => {
         async function coursePermissions(onlyEnrolled = false) {
             // User can view a course if enrolled

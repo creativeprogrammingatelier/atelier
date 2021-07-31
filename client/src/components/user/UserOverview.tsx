@@ -15,14 +15,14 @@ import {CourseTab} from "./CourseTab";
 import {SubmissionTab} from "./SubmissionTab";
 
 interface UserOverviewProperties {
-	match: {
-		params: {
-			/** User ID within database */
-			userId: string,
-			/** Current active tab */
-			tab: string
-		}
-	}
+    match: {
+        params: {
+            /** User ID within database */
+            userId: string,
+            /** Current active tab */
+            tab: string
+        }
+    }
 }
 /**
  * Component for retrieving user information for the current active tab
@@ -30,7 +30,7 @@ interface UserOverviewProperties {
 export function UserOverview({match: {params: {userId, tab}}}: UserOverviewProperties) {
     const [activeTab, setActiveTab] = useState(tab);
     const userPath = "/user/" + userId;
-	
+
     useEffect(() => {
         setActiveTab(tab);
     }, [tab]);
@@ -39,12 +39,12 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
             setActiveTab("courses");
         }
     });
-	
+
     /**
-	 * Render the contents of the tab based on the user given.
-	 * 
-	 * @param user User to be queried.
-	 */
+     * Render the contents of the tab based on the user given.
+     *
+     * @param user User to be queried.
+     */
     const renderTabContents = (user: User) => {
         if (activeTab === "courses") {
             return <CourseTab user={user}/>;
@@ -56,7 +56,7 @@ export function UserOverview({match: {params: {userId, tab}}}: UserOverviewPrope
         // TODO: Better error
         return <div><h1>Tab not found!</h1></div>;
     };
-	
+
     return <Loading<User>
         loader={getUser}
         params={[userId]}

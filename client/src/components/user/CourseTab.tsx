@@ -10,8 +10,8 @@ import {Loading} from "../general/loading/Loading";
 import {Panel} from "../general/Panel";
 
 interface CourseTabProperties {
-	/** User to be queried. */
-	user: User
+    /** User to be queried. */
+    user: User
 }
 /**
  * Component that retrieves all courses the user is part of.

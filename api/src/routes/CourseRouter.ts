@@ -51,15 +51,15 @@ courseRouter.get("/", capture(async (request: Request, response: Response) => {
 courseRouter.get("/user/:userID", capture(async (request: Request, response: Response) => {
     const userID = request.params.userID;
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     if (currentUserID !== userID) await requirePermission(currentUserID, PermissionEnum.viewAllCourses);
-	
+
     const enrolledCourses = (await CourseRegistrationDB.getEntriesByUser(userID))
         .map((course: CourseUser) => course.courseID);
     const courses = (await CourseDB.getAllCourses())
         .filter(course => enrolledCourses.includes(course.ID))
         .map(course => removePermissionsCoursePartial(course));
-	
+
     response.status(200).send(courses);
 }));
 
@@ -72,10 +72,10 @@ courseRouter.get("/:courseID", capture(async (request: Request, response: Respon
     const courseID: string = request.params.courseID;
     const course: CoursePartial = await CourseDB.getCourseByID(courseID);
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     // User should be registered in the course
     await requireRegistered(currentUserID, courseID);
-	
+
     response.status(200).send(removePermissionsCoursePartial(course));
 }));
 
@@ -93,12 +93,12 @@ courseRouter.post("/", capture(async (request: Request, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
 
     /**
-	 * Once creation of course and adding users via canvas has been stressed tested the transaction could be merged
-	 */
+     * Once creation of course and adding users via canvas has been stressed tested the transaction could be merged
+     */
 
     // Requires addCourses permission
     await requirePermission(currentUserID, PermissionEnum.addCourses);
-	
+
     const course = await transaction(async client => {
         const course: CoursePartial = await CourseDB.addCourse({
             courseName: name,
@@ -107,21 +107,21 @@ courseRouter.post("/", capture(async (request: Request, response: Response) => {
             canvasCourseID: canvasCourseID,
             client
         });
-		
+
         await CourseRegistrationDB.addEntry({
             courseID: course.ID,
             userID: currentUserID,
             courseRole: CourseRole.moduleCoordinator,
             client
         });
-		
+
         return course;
     });
 
-    /** 
-	 * Adds all users in canvas linked course
-	 * */
-    if(canvasCourseID != ""){ 
+    /**
+     * Adds all users in canvas linked course
+     * */
+    if(canvasCourseID != ""){
         let students = await getCourseUsersStudents(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
         let tas = await getCourseUsersTAs(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
         await transaction(async client => {
@@ -147,17 +147,17 @@ courseRouter.put("/:courseID", capture(async (request: Request, response: Respon
     const name: string | undefined = request.body.name;
     const canvasCourseID: string = (request.body.canvasCourseId == "") ? undefined: request.body.canvasCourseId ;
     const state: CourseState | undefined = request.body.state as CourseState;
-	
+
     // Require manageCourses permission
     await requirePermission(currentUserID, PermissionEnum.manageCourses, courseID);
-	
+
     const course: CoursePartial = await CourseDB.updateCourse({
         courseID,
         courseName: name,
         canvasCourseID,
         state
     });
-	
+
     response.status(200).send(removePermissionsCoursePartial(course));
 }));
 
@@ -171,13 +171,13 @@ courseRouter.put("/:courseID/user/:userID/role/:role", capture(async (request: R
     const userID: string = request.params.userID;
     const courseRole: CourseRole = request.params.role as CourseRole;
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     // Require manageUserRegistration permission
     await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
-	
+
     // Get current user registrations
     const courseRegistrations: CourseUser[] = await CourseRegistrationDB.getSubset([courseID], [userID]);
-	
+
     // User already registered in the course
     if (courseRegistrations.length !== 0) {
         response.status(200).send(removePermissionsCourseUser(courseRegistrations[0]));
@@ -196,26 +196,26 @@ courseRouter.put("/:courseID/user/:userID/role/:role", capture(async (request: R
 courseRouter.delete("/:courseID", capture(async (request: Request, response: Response) => {
     const courseID: string = request.params.courseID;
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     // Require manage courses permission
     await requirePermission(currentUserID, PermissionEnum.manageCourses, courseID);
-	
+
     const result: CoursePartial = await CourseDB.deleteCourseByID(courseID);
-	
+
     response.status(200).send(removePermissionsCoursePartial(result));
 }));
 courseRouter.delete("/:courseID/user/:userID", capture(async (request: Request, response: Response) => {
     const courseID: string = request.params.courseID;
     const userID: string = request.params.userID;
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     // Require manage user registration
     await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
-	
+
     const result: CourseUser = await CourseRegistrationDB.deleteEntry({
         courseID,
         userID
     });
-	
+
     response.status(200).send(removePermissionsCourseUser(result));
 }));

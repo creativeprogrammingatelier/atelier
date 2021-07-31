@@ -1,4 +1,4 @@
 export enum ThreadState {
-	public = "public",
-	private = "private"
+    public = "public",
+    private = "private"
 }

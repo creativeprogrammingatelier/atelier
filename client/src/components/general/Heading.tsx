@@ -5,31 +5,31 @@ import {IconType} from "react-icons";
 import {HeaderButton} from "../frame/HeaderButton";
 
 interface HeadingButtonProperties {
-	/**
-	 * Icon for the heading button
-	 */
-	icon: IconType,
-	/**
-	 * Function for resolving a button clikc.
-	 */
-	click: React.MouseEventHandler
+    /**
+     * Icon for the heading button
+     */
+    icon: IconType,
+    /**
+     * Function for resolving a button clikc.
+     */
+    click: React.MouseEventHandler
 }
 interface HeadingProperties {
-	/** Title of heading */
-	title?: string,
-	/** Cosmetic properties */
-	large?: boolean,
-	transparent?: boolean,
-	/** Position of heading. */
-	position?: string,
-	/** Offset for left and right positioning */
-	offset?: {
-		left?: number | string,
-		right?: number | string
-	},
-	/** Heading Buttons for navigation */
-	leftButton?: HeadingButtonProperties,
-	rightButton?: HeadingButtonProperties
+    /** Title of heading */
+    title?: string,
+    /** Cosmetic properties */
+    large?: boolean,
+    transparent?: boolean,
+    /** Position of heading. */
+    position?: string,
+    /** Offset for left and right positioning */
+    offset?: {
+        left?: number | string,
+        right?: number | string
+    },
+    /** Heading Buttons for navigation */
+    leftButton?: HeadingButtonProperties,
+    rightButton?: HeadingButtonProperties
 }
 export function Heading({title, large, transparent, position, offset, leftButton, rightButton}: HeadingProperties) {
     return (

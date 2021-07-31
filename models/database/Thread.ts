@@ -12,10 +12,10 @@ import { GlobalRole } from "../enums/GlobalRoleEnum";
 import { CourseRole } from "../enums/CourseRoleEnum";
 
 export interface Thread extends DBTools {
-	commentThreadID?: string,
-	submissionID?: string,
-	courseID?: string,
-	fileID?: string,
+    commentThreadID?: string,
+    submissionID?: string,
+    courseID?: string,
+    fileID?: string,
     snippetID?: string,
     submissionName?: string,
     submissionUserID?: string,
@@ -28,15 +28,15 @@ export interface Thread extends DBTools {
     sharedByGlobalRole?: string,
     sharedByCourseRole?: string,
     sharedByPermission?: string,
-	//requires extra database call
+    //requires extra database call
     addComments?: boolean,
     automatedOnlyIfShared?: boolean
 }
 export interface DBThread {
-	commentthreadid: string,
-	submissionid: string,
-	courseid: string,
-	fileid: string,
+    commentthreadid: string,
+    submissionid: string,
+    courseid: string,
+    fileid: string,
     snippetid: string,
     submissionname: string,
     submissionuserid: string,
@@ -57,7 +57,7 @@ export type DBAPIThread = DBThread & DBAPIFile & DBAPISnippet
 
 export function convertThread(db: DBThread): Thread {
     checkAvailable(["commentthreadid", "visibilitystate", "courseid", "submissionid", "fileid", "snippetid"], db);
-	
+
     return {
         commentThreadID: UUIDHelper.fromUUID(db.commentthreadid),
         submissionID: UUIDHelper.fromUUID(db.submissionid),
@@ -87,9 +87,9 @@ export function threadToAPI(db: DBAPIThread): APIThread {
         automated: db.automated,
         submission: {
             name: db.submissionname,
-            user: { 
-                ID: UUIDHelper.fromUUID(db.submissionuserid), 
-                userName: db.submissionusername 
+            user: {
+                ID: UUIDHelper.fromUUID(db.submissionuserid),
+                userName: db.submissionusername
             }
         },
         sharedBy: db.sharedByID === undefined ? undefined : {

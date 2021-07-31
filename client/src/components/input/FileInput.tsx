@@ -4,12 +4,12 @@ import {Form} from "react-bootstrap";
 import {ParentalProperties} from "../../helpers/ParentHelper";
 
 interface FileInputProperties extends ParentalProperties {
-	/** Whether there are folders in the input */
-	folders: boolean,
-	/** Function for handling input elements */
-	handleElement: (element: HTMLInputElement) => void,
-	/** Function for resolving a change event on an element */
-	handleSelected: (event: React.ChangeEvent<HTMLInputElement>) => void
+    /** Whether there are folders in the input */
+    folders: boolean,
+    /** Function for handling input elements */
+    handleElement: (element: HTMLInputElement) => void,
+    /** Function for resolving a change event on an element */
+    handleSelected: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 /**
  * Component for defining a file input.

@@ -10,8 +10,8 @@ import {Loading} from "../../general/loading/Loading";
 import {CourseInvite} from "./CourseInvite";
 
 interface CourseSettingsInvitesProperties {
-	/** ID of course in database */
-	courseID: string
+    /** ID of course in database */
+    courseID: string
 }
 /**
  * Components for creating a course invite for a student, TA and a teacher to a given course.

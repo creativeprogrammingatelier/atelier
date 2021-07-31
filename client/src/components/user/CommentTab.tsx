@@ -11,10 +11,10 @@ import {DataBlockList} from "../data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 
 interface CommentTabProperties {
-	/** User to be queried */
-	user: User,
-	/** Course ID withing database */
-	course?: Course
+    /** User to be queried */
+    user: User,
+    /** Course ID withing database */
+    course?: Course
 }
 /**
  * Component for retrieving all comments that a given user has made within a specified course.

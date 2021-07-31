@@ -89,10 +89,10 @@ commentRouter.put("/:commentThreadID", capture(async(request, response) => {
             body: commentBody,
             client
         });
-		
+
         await createMentions(commentBody, comment.ID, comment.references.courseID, currentUserID, client);
         await createTags(commentBody, comment.ID, client);
-		
+
         return comment;
     });
 
@@ -110,16 +110,16 @@ commentRouter.delete("/:commentThreadID/:commentID", capture(async(request, resp
     const currentUserID = await getCurrentUserID(request);
     const commentID = request.params.commentID;
     //const commentThreadID = request.params.commentThreadID;
-	
+
     let comment = await CommentDB.getCommentByID(commentID);
     if (comment.user.ID !== currentUserID) {
         throw new PermissionError("permission.notAllowed", "You should be the owner of the comment.");
     }
-	
+
     comment = await CommentDB.updateComment({
         commentID,
         body: "This comment was deleted"
     });
-	
+
     response.status(200).send(comment);
 }));

@@ -15,14 +15,14 @@ import {
 
 export function commentTest() {
     /**
-	 * GET requests:
-	 * /api/comment/user/:userID
-	 * - response should be Comment[]
-	 * - comments should belong to userID
-	 * /api/comment/course/:courseID/user/:userID
-	 * - response should be Comment[]
-	 * - comments should belong to userID and courseID
-	 */
+     * GET requests:
+     * /api/comment/user/:userID
+     * - response should be Comment[]
+     * - comments should belong to userID
+     * /api/comment/course/:courseID/user/:userID
+     * - response should be Comment[]
+     * - comments should belong to userID and courseID
+     */
     describe("Comments", async() => {
         it("Should be possible to get user comments", async() => {
             const response = await getCommentsUser();
@@ -30,17 +30,17 @@ export function commentTest() {
             console.log("??????", response.body);
             assert(response.body.every((comment: Comment) =>
                 instanceOfComment(comment) &&
-				comment.user.ID === USER_ID
+                comment.user.ID === USER_ID
             ));
         });
-		
+
         it("Should be possible to get user comments in a course", async() => {
             const response = await getCommentsByUserAndCourse();
             expect(response).to.have.status(200);
             assert(response.body.every((comment: Comment) =>
                 instanceOfComment(comment) &&
-				comment.references.courseID === COURSE_ID &&
-				comment.user.ID === USER_ID,
+                comment.references.courseID === COURSE_ID &&
+                comment.user.ID === USER_ID,
             ));
         });
 

@@ -12,19 +12,19 @@ import {UserSearch} from "../user/UserSearch";
 import {UserInfo} from "../user/UserInfo";
 
 interface CourseSettingsDisenrollmentProperties {
-	/** Course ID withing database */
-	courseID: string
+    /** Course ID withing database */
+    courseID: string
 }
 /**
- * Component for disenrolling user from a course. 
+ * Component for disenrolling user from a course.
  */
 export function CourseSettingsDisenrollment({courseID}: CourseSettingsDisenrollmentProperties) {
     const [user, setUser] = useState(undefined as User | undefined);
     const [success, setSuccess] = useState(false as FeedbackContent);
-	
+
     /**
-	 * Disenrolls user from course.
-	 */
+     * Disenrolls user from course.
+     */
     function disenrollUser() {
         if (user) {
             courseDisenrollUser(courseID, user.ID)
@@ -34,15 +34,15 @@ export function CourseSettingsDisenrollment({courseID}: CourseSettingsDisenrollm
             setUser(undefined);
         }
     }
-	
+
     return <Form>
         <UserSearch courseID={courseID} onSelected={setUser}/>
         {
             user &&
-			<Fragment>
-			    <UserInfo user={user}/>
-			    <Button onClick={disenrollUser}>Disenroll User</Button>
-			</Fragment>
+            <Fragment>
+                <UserInfo user={user}/>
+                <Button onClick={disenrollUser}>Disenroll User</Button>
+            </Fragment>
         }
         <FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
     </Form>;

@@ -33,9 +33,9 @@ export function databaseSamples(client: pgDB = pool): Promise<void> {
           (${uuid6}, NULL, 'test user', 'test@test', 'user', ${permissionType}, '');
 
      INSERT INTO "Plugins" VALUES
-          ((SELECT userID FROM "Users" WHERE globalRole='plugin' LIMIT 1), 
-          'http://localhost:8080/atelier-pmd/hook', 
-          'Super$ecretWebh00k$ecret', 
+          ((SELECT userID FROM "Users" WHERE globalRole='plugin' LIMIT 1),
+          'http://localhost:8080/atelier-pmd/hook',
+          'Super$ecretWebh00k$ecret',
           '-----BEGIN CERTIFICATE-----
          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhtNUfBsngFxBI06YuRO3
          b3MY7z0fzrnco0oQeUF8JUrk/zTTi99mZRsP9TH43pGglKgyQVfzhvLey+YZABKX
@@ -45,16 +45,16 @@ export function databaseSamples(client: pgDB = pool): Promise<void> {
          VHj8DA+aZ4jrN1hF46nYIXXM3O2LlWoOhgOaogEAB98nqaG5y2zTStUhRQfB9Yse
          YQIDAQAB
          -----END CERTIFICATE-----');
-     
+
      INSERT INTO "PluginHooks" VALUES
           ((SELECT pluginID FROM "Plugins" LIMIT 1),
           'submission'
           );
-	
-     INSERT INTO "Courses" VALUES 
+
+     INSERT INTO "Courses" VALUES
           (${uuid0}, 'Pearls of Computer Science', DEFAULT, ${uuid0}),
-		(${uuid1}, 'Art, Impact and Technology', DEFAULT, ${uuid0});
-	  
+        (${uuid1}, 'Art, Impact and Technology', DEFAULT, ${uuid0});
+
      INSERT INTO "CourseRegistration" VALUES
           (${uuid1}, ${uuid5}, 'student', 3${permissionType}),
           (${uuid0}, ${uuid0}, 'student', ${permissionType}),
@@ -62,37 +62,37 @@ export function databaseSamples(client: pgDB = pool): Promise<void> {
           (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', ${permissionType}),
           (${uuid0}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', ${permissionType}),
           (${uuid0}, (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', ${permissionType}),
-	    (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', ${permissionType}),
-	    (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', ${permissionType}),
-	    (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', ${permissionType}),
-	    (${uuid1}, (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', ${permissionType});
-	    
+        (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'student', ${permissionType}),
+        (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), 'teacher', ${permissionType}),
+        (${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), 'TA', ${permissionType}),
+        (${uuid1}, (SELECT userID from "Users" WHERE globalRole='plugin'), 'plugin', ${permissionType});
+
      INSERT INTO "Submissions" VALUES
           (${uuid0}, ${uuid0}, ${uuid0}, 'MyFirstSubmission', DEFAULT, DEFAULT),
-		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'Planets', DEFAULT, DEFAULT);
-		
+        (${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_user'), 'Planets', DEFAULT, DEFAULT);
+
      INSERT INTO "Files" VALUES
-	     (${uuid0}, ${uuid0}, 'MyFirstSubmission/MyFirstSubmission', 'processing'),
-	     (${uuid1}, ${uuid1}, 'Planets/Perlin.pde', 'text/x-java'),
-	     (${uuid2}, ${uuid1}, 'Planets/Planets.pde', 'text/x-java'),
-	     (${uuid3}, ${uuid1}, 'Planets/data/mercury.jpg', 'image/jpg'),
-	     (${uuid4}, ${uuid1}, 'Planets/data/planet.jpg', 'image/jpg'),
-	     (${uuid5}, ${uuid1}, 'Planets/data/starfield.jpg', 'image/jpg'),
-	     (${uuid6}, ${uuid1}, 'Planets/data/sun.jpg', 'image/jpg');
-	     
+         (${uuid0}, ${uuid0}, 'MyFirstSubmission/MyFirstSubmission', 'processing'),
+         (${uuid1}, ${uuid1}, 'Planets/Perlin.pde', 'text/x-java'),
+         (${uuid2}, ${uuid1}, 'Planets/Planets.pde', 'text/x-java'),
+         (${uuid3}, ${uuid1}, 'Planets/data/mercury.jpg', 'image/jpg'),
+         (${uuid4}, ${uuid1}, 'Planets/data/planet.jpg', 'image/jpg'),
+         (${uuid5}, ${uuid1}, 'Planets/data/starfield.jpg', 'image/jpg'),
+         (${uuid6}, ${uuid1}, 'Planets/data/sun.jpg', 'image/jpg');
+
      INSERT INTO "Snippets" VALUES
-          (    ${uuid0}, 
-               0, 1, 0, 0, 
+          (    ${uuid0},
+               0, 1, 0, 0,
                'this is a snippet of a file',
                'head context',
                'footer context'
           ),
-	     (${uuid1}, 
-	          29, 58, 2, 4, 
-	          '/*
+         (${uuid1},
+              29, 58, 2, 4,
+              '/*
   // The clouds texture will "move" having the values of its u
   // texture coordinates displaced by adding a constant increment
-  // in each frame. This requires REPEAT wrapping mode so texture 
+  // in each frame. This requires REPEAT wrapping mode so texture
   // coordinates can be larger than 1.
   //PTexture.Parameters params2 = PTexture.newParameters();
   //params2.wrapU = REPEAT;
@@ -107,56 +107,56 @@ export function databaseSamples(client: pgDB = pool): Promise<void> {
       // The angle values corresponding to each u,v pair:
       float u = float(i) / cloudtex.width;
       float v = float(j) / cloudtex.height;
-      float phi = map(u, 0, 1, TWO_PI, 0); 
+      float phi = map(u, 0, 1, TWO_PI, 0);
       float theta = map(v, 0, 1, -HALF_PI, HALF_PI);
       // The x, y, z point corresponding to these angles:
       float x = cos(phi) * cos(theta);
-      float y = sin(theta);            
-      float z = sin(phi) * cos(theta);      
+      float y = sin(theta);
+      float z = sin(phi) * cos(theta);
       float n = perlin.noise3D(x, y, z, 1.2, 2, 8);
       cloudtex.pixels[j * cloudtex.width + i] = color(255, 255,  255, 255 * n * n);
     }
-  }  
+  }
   cloudtex.updatePixels();
   */','before context works!','after context works too!'
-	     ),
-	     (${uuid2}, 
-	          57, 57, 2, 10, 
+         ),
+         (${uuid2},
+              57, 57, 2, 10,
                'cloudtex',
                'this is a line before the item, as context',
                'this is a line after the item, as context'
-	     ),
-	     (${uuid3}, 
-	          178, 204, 4, 23, 
-	          'q = g3[b00 + bz0]; 
+         ),
+         (${uuid3},
+              178, 204, 4, 23,
+              'q = g3[b00 + bz0];
     u = at3(q, rx0, ry0, rz0);
-    q = g3[b10 + bz0]; 
+    q = g3[b10 + bz0];
     v = at3(q, rx1, ry0, rz0);
     a = lerp(u, v, t);
 
-    q = g3[b01 + bz0]; 
+    q = g3[b01 + bz0];
     u = at3(q, rx0, ry1, rz0);
-    q = g3[b11 + bz0]; 
+    q = g3[b11 + bz0];
     v = at3(q, rx1, ry1, rz0);
     b = lerp(u, v, t);
 
     c = lerp(a, b, sy);
 
-    q = g3[b00 + bz1]; 
+    q = g3[b00 + bz1];
     u = at3(q, rx0, ry0, rz1);
-    q = g3[b10 + bz1]; 
+    q = g3[b10 + bz1];
     v = at3(q, rx1, ry0, rz1);
     a = lerp(u, v, t);
 
-    q = g3[b01 + bz1]; 
+    q = g3[b01 + bz1];
     u = at3(q, rx0, ry1, rz1);
-    q = g3[b11 + bz1]; 
+    q = g3[b11 + bz1];
     v = at3(q, rx1, ry1, rz1);
     b = lerp(u, v, t);
 
     d = lerp(a, b, sy);',
     '',''
-	     ),
+         ),
      ( -- a null snippet
           ${uuid4},
           -1, -1, -1, -1,
@@ -167,33 +167,33 @@ export function databaseSamples(client: pgDB = pool): Promise<void> {
           -1, -1, -1, -1,
           '','',''
      );
-	     
+
      INSERT INTO "CommentThread" VALUES
           (${uuid0}, ${uuid0}, ${uuid0}, ${uuid0}, DEFAULT),
-		(${uuid1}, ${uuid1}, ${uuid2}, ${uuid1}, DEFAULT),
-		(${uuid2}, ${uuid1}, ${uuid2}, ${uuid2}, DEFAULT),
-		(${uuid3}, ${uuid1}, ${uuid1}, ${uuid3}, DEFAULT),
+        (${uuid1}, ${uuid1}, ${uuid2}, ${uuid1}, DEFAULT),
+        (${uuid2}, ${uuid1}, ${uuid2}, ${uuid2}, DEFAULT),
+        (${uuid3}, ${uuid1}, ${uuid1}, ${uuid3}, DEFAULT),
           (${uuid4}, ${uuid1}, (SELECT fileid FROM "Files" WHERE submissionid=${uuid1} AND type='undefined/undefined'), ${uuid4}, DEFAULT),
           (${uuid5}, ${uuid1}, ${uuid6}, ${uuid5}, DEFAULT);
-	
+
      INSERT INTO "Comments" VALUES
           (${uuid0}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
           (${uuid6}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is a multi
-line comment, mentioning 
+line comment, mentioning
 all @teachers in one go!'),
-		(${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
-		(${uuid2}, ${uuid2}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Bad names'),
-		(${uuid3}, ${uuid3}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'All these names are totally incomprehensible to anyone, horrible to do this!'),
+        (${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
+        (${uuid2}, ${uuid2}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Bad names'),
+        (${uuid3}, ${uuid3}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'All these names are totally incomprehensible to anyone, horrible to do this!'),
           (${uuid4}, ${uuid4}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), DEFAULT, DEFAULT, 'Youre missing some planets, Pluto example'),
           (${uuid5}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is a comment about nothing at all..');
-     
-          INSERT INTO "Mentions" VALUES 
+
+          INSERT INTO "Mentions" VALUES
                (${uuid0}, ${uuid0}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'), null),
                (${uuid1}, ${uuid5}, NULL, 'teacher');
           INSERT INTO "Tags" VALUES
-          		(${uuid0}, ${uuid5}, 'test');
+                  (${uuid0}, ${uuid5}, 'test');
 
-          
+
      `;
     return client.query(query).then(() => {
         console.log("inserted values into db");

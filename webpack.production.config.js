@@ -28,7 +28,7 @@ module.exports = {
                     entry: "main.js"
                 }
             }
-            
+
         }),
         new webpack.ProvidePlugin({
             "React": "react",

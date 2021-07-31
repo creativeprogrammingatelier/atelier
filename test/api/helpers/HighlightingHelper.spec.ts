@@ -22,7 +22,7 @@ function r(a: number, b: number, c: number, d: number, e: number) {
  */
 function testSplit(a: Range[]) {
     const result: Range[] = getRanges(a);
-	
+
     // Just manually checking if overlaps are properly detected
     // Bit too much time to write a test for this, and its easy
     // for humans to see
@@ -32,7 +32,7 @@ function testSplit(a: Range[]) {
     const s2 = rangesToString(result).split("\n").join("\n\t");
     console.log("\t" + s2);
     console.log("\t----- /// -----");
-	
+
     // Check whether resulting segments are indeed disjoint
     for (const [indexA, rangeA] of result.entries()) {
         for (const [indexB, rangeB] of result.entries()) {
@@ -75,7 +75,7 @@ describe("Checks whether the split is indeed disjoint. Edges cases for overlap c
     testSplit(ranges.slice(6, 8));
     testSplit(ranges.slice(8, 10));
     testSplit(ranges.slice(10, 13));
-	
+
     // Combined large case
     testSplit(ranges);
 });

@@ -7,12 +7,12 @@ import {OptionalLink} from "../general/OptionalLink";
 import {Tag, TagProperties} from "../general/Tag";
 
 interface DataItemProperties extends HTMLProperties {
-	/** The destination for the OptionalLink component */
-	transport?: string,
-	/** Data of DataItem */
-	text: string,
-	/** Tags associated with DataItem */
-	tags?: TagProperties[]
+    /** The destination for the OptionalLink component */
+    transport?: string,
+    /** Data of DataItem */
+    text: string,
+    /** Tags associated with DataItem */
+    tags?: TagProperties[]
 }
 /**
  * Returns the DataItem component from the parameters passed.

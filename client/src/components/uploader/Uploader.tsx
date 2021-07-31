@@ -20,10 +20,10 @@ import {FileInput} from "../input/FileInput";
 import {RadioInput} from "../input/RadioInput";
 
 interface UploaderProperties {
-	/** The courseId to upload the submission to */
-	courseId: string
-	/** Callback to call when uploading is finished */
-	onUploadComplete: (submission: Submission) => void
+    /** The courseId to upload the submission to */
+    courseId: string
+    /** Callback to call when uploading is finished */
+    onUploadComplete: (submission: Submission) => void
 }
 
 /** If the browser supports uploading directories, the component
@@ -39,7 +39,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
     const [validation, updateValidation] = useState(defaultValidation<File>([]));
     const [errors, updateErrors] = useState({upload: false as false | string});
     const submissions = useCourseSubmissions(courseId);
-	
+
     // Directory upload is non-standard, so it is very possible that it doesn't work.
     // Modern Chromium, EdgeHTML and Firefox work, but, despite the name, Safari is supposed
     // to have troubles with this, although I've not tested that.
@@ -48,30 +48,30 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
         input.type = "file";
         return "webkitdirectory" in input;
     })();
-	
+
     let inputElement = null as HTMLInputElement | null;
-	
+
     /**
-	 * Function to validate the upload.
-	 */
+     * Function to validate the upload.
+     */
     const uploadPrevented = () => validation.containsNoCodeFiles || validation.invalidProjectName;
-	
+
     /**
-	 * Rests the validation for files.
-	 */
+     * Rests the validation for files.
+     */
     const resetValidation = () => {
         updateValidation(defaultValidation<File>([]));
     };
     /**
-	 * Resets upload errors. 
-	 */
+     * Resets upload errors.
+     */
     const resetErrors = () => {
         updateErrors({upload: false as false | string});
     };
-	
+
     /**
-	 * Function for handling file selection.
-	 */
+     * Function for handling file selection.
+     */
     const handleFilesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             console.log("Selected some files");
@@ -82,10 +82,10 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
         }
     };
     /**
-	 * Function for handling successful uploads.
-	 * 
-	 * @param result Success result.
-	 */
+     * Function for handling successful uploads.
+     *
+     * @param result Success result.
+     */
     const handleUploadComplete = (result: Submission) => {
         updateUploading(false);
         updateErrors(prev => ({...prev, upload: false}));
@@ -96,10 +96,10 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
         onUploadComplete(result);
     };
     /**
-	 * Handler upload error.
-	 * 
-	 * @param error Upload Error 
-	 */
+     * Handler upload error.
+     *
+     * @param error Upload Error
+     */
     const handleUploadError = (error: JsonFetchError) => {
         console.log(`Error uploading folder: ${error.message}`);
         updateErrors(prev => ({...prev, upload: error.message}));
@@ -114,7 +114,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
                 .catch(handleUploadError);
         }
     };
-	
+
     useEffect(() => {
         // Update the folder name
         let folderName = "";
@@ -126,7 +126,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
             }
         }
         updateFolderName(folderName);
-		
+
         // Project validation
         if (selectedFiles.length > 0) {
             updateValidation(validateProjectClient(folderName, selectedFiles));
@@ -152,7 +152,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
             updateUploadableFiles(validation.acceptableFiles);
         }
     }, [validation]);
-	
+
     return <Form onSubmit={handleSubmit}>
         <Form.Group>
             <FileInput folders={folderUploadSupported} handleElement={(element) => inputElement = element}
@@ -172,29 +172,29 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
         </Form.Group>
         {
             selectedFiles.length > 0 &&
-			<div>
-			    {folderUploadSupported ?
-			        <Form.Group>
-			            <p>These files will be uploaded:</p>
-			            <DirectoryViewer filePaths={uploadableFiles.map(file => ({name: file.webkitRelativePath}))}/>
-			        </Form.Group>
-			        :
-			        <Form.Group>
-			            <p>These files will be uploaded, please select your main project file:</p>
-			            <RadioInput
-			                options={uploadableFiles.map(f => ({value: f.name, name: f.name}))}
-			                selected={folderName + ".pde"}
-			                onChange={value => updateFolderName(value.replace(".pde", ""))}
-			            />
-			        </Form.Group>
-			    }
-			    <FeedbackError show={uploadableFiles.length < selectedFiles.length}>
-					These files won't be uploaded, because they are too large
-			        {validation.projectTooLarge && " or the project as a whole would be too large"}:
-			    </FeedbackError>
-			    <DirectoryViewer
-			        filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath}))}/>
-			</div>
+            <div>
+                {folderUploadSupported ?
+                    <Form.Group>
+                        <p>These files will be uploaded:</p>
+                        <DirectoryViewer filePaths={uploadableFiles.map(file => ({name: file.webkitRelativePath}))}/>
+                    </Form.Group>
+                    :
+                    <Form.Group>
+                        <p>These files will be uploaded, please select your main project file:</p>
+                        <RadioInput
+                            options={uploadableFiles.map(f => ({value: f.name, name: f.name}))}
+                            selected={folderName + ".pde"}
+                            onChange={value => updateFolderName(value.replace(".pde", ""))}
+                        />
+                    </Form.Group>
+                }
+                <FeedbackError show={uploadableFiles.length < selectedFiles.length}>
+                    These files won't be uploaded, because they are too large
+                    {validation.projectTooLarge && " or the project as a whole would be too large"}:
+                </FeedbackError>
+                <DirectoryViewer
+                    filePaths={selectedFiles.filter(file => !uploadableFiles.includes(file)).map(file => ({name: file.webkitRelativePath}))}/>
+            </div>
         }
         {uploading ?
             <LoadingIcon/>

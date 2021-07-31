@@ -6,17 +6,17 @@ import {config} from "./ConfigurationHelper";
 
 /** Error that gets thrown when the user is not authorized or authenticated */
 export class AuthError extends Error {
-	reason: string;
-	
-	constructor(reason: string, message: string) {
-	    super(message);
-	    this.reason = reason;
-	}
+    reason: string;
+
+    constructor(reason: string, message: string) {
+        super(message);
+        this.reason = reason;
+    }
 }
 
 interface TokenProps {
-	iat: number,
-	exp: number
+    iat: number,
+    exp: number
 }
 
 /** Issue a new token for a user */
@@ -26,7 +26,7 @@ export function issueToken(userID: string, expiresIn: string | number = TOKEN_EX
 
 /** Decode a token without verifying its validity */
 export const decodeToken = <T>(token: string) =>
-	jwt.decode(token) as TokenProps & T;
+    jwt.decode(token) as TokenProps & T;
 
 /** Asynchronously verify a token */
 export const verifyToken = <T>(token: string, secretOrKey = AUTHSECRETKEY, options?: jwt.VerifyOptions) =>
@@ -51,7 +51,7 @@ export const verifyToken = <T>(token: string, secretOrKey = AUTHSECRETKEY, optio
 /** Retrieve the JWT token from request headers */
 export function getToken(request: Request) {
     return request.cookies?.atelierToken?.trim() ||
-		request.headers?.authorization?.replace("Bearer ", "")?.trim();
+        request.headers?.authorization?.replace("Bearer ", "")?.trim();
 }
 
 /** Get the `userID` of the user making the request */
@@ -121,7 +121,7 @@ export function issueTemporaryToken(userID: string) {
 /** Verify that a temporary token is valid and indeed temporary. */
 export async function verifyTemporaryToken(token: string) {
     const { userID, temporary, iat, exp } = await verifyToken<{ userID: string, temporary: boolean }>(token, TEMPSECRETKEY);
-    if (!temporary || exp - iat > temporaryTokenExpiration) 
+    if (!temporary || exp - iat > temporaryTokenExpiration)
         throw new AuthError("token.notTemporary", "This endpoint requires the use of a temporary token, but a different token was used.");
     if (!tokenInvalidator.checkAndInvalidate(token, exp))
         throw new AuthError("token.temporaryInvalidated", "This temporary token has already been used. Please try logging in again.");

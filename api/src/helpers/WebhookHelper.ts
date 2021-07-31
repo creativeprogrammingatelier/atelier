@@ -7,8 +7,8 @@ import {WebhookEvent} from "../../../models/enums/WebhookEventEnum";
 import {PluginsDB} from "../database/PluginsDB";
 
 interface WebhookRequest<T> {
-	event: WebhookEvent,
-	payload: T
+    event: WebhookEvent,
+    payload: T
 }
 
 /**

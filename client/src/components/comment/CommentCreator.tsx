@@ -7,20 +7,20 @@ import {MentionSuggestions} from "./MentionSuggestions";
 import {TagSuggestions} from "./TagSuggestions";
 
 interface MentionProperties {
-	/** Course ID within database */
-	courseID: string
+    /** Course ID within database */
+    courseID: string
 }
 interface CommentCreatorProperties {
-	/** PLaceholder string when creating comment */
-	placeholder?: string,
-	transparent?: boolean,
-	large?: boolean,
-	round?: boolean,
-	allowRestricted?: boolean,
-	code?: CodeMirror.Editor,
-	mentions?: MentionProperties
-	/** Function used for sending the new comment to the database */
-	sendHandler: (comment: string, restricted: boolean) => Promise<boolean>
+    /** PLaceholder string when creating comment */
+    placeholder?: string,
+    transparent?: boolean,
+    large?: boolean,
+    round?: boolean,
+    allowRestricted?: boolean,
+    code?: CodeMirror.Editor,
+    mentions?: MentionProperties
+    /** Function used for sending the new comment to the database */
+    sendHandler: (comment: string, restricted: boolean) => Promise<boolean>
 }
 /**
  * Handles the CommentCreator component; input, sending and functionality.
@@ -35,7 +35,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
     const [tagIndex, updateTagIndex] = useState(undefined as number | undefined);
     const [suggestionBase, updateSuggestionBase] = useState("");
     const input = useRef(null as (HTMLInputElement | null));
-	
+
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === "Shift") {
             setShift(true);
@@ -62,11 +62,11 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
     const handleCommentSubmit = async() => {
         if (!sending) {
             setSending(true);
-			
+
             if (await sendHandler(comment, restricted)) {
                 setComment("");
             }
-			
+
             setSending(false);
         }
     };
@@ -103,7 +103,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
             }
         }
     };
-	
+
     useEffect(() => {
         // Poll every 100ms for the location of the caret in the textarea and update
         // the caretPosition property
@@ -123,7 +123,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
                 .filter(pair => pair.char === findChar)
                 .map(pair => pair.index);
         }
-		
+
         updateMentionIndex(allIndexesOf(comment, "@").reverse().find(index => index < caretPosition));
         if (mentionIndex !== undefined) {
             // Cut off the @ sign from the suggestionBase
@@ -135,7 +135,7 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
         updateTagIndex(allIndexesOf(comment, "#").reverse().find(index => index < caretPosition));
 
     }, [caretPosition]);
-	
+
     return <Form className={"commentCreator" + (large ? " commentCreatorLarge" : "") + (round ? " commentCreatorRound" : "") + (restricted ? " restricted" : "") + (transparent ? " bg-transparent" : "")}>
         <Form.Group>
             <InputGroup className="bg-transparent">
@@ -152,21 +152,21 @@ export function CommentCreator({placeholder = "Write a comment", transparent, la
                 <InputGroup.Append>
                     {
                         allowRestricted &&
-						<Button onClick={() => setRestricted(!restricted)}>
-						    {restricted ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}
-						</Button>
+                        <Button onClick={() => setRestricted(!restricted)}>
+                            {restricted ? <FiEyeOff size={14} color="#FFFFFF"/> : <FiEye size={14} color="#FFFFFF"/>}
+                        </Button>
                     }
                     <Button onClick={handleCommentSubmit} disabled={sending}><FiSend size={14} color="#FFFFFF"/></Button>
                 </InputGroup.Append>
                 {
                     mentions &&
-					<MentionSuggestions
-					    prefix='@'
-					    suggestionBase={suggestionBase}
-					    round={round}
-					    courseID={mentions.courseID}
-					    onSelected={(user: string) => handleMentionSelected(user)}
-					/>
+                    <MentionSuggestions
+                        prefix='@'
+                        suggestionBase={suggestionBase}
+                        round={round}
+                        courseID={mentions.courseID}
+                        onSelected={(user: string) => handleMentionSelected(user)}
+                    />
                 }
                 {
                     <TagSuggestions

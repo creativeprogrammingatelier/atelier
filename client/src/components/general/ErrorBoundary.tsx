@@ -5,7 +5,7 @@ import {FeedbackError} from "../feedback/FeedbackError";
 
 interface ErrorBoundaryProperties { }
 interface ErrorBoundaryState {
-	error: FeedbackContent
+    error: FeedbackContent
 }
 
 /** This component will catch any React errors and display a FeedbackError */

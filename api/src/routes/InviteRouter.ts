@@ -64,19 +64,19 @@ inviteRouter.get("/:inviteID", capture(async(request: Request, response: Respons
 inviteRouter.get("/course/:courseID/all", capture(async(request: Request, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
     const courseID: string = request.params.courseID;
-	
+
     // Link require manageUserRegistration
     await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
-	
+
     const invites: CourseInvite[] = await CourseInviteDB.filterInvite({
         creatorID: currentUserID,
         courseID
     });
-	
+
     const studentInvites: CourseInvite[] = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.student);
     const taInvites: CourseInvite[] = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.TA);
     const teacherInvites: CourseInvite[] = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.teacher);
-	
+
     response.status(200).send({
         student: studentInvites.length > 0 ? studentInvites[0].inviteID : undefined,
         TA: taInvites.length > 0 ? taInvites[0].inviteID : undefined,
@@ -91,16 +91,16 @@ inviteRouter.get("/course/:courseID/role/:role", capture(async(request: Request,
     const currentUserID: string = await getCurrentUserID(request);
     const role: CourseRole = request.params.role as CourseRole;
     const courseID: string = request.params.courseID;
-	
+
     // Link require manageUserRegistration
     await requirePermission(currentUserID, PermissionEnum.manageUserRegistration, courseID);
-	
+
     const invites: CourseInvite[] = await CourseInviteDB.filterInvite({
         creatorID: currentUserID,
         courseID: request.params.courseID,
         joinRole: role
     });
-	
+
     if (invites.length > 0) {
         response.status(200).send(invites[0]);
     } else {
@@ -121,17 +121,17 @@ inviteRouter.delete("/course/:courseID/role/:role", capture(async(request: Reque
     const courseID: string = request.params.courseID;
     const role: string = request.params.role;
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     const courseInvites: CourseInvite[] = await CourseInviteDB.filterInvite({
         courseID,
         creatorID: currentUserID,
         joinRole: role as CourseRole
     });
-	
+
     await Promise.all(courseInvites.map((courseInvite: CourseInvite) =>
         CourseInviteDB.deleteInvite(courseInvite.inviteID))
     );
-	
+
     response.status(200).send(courseInvites);
 }));
 

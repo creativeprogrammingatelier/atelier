@@ -13,8 +13,8 @@ import {FeedbackError} from "../../feedback/FeedbackError";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface CourseSettingsGeneralProperties {
-	/** Course ID within database */
-	courseID: string
+    /** Course ID within database */
+    courseID: string
 }
 /**
  * Component to manage the general setting for the given course.
@@ -32,17 +32,17 @@ export function CourseSettingsGeneral({courseID}: CourseSettingsGeneralPropertie
         setState(c?.state as CourseState);
         setLoading(course.state !== CacheState.Loaded);
     });
-	
+
     /**
-	 * Function for updating the course settings. 
-	 * 
-	 * @throws Error when it fails to update the course.
-	 */
+     * Function for updating the course settings.
+     *
+     * @throws Error when it fails to update the course.
+     */
     const handleUpdate = async() => {
         course.update({name, state})
             .catch(error => setError(`Failed to update course: ${error}`));
     };
-	
+
     return <Form>
         <LabeledInput label="Course name">
             <Form.Control

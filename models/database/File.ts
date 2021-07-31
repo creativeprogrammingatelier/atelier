@@ -4,19 +4,19 @@ import {DBTools, checkAvailable} from "../../api/src/database/HelperDB";
 import {File as APIFile} from "../api/File";
 
 export interface File extends DBTools {
-	fileID?: string,
-	submissionID?: string,
-	courseID?: string,
-	pathname?: string,
-	type?: string,
-	includeNulls?: boolean,
+    fileID?: string,
+    submissionID?: string,
+    courseID?: string,
+    pathname?: string,
+    type?: string,
+    includeNulls?: boolean,
 }
 export interface DBFile {
-	fileid: string,
-	submissionid: string,
-	courseid: string,
-	pathname: string,
-	type: string
+    fileid: string,
+    submissionid: string,
+    courseid: string,
+    pathname: string,
+    type: string
 }
 
 export {APIFile};

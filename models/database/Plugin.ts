@@ -2,16 +2,16 @@ import {UUIDHelper} from "../../api/src/helpers/UUIDHelper";
 import {DBTools} from "../../api/src/database/HelperDB";
 
 export interface Plugin {
-	pluginID: string,
-	webhookUrl: string,
-	webhookSecret: string,
-	publicKey: string,
+    pluginID: string,
+    webhookUrl: string,
+    webhookSecret: string,
+    publicKey: string,
 }
 export interface DBPlugin {
-	pluginid: string,
-	webhookurl: string,
-	webhooksecret: string,
-	publickey: string,
+    pluginid: string,
+    webhookurl: string,
+    webhooksecret: string,
+    publickey: string,
 }
 export interface PluginInput extends Partial<Plugin>, DBTools {}
 

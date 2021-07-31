@@ -3,11 +3,11 @@ import FastPriorityQueue = require("fastpriorityqueue");
 const DEBUGGING = false;
 
 export interface Range {
-	startLine: number,
-	endLine: number,
-	startChar: number,
-	endChar: number,
-	overlap: number
+    startLine: number,
+    endLine: number,
+    startChar: number,
+    endChar: number,
+    overlap: number
 }
 
 /**
@@ -78,32 +78,32 @@ const nonEmptyRange: (a: Range) => boolean = (a: Range) => {
  */
 export function getRanges(ranges: Range[]) {
     const q = new FastPriorityQueue(rangeSort);
-	
+
     for (const range of ranges.entries()) {
         q.add(range[1]);
     }
-	
+
     const result: Range[] = [];
-	
+
     while (!q.isEmpty()) {
         // Get next range
         const currentRange: Range = q.poll() as Range;
         if (DEBUGGING) {
             console.log("Current: " + rangeToString(currentRange));
         }
-		
+
         // If no ranges left, there will be not overlap
         if (q.isEmpty()) {
             result.push(currentRange);
             continue;
         }
-		
+
         // Get the next range
         const nextRange: Range = q.poll() as Range;
         if (DEBUGGING) {
             console.log("Next: " + rangeToString(nextRange));
         }
-		
+
         // If current range ends before the next range it can be added to the result
         if (before(currentRange, nextRange)) {
             if (DEBUGGING) {
@@ -113,10 +113,10 @@ export function getRanges(ranges: Range[]) {
             q.add(nextRange);
             continue;
         }
-		
+
         // If they start at the same point, we cut it off where the current range ends
         if (equalStart(currentRange, nextRange)) {
-			
+
             // Add overlap to the queue, and adjust the overlapping segments
             const overlapRange = {
                 startLine: currentRange.startLine,
@@ -137,12 +137,12 @@ export function getRanges(ranges: Range[]) {
                 console.log(rangeToString(overlapRange));
                 console.log(rangeToString(additionalRange));
             }
-			
+
             q.add(overlapRange);
             q.add(additionalRange);
             continue;
         }
-		
+
         // If they don't start at the same point, we cut if off where the next range starts
         const beforeNextRange: Range = {
             startLine: currentRange.startLine,
@@ -165,19 +165,19 @@ export function getRanges(ranges: Range[]) {
             endChar: nextRange.endChar,
             overlap: nextRange.overlap
         };
-		
+
         if (DEBUGGING) {
             console.log("CASE: unequal start");
             console.log(rangeToString(beforeNextRange));
             console.log(rangeToString(additionalCurrentRange));
             console.log(rangeToString(additionalNextRange));
         }
-		
+
         q.add(beforeNextRange);
         q.add(additionalCurrentRange);
         q.add(additionalNextRange);
     }
-	
+
     return result.filter(nonEmptyRange);
 }
 

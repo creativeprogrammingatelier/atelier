@@ -7,29 +7,29 @@ import {User as APIUser} from "../api/User";
 import {GlobalRole} from "../enums/GlobalRoleEnum";
 
 export interface User extends DBTools {
-	userID?: string,
-	samlID?: string,
-	userName?: string,
-	email?: string,
-	globalRole?: GlobalRole,
-	permission?: number,
+    userID?: string,
+    samlID?: string,
+    userName?: string,
+    email?: string,
+    globalRole?: GlobalRole,
+    permission?: number,
     password?: string,
-	researchAllowed?: boolean,
-	canvasrefresh?: string
+    researchAllowed?: boolean,
+    canvasrefresh?: string
 }
 export interface DBUser extends DBAPIUser {
-	samlid: string,
-	hash?: string,
+    samlid: string,
+    hash?: string,
 }
 
 export interface DBAPIUser {
-	userid: string,
-	username: string,
-	email: string,
-	globalrole: string,
+    userid: string,
+    username: string,
+    email: string,
+    globalrole: string,
     permission: string,
-	researchallowed?: boolean,
-	canvasrefresh: string
+    researchallowed?: boolean,
+    canvasrefresh: string
 }
 
 export function convertUser(db: DBUser): User {

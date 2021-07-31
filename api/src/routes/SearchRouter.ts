@@ -36,13 +36,13 @@ export const searchRouter = express.Router();
 searchRouter.use(AuthMiddleware.requireAuth);
 
 interface Common {
-	courseID: string | undefined;
-	userID: string | undefined;
-	submissionID: string | undefined;
-	currentUserID: string;
-	limit?: number;
-	offset?: number;
-	sorting?: Sorting;
+    courseID: string | undefined;
+    userID: string | undefined;
+    submissionID: string | undefined;
+    currentUserID: string;
+    limit?: number;
+    offset?: number;
+    sorting?: Sorting;
 }
 
 /** Get the parameters for a search query, throws an error if invalid */
@@ -52,12 +52,12 @@ async function getSearchParams(request: Request): Promise<{query: string, common
     if (!query?.trim()) {
         throw new InvalidParamsError("q", "it should not be empty");
     }
-	
+
     const common = getCommonQueryParams(request);
     const courseID = request.query.courseID as string | undefined;
     const userID = request.query.userID as string | undefined;
     const submissionID = request.query.submissionID as string | undefined;
-	
+
     const currentUserID = await getCurrentUserID(request);
     return {query, common: {...common, courseID, userID, submissionID, currentUserID}};
 }

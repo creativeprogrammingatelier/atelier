@@ -10,7 +10,7 @@ chai.use(chaiAsPromised);
 
 describe("AuthenticationHelper", () => {
     const userID = randomBytes(16).toString("hex");
-	
+
     it("should issue verifiable tokens", async() => {
         const token = auth.issueToken(userID);
         const props = await auth.verifyToken<{userID: string}>(token);

@@ -267,11 +267,11 @@ export function funmap3<A, a, B, b, C, c>(
  * Some standard elements that might be present on an input object to some database method.
  */
 export interface DBTools {
-	limit?: number,
+    limit?: number,
     offset?: number,
     after?: Date,
     before?: Date,
-	sorting?: Sorting,
-	currentUserID?: string,
-	client?: pgDB
+    sorting?: Sorting,
+    currentUserID?: string,
+    client?: pgDB
 }

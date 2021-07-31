@@ -37,10 +37,10 @@ userRouter.get("/", capture(async(request: Request, response: Response) => {
  */
 userRouter.get("/all", capture(async(request: Request, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     // Require view all user profiles permission
     await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
-	
+
     const users: User[] = (await UserDB.getAllUsers());
     response.status(200).send(users);
 }));
@@ -53,7 +53,7 @@ userRouter.get("/all", capture(async(request: Request, response: Response) => {
 userRouter.get("/course/:courseID", capture(async(request: Request, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
     const courseID: string = request.params.courseID;
-	
+
     // Either of these 3 permissions should be set. In this case managing user permissions
     // implies permission to view all users.
     await requirePermissions(currentUserID, [
@@ -61,7 +61,7 @@ userRouter.get("/course/:courseID", capture(async(request: Request, response: Re
         PermissionEnum.manageUserPermissionsManager,
         PermissionEnum.manageUserPermissionsView
     ], courseID, true);
-	
+
     const users: CourseUser[] = (await CourseRegistrationDB.getEntriesByCourse(courseID));
     response.status(200).send(users);
 }));
@@ -75,13 +75,13 @@ userRouter.get("/:userID", capture(async(request: Request, response: Response) =
     const userID: string = request.params.userID;
     const currentUserID: string = await getCurrentUserID(request);
     const user: User = await UserDB.getUserByID(userID);
-	
+
     console.log(`Querying user ${currentUserID}`);
     if (userID !== currentUserID) {
         console.log("checking whether user has permission to get user profiles");
         await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
     }
-	
+
     response.status(200).send(user);
 }));
 
@@ -92,7 +92,7 @@ userRouter.get("/:userID/course/:courseID/", capture(async(request: Request, res
     const currentUserID: string = await getCurrentUserID(request);
     const userID: string = request.params.userID;
     const courseID: string = request.params.courseID;
-	
+
     // Either of these 3 permissions should be set. In this case managing user permissions
     // implies permission to view all users.
     await requirePermissions(currentUserID, [
@@ -100,7 +100,7 @@ userRouter.get("/:userID/course/:courseID/", capture(async(request: Request, res
         PermissionEnum.manageUserPermissionsManager,
         PermissionEnum.manageUserPermissionsView
     ], courseID, true);
-	
+
     const user = await CourseRegistrationDB.getSingleEntry(courseID, userID);
     response.status(200).send(user);
 }));
@@ -113,7 +113,7 @@ userRouter.put("/", capture(async(request: Request, response: Response) => {
     const updatedEmail: string | undefined = request.body.email;
     const updatedName: string | undefined = request.body.name;
     const updatedResearchAllowed: boolean | undefined = request.body.researchAllowed;
-	
+
     const user: User = await UserDB.updateUser({
         userID: currentUserID,
         email: updatedEmail,

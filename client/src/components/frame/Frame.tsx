@@ -11,24 +11,24 @@ import {Sidebar} from "./Sidebar";
 import {Content} from "./Content";
 
 interface FrameProperties extends ParentalProperties {
-	/** Title of Frame */
-	title: string,
-	/** Variable for tracking whether the frame has a sidebar */
-	sidebar: boolean,
-	/** Variable for tracking whether the frame has a search */
-	search?: boolean | SearchProperties,
+    /** Title of Frame */
+    title: string,
+    /** Variable for tracking whether the frame has a sidebar */
+    sidebar: boolean,
+    /** Variable for tracking whether the frame has a search */
+    search?: boolean | SearchProperties,
 }
 /**
- * Component that defines a Frame with content. Frame is constructed differently based on the screen size and is used 
- * to define the main wrapper page, with sidebar or search, depending on breakpoints, and any content to the page is added via 
- * the children. 
+ * Component that defines a Frame with content. Frame is constructed differently based on the screen size and is used
+ * to define the main wrapper page, with sidebar or search, depending on breakpoints, and any content to the page is added via
+ * the children.
  */
 export function Frame({children, title, sidebar, search}: FrameProperties) {
     const sidebarPositionOpened = "0vw";
     const sidebarPositionClosed = "-150vw";
     const history = useHistory();
     const [sidebarPosition, setSidebarPosition] = useState(sidebarPositionClosed);
-	
+
     const sidebarOpen = () => {
         setSidebarPosition(() => sidebarPositionOpened);
     };
@@ -38,7 +38,7 @@ export function Frame({children, title, sidebar, search}: FrameProperties) {
     const searchClick = () => {
         history.push({pathname: "/search", state: search === true ? {} : search});
     };
-	
+
     return <div>
         <Responsive breakpoints={["extraSmall", "small", "medium"]}>
             <Header fixed title={title} leftButton={sidebar ? {icon: FiMenu, click: sidebarOpen} : undefined}

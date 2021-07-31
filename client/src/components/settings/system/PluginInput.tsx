@@ -17,15 +17,15 @@ import {CheckboxInput} from "../../input/CheckboxInput";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface PluginInputProperties {
-	/** Plugin to be handled */
-	plugin?: Plugin,
-	/** New plugin to be added */
-	newPlugin?: {
-		/** Function for creating the new plugin */
-		create: (plugin: Plugin) => void,
-		/** Function for canceling the plugin's creation */
-		cancel: () => void
-	}
+    /** Plugin to be handled */
+    plugin?: Plugin,
+    /** New plugin to be added */
+    newPlugin?: {
+        /** Function for creating the new plugin */
+        create: (plugin: Plugin) => void,
+        /** Function for canceling the plugin's creation */
+        cancel: () => void
+    }
 }
 /**
  * Component for managing Atelier plugins.
@@ -42,12 +42,12 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
     const [saving, setSaving] = useState(false);
     const [success, setSuccess] = useState(false as FeedbackContent);
     const [error, setError] = useState(false as FeedbackContent);
-	
+
     /**
-	 * Sets the input for the plugin given.
-	 * 
-	 * @param plugin Plugin to be managed.
-	 */
+     * Sets the input for the plugin given.
+     *
+     * @param plugin Plugin to be managed.
+     */
     const setInput = (plugin: Plugin) => {
         setPluginID(plugin.pluginID);
         setPluginName(plugin.user.name);
@@ -58,8 +58,8 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
         setHooks(plugin.hooks);
     };
     /**
-	 * Function to rest the input field.
-	 */
+     * Function to rest the input field.
+     */
     const resetInput = () => {
         setPluginID("");
         setPluginName("");
@@ -69,11 +69,11 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
         setPublicKey("");
         setHooks([]);
     };
-	
+
     /**
-	 * Function to asynchronously add a new plugin 
-	 * to Atelier.
-	 */
+     * Function to asynchronously add a new plugin
+     * to Atelier.
+     */
     const handleCreate = async() => {
         if (newPlugin) {
             setSaving(true);
@@ -98,9 +98,9 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
         }
     };
     /**
-	 * Function to asynchronously save the settings 
-	 * of the managed plugin.
-	 */
+     * Function to asynchronously save the settings
+     * of the managed plugin.
+     */
     const handleSave = async() => {
         if (plugin) {
             setSaving(true);
@@ -128,8 +128,8 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
         }
     };
     /**
-	 * Cancels managing of the new plugin.
-	 */
+     * Cancels managing of the new plugin.
+     */
     const handleCancel = () => {
         if (newPlugin) {
             resetInput();
@@ -142,8 +142,8 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
         resetInput();
     };
     /**
-	 * Deletes the given plugin from Atelier.
-	 */
+     * Deletes the given plugin from Atelier.
+     */
     const handleDelete = async() => {
         if (confirm(`This will delete plugin ${pluginName} from Atelier and make it unavailable for use in any course. Are you sure you want to proceed?`)) {
             setSaving(true);
@@ -153,7 +153,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
             // Probably can be done once the fancy new useCache is there
         }
     };
-	
+
     useEffect(() => {
         if (plugin) {
             setInput(plugin);
@@ -161,13 +161,13 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
             resetInput();
         }
     }, [plugin]);
-	
+
     return <Form>
         {
             !newPlugin &&
-			<LabeledInput label="ID">
-			    <MaybeInput modify={false} placeholder="Plugin ID" value={pluginID}/>
-			</LabeledInput>
+            <LabeledInput label="ID">
+                <MaybeInput modify={false} placeholder="Plugin ID" value={pluginID}/>
+            </LabeledInput>
         }
         <LabeledInput label="Name">
             <MaybeInput modify={editing} placeholder="Plugin name" value={pluginName} onChange={setPluginName}/>

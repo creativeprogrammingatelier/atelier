@@ -11,12 +11,12 @@ import {UserDB} from "../database/UserDB";
 
 /** Error that gets thrown when the user is missing certain permissions. */
 export class PermissionError extends Error {
-	reason: string;
-	
-	constructor(reason: string, message: string) {
-	    super(message);
-	    this.reason = reason;
-	}
+    reason: string;
+
+    constructor(reason: string, message: string) {
+        super(message);
+        this.reason = reason;
+    }
 }
 
 /**
@@ -28,7 +28,7 @@ export class PermissionError extends Error {
  * @param anyPermission, true if 1 or more of the permissions should be set
  */
 export async function requirePermissions(userID: string, requiredPermissions: PermissionEnum[], courseID?: string, anyPermission = false) {
-	
+
     let permissions = 0;
     if (courseID !== undefined) {
         const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
@@ -36,7 +36,7 @@ export async function requirePermissions(userID: string, requiredPermissions: Pe
     } else {
         permissions = (await UserDB.getUserByID(userID)).permission.permissions;
     }
-	
+
     const access: boolean = anyPermission ?
         requiredPermissions.some((permission: PermissionEnum) => containsPermission(permission, permissions)) :
         requiredPermissions.every((permission: PermissionEnum) => containsPermission(permission, permissions));
@@ -68,7 +68,7 @@ export async function requireRegistered(userID: string, courseID: string) {
     if (containsPermission(PermissionEnum.viewAllCourses, globalPermissions)) {
         return;
     }
-	
+
     // Check registration
     const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
     if (courseUser.permission.courseRole === CourseRole.unregistered) {

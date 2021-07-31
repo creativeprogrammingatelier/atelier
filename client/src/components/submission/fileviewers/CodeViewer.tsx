@@ -35,12 +35,12 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
         defaultTimeout: fileComments.defaultTimeout,
         refresh: fileComments.refresh
     };
-	
+
     /**
-	 * Function to get all code snippets of from the given threads.
-	 * 
-	 * @param threads Comment threads.
-	 */
+     * Function to get all code snippets of from the given threads.
+     *
+     * @param threads Comment threads.
+     */
     const getSnippets = (threads: CommentThread[]) => {
         const snippets: SnippetHighlight[] = [];
         for (const commentThread of threads) {
@@ -57,13 +57,13 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
         return snippets;
     };
     /**
-	 * Function for handling creating a new comment. 
-	 * 
-	 * @param comment Comment to be sent.
-	 * @param restricted Whether the comment is retracted, i.e. only visible to teachers and TAs.
-	 * @param selection Snippets selection of comment.
-	 * @returns False if it fails and true if it succeeds.
-	 */
+     * Function for handling creating a new comment.
+     *
+     * @param comment Comment to be sent.
+     * @param restricted Whether the comment is retracted, i.e. only visible to teachers and TAs.
+     * @param selection Snippets selection of comment.
+     * @returns False if it fails and true if it succeeds.
+     */
     const handleCommentSend = async(comment: string, restricted: boolean, selection: Selection) => {
         return sendComment(comment, restricted, selection).then(feedback => {
             if (feedback.type === "error") {
@@ -74,7 +74,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
             return true;
         });
     };
-	
+
     return <Fragment>
         <Cached cache={snippets}>
             {snippets =>
@@ -97,8 +97,8 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
 }
 
 /**
- * Function for whether given file viewer accepts given file type. 
- * 
+ * Function for whether given file viewer accepts given file type.
+ *
  * @param type File type to be parsed.
  */
 function acceptsType(type: string) {
@@ -106,7 +106,7 @@ function acceptsType(type: string) {
 }
 /**
  * Function to check if the file viewer accepts given file.
- * 
+ *
  * @param file File to be parsed.
  */
 function acceptsFile(file: File) {

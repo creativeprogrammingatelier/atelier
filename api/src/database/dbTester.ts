@@ -123,7 +123,7 @@ async function DBrolesTest() {
         //pass, do nothing
     }
     equal(noError, false, "role DEBUG should not yet exist in the courseRoleEnum");
-	
+
     await promise(RPH.getAllRoles(), "getAllRoles");
     await promise(RPH.addNewCourseRole(role, perm), "addNewCourseRole");
     try {
@@ -134,7 +134,7 @@ async function DBrolesTest() {
         //pass, do nothing
     }
     equal(noError, true, "role DEBUG should now exist in the courseRoleEnum");
-	
+
     await promise(RPH.addPermissionToRole(role, 32), "addPermissionToRole");
     await promise(RPH.getRolePermissions(role), "getRolePermissions");
     await promise(RPH.removePermissionFromRole(role, 64), "removePermissionFromRole");
@@ -150,7 +150,7 @@ async function DBrolesTest() {
     equal(noError, false, "role DEBUG should no longer exist in the courseRoleEnum");
 }
 async function courseRegistrationDBTest() {
-	
+
     log("\n\nCOURSEREGISTRATIONTEST\n\n");
     const newEntry = {userID: uuid0, courseID: uuid1, courseRole: CourseRole.teacher, permission: 5};
     equal(newEntry.permission, 5);
@@ -224,7 +224,7 @@ async function DBsnippetTest() {
     await promise(SPH.getSnippetsByFile(uuid0), "getSnippetsByFile");
     await promise(SPH.searchSnippets("//", {currentUserID: uuid0, courseID: uuid0}), "searchSnippets");
     await promise(SPH.getSnippetByID(uuid0), "getSnippetByID");
-	
+
     const snip1: Snippet = {
         lineStart: 0,
         lineEnd: 3,
@@ -234,10 +234,10 @@ async function DBsnippetTest() {
         contextAfter: "abc",
         contextBefore: "def"
     };
-	
+
     const id = await promise(SPH.addSnippet(snip1), "addSnippet");
     await promise(SPH.deleteSnippet(id), "deleteSnippet");
-	
+
 }
 async function TDBhreadTest() {
     log("\n\nTHREADTEST\n\n");
@@ -308,14 +308,14 @@ async function DBpluginTest() {
     await promise(P.filterHooks({pluginID: ID}), "filterHooks2");
     const plugin = await promise(P.filterPlugins({pluginID: ID}), "filterPlugin").then(one);
     const pluginExt = await promise(P.addHooks(plugin), "add hooks");
-	
+
     //disable warnings, this is what we want to do, as we are adding the same entry back in later
     const warn = console.warn;
     console.warn = () => {
     };
     await promise(P.deletePlugin(plugin.pluginID), "deletePlugin");
     console.warn = warn;
-	
+
     await promise(P.addPlugin(plugin), "addPlugin");
     for (const el of pluginExt.hooks) {
         await promise(P.addHook({pluginID: ID, hook: el}), "addPlugin");

@@ -19,7 +19,7 @@ export function checkEnum<T>(enumer: T, item: string | number | symbol): item is
     return item in enumer;
 }
 
-//this function adds `item` to enum( : any) 
+//this function adds `item` to enum( : any)
 // tslint:disable-next-line: no-any
 export function addItem(enumer: any, item: string): void {
     if (item in enumer) {
@@ -28,7 +28,7 @@ export function addItem(enumer: any, item: string): void {
     enumer[item] = item;
 }
 
-//this function removes `item` from enum( : any) 
+//this function removes `item` from enum( : any)
 // tslint:disable-next-line: no-any
 export function removeItem(enumer: any, item: string): void {
     if (!(item in enumer)) {

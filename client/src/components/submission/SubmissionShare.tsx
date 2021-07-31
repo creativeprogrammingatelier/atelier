@@ -10,24 +10,24 @@ import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
 import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 interface SubmissionShareProperties {
-	match: {
-		/** Params of submission share */
-		params: {
-			/** Submission ID within database */
-			submissionId: string
-		}
-	}
+    match: {
+        /** Params of submission share */
+        params: {
+            /** Submission ID within database */
+            submissionId: string
+        }
+    }
 }
 /**
- * Component for sharing submissions. Submissions are retrieved from the cache and 
- * BreadCrumbs are created of the given permission. The submission URL is then extracted and 
- * added to a sharing component.  
+ * Component for sharing submissions. Submissions are retrieved from the cache and
+ * BreadCrumbs are created of the given permission. The submission URL is then extracted and
+ * added to a sharing component.
  */
 export function SubmissionShare({match: {params: {submissionId}}}: SubmissionShareProperties) {
     const submission = useSubmission(submissionId);
     const submissionPath = "/submission/" + submissionId;
     const submissionURL = window.location.origin + submissionPath;
-	
+
     return <Cached
         cache={submission}
         wrapper={children => <Frame title="Submission" sidebar search={{submission: submissionId}}>{children}</Frame>}
@@ -38,7 +38,7 @@ export function SubmissionShare({match: {params: {submissionId}}}: SubmissionSha
                 <Jumbotron>
                     <Breadcrumbs>
                         <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
-                        <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} 
+                        <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`}
                             course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} />
                         <Crumb text={submission.name} link={submissionPath} />
                     </Breadcrumbs>

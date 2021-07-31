@@ -15,7 +15,7 @@ export function Logout() {
     const [loggedOut, setLoggedOut] = useState(false);
     const [error, setError] = useState(false as FeedbackContent);
     const cache = useRawCache();
-	
+
     useEffect(() => {
         AuthHelper.logout()
             .then(() => {
@@ -24,7 +24,7 @@ export function Logout() {
             })
             .catch((err: Error) => setError(`Failed to log out: ${err.message}`));
     }, []);
-	
+
     if (loggedOut) {
         return <Redirect to={{pathname: "/login"}}/>;
     } else {

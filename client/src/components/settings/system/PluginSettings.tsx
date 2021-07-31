@@ -14,7 +14,7 @@ import {PluginInput} from "./PluginInput";
  */
 export function PluginSettings() {
     const [creating, updateCreating] = useState(false);
-	
+
     return <Loading<Plugin[]>
         loader={getPlugins}
         component={plugins => {

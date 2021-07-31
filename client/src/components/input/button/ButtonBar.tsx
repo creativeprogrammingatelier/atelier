@@ -3,12 +3,12 @@ import {ButtonGroup} from "react-bootstrap";
 import {ParentalProperties} from "../../../helpers/ParentHelper";
 
 interface ButtonBarProperties extends ParentalProperties {
-	/** Alignment of button bar */
-	align?: string,
-	/** Transparency boolean */
-	transparent?: boolean,
-	/** Rounded boolean */
-	round?: boolean
+    /** Alignment of button bar */
+    align?: string,
+    /** Transparency boolean */
+    transparent?: boolean,
+    /** Rounded boolean */
+    round?: boolean
 }
 /**
  * Component that holds children buttons.
@@ -19,7 +19,7 @@ export function ButtonBar({children, align, transparent, round}: ButtonBarProper
         center: {textAlign: "center"},
         right: {textAlign: "right"}
     };
-	
+
     return <div
         className={"buttonBar" + (round ? " buttonBarRound" : "") + (transparent ? " bg-transparent" : "")}
         style={alignments[align ? align : "center"]}

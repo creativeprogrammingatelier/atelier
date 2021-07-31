@@ -27,19 +27,19 @@ import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
 import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
 
 interface FileOverviewProperties {
-	match: {
-		params: {
-			/** Submission ID within database */
-			submissionId: string,
-			/** Filed ID within file */
-			fileId: string,
-			/** Current tav opened. */
-			tab: string
-		}
-	}
+    match: {
+        params: {
+            /** Submission ID within database */
+            submissionId: string,
+            /** Filed ID within file */
+            fileId: string,
+            /** Current tav opened. */
+            tab: string
+        }
+    }
 }
 /**
- * Component that, given a file and opened tab, renders the appropriate information from the 
+ * Component that, given a file and opened tab, renders the appropriate information from the
  * database.
  */
 export function FileOverview({match: {params: {submissionId, fileId, tab}}}: FileOverviewProperties) {
@@ -54,10 +54,10 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
         )
     );
     const fileViewer = useObservableState(fileViewerObservable, FileViewerUnsupported);
-	
+
     const submissionPath = "/submission/" + submissionId;
     const filePath = submissionPath + "/" + fileId;
-	
+
     const renderTabContents = (file: File) => {
         if (tab === "view") {
             return <ViewTab file={file} viewer={fileViewer.viewer}/>;
@@ -68,7 +68,7 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
         }
         return <div><h1>Tab not found!</h1></div>; // TODO: Better error
     };
-	
+
     return <Cached
         cache={file}
         wrapper={children => <Frame title="File" sidebar search={{submission: submissionId}}>{children}</Frame>}
@@ -81,13 +81,13 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
                         {submission =>
                             <Breadcrumbs>
                                 <Crumb text={submission.references.courseName} link={`/course/${submission.references.courseID}`} />
-                                <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`} 
+                                <PermissionsCrumb text={submission.user.name} link={`/course/${submission.references.courseID}/user/${submission.user.ID}`}
                                     course={submission.references.courseID} single={PermissionEnum.viewAllUserProfiles} />
                                 <Crumb text={submission.name} link={submissionPath} />
                             </Breadcrumbs>
                         }
                     </Cached>
-                    <h1>{FileNameHelper.fromPath(file.name)}</h1>						
+                    <h1>{FileNameHelper.fromPath(file.name)}</h1>
                     {tab === "view" && <Button><a href={`/api/file/${fileId}/download`}>Download</a></Button>}
                 </Jumbotron>
                 <ErrorBoundary>
@@ -120,15 +120,15 @@ export function FileOverview({match: {params: {submissionId, fileId, tab}}}: Fil
 export type FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => Promise<FeedbackMessage>;
 
 export interface FileViewerProperties {
-	file: File,
-	sendComment: FileCommentHandler
+    file: File,
+    sendComment: FileCommentHandler
 }
 export interface FileViewer {
-	name: string,
-	icon: IconType,
-	viewer: (properties: FileViewerProperties) => JSX.Element,
-	acceptsType: (type: string) => boolean,
-	acceptsFile: (file: File) => boolean
+    name: string,
+    icon: IconType,
+    viewer: (properties: FileViewerProperties) => JSX.Element,
+    acceptsType: (type: string) => boolean,
+    acceptsFile: (file: File) => boolean
 }
 
 const fileViewers = [FileViewerCode, FileViewerImage];

@@ -13,15 +13,15 @@ import {CacheItem} from "../../helpers/api/Cache";
 import {Tag} from "../general/Tag";
 
 interface MentionSuggestionsProperties {
-	/** Prefix for display */
-	prefix?: string
-	/** Already inserted text to match with the start of suggestions */
-	suggestionBase: string,
-	round?: boolean,
-	/** The ID of the course the comment is written for */
-	courseID?: string,
-	/** Callback that's called when a suggestion is selected */
-	onSelected: (user: string) => void
+    /** Prefix for display */
+    prefix?: string
+    /** Already inserted text to match with the start of suggestions */
+    suggestionBase: string,
+    round?: boolean,
+    /** The ID of the course the comment is written for */
+    courseID?: string,
+    /** Callback that's called when a suggestion is selected */
+    onSelected: (user: string) => void
 }
 
 /**
@@ -31,7 +31,7 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
     const [suggestions, setSuggestions] = useState({options: [] as string[], base: suggestionBase});
     const displayPrefix: string = prefix === undefined ? "" : prefix;
     const permission = courseID ? useCoursePermission(courseID) : usePermission();
-	
+
     const allowedGroupsObservable = useObservable(() => permission.observable.pipe(map(permission => {
         const groups: string[] = [];
         const permissions = (permission as CacheItem<Permission>)?.value?.permissions;
@@ -52,7 +52,7 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
     const filterSuggestions = (suggestions: string[], base: string) => {
         return suggestions.filter(user => user.toLowerCase().includes(base.toLowerCase()));
     };
-	
+
     useEffect(() => {
         if (allowedGroups === []) {
             permission.refresh();
@@ -67,7 +67,7 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
                 options: filterSuggestions(users, suggestionBase),
                 base: suggestionBase
             }));
-			
+
             // Online lookup, only if there's a good chance we'll get results
             // Therefore the string for which we'll request suggestions has to be shorter than 25 characters
             // and we either had an empty base before, or if we had a similar base, there were some suggestions
@@ -93,7 +93,7 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
             }
         }
     }, [suggestionBase]);
-	
+
     return suggestions.options.length > 0 ?
         <ul className={"mentions m-0 w-100" + (round ? " px-2 pt-2 mb-2" : " px-1 pt-1 mb-1 ")}>
             {suggestions.options.map(user => <Tag key={user} large round theme="primary" click={() => onSelected(user)}>{displayPrefix}{user}</Tag>)}

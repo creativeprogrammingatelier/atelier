@@ -2,10 +2,10 @@ import {Permission} from "./Permission";
 import { User } from "./User";
 
 export interface CourseUser {
-	userID: string,
-	courseID: string,
-	userName: string,
-	email: string,
+    userID: string,
+    courseID: string,
+    userName: string,
+    email: string,
     permission: Permission,
     canvasrefresh: string
 }

@@ -2,8 +2,8 @@ import React from "react";
 import {HTMLProperties} from "../../helpers/HTMLHelper";
 
 interface AreaProperties extends HTMLProperties {
-	/** Boolean for whether Area should be transparent. */
-	transparent?: boolean
+    /** Boolean for whether Area should be transparent. */
+    transparent?: boolean
 }
 /**
  * Component used to create an Area div for sectioning of page.

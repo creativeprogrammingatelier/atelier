@@ -6,8 +6,8 @@ import {User} from "../../../../../models/api/User";
 import {LabeledInput} from "../../input/LabeledInput";
 
 interface UserInfoProperties {
-	/** User to be parsed. */
-	user: User
+    /** User to be parsed. */
+    user: User
 }
 /**
  * Component that takes in a user and returns the user info of that user from the database.

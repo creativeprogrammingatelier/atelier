@@ -6,44 +6,44 @@ import {Tag as APITag} from "../api/Tag";
 import {DBAPIComment, commentToAPI} from "./Comment";
 
 export interface Tag extends DBTools {
-	tagID?: string,
-	tagbody?: string,
-	
-	commentID?: string,
-	commentThreadID?: string,
-	submissionID?: string,
-	courseID?: string
+    tagID?: string,
+    tagbody?: string,
+
+    commentID?: string,
+    commentThreadID?: string,
+    submissionID?: string,
+    courseID?: string
 }
 
 export interface DBTag {
-	tagid: string,
-	tagbody: string,
-	
-	commentid: string,
-	commentthreadid: string,
-	submissionid: string,
-	courseid: string,
-	fileid: string,
-	snippetid: string,
-	created: Date,
+    tagid: string,
+    tagbody: string,
+
+    commentid: string,
+    commentthreadid: string,
+    submissionid: string,
+    courseid: string,
+    fileid: string,
+    snippetid: string,
+    created: Date,
     edited: Date,
     visibilitystate: string,
     automated: boolean,
     submissionname: string,
     submissionuserid: string,
     submissionusername: string,
-	body: string,
-	linestart: number,
-	type: string,
+    body: string,
+    linestart: number,
+    type: string,
 
-	cmuuserid: string,
-	cmuusername: string,
-	cmuemail: string,
-	cmuglobalrole: string,
-	cmupermission: string,
-	cmucanvasrefresh: string,
-	submtitle: string,
-	coursename: string
+    cmuuserid: string,
+    cmuusername: string,
+    cmuemail: string,
+    cmuglobalrole: string,
+    cmupermission: string,
+    cmucanvasrefresh: string,
+    submtitle: string,
+    coursename: string
 }
 
 export function convertTag(db: DBTag): Tag {

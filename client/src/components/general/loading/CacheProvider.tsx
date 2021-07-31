@@ -36,11 +36,11 @@ export function CacheProvider({children}: {children: React.ReactNode}) {
     } else {
         cache = Cache.load("cache");
     }
-	
+
     cache.getExport()
         .pipe(debounceTime(750))
         .subscribe(exported => Cache.save("cache", exported));
-	
+
     return <cacheContext.Provider value={cache} children={children}/>;
 }
 

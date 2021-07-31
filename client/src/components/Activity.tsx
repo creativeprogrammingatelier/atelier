@@ -4,7 +4,7 @@ import {Jumbotron} from "react-bootstrap";
 import { PersonalFeed } from "./feed/Feed";
 
 /**
- * Activity tab on the sidebar. It retrieves all 
+ * Activity tab on the sidebar. It retrieves all
  * recent activity pertaining to or executed by the user.
  */
 export function Activity() {

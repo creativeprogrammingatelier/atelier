@@ -33,7 +33,7 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
             .then(map(removePermissionsCommentThread))
             .then(map(thread => ({ type: "commentThread", data: thread, relation: "yourSubmission", timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
         CommentDB.getCommentsBySubmissionOwner(userID, courseID, true, params)
-            .then(comments => filterComments(comments, userID))    
+            .then(comments => filterComments(comments, userID))
             .then(map(removePermissionsComment))
             .then(map(comment => ({ type: "comment", data: comment, relation: "yourSubmission", timestamp: comment.created, ID: comment.ID }))),
         CommentDB.getCommentsByThreadParticipation(userID, courseID, true, params)
@@ -68,10 +68,10 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
             return acc;
         }, {} as { [ID: string]: FeedItem[] });
     return Object.values(byCommentId)
-        .map(arr => 
-            arr.find(f => f.type === "submission") 
-            || arr.find(f => f.type === "mention") 
-            || arr.find(f => f.type === "commentThread") 
+        .map(arr =>
+            arr.find(f => f.type === "submission")
+            || arr.find(f => f.type === "mention")
+            || arr.find(f => f.type === "commentThread")
             || arr.find(f => f.type === "comment")!)
         // Sort by date descending
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -99,7 +99,7 @@ feedRouter.get("/course/:courseID", capture(async (request, response) => {
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
     const courseID = request.params.courseID;
-    
+
     await requireRegistered(userID, courseID);
     await requirePermission(userID, PermissionEnum.viewAllSubmissions, courseID);
 

@@ -5,12 +5,12 @@ import {getMostPopularTags} from "../../helpers/api/APIHelper";
 import {Tag} from "../general/Tag";
 
 interface TagSuggestionsProperties {
-	/** Prefix for display */
-	prefix?: string,
-	tagIndex?: number,
-	round?: boolean,
-	/** Callback that's called when a suggestion is selected */
-	onSelected: (tag: string) => void
+    /** Prefix for display */
+    prefix?: string,
+    tagIndex?: number,
+    round?: boolean,
+    /** Callback that's called when a suggestion is selected */
+    onSelected: (tag: string) => void
 }
 
 /**

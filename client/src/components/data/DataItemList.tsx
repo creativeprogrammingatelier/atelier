@@ -8,15 +8,15 @@ import {DataItem} from "./DataItem";
  * Same properties as the DataItemProperties
  */
 interface DataListEntryProperties {
-	transport?: string,
-	text: string,
-	tags?: TagProperties[]
+    transport?: string,
+    text: string,
+    tags?: TagProperties[]
 }
 interface DataItemListProperties {
-	/** Header for the DataItemList */
-	header: string,
-	/** List of properties representing the data entries inside the list. */
-	list: DataListEntryProperties[]
+    /** Header for the DataItemList */
+    header: string,
+    /** List of properties representing the data entries inside the list. */
+    list: DataListEntryProperties[]
 }
 /**
  * Returns the DataItemList populated with the DataItems derived from the parameters passed.

@@ -25,15 +25,15 @@ async function getPermissions(setPermissions: Permissions, currentUserID: string
     const user: User = await UserDB.getUserByID(currentUserID);
     const userPermissions = user.permission.permissions;
     const permissionsToSet =
-		(containsPermission(PermissionEnum.manageUserPermissionsView, userPermissions) ? BigInt(viewPermissionBits) : BigInt(0)) |
-		(containsPermission(PermissionEnum.manageUserPermissionsManager, userPermissions) ? BigInt(managePermissionBits) : BigInt(0));
-	
+        (containsPermission(PermissionEnum.manageUserPermissionsView, userPermissions) ? BigInt(viewPermissionBits) : BigInt(0)) |
+        (containsPermission(PermissionEnum.manageUserPermissionsManager, userPermissions) ? BigInt(managePermissionBits) : BigInt(0));
+
     let addPermissions = BigInt(0);
     let removePermissions = BigInt(0);
-	
+
     const permissions = Object.keys(setPermissions);
     const add: boolean[] = Object.values(setPermissions);
-	
+
     for (let i = 0; i < permissions.length; i++) {
         const permissionType: PermissionEnum = getEnum(PermissionEnum, permissions[i]);
         if (add[i]) {
@@ -42,11 +42,11 @@ async function getPermissions(setPermissions: Permissions, currentUserID: string
             removePermissions |= (BigInt(1) << BigInt(permissionType));
         }
     }
-	
+
     // Convert permissions back to number after bit operations
     return [
-		(addPermissions & permissionsToSet).toString() as unknown as number,
-		(removePermissions & permissionsToSet).toString() as unknown as number
+        (addPermissions & permissionsToSet).toString() as unknown as number,
+        (removePermissions & permissionsToSet).toString() as unknown as number
     ];
 }
 
@@ -67,7 +67,7 @@ permissionRouter.get("/", capture(async(request: Request, response: Response) =>
 permissionRouter.get("/course/:courseID", capture(async(request: Request, response: Response) => {
     const courseID: string = request.params.courseID;
     const userID: string = await getCurrentUserID(request);
-	
+
     // If user not registered in the course, return global permissions and localRole.unregistered
     const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
     const coursePermissions = courseUser.permission;
@@ -90,23 +90,23 @@ permissionRouter.get("/course/:courseID", capture(async(request: Request, respon
 permissionRouter.put("/course/:courseID/user/:userID/", capture(async(request: Request, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
     const courseID: string = request.params.courseID;
-	
+
     const setPermissions = request.body.permissions;
     const userID: string = request.params.userID;
     const permissions = await getPermissions(setPermissions, currentUserID);
-	
+
     await CourseRegistrationDB.addPermission({
         courseID,
         userID,
         permission: permissions[0]
     });
-	
+
     const courseUser: CourseUser = await CourseRegistrationDB.removePermission({
         courseID,
         userID,
         permission: permissions[1]
     });
-	
+
     response.status(200).send(courseUser);
 }));
 
@@ -117,11 +117,11 @@ permissionRouter.put("/course/:courseID/user/:userID/", capture(async(request: R
  */
 permissionRouter.put("/user/:userID/", capture(async(request: Request, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
-	
+
     const setPermissions = request.body.permissions;
     const userID: string = request.params.userID;
     const permissions = await getPermissions(setPermissions, currentUserID);
-	
+
     await UserDB.addPermissionsUser(userID, permissions[0]);
     const user: User = await UserDB.removePermissionsUser(userID, permissions[1]);
     response.status(200).send(user);

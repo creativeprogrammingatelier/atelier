@@ -31,7 +31,7 @@ export async function filterCommentThread(commentThreads: CommentThread[], userI
     if (!containsPermission(PermissionEnum.viewRestrictedComments, permissions)) {
         return commentThreads.filter((commentThread: CommentThread) =>
             commentThread.visibility === ThreadState.public ||
-			userPartOfCommentThread(userID, commentThread)
+            userPartOfCommentThread(userID, commentThread)
         );
     }
     return commentThreads;
@@ -56,7 +56,7 @@ export async function filterComments(comments: Comment[], userID: string, permis
     if (!containsPermission(PermissionEnum.viewRestrictedComments, permissions)) {
         return comments.filter((comment: Comment) =>
             comment.thread.visibility === ThreadState.public ||
-			comment.user.ID === userID
+            comment.user.ID === userID
         );
     }
     return comments;

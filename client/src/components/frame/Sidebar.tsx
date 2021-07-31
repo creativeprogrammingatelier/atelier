@@ -14,17 +14,17 @@ import {Logo} from "./Logo";
 import {SidebarEntry} from "./SidebarEntry";
 
 interface SidebarProperties {
-	/** Position of sidebar on the screen */
-	position: string,
-	/** Callback function for closing the sidebar */
-	close: React.MouseEventHandler
+    /** Position of sidebar on the screen */
+    position: string,
+    /** Callback function for closing the sidebar */
+    close: React.MouseEventHandler
 }
 /**
  * Component that defines the sidebar of the website.
  */
 export function Sidebar({position, close}: SidebarProperties) {
     const user = useCurrentUser();
-	
+
     return <Fragment>
         <Responsive breakpoints={["extraSmall", "small", "medium"]}>
             <div className="sidebarContainer row no-gutters" style={{left: position}}>
@@ -45,9 +45,9 @@ export function Sidebar({position, close}: SidebarProperties) {
 }
 
 interface ContentProperties {
-	/** Refreshabable cache object tied to the User of the client, this can be refreshed via the API.  */
-	user: Refresh<User>,
-	/** Function callback handling closing of the Content comp.*/
+    /** Refreshabable cache object tied to the User of the client, this can be refreshed via the API.  */
+    user: Refresh<User>,
+    /** Function callback handling closing of the Content comp.*/
     close: React.MouseEventHandler
 }
 /**

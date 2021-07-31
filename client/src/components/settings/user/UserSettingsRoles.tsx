@@ -10,10 +10,10 @@ import {UserInfo} from "./UserInfo";
 import {UserRoles} from "./UserRoles";
 
 interface UserSettingsRolesProperties<T> {
-	/** roles within Atelier */
-	roles: T,
-	/** Course ID within database */
-	courseID?: string
+    /** roles within Atelier */
+    roles: T,
+    /** Course ID within database */
+    courseID?: string
 }
 /**
  * Component for managing roles for a given user, within a specified course.
@@ -21,7 +21,7 @@ interface UserSettingsRolesProperties<T> {
 export function UserSettingsRoles<T>({roles, courseID}: UserSettingsRolesProperties<T>) {
     const [user, setUser] = useState(undefined as User | undefined);
     const [role, setRole] = useState(undefined as T | undefined);
-	
+
     const handleUpdate = () => {
         if (user && role) {
             if (courseID) {
@@ -45,16 +45,16 @@ export function UserSettingsRoles<T>({roles, courseID}: UserSettingsRolesPropert
             }
         }
     };
-	
+
     return <Form>
         <UserSearch courseID={courseID} onSelected={setUser}/>
         {
             user &&
-			<Fragment>
-			    <UserInfo user={user}/>
-			    <UserRoles<T> roles={roles} onSelected={setRole}/>
-			    <Button onClick={handleUpdate}>Update Role</Button>
-			</Fragment>
+            <Fragment>
+                <UserInfo user={user}/>
+                <UserRoles<T> roles={roles} onSelected={setRole}/>
+                <Button onClick={handleUpdate}>Update Role</Button>
+            </Fragment>
         }
     </Form>;
 }

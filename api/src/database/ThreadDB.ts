@@ -25,7 +25,7 @@ export class ThreadDB {
     static async getThreadsByFile(fileID: string, params: DBTools = {}): Promise<APIThread[]> {
         return ThreadDB.filterThread({...params, fileID});
     }
-	
+
     static async filterThread(thread: Thread): Promise<APIThread[]> {
         return ThreadDB.filterThreadExtended(thread);
     }
@@ -65,35 +65,35 @@ export class ThreadDB {
             snippetid = UUIDHelper.toUUID(snippetID),
             courseid = UUIDHelper.toUUID(courseID),
             sharedbyid = UUIDHelper.toUUID(sharedByID);
-		
+
         const query = client.query(`SELECT * FROM "CommentThreadView"
-			WHERE
-				($1::uuid IS NULL OR commentThreadID = $1)
-			AND ($2::uuid IS NULL OR submissionID = $2)
-			AND ($3::uuid IS NULL OR courseID = $3)
-			AND ($4::uuid IS NULL OR fileID = $4)
+            WHERE
+                ($1::uuid IS NULL OR commentThreadID = $1)
+            AND ($2::uuid IS NULL OR submissionID = $2)
+            AND ($3::uuid IS NULL OR courseID = $3)
+            AND ($4::uuid IS NULL OR fileID = $4)
             AND ($5::uuid IS NULL OR snippetID = $5)
             AND (TRUE OR $6::uuid IS NULL OR sharedByID = $6)
-			--thread
+            --thread
             AND ($7::text IS NULL OR visibilityState = $7)
             AND (TRUE OR $8::boolean IS NULL OR automated = $8)
             AND (NOT $20::boolean OR automated = FALSE OR visibilityState = 'public')
-			--file
-			AND ($9::text IS NULL OR pathname ILIKE $9)
-			AND ($10::text IS NULL OR type ILIKE $10)
-			--snippet
-			AND ($11::text IS NULL OR body ILIKE $11)
-			AND ($12::integer IS NULL OR lineStart = $12)
-			AND ($13::integer IS NULL OR lineEnd = $13)
-			AND ($14::integer IS NULL OR charStart = $14)
-			AND ($15::integer IS NULL OR charEnd = $15)
+            --file
+            AND ($9::text IS NULL OR pathname ILIKE $9)
+            AND ($10::text IS NULL OR type ILIKE $10)
+            --snippet
+            AND ($11::text IS NULL OR body ILIKE $11)
+            AND ($12::integer IS NULL OR lineStart = $12)
+            AND ($13::integer IS NULL OR lineEnd = $13)
+            AND ($14::integer IS NULL OR charStart = $14)
+            AND ($15::integer IS NULL OR charEnd = $15)
             -- date
             AND ($18::timestamp IS NULL OR created > $18)
             AND ($19::timestamp IS NULL OR created < $19)
-			ORDER BY created DESC
-			LIMIT $16
-			OFFSET $17
-				`, [
+            ORDER BY created DESC
+            LIMIT $16
+            OFFSET $17
+                `, [
             //ids
             commentThreadid,
             submissionid,
@@ -122,14 +122,14 @@ export class ThreadDB {
             automatedOnlyIfShared
         ])
             .then(extract).then(map(threadToAPI));
-		
+
         if (addComments) {
             return ThreadDB.addComments(query, client);
         } else {
             return query;
         }
     }
-    
+
     static async getThreadsBySubmissionOwner(submissionOwnerID: string, courseID?: string, addComments = false, automatedOnlyIfShared = false, params: DBTools = {}) {
         const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
         const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
@@ -151,7 +151,7 @@ export class ThreadDB {
             return query;
         }
     }
-	
+
     static async addCommentSingle(firstQuery: Promise<APIThread>, client: pgDB = pool): Promise<APIThread> {
         //receive first result, modify it to accomodate for comments.
         const res: APIThread = {...(await firstQuery), comments: []};
@@ -201,9 +201,9 @@ export class ThreadDB {
             sharedByID = undefined,
             visibilityState,
             automated,
-			
+
             addComments = false,
-			
+
             client = pool
         } = thread;
         const submissionid = UUIDHelper.toUUID(submissionID),
@@ -211,13 +211,13 @@ export class ThreadDB {
             snippetid = UUIDHelper.toUUID(snippetID),
             sharedbyid = UUIDHelper.toUUID(sharedByID);
         const query = client.query(`
-		WITH insert AS (
-			INSERT INTO "CommentThread" 
-			VALUES (DEFAULT, $1, $2, $3, $4, $5, $6) 
-			RETURNING *
-		)
-		${commentThreadView("insert")}
-			`, [submissionid, fileid, snippetid, visibilityState, automated, sharedbyid])
+        WITH insert AS (
+            INSERT INTO "CommentThread"
+            VALUES (DEFAULT, $1, $2, $3, $4, $5, $6)
+            RETURNING *
+        )
+        ${commentThreadView("insert")}
+            `, [submissionid, fileid, snippetid, visibilityState, automated, sharedbyid])
             .then(extract).then(map(threadToAPI)).then(one);
         if (addComments) {
             return ThreadDB.addCommentSingle(query, client);
@@ -234,9 +234,9 @@ export class ThreadDB {
             snippetID = undefined,
             sharedByID = undefined,
             visibilityState = undefined,
-			
+
             addComments = false,
-			
+
             client = pool
         } = thread;
         const commentThreadid = UUIDHelper.toUUID(commentThreadID),
@@ -245,48 +245,48 @@ export class ThreadDB {
             snippetid = UUIDHelper.toUUID(snippetID),
             sharedbyid = UUIDHelper.toUUID(sharedByID);
         const query = client.query(`
-		WITH update AS (
-			UPDATE "CommentThread" SET
-			submissionID = COALESCE($2, submissionID),
-			fileID = COALESCE($3, fileID),
+        WITH update AS (
+            UPDATE "CommentThread" SET
+            submissionID = COALESCE($2, submissionID),
+            fileID = COALESCE($3, fileID),
             snippetID = COALESCE($4, snippetID),
             sharedBy = $5,
             visibilityState = COALESCE($6, visibilityState)
-			WHERE commentThreadID = $1
-			RETURNING *
-		)
-		${commentThreadView("update")}
-		`, [commentThreadid, submissionid, fileid, snippetid, sharedbyid, visibilityState])
+            WHERE commentThreadID = $1
+            RETURNING *
+        )
+        ${commentThreadView("update")}
+        `, [commentThreadid, submissionid, fileid, snippetid, sharedbyid, visibilityState])
             .then(extract).then(map(threadToAPI)).then(one);
-		
+
         if (addComments) {
             return ThreadDB.addCommentSingle(query, client);
         } else {
             return query;
         }
-		
+
     }
-	
+
     /**
-	 * This delete will bring down all comments and with this thread.
-	 * After this call is made, the comments can no longer be retrieved, except the snippet
-	 * though the snippet and file are still send back.
-	 * @param commentThreadID
-	 * @param client
-	 */
+     * This delete will bring down all comments and with this thread.
+     * After this call is made, the comments can no longer be retrieved, except the snippet
+     * though the snippet and file are still send back.
+     * @param commentThreadID
+     * @param client
+     */
     static async deleteThread(commentThreadID: string, client: pgDB = pool) {
         const commentThreadid = UUIDHelper.toUUID(commentThreadID);
         return client.query(`
-		WITH delete AS (
-			DELETE FROM "CommentThread" 
-			WHERE commentThreadID = $1
-			RETURNING *
-		)
-		${commentThreadView("delete")}
-		`, [commentThreadid])
+        WITH delete AS (
+            DELETE FROM "CommentThread"
+            WHERE commentThreadID = $1
+            RETURNING *
+        )
+        ${commentThreadView("delete")}
+        `, [commentThreadid])
             .then(extract).then(map(convertThread)).then(one);
     }
-	
+
 }
 
 /*
@@ -296,10 +296,10 @@ export class ThreadDB {
  WHERE commentThreadID = $1
  RETURNING snippetID
  )`,['41a6340a-7465-420f-83a9-1227cf6f1640',]).then(res=>console.log(res.rows)).catch(console.error)
- 
- 
- 
- 
+
+
+
+
  '5193250c-b69b-4b48-9ca6-2aab4f52e1fe',
  '8f94e215-d610-401a-9c35-43b61b0089a0',
  '9463450f-78c3-4df2-bd68-de3f97e5cfb6',

@@ -21,13 +21,13 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     // Construct the SAML IDP from its metadata
     const idp = IdentityProvider({
         metadata:
-			"url" in samlConfig.metadata ?
-			    await fetch(samlConfig.metadata.url).then(res => res.text())
-			    :
-			    await readFileAsString(samlConfig.metadata.file)
+            "url" in samlConfig.metadata ?
+                await fetch(samlConfig.metadata.url).then(res => res.text())
+                :
+                await readFileAsString(samlConfig.metadata.file)
     }
     );
-	
+
     // Create the SAML SP metadata for our application
     const urlBase = `${samlConfig.altBaseUrl || config.baseUrl}/api/auth/${samlConfig.id}`;
     const sp = ServiceProvider({
@@ -44,24 +44,24 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
         // ],
         wantAssertionsSigned: true
     });
-	
+
     const extIDPrefix = samlConfig.id + "_";
-	
+
     const samlRouter = express.Router();
-	
+
     /** Get the metadata for our Service Provider */
     samlRouter.get("/metadata.xml", capture(async(request, response) => {
         response.status(200)
             .set("Content-Type", "application/xml")
             .send(sp.getMetadata());
     }));
-	
+
     /** Request login, redirects to the Identity Provider */
     samlRouter.get("/login", capture(async(request, response) => {
         const {context} = sp.createLoginRequest(idp, "redirect");
         response.redirect(context);
     }));
-	
+
     /** Post back the SAML response to finish logging in */
     samlRouter.post("/login", capture(async(request, response) => {
 
@@ -108,7 +108,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                                     userName = firstname;
                                 }
                             }
-                        }			
+                        }
                         // Get role from SAML attributes
                         let role = GlobalRole.user;
                         if (samlConfig.attributes?.role !== undefined) {
@@ -120,7 +120,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                                 role = getEnum(GlobalRole, samlRole);
                             }
                         }
-                        
+
                         user = await UserDB.createUser({
                             samlID: extID, userName, email, globalRole: role,
                             password: UserDB.invalidPassword()
@@ -133,7 +133,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                 throw err;
             }
         }
-        
+
         if (!samlConfig.altBaseUrl) {
             (await setTokenCookie(response, user.ID)).redirect("/");
         } else {
@@ -141,7 +141,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
             response.redirect(`${config.baseUrl}/api/auth/login?token=${temporaryToken}`);
         }
     }));
-	
+
     // /** Initiate Single Logout with a logout request to the IDP */
     // samlRouter.get('/logout', capture(async (request, response) => {
     //     const userID = await getCurrentUserID(request);
@@ -150,13 +150,13 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     //     const { context } = sp.createLogoutRequest(idp, 'redirect', { logoutNameID: samlID });
     //     clearTokenCookie(response).redirect(context);
     // }));
-	
+
     // /** Parse the logout response */
     // samlRouter.post('/logout', capture(async (request, response) => {
     //     await sp.parseLogoutResponse(idp, 'post', request);
     //     clearTokenCookie(response).redirect("/");
     // }));
-	
+
     /** Handle some SAML specific errors */
     samlRouter.use((err: Error & {code?: string}, request: Request, response: Response, next: NextFunction) => {
         if (err.code === "ERR_INVALID_ARG_TYPE") {
@@ -166,6 +166,6 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
             next(err);
         }
     });
-	
+
     return samlRouter;
 }

@@ -15,8 +15,8 @@ import {UserRoles} from "../user/UserRoles";
 import {UserSearch} from "../user/UserSearch";
 
 interface CourseSettingsEnrollmentProperties {
-	/** Course ID within database. */
-	courseID: string
+    /** Course ID within database. */
+    courseID: string
 }
 /**
  * Component for enrolling the user into a course.
@@ -25,11 +25,11 @@ export function CourseSettingsEnrollment({courseID}: CourseSettingsEnrollmentPro
     const [user, setUser] = useState(undefined as User | undefined);
     const [role, setRole] = useState(undefined as typeof CourseRole | undefined);
     const [success, setSuccess] = useState(false as FeedbackContent);
-	
+
     /**
-	 * Function that takes in a user along with their role and enrolls them 
-	 * into the course.
-	 */
+     * Function that takes in a user along with their role and enrolls them
+     * into the course.
+     */
     function enrollUser() {
         if (user) {
             let courseRole = role ? role : CourseRole.student;
@@ -41,16 +41,16 @@ export function CourseSettingsEnrollment({courseID}: CourseSettingsEnrollmentPro
             setUser(undefined);
         }
     }
-	
+
     return <Form>
         <UserSearch onSelected={setUser}/>
         {
             user &&
-			<Fragment>
-			    <UserInfo user={user}/>
-			    <UserRoles<typeof CourseRole> roles={CourseRole} onSelected={setRole}/>
-			    <Button onClick={enrollUser}>Enroll User</Button>
-			</Fragment>
+            <Fragment>
+                <UserInfo user={user}/>
+                <UserRoles<typeof CourseRole> roles={CourseRole} onSelected={setRole}/>
+                <Button onClick={enrollUser}>Enroll User</Button>
+            </Fragment>
         }
         <FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
     </Form>;
