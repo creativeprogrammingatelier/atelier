@@ -17,7 +17,11 @@
 		"database-build": "node build/api/src/database/structure/DatabaseStructure",
 		"database-samples": "node build/api/src/database/structure/DatabaseSamples",
 		"database-dev": "node build/api/src/database/structure/DatabaseStructure -i",
-		"generate-docs": "typedoc --out docs/typedoc --entryPoints api/src --entryPoints client --entryPoints helpers --entryPoints models"
+		"generate-docs": "typedoc --out docs/typedoc --entryPoints api/src --entryPoints client --entryPoints helpers --entryPoints models",
+		"lint": "eslint .",
+		"lint-fix": "eslint . --fix",
+		"lint-nowarn": "eslint . --quiet",
+		"lint-nowarn-fix": "eslint . --quiet --fix"
 	},
 	"dependencies": {
 		"@authenio/samlify-node-xmllint": "^2.0.0",
