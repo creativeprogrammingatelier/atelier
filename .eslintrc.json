@@ -5,8 +5,10 @@
         "node": true
     },
     "extends": [
+        "eslint:recommended",
         "plugin:react/recommended",
-        "google"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -14,20 +16,32 @@
             "jsx": true
         },
         "ecmaVersion": 12,
-        "sourceType": "module"
+        "sourceType": "module",
+        "tsconfigRootDir": ".",
+        "project": [ "./tsconfig.json", "./client/tsconfig.json" ]
     },
     "plugins": [
         "react",
         "@typescript-eslint"
     ],
     "rules": {
-        "max-len" : "warn",
-        "no-tabs": "warn",
-        "no-mixed-spaces-and-tabs": "warn",
-        "valid-jsdoc": "warn",
-        "require-jsdoc": "warn",
-        "linebreak-style": "off"
-
+        "indent": [
+            "error",
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "quotes": [
+            "error",
+            "double",
+            { "avoidEscape": true }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
     },
     "settings": {
         "react": {
