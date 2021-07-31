@@ -10,14 +10,13 @@ To run and debug Atelier in your local development environment, you'll need the 
 
 - [Node.js](https://nodejs.org/): to run the backend server and development tools (the LTS version is recommended, but other versions might work too)
 - [PostgreSQL](https://www.postgresql.org/): to run a local database (but you can also use a remote database, if you prefer)
-- TypeScript and webpack: `npm install -g typescript webpack`
 - Some editor that supports TypeScript (e.g. [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm/))
 
 Once you've got the tooling set up, we can start with getting Atelier running:
 
 1. Clone the repo and switch to the atelier directory
 
-2. Run `npm install` to install the dependencies
+2. Run `npm install` to install the dependencies. If this command changed the *package-lock.json* file, you may want to run it again.
 
 3. Create a development configuration:
 
@@ -34,16 +33,14 @@ Once you've got the tooling set up, we can start with getting Atelier running:
 
 8. Navigate to <http://localhost:5000>
 
-9. You will be shown the login page. Click on the *Samling* button to log in. In the *Name Identifier* field, fill in one of the following user identifiers:
+9. You will be shown the login page. Click on the *Sustainsys Stub IDP* button to log in. In the *Subject NameId* field, fill in one of the following user identifiers:
 
    - `admin` - a global admin user, who is allowed to do anything in the system
    - `user` - a global 'user' user, who is enrolled in a course as a student
    - `teacher` - a global staff user, who is enrolled in a course as a teacher 
    - `TA` - a global 'user' user, who is enrolled in a course as a teaching assistant
 
-   Then click *Next* and *Post Response!* to log in.
-
-   (*Note:* there is known issue with using Samling and Firefox or Safari. After logging in, you'll be redirected back to http://localhost:5000/login. Simply change the address in your address bar back to http://localhost:5000 to proceed.)
+   Leave all other fields as they are and click the *Log in* button to log in.
 
 Now you are ready to start developing Atelier further. Also take a look at the [*/docs/dev*](/docs/dev) folder for more information about developing all parts of the Atelier system.
 
@@ -77,6 +74,10 @@ In *package.json*, a couple scripts are defined to do common operations while de
 - `database-build` - Create the database table structure, dropping old tables if they already exist
 - `database-samples` - Add sample data to an existing database structure
 - `database-dev` - Set up the database for development, including sample data
+
+**Documentation**
+
+- `generate-docs` - Generate a typedoc documentation website from the inline code documentation
 
 ### Optional Tools for Development
 
@@ -174,18 +175,18 @@ where you replace `atelier_atelier_1` with the name of your Atelier container.
 
 ## Documentation 
 
-Documentation is inline but has been created in line with the [Type Doc](https://typedoc.org/) , generated version of the docs can be created using:
-```
-typedoc
-```
+The above should help you get started with running and developing Atelier. More specific documentation is available in the [*/docs*](/docs) folder: this is mainly conceptual documentation about the whole structure of the project. Most files (and they really all should) include inline JSDoc documentation describing specific functionalities. If you prefer, you can also run the `npm run generate-docs` command to create a TypeDoc website based on this inline documentation. The website files can then be found in the [*/docs/typedoc*](/docs/typedoc) folder.
+
 ## Design Guidelines
 
 The Atelier design is based on Bootstrap, with additional custom styling for the distinctive Atelier look.
 
 ### Icons 
+
 The project is using [React Icon package](https://react-icons.netlify.com/#/), which contains a number of icon packs. Preference should be given to the [Feather](https://react-icons.netlify.com/#/icons/fi) Icon pack.
 
 ## Contributing
+
 If you wish to contribute, please first make a branch named after yourself or the features you are implementing. If you plan to do a larger amount of work, please first open an issue to discuss your plans. This prevents double work and other forms of disappointment.
 
 ## Contributors

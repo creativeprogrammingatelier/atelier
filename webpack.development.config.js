@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
 
 module.exports = {
     mode: "development",
@@ -11,7 +10,13 @@ module.exports = {
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx"]
+        extensions: [".ts", ".tsx", "..."],
+        // Polyfills for use of path and crypto in the client
+        fallback: {
+            path: require.resolve("path-browserify"),
+            crypto: require.resolve("crypto-browserify"),
+            stream: require.resolve("stream-browserify")
+        }
     },
     output: {
 		path: __dirname + "/build/client",
@@ -56,12 +61,5 @@ module.exports = {
             },
         ],
 
-    },
-    // externals: {
-    //     "react": "React",
-    //     "react-dom": "ReactDOM"
-    // },
-    resolve: {
-        extensions: [".ts", ".tsx", ".js", ".jsx"]
     },
 };

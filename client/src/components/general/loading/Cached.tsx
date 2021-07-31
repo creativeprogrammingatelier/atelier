@@ -48,12 +48,12 @@ export function Cached<T>(
       children,
     }: CachedProperties<T>,
 ) {
-  const cached = useObservableState(cache.observable)!;
+  const cached = useObservableState(cache.observable);
   const [loadMoreEnabled, setLoadMoreEnabled] = useState(true);
   const [error, setError] = useState(false as FeedbackContent);
 
   useEffect(() => {
-    if ('refresh' in cache && cache.refresh) {
+    if (cached !== undefined && 'refresh' in cache && cache.refresh) {
       const actualTimeout = timeout !== undefined ? timeout : cache.defaultTimeout;
       if (cached.state === CacheState.Uninitialized) {
         cache.refresh().catch((err: Error) => {
@@ -66,9 +66,9 @@ export function Cached<T>(
         return () => clearTimeout(handle);
       }
     }
-  }, [timeout, cached.updatedAt]);
+  }, [timeout, cached?.updatedAt]);
   useEffect(() => {
-    if (cached.state === CacheState.Loaded) {
+    if (cached !== undefined && cached.state === CacheState.Loaded) {
       if ('value' in cached) {
         updateCount(1);
       } else {
@@ -79,7 +79,7 @@ export function Cached<T>(
     }
   }, [cached]);
 
-  if (cached.state !== CacheState.Loaded) {
+  if (cached === undefined || cached.state !== CacheState.Loaded) {
     const content = (
       <Fragment>
         { onError === undefined && <FeedbackError children={error} close={setError} /> }

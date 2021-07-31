@@ -79,7 +79,7 @@ export function convertThread(db: DBThread): Thread {
 }
 export function threadToAPI(db: DBAPIThread): APIThread {
 	checkAvailable(["commentthreadid", "visibilitystate", "courseid", "submissionid"], db);
-	const obj = {
+	const obj: APIThread = {
 		ID: UUIDHelper.fromUUID(db.commentthreadid),
 		file: fileToAPI(db),
 		snippet: snippetToAPI(db),
@@ -109,9 +109,9 @@ export function threadToAPI(db: DBAPIThread): APIThread {
 			submissionID: UUIDHelper.fromUUID(db.submissionid)
 		}
 	};
-	if (!isNotNullSnippet(obj.snippet)) {
+	if (!isNotNullSnippet(obj.snippet!)) {
 		delete obj.snippet;
-		if (!isNotNullFile(obj.file)) {
+		if (!isNotNullFile(obj.file!)) {
 			delete obj.file;
 		}
 	}

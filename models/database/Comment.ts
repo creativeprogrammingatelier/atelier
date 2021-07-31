@@ -60,7 +60,7 @@ export function convertComment(db: DBComment): Comment {
 }
 export function commentToAPI(db: DBAPIComment): APIComment {
 	checkAvailable(["commentid", "body", "created", "edited", "userid", "courseid", "submissionid", "commentthreadid", "type", "linestart"], db);
-	const res = {
+	const res : APIComment = {
 		ID: UUIDHelper.fromUUID(db.commentid),
 		user: userToAPI(db),
 		text: db.body,

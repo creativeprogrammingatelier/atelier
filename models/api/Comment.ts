@@ -22,7 +22,7 @@ export interface Comment {
 		courseID: string,
 		submissionID: string,
 		commentThreadID: string,
-		fileID: string,
-		snippetID: string,
+		fileID?: string,
+		snippetID?: string,
 	}
 }
