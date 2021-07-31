@@ -34,7 +34,7 @@ export async function getAccessToken(refreshToken: string) {
     const {canvas_url_root, client_id, client_secret, redirect_uri} = canvasConfig();
     const grant_type = "refresh_token";
     const result = await fetch(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&refresh_token=${refreshToken}`, { method: "POST" });
-    const { access_token } : { access_token: string } = await result.json();
+    const { access_token }: { access_token: string } = await result.json();
     return access_token;
 }
 
@@ -54,7 +54,7 @@ export async function createRefreshToken(request: Request) {
     const code = (request.query.code);
     const grant_type = "authorization_code";
     const result = await fetch(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&code=${code}`, { method: "POST" });
-    const { refresh_token } : { refresh_token: string } = await result.json();
+    const { refresh_token }: { refresh_token: string } = await result.json();
     return refresh_token;
 }
 

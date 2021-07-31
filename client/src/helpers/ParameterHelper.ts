@@ -12,7 +12,7 @@ export class ParameterHelper {
      */
     static getQueryParameters(parameters: string) {
         const query: {[key: string]: string} = {};
-        const pairs = (parameters[0] === "?" ? parameters.substr(1) : parameters).split("&");
+        const pairs = (parameters.startsWith("?") ? parameters.substr(1) : parameters).split("&");
         for (let i = 0; i < pairs.length; i++) {
             const pair = pairs[i].split("=");
             query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");

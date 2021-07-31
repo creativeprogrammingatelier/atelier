@@ -53,7 +53,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
 
     getOptions() {
         if (this.state.data != null) {
-            let newOptions = [<option key={""} value={""} >No Canvas Link</option>];
+            const newOptions = [<option key={""} value={""} >No Canvas Link</option>];
             for (const course of this.state.data) {
                 newOptions.push(<option key={course["id"]} value={course["id"]} >{course["name"]}</option>);
             }

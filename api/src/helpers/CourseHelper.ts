@@ -9,9 +9,9 @@ import { UserDB } from "../database/UserDB";
 
 export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole: CourseRole, course: CoursePartial){
 
-    for (let user of users){
+    for (const user of users){
         try {
-            let userDB: any  = await UserDB.getUserByEmail(user.email, client);
+            const userDB: any  = await UserDB.getUserByEmail(user.email, client);
             console.log(userDB);
             if (userDB != undefined){
                 await CourseRegistrationDB.addEntry({
@@ -21,7 +21,7 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
                     client
                 });
             } else if ( user.email != undefined ) {
-                let createdUser: any = await UserDB.createUser({ userName: user.name , email: user.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client });
+                const createdUser: any = await UserDB.createUser({ userName: user.name, email: user.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client });
                 await CourseRegistrationDB.addEntry({
                     courseID: course.ID,
                     userID: createdUser.ID,

@@ -62,7 +62,7 @@ export function Comment({comment}: CommentProperties) {
         <div className="comment px-2 py-1" onMouseDown={handleDown} onMouseUp={handleUp} onTouchStart={handleDown} onTouchEnd={handleUp}>
             <small><span>{comment.user.name}</span> at <span>{TimeHelper.toDateTimeString(TimeHelper.fromString(comment.created))}</span></small>
             <div style={comment.text === "This comment was deleted" ? {fontStyle: "italic"} : {}}>
-                {comment.text.split(" ").map(text => text[0] == "#" ? <Tag key={text} large round theme="primary">{text}</Tag>: text + " ")
+                {comment.text.split(" ").map(text => text.startsWith("#") ? <Tag key={text} large round theme="primary">{text}</Tag>: text + " ")
                 }
             </div>
         </div>

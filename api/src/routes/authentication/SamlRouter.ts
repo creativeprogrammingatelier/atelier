@@ -79,7 +79,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
         }
 
 
-        let user:any = undefined;
+        let user: any = undefined;
         try {
             user = await UserDB.getUserBySamlID(extID);
         } catch (err) {

@@ -69,7 +69,7 @@ export function commentTest() {
                 const response = await putComment(comment);
                 expect(response).to.have.status(200);
                 assert(instanceOfComment(response.body), "Body should be comment, but was" + response.body);
-                const result : Comment = response.body;
+                const result: Comment = response.body;
                 assert(result.text === expected, 'Result comment should be "' + expected + '", but was "' +result.text + '".');
 
 

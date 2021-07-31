@@ -22,7 +22,7 @@ import {
 } from "../APIRequestHelper";
 
 export function courseTest() {
-    let createdCourseID: string | undefined = undefined;
+    const createdCourseID: string | undefined = undefined;
     /**
      * GET requests:
      * /api/course

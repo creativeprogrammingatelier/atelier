@@ -6,7 +6,7 @@ export interface CoursePartial {
     name: string,
     state: string,
     creator: User,
-    canvasCourseId? : string
+    canvasCourseId?: string
 }
 
 export interface Course extends CoursePartial {

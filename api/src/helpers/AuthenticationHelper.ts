@@ -94,11 +94,11 @@ const temporaryTokenExpiration = 20; //seconds
 
 /** A simple class that tracks tokens that have already been used. */
 class TokenInvalidator {
-    private tokens : Set<string>;
+    private tokens: Set<string>;
     constructor () {
         this.tokens = new Set();
     }
-    checkAndInvalidate(token : string, exp : number) {
+    checkAndInvalidate(token: string, exp: number) {
         if (this.tokens.has(token)) {
             return false;
         } else {

@@ -55,7 +55,7 @@ export function convertTag(db: DBTag): Tag {
     };
 }
 export function tagToAPI(db: DBTag): APITag {
-    checkAvailable(["tagid","tagbody",
+    checkAvailable(["tagid", "tagbody",
         "commentid", "fileid", "commentthreadid", "snippetid", //comment specific
         "submissionid", "courseid", "created", "edited",
         "body", "type", "linestart",

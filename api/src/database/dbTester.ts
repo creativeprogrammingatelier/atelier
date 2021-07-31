@@ -44,7 +44,7 @@ const all = false;
 // Log functionality
 let stored = "";
 
-function log<T>(a: string, b ?: T): void {
+function log<T>(a: string, b?: T): void {
     const tbp = a + (b === undefined ? "" : JSON.stringify(b, null, 4));
     if (all) {
         console.log(tbp);

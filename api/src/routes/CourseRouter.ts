@@ -122,8 +122,8 @@ courseRouter.post("/", capture(async (request: Request, response: Response) => {
      * Adds all users in canvas linked course
      * */
     if (canvasCourseID != ""){
-        let students = await getCourseUsersStudents(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
-        let tas = await getCourseUsersTAs(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
+        const students = await getCourseUsersStudents(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
+        const tas = await getCourseUsersTAs(canvasCourseID, await getAccessToken(await getRefreshToken(request)));
         await transaction(async client => {
             addUsersFromCanvas(students, client, CourseRole.student, course);
             addUsersFromCanvas(tas, client, CourseRole.TA, course);

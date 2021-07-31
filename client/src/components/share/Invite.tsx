@@ -25,7 +25,7 @@ export function Invite({match: {params: {inviteId}}}: InviteProperties) {
 
     useEffect(() => {
         getInvite(inviteId)
-            .then((courseUser : CourseUser) => {
+            .then((courseUser: CourseUser) => {
                 history.push(`/course/${courseUser.courseID}`);
             });
     }, []);

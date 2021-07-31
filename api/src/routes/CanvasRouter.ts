@@ -13,15 +13,15 @@ canvasRouter.get("/enabled", capture(async (request: Request, response: Response
 }));
 
 canvasRouter.get("/linked", capture(async (request: Request, response: Response) => {
-    let refresh_token = await getRefreshToken(request);
-    let linked: boolean = (refresh_token != null && refresh_token != "");
+    const refresh_token = await getRefreshToken(request);
+    const linked: boolean = (refresh_token != null && refresh_token != "");
     response.json({ linked: linked });
 }));
 
 canvasRouter.delete("/link", capture(async (request: Request, response: Response) => {
     const userID: string = await getCurrentUserID(request);
-    let access_token = await getAccessToken(await getRefreshToken(request));
-    let newUser = { userID: userID, canvasrefresh: "" };
+    const access_token = await getAccessToken(await getRefreshToken(request));
+    const newUser = { userID: userID, canvasrefresh: "" };
     await UserDB.updateUser(newUser);
     deleteCanvasLink(access_token);
     response.status(200).send();
@@ -32,9 +32,9 @@ canvasRouter.get("/link", capture(async (request: Request, response: Response) =
 }));
 
 canvasRouter.get("/oauth_complete", capture(async (request: Request, response: Response) => {
-    let refresh_token: string = await createRefreshToken(request);
-    let userID: string = await getCurrentUserID(request);
-    let newUser = { userID: userID, canvasrefresh: refresh_token };
+    const refresh_token: string = await createRefreshToken(request);
+    const userID: string = await getCurrentUserID(request);
+    const newUser = { userID: userID, canvasrefresh: refresh_token };
     await UserDB.updateUser(newUser);
     response.redirect("/account");
 }));

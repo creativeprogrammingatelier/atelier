@@ -50,7 +50,7 @@ inviteRouter.get("/:inviteID", capture(async(request: Request, response: Respons
     }
 
     // Enroll user
-    const enrollment : CourseUser = await CourseRegistrationDB.addEntry({
+    const enrollment: CourseUser = await CourseRegistrationDB.addEntry({
         courseID,
         userID: currentUserID,
         courseRole: courseInvite.joinRole
