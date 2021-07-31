@@ -41,7 +41,72 @@
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "@typescript-eslint/no-unused-vars": [
+            "warn",
+            { "varsIgnorePattern": "^\\\\_.*" }
+        ],
+        "key-spacing": "error",
+        "keyword-spacing": "error",
+        "max-len": [
+            "warn",
+            {
+                "code": 120,
+                "ignoreTrailingComments": true,
+                "ignoreUrls": true,
+                "ignoreStrings": true,
+                "ignoreTemplateLiterals": true,
+                "ignoreRegExpLiterals": true
+            }
+        ],
+        "new-cap": "error",
+        "no-lonely-if": "error",
+        "no-mixed-operators": "warn",
+        "no-trailing-spaces": "warn",
+        "semi-spacing": "error",
+        "semi-style": "error",
+        "arrow-spacing": "error",
+        "arrow-parens": [
+            "error",
+            "as-needed"
+        ],
+        "arrow-body-style": [
+            "error",
+            "as-needed"
+        ],
+        "no-duplicate-imports": "error",
+        "no-var": "error",
+        "prefer-const": "warn",
+        "eqeqeq": [
+            "error",
+            "smart"
+        ],
+        "array-bracket-spacing": "error",
+        "brace-style": [
+            "error",
+            "1tbs",
+            { "allowSingleLine": true }
+        ],
+        "camelcase": [
+            "error",
+            {
+                "ignoreDestructuring": true,
+                "ignoreImports": true,
+                "ignoreGlobals": true
+            }
+        ],
+        "eol-last": "warn",
+        "comma-spacing": "warn",
+        "comma-style": "error",
+        "func-call-spacing": "error",
+        "@typescript-eslint/no-require-imports": "error",
+        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
+        "@typescript-eslint/prefer-for-of": "warn",
+        "@typescript-eslint/prefer-includes": "warn",
+        "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+        "@typescript-eslint/promise-function-async": "error",
+        "@typescript-eslint/switch-exhaustiveness-check": "warn",
+        "@typescript-eslint/type-annotation-spacing": "warn"
     },
     "settings": {
         "react": {
