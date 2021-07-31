@@ -1,6 +1,6 @@
-const webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require("webpack");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     mode: "production",
@@ -16,13 +16,13 @@ module.exports = {
     },
     entry: "main.js",
     output: {
-		path: __dirname + "/build/client",
+        path: __dirname + "/build/client",
     },
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "Atelier",
-            template: 'client/index.html',
+            template: "client/index.html",
             files: {
                 main:{
                     entry: "main.js"
@@ -32,28 +32,28 @@ module.exports = {
         }),
         new webpack.ProvidePlugin({
             "React": "react",
-            'ReactDOM':   'react-dom',
+            "ReactDOM":   "react-dom",
         }),
     ],
     module: {
         rules: [{
-                test: /\.ts(x?)$/,
-                exclude: /node_modules/,
-                use: [{
-                    loader: "ts-loader"
-                }]
-            },
-            {
-                test: /\.(js|jsx) $/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader"
-                }
-            },
-            {
-                test: /\.(s*)css$/i,
-                use: ['style-loader', 'css-loader', 'sass-loader'],
-            },
+            test: /\.ts(x?)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: "ts-loader"
+            }]
+        },
+        {
+            test: /\.(js|jsx) $/,
+            exclude: /node_modules/,
+            use: {
+                loader: "babel-loader"
+            }
+        },
+        {
+            test: /\.(s*)css$/i,
+            use: ["style-loader", "css-loader", "sass-loader"],
+        },
         ],
 
     },

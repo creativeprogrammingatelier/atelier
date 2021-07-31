@@ -16,10 +16,10 @@ export interface DBPlugin {
 export interface PluginInput extends Partial<Plugin>, DBTools {}
 
 export function convertPlugin(db: DBPlugin): Plugin {
-	return {
-		pluginID: UUIDHelper.fromUUID(db.pluginid),
-		webhookSecret: db.webhooksecret,
-		webhookUrl: db.webhookurl,
-		publicKey: db.publickey
-	};
+    return {
+        pluginID: UUIDHelper.fromUUID(db.pluginid),
+        webhookSecret: db.webhooksecret,
+        webhookUrl: db.webhookurl,
+        publicKey: db.publickey
+    };
 }

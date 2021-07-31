@@ -7,28 +7,28 @@ import {FileViewer, FileViewerProperties} from "../FileOverview";
  * Component for UnsupportedViewer message.
  */
 export function UnsupportedViewer({file, sendComment}: FileViewerProperties) {
-	return <p>Displaying files of type <b>{file.type}</b> is not supported.</p>;
+    return <p>Displaying files of type <b>{file.type}</b> is not supported.</p>;
 }
 
 /**
  * AcceptType returns false since type is not supported.
  */
 function acceptsType(type: string) {
-	return false;
+    return false;
 }
 
 /**
  * AcceptsFile returns false since file is not supported.
  */
 function acceptsFile(file: File) {
-	return false;
+    return false;
 }
 
 const fileViewer: FileViewer = {
-	name: "File",
-	icon: FiFile,
-	viewer: UnsupportedViewer,
-	acceptsType,
-	acceptsFile
+    name: "File",
+    icon: FiFile,
+    viewer: UnsupportedViewer,
+    acceptsType,
+    acceptsFile
 };
 export {fileViewer as FileViewerUnsupported};

@@ -17,16 +17,16 @@ import {Request, Response, RequestHandler, NextFunction} from "express";
  * });
  */
 export function capture<T>(func: (request: Request, response: Response) => Promise<T>): RequestHandler {
-	return captureNext((request, response, _next) => func(request, response));
+    return captureNext((request, response, _next) => func(request, response));
 }
 
 /** Does the same as `capture` for handlers using the `next` function */
 export function captureNext<T>(func: (request: Request, response: Response, next: NextFunction) => Promise<T>): RequestHandler {
-	return async(request, response, next) => {
-		try {
-			return await func(request, response, next);
-		} catch (err) {
-			next(err);
-		}
-	};
+    return async(request, response, next) => {
+        try {
+            return await func(request, response, next);
+        } catch (err) {
+            next(err);
+        }
+    };
 }

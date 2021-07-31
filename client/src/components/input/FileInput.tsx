@@ -15,23 +15,23 @@ interface FileInputProperties extends ParentalProperties {
  * Component for defining a file input.
  */
 export function FileInput({children, folders, handleElement, handleSelected}: FileInputProperties) {
-	return <Form.Label className="w-100 m-0">
-		{children}
-		<input
-			multiple
-			required
-			type="file"
-			accept=".pde"
-			className="form-control-file d-none"
-			ref={(element: HTMLInputElement) => {
-				if (element) {
-					handleElement(element);
-				}
-				if (element && folders) {
-					element.webkitdirectory = true;
-				}
-			}}
-			onChange={handleSelected}
-		/>
-	</Form.Label>;
+    return <Form.Label className="w-100 m-0">
+        {children}
+        <input
+            multiple
+            required
+            type="file"
+            accept=".pde"
+            className="form-control-file d-none"
+            ref={(element: HTMLInputElement) => {
+                if (element) {
+                    handleElement(element);
+                }
+                if (element && folders) {
+                    element.webkitdirectory = true;
+                }
+            }}
+            onChange={handleSelected}
+        />
+    </Form.Label>;
 }

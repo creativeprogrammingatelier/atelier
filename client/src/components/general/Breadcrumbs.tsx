@@ -1,6 +1,6 @@
-import React, { Fragment, ReactElement } from 'react';
-import { Permissions, PermissionsProperties } from './Permissions';
-import { OptionalLink } from './OptionalLink';
+import React, { Fragment, ReactElement } from "react";
+import { Permissions, PermissionsProperties } from "./Permissions";
+import { OptionalLink } from "./OptionalLink";
 
 interface BreadcrumbsProperties {
     /** Children to be passed into the BreadCrumbs component  */

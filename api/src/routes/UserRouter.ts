@@ -25,9 +25,9 @@ userRouter.use(AuthMiddleware.requireAuth);
  * Get current user
  */
 userRouter.get("/", capture(async(request: Request, response: Response) => {
-	const userID: string = await getCurrentUserID(request);
-	const user: User = await UserDB.getUserByID(userID);
-	response.status(200).send(user);
+    const userID: string = await getCurrentUserID(request);
+    const user: User = await UserDB.getUserByID(userID);
+    response.status(200).send(user);
 }));
 
 /**
@@ -36,13 +36,13 @@ userRouter.get("/", capture(async(request: Request, response: Response) => {
  *  - view all user permissions
  */
 userRouter.get("/all", capture(async(request: Request, response: Response) => {
-	const currentUserID: string = await getCurrentUserID(request);
+    const currentUserID: string = await getCurrentUserID(request);
 	
-	// Require view all user profiles permission
-	await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
+    // Require view all user profiles permission
+    await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
 	
-	const users: User[] = (await UserDB.getAllUsers());
-	response.status(200).send(users);
+    const users: User[] = (await UserDB.getAllUsers());
+    response.status(200).send(users);
 }));
 
 /**
@@ -51,19 +51,19 @@ userRouter.get("/all", capture(async(request: Request, response: Response) => {
  *  - either viewAllUserProfiles, manageUserPermissionsManager or manageUserPermissionsView
  */
 userRouter.get("/course/:courseID", capture(async(request: Request, response: Response) => {
-	const currentUserID: string = await getCurrentUserID(request);
-	const courseID: string = request.params.courseID;
+    const currentUserID: string = await getCurrentUserID(request);
+    const courseID: string = request.params.courseID;
 	
-	// Either of these 3 permissions should be set. In this case managing user permissions
-	// implies permission to view all users.
-	await requirePermissions(currentUserID, [
-		PermissionEnum.viewAllUserProfiles,
-		PermissionEnum.manageUserPermissionsManager,
-		PermissionEnum.manageUserPermissionsView
-	], courseID, true);
+    // Either of these 3 permissions should be set. In this case managing user permissions
+    // implies permission to view all users.
+    await requirePermissions(currentUserID, [
+        PermissionEnum.viewAllUserProfiles,
+        PermissionEnum.manageUserPermissionsManager,
+        PermissionEnum.manageUserPermissionsView
+    ], courseID, true);
 	
-	const users: CourseUser[] = (await CourseRegistrationDB.getEntriesByCourse(courseID));
-	response.status(200).send(users);
+    const users: CourseUser[] = (await CourseRegistrationDB.getEntriesByCourse(courseID));
+    response.status(200).send(users);
 }));
 
 /**
@@ -72,17 +72,17 @@ userRouter.get("/course/:courseID", capture(async(request: Request, response: Re
  *  - view all users (if you are not the user)
  */
 userRouter.get("/:userID", capture(async(request: Request, response: Response) => {
-	const userID: string = request.params.userID;
-	const currentUserID: string = await getCurrentUserID(request);
-	const user: User = await UserDB.getUserByID(userID);
+    const userID: string = request.params.userID;
+    const currentUserID: string = await getCurrentUserID(request);
+    const user: User = await UserDB.getUserByID(userID);
 	
-	console.log(`Querying user ${currentUserID}`);
-	if (userID !== currentUserID) {
-		console.log("checking whether user has permission to get user profiles");
-		await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
-	}
+    console.log(`Querying user ${currentUserID}`);
+    if (userID !== currentUserID) {
+        console.log("checking whether user has permission to get user profiles");
+        await requirePermission(currentUserID, PermissionEnum.viewAllUserProfiles);
+    }
 	
-	response.status(200).send(user);
+    response.status(200).send(user);
 }));
 
 /**
@@ -91,34 +91,34 @@ userRouter.get("/:userID", capture(async(request: Request, response: Response) =
 userRouter.get("/:userID/course/:courseID/", capture(async(request: Request, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
     const userID: string = request.params.userID;
-	const courseID: string = request.params.courseID;
+    const courseID: string = request.params.courseID;
 	
-	// Either of these 3 permissions should be set. In this case managing user permissions
-	// implies permission to view all users.
-	await requirePermissions(currentUserID, [
-		PermissionEnum.viewAllUserProfiles,
-		PermissionEnum.manageUserPermissionsManager,
-		PermissionEnum.manageUserPermissionsView
-	], courseID, true);
+    // Either of these 3 permissions should be set. In this case managing user permissions
+    // implies permission to view all users.
+    await requirePermissions(currentUserID, [
+        PermissionEnum.viewAllUserProfiles,
+        PermissionEnum.manageUserPermissionsManager,
+        PermissionEnum.manageUserPermissionsView
+    ], courseID, true);
 	
-	const user = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-	response.status(200).send(user);
+    const user = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    response.status(200).send(user);
 }));
 
 // ---------- PUT REQUESTS ----------
 
 /** Set details for current user */
 userRouter.put("/", capture(async(request: Request, response: Response) => {
-	const currentUserID: string = await getCurrentUserID(request);
-	const updatedEmail: string | undefined = request.body.email;
+    const currentUserID: string = await getCurrentUserID(request);
+    const updatedEmail: string | undefined = request.body.email;
     const updatedName: string | undefined = request.body.name;
     const updatedResearchAllowed: boolean | undefined = request.body.researchAllowed;
 	
-	const user: User = await UserDB.updateUser({
-		userID: currentUserID,
-		email: updatedEmail,
+    const user: User = await UserDB.updateUser({
+        userID: currentUserID,
+        email: updatedEmail,
         userName: updatedName,
         researchAllowed: updatedResearchAllowed
-	});
-	response.status(200).send(user);
+    });
+    response.status(200).send(user);
 }));

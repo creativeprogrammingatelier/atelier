@@ -22,10 +22,10 @@ interface DataItemListProperties {
  * Returns the DataItemList populated with the DataItems derived from the parameters passed.
  */
 export function DataItemList({header, list}: DataItemListProperties) {
-	return <div>
-		<Heading title={header}/>
-		<div className="m-3">
-			{list.map((block) => <DataItem transport={block.transport} text={block.text} tags={block.tags}/>)}
-		</div>
-	</div>;
+    return <div>
+        <Heading title={header}/>
+        <div className="m-3">
+            {list.map((block) => <DataItem transport={block.transport} text={block.text} tags={block.tags}/>)}
+        </div>
+    </div>;
 }

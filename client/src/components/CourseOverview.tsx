@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
-import {Button, Jumbotron} from 'react-bootstrap';
-import {FiX, FiInbox, FiList, FiUpload} from 'react-icons/all';
+import React, {useState} from "react";
+import {Link} from "react-router-dom";
+import {Button, Jumbotron} from "react-bootstrap";
+import {FiX, FiInbox, FiList, FiUpload} from "react-icons/all";
 
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 
@@ -32,34 +32,34 @@ interface CourseOverviewProperties {
  * Component retrieves all submission for a given course.
  */
 export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: CourseOverviewProperties) {
-	const [uploading, setUploading] = useState(false);
-	const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
-	const course = useCourse(courseId);
+    const [uploading, setUploading] = useState(false);
+    const [uploadingSuccess, setUploadingSuccess] = useState(false as FeedbackContent);
+    const course = useCourse(courseId);
     const url = `/course/${courseId}`;
 
     const uploadButton = { icon: FiUpload, text: "Upload", onClick: () => setUploading(true) };
 	
-	return <Cached
-		cache={course}
-		wrapper={children => <Frame title="Course" sidebar search={{course: courseId}}>{children}</Frame>}
-	>
-		{course =>
-			<Frame title={course.name} sidebar search={{course: courseId}}>
-				<Jumbotron>
-					<h1>{course.name}</h1>
-					<Permissions
-						any={[
-							PermissionEnum.manageCourses,
-							PermissionEnum.manageUserRegistration,
-							PermissionEnum.manageUserRole,
-							PermissionEnum.manageUserPermissionsView,
-							PermissionEnum.manageUserPermissionsManager
-						]}
-						course={courseId}
-					>
-						<Link to={`/course/${courseId}/settings`}><Button>Settings</Button></Link>
-					</Permissions>
-				</Jumbotron>
+    return <Cached
+        cache={course}
+        wrapper={children => <Frame title="Course" sidebar search={{course: courseId}}>{children}</Frame>}
+    >
+        {course =>
+            <Frame title={course.name} sidebar search={{course: courseId}}>
+                <Jumbotron>
+                    <h1>{course.name}</h1>
+                    <Permissions
+                        any={[
+                            PermissionEnum.manageCourses,
+                            PermissionEnum.manageUserRegistration,
+                            PermissionEnum.manageUserRole,
+                            PermissionEnum.manageUserPermissionsView,
+                            PermissionEnum.manageUserPermissionsManager
+                        ]}
+                        course={courseId}
+                    >
+                        <Link to={`/course/${courseId}/settings`}><Button>Settings</Button></Link>
+                    </Permissions>
+                </Jumbotron>
 
                 {
                     uploading &&
@@ -78,10 +78,10 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
 
                 <FeedbackSuccess close={setUploadingSuccess}>{uploadingSuccess}</FeedbackSuccess>
 
-				{
+                {
                     tab === "public"
-                    ? <CourseFeed courseID={courseId} buttons={[uploadButton]} />
-                    : <PersonalFeed courseID={courseId} buttons={[uploadButton]} />
+                        ? <CourseFeed courseID={courseId} buttons={[uploadButton]} />
+                        : <PersonalFeed courseID={courseId} buttons={[uploadButton]} />
                 }
 
                 <Permissions course={courseId} single={PermissionEnum.viewAllSubmissions}>
@@ -99,7 +99,7 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
                             location: url + "/public"
                         }]} />
                 </Permissions>
-			</Frame>
-		}
-	</Cached>;
+            </Frame>
+        }
+    </Cached>;
 }

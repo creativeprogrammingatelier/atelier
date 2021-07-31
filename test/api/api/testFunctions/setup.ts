@@ -19,7 +19,7 @@ import {
     getCourses,
     DEFAULT_GLOBAL_PERMISSIONS,
     ping,
-} from '../APIRequestHelper';
+} from "../APIRequestHelper";
 
 export function setup() {
     /**
@@ -30,7 +30,7 @@ export function setup() {
 
     before(async function () {
         // Get test user and set token
-        const USER_ID = (await UserDB.filterUser({ userName: 'test user', limit: 1 }))[0].ID;
+        const USER_ID = (await UserDB.filterUser({ userName: "test user", limit: 1 }))[0].ID;
         const USER_AUTHORIZATION_KEY = issueToken(USER_ID);
         setAPITestUserValues(USER_ID, USER_AUTHORIZATION_KEY);
 
@@ -39,12 +39,12 @@ export function setup() {
         do {
             // Wait for 100 ms
             await new Promise((resolve) => setTimeout(resolve, 100));
-            console.log('[Test Setup] Pinging server...');
+            console.log("[Test Setup] Pinging server...");
             // Ping the server and see if it is up
             response = await ping();
             console.log(`[Test Setup] Got ${response.status}: ${response.text}`);
         } while (response.status != 204);
-        console.log('[Test Setup] Server is up.');
+        console.log("[Test Setup] Server is up.");
     });
 
     /**
@@ -60,24 +60,24 @@ export function setup() {
 
     async function removeAllPermissions() {
         await adminSetPermissions({
-            'manageUserPermissionsView': false,
-            'manageUserPermissionsManager': false,
-            'manageUserRole': false,
-            'viewAllUserProfiles': false,
-            'manageUserRegistration': false,
-            'viewAllCourses': false,
-            'addCourses': false,
-            'manageCourses': false,
-            'addAssignments': false,
-            'manageAssignments': false,
-            'viewAllSubmissions': false,
-            'viewRestrictedComments': false,
-            'addRestrictedComments': false,
-            'manageRestrictedComments': false,
-            'mentionAllStudents': false,
-            'mentionAllAssistants': false,
-            'mentionAllTeachers': false,
-            'mentionNoLimit': false,
+            "manageUserPermissionsView": false,
+            "manageUserPermissionsManager": false,
+            "manageUserRole": false,
+            "viewAllUserProfiles": false,
+            "manageUserRegistration": false,
+            "viewAllCourses": false,
+            "addCourses": false,
+            "manageCourses": false,
+            "addAssignments": false,
+            "manageAssignments": false,
+            "viewAllSubmissions": false,
+            "viewRestrictedComments": false,
+            "addRestrictedComments": false,
+            "manageRestrictedComments": false,
+            "mentionAllStudents": false,
+            "mentionAllAssistants": false,
+            "mentionAllTeachers": false,
+            "mentionNoLimit": false,
         });
     }
 
@@ -99,7 +99,7 @@ export function setup() {
      * Check permissions of the user at the start of the test. User should not have
      * any permissions.
      */
-    it('Should have default permissions at the start of the test', async () => {
+    it("Should have default permissions at the start of the test", async () => {
         const response = await getOwnUser1();
         expect(response).to.have.status(200);
 
@@ -111,7 +111,7 @@ export function setup() {
     /**
      * Check that user is not registered in any courses prior to the rest of the tests.
      */
-    it('Should have no course registrations at the start of the test', async () => {
+    it("Should have no course registrations at the start of the test", async () => {
         let response = await getCourses();
         expect(response).to.have.status(200);
         expect(response.body.length).to.equal(0);

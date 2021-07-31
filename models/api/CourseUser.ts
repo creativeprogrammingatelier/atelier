@@ -17,5 +17,5 @@ export function courseUserToUser(cu: CourseUser): User {
         email: cu.email,
         permission: cu.permission,
         canvasrefresh: cu.canvasrefresh
-    }
+    };
 }

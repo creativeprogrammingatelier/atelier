@@ -19,31 +19,31 @@ interface CourseSettingsDisenrollmentProperties {
  * Component for disenrolling user from a course. 
  */
 export function CourseSettingsDisenrollment({courseID}: CourseSettingsDisenrollmentProperties) {
-	const [user, setUser] = useState(undefined as User | undefined);
-	const [success, setSuccess] = useState(false as FeedbackContent);
+    const [user, setUser] = useState(undefined as User | undefined);
+    const [success, setSuccess] = useState(false as FeedbackContent);
 	
-	/**
+    /**
 	 * Disenrolls user from course.
 	 */
-	function disenrollUser() {
-		if (user) {
-			courseDisenrollUser(courseID, user.ID)
-				.then((user: CourseUser) => {
-					setSuccess(`Successfully disenrolled ${user.userName}`);
-				});
-			setUser(undefined);
-		}
-	}
+    function disenrollUser() {
+        if (user) {
+            courseDisenrollUser(courseID, user.ID)
+                .then((user: CourseUser) => {
+                    setSuccess(`Successfully disenrolled ${user.userName}`);
+                });
+            setUser(undefined);
+        }
+    }
 	
-	return <Form>
-		<UserSearch courseID={courseID} onSelected={setUser}/>
-		{
-			user &&
+    return <Form>
+        <UserSearch courseID={courseID} onSelected={setUser}/>
+        {
+            user &&
 			<Fragment>
-				<UserInfo user={user}/>
-				<Button onClick={disenrollUser}>Disenroll User</Button>
+			    <UserInfo user={user}/>
+			    <Button onClick={disenrollUser}>Disenroll User</Button>
 			</Fragment>
-		}
-		<FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
-	</Form>;
+        }
+        <FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
+    </Form>;
 }

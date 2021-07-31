@@ -10,23 +10,23 @@ interface ResponsiveProperties extends ParentalProperties {
  * Responsive component that resized based on the breakpoints being passed to it.
  */
 export function Responsive({breakpoints, children}: ResponsiveProperties) {
-	const [width, setWidth] = useState(windowWidth());
-	const [height, setHeight] = useState(windowHeight());
-	const [breakpoint, setBreakpoint] = useState(currentBreakpoint(width) as Breakpoint);
+    const [width, setWidth] = useState(windowWidth());
+    const [height, setHeight] = useState(windowHeight());
+    const [breakpoint, setBreakpoint] = useState(currentBreakpoint(width) as Breakpoint);
 	
-	const handleWindowResize = () => {
-		setWidth(windowWidth());
-		setHeight(windowHeight());
-	};
+    const handleWindowResize = () => {
+        setWidth(windowWidth());
+        setHeight(windowHeight());
+    };
 	
-	useEffect(() => {
-		window.addEventListener("resize", handleWindowResize);
-	}, []);
-	useEffect(() => {
-		setBreakpoint(currentBreakpoint(width));
-	}, [width]);
+    useEffect(() => {
+        window.addEventListener("resize", handleWindowResize);
+    }, []);
+    useEffect(() => {
+        setBreakpoint(currentBreakpoint(width));
+    }, [width]);
 	
-	return <Fragment>{breakpoints.includes(breakpoint) && children}</Fragment>;
+    return <Fragment>{breakpoints.includes(breakpoint) && children}</Fragment>;
 }
 
 /**
@@ -34,13 +34,13 @@ export function Responsive({breakpoints, children}: ResponsiveProperties) {
  * the width and height of the window.
  */
 function windowSize() {
-	return {windowWidth, windowHeight};
+    return {windowWidth, windowHeight};
 }
 /**
  * Function for getting the width of the current window.
  */
 function windowWidth() {
-	return window.innerWidth
+    return window.innerWidth
 		|| document.documentElement.clientWidth
 		|| document.body.clientWidth;
 }
@@ -48,7 +48,7 @@ function windowWidth() {
  * Function for getting height of the window.
  */
 function windowHeight() {
-	return window.innerHeight
+    return window.innerHeight
 		|| document.documentElement.clientHeight
 		|| document.body.clientHeight;
 }
@@ -59,10 +59,10 @@ function windowHeight() {
  * @param width Width of the window.
  */
 function currentBreakpoint(width: number): Breakpoint {
-	for (const [breakpoint, value] of Object.entries(breakpointValues).reverse()) {
-		if (width >= value) {
-			return breakpoint as Breakpoint;
-		}
-	}
-	return Object.keys(breakpointValues)[0] as Breakpoint;
+    for (const [breakpoint, value] of Object.entries(breakpointValues).reverse()) {
+        if (width >= value) {
+            return breakpoint as Breakpoint;
+        }
+    }
+    return Object.keys(breakpointValues)[0] as Breakpoint;
 }

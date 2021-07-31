@@ -1,4 +1,4 @@
-import {Fetch} from './api/FetchHelper';
+import {Fetch} from "./api/FetchHelper";
 
 export class CanvasHelper {
     static async isEnabled() {
@@ -6,13 +6,13 @@ export class CanvasHelper {
         return response.enabled;
     }
 
-	static async removeLink() {
+    static async removeLink() {
         let options ={ 
             method:"delete"
-        }
+        };
         const response = await Fetch.fetch("/api/canvas/link", options);
         return response;
-	}
+    }
 
     static async getLinked(){
         const response = await Fetch.fetch("/api/canvas/linked");
@@ -20,7 +20,7 @@ export class CanvasHelper {
     }
 
     static async createLink(){
-        const response = await Fetch.fetch("/api/canvas/link",{redirect: 'follow'});
+        const response = await Fetch.fetch("/api/canvas/link",{redirect: "follow"});
         return response.json();
     }
 

@@ -42,51 +42,51 @@ export interface CodeProperties {
  * @param options Options for configuring CodeMirror
  */
 export function Code({code, options = {}, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: CodeProperties) {
-	useEffect(ScrollHelper.scrollToHash, []);
+    useEffect(ScrollHelper.scrollToHash, []);
 	
-	/**
+    /**
 	 * Add ID's to line in the code to allow #lineNumber in the url
 	 */
-	function setLineIDs() {
-		const codeLines = document.getElementsByClassName("CodeMirror-code")[0].childNodes;
-		let lineNumber = 1;
-		for (const codeLine of codeLines) {
-			(codeLine as Element).id = `${lineNumber++}`;
-		}
-	}
+    function setLineIDs() {
+        const codeLines = document.getElementsByClassName("CodeMirror-code")[0].childNodes;
+        let lineNumber = 1;
+        for (const codeLine of codeLines) {
+            (codeLine as Element).id = `${lineNumber++}`;
+        }
+    }
 	
-	// Define syntax highlighting for MIME types
-	codemirror.defineMIME("text/x-processing", "text/x-java");
+    // Define syntax highlighting for MIME types
+    codemirror.defineMIME("text/x-processing", "text/x-java");
 	
-	return <CodeMirror
-		value={code}
-		options={{...defaultOptions, ...options}}
-		editorDidMount={editor => {
-			// Standard code viewer initialization
-			editor.setSize("100%", "100%");
-			setLineIDs();
+    return <CodeMirror
+        value={code}
+        options={{...defaultOptions, ...options}}
+        editorDidMount={editor => {
+            // Standard code viewer initialization
+            editor.setSize("100%", "100%");
+            setLineIDs();
 			
-			// Given initialization
-			handleInitialize(editor);
-		}}
-		onSelection={handleSelect}
-		onMouseDown={handleClick}
-		onTouchStart={handleClick}
-		onBeforeChange={handleChange}
-		onChange={handleChange}
-	/>;
+            // Given initialization
+            handleInitialize(editor);
+        }}
+        onSelection={handleSelect}
+        onMouseDown={handleClick}
+        onTouchStart={handleClick}
+        onBeforeChange={handleChange}
+        onChange={handleChange}
+    />;
 }
 
 /**
  * Default configuration for CodeMirror
  */
 export const defaultOptions = {
-	mode: "text/x-java",
-	theme: "atelyay",
-	lineNumbers: true,
-	tabSize: 4,
-	indentUnit: 4,
-	indentWithTabs: true
+    mode: "text/x-java",
+    theme: "atelyay",
+    lineNumbers: true,
+    tabSize: 4,
+    indentUnit: 4,
+    indentWithTabs: true
 };
 /**
  * Default Handler

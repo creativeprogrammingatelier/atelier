@@ -24,8 +24,8 @@ export class FeedbackMessage {
 	 * @param content Content of message.
 	 */
 	constructor(type: FeedbackType, content: FeedbackContent) {
-		this.type = type;
-		this.content = content;
+	    this.type = type;
+	    this.content = content;
 	}
 }
 
@@ -42,21 +42,21 @@ export interface FeedbackProperties extends HTMLProperties {
  * Component constructed from the props passed in.
  */
 export function Feedback({show, close, timeout, variant, className, id, key, children}: FeedbackProperties) {
-	useEffect(() => {
-		if (!(show === false) && close && timeout) {
-			const handle = setTimeout(() => {
-				close(false);
-			}, timeout);
-			return () => clearTimeout(handle);
-		}
-	}, [show, children]);
+    useEffect(() => {
+        if (!(show === false) && close && timeout) {
+            const handle = setTimeout(() => {
+                close(false);
+            }, timeout);
+            return () => clearTimeout(handle);
+        }
+    }, [show, children]);
 	
-	// A component must always return an element or null
-	return !(show === false) && Parent.countChildren(children) !== 0 ?
-		<Alert variant={variant} className={"buttonWrapper my-2 " + className} id={id} key={key}>
-			{children}
-			{close && <Button onClick={() => close(false)}><FiX/></Button>}
-		</Alert>
-		:
-		null;
+    // A component must always return an element or null
+    return !(show === false) && Parent.countChildren(children) !== 0 ?
+        <Alert variant={variant} className={"buttonWrapper my-2 " + className} id={id} key={key}>
+            {children}
+            {close && <Button onClick={() => close(false)}><FiX/></Button>}
+        </Alert>
+        :
+        null;
 }

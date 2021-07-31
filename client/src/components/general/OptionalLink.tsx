@@ -10,9 +10,9 @@ interface OptionalLinkProperties extends ParentalProperties {
  * 	undefined will simply wrap the child in a Fragment.
  */
 export function OptionalLink({to, children}: OptionalLinkProperties) {
-	if (to !== undefined) {
-		return <Link to={to}>{children}</Link>;
-	} else {
-		return <Fragment>{children}</Fragment>;
-	}
+    if (to !== undefined) {
+        return <Link to={to}>{children}</Link>;
+    } else {
+        return <Fragment>{children}</Fragment>;
+    }
 }

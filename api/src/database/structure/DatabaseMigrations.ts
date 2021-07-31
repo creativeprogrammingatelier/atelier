@@ -96,7 +96,7 @@ const migrations: Migrations = {
     1: async client => {
         // There is no previous version, so this should never run
     }
-}
+};
 /**
  * Upgrades the database to newer version
  */

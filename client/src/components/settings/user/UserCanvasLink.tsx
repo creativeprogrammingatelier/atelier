@@ -22,56 +22,56 @@ interface UserSettingsPermissionsSectionProperties {
  */
 export default class UserCanvasLink extends React.Component<any, any> {
 	
-	constructor(props: any){
-		super(props);
-		this.state = {
+    constructor(props: any){
+        super(props);
+        this.state = {
             enabled: false,
-			linked: false
-        }
+            linked: false
+        };
         this.checkEnabled();
-		this.checkLinkedCanvas();
-	}
+        this.checkLinkedCanvas();
+    }
 
 	private linkCanvas = () => { 
-		CanvasHelper.createLink().then(res => {
-			window.location.href = res.redirect;
-			this.setState({linked: res.linked	})
+	    CanvasHelper.createLink().then(res => {
+	        window.location.href = res.redirect;
+	        this.setState({linked: res.linked	});
 			
 			
-		})
+	    });
 	}
 
 	/**
 	 * Remove Link to canvas
 	 */
 	private unlinkCanvas = () => { 
-		CanvasHelper.removeLink().then(res => this.setState({linked: false}))
+	    CanvasHelper.removeLink().then(res => this.setState({linked: false}));
 	}
 
 	/**
 	 * Check if account has already been linked
 	 */
 	private checkLinkedCanvas() { 
-		CanvasHelper.getLinked().then(res => 
-			this.setState({linked: res.linked})
-			)
-    }
+	    CanvasHelper.getLinked().then(res => 
+	        this.setState({linked: res.linked})
+	    );
+	}
     
-    /** Check if Canvas integration is enabled */
-    private checkEnabled() {
-        CanvasHelper.isEnabled().then(res => this.setState({ enabled: res }));
-    }
+	/** Check if Canvas integration is enabled */
+	private checkEnabled() {
+	    CanvasHelper.isEnabled().then(res => this.setState({ enabled: res }));
+	}
 
 	render(){
-		return (
-            this.state.enabled &&
+	    return (
+	        this.state.enabled &&
 			<Form>
-				<FormLabel><p className="label">Canvas Link</p></FormLabel> <br/>
+			    <FormLabel><p className="label">Canvas Link</p></FormLabel> <br/>
 					Linking Allows Atelier to Access your canvas data.<br/>
-					<Button onClick={this.linkCanvas} disabled={this.state.linked} >Link</Button>
-					<Button onClick={this.unlinkCanvas} disabled={!this.state.linked}>Unlink</Button>
+			    <Button onClick={this.linkCanvas} disabled={this.state.linked} >Link</Button>
+			    <Button onClick={this.unlinkCanvas} disabled={!this.state.linked}>Unlink</Button>
 			</Form>
-		);
+	    );
 	}
 }
 

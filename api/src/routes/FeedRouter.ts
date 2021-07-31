@@ -46,19 +46,19 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
         .reduce((acc, next) => {
             let commentID = "";
             switch (next.type) {
-                case "submission":
-                    // A submission is not equivalent to a comment, so group it by its own ID
-                case "comment":
-                    commentID = next.ID;
-                    break;
-                case "commentThread":
-                    commentID = next.data.comments[0]?.ID || next.data.ID;
-                    break;
-                case "mention":
-                    commentID = next.data.comment?.ID || next.data.ID;
-                    break;
-                default:
-                    assertNever(next);
+            case "submission":
+                // A submission is not equivalent to a comment, so group it by its own ID
+            case "comment":
+                commentID = next.ID;
+                break;
+            case "commentThread":
+                commentID = next.data.comments[0]?.ID || next.data.ID;
+                break;
+            case "mention":
+                commentID = next.data.comment?.ID || next.data.ID;
+                break;
+            default:
+                assertNever(next);
             }
             if (commentID in acc) {
                 acc[commentID].push(next);
@@ -66,7 +66,7 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
                 acc[commentID] = [next];
             }
             return acc;
-        }, {} as { [ID: string]: FeedItem[] })
+        }, {} as { [ID: string]: FeedItem[] });
     return Object.values(byCommentId)
         .map(arr => 
             arr.find(f => f.type === "submission") 
@@ -78,10 +78,10 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
 }
 
 feedRouter.get("/personal", capture(async (request, response) => {
-	const params = getCommonQueryParams(request);
+    const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
-	const feedData = await getPersonalFeed(userID, params);
-	response.send(feedData);
+    const feedData = await getPersonalFeed(userID, params);
+    response.send(feedData);
 }));
 
 feedRouter.get("/course/:courseID/personal", capture(async (request, response) => {
@@ -91,14 +91,14 @@ feedRouter.get("/course/:courseID/personal", capture(async (request, response) =
 
     await requireRegistered(userID, courseID);
 
-	const feedData = await getPersonalFeed(userID, params, courseID);
-	response.send(feedData);
+    const feedData = await getPersonalFeed(userID, params, courseID);
+    response.send(feedData);
 }));
 
 feedRouter.get("/course/:courseID", capture(async (request, response) => {
-	const params = getCommonQueryParams(request);
-	const userID = await getCurrentUserID(request);
-	const courseID = request.params.courseID;
+    const params = getCommonQueryParams(request);
+    const userID = await getCurrentUserID(request);
+    const courseID = request.params.courseID;
     
     await requireRegistered(userID, courseID);
     await requirePermission(userID, PermissionEnum.viewAllSubmissions, courseID);

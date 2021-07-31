@@ -12,8 +12,8 @@ export interface DBPluginHook {
 export type PluginHookInput = Partial<PluginHook> & DBTools
 
 export function convertPluginHook(db: DBPluginHook): PluginHook {
-	return {
-		pluginID: UUIDHelper.fromUUID(db.pluginid),
-		hook: db.hook
-	};
+    return {
+        pluginID: UUIDHelper.fromUUID(db.pluginid),
+        hook: db.hook
+    };
 }

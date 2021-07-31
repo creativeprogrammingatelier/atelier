@@ -16,7 +16,7 @@ import {User} from "../models/api/User";
  */
 /* tslint:disable:no-any */
 export function instanceOfCourseUser(object: any): object is CourseUser {
-	return ("userID" in object
+    return ("userID" in object
 		&& typeof object.userID === "string"
 		&& "courseID" in object
 		&& typeof object.courseID === "string"
@@ -26,10 +26,10 @@ export function instanceOfCourseUser(object: any): object is CourseUser {
 		&& typeof object.email === "string"
 		&& "permission" in object
 		&& instanceOfPermission(object.permission)
-	);
+    );
 }
 export function instanceOfComment(object: any): object is Comment {
-	return ("ID" in object
+    return ("ID" in object
 		&& typeof object.ID === "string"
 		&& "user" in object
 		&& instanceOfUser(object.user)
@@ -43,7 +43,7 @@ export function instanceOfComment(object: any): object is Comment {
 		&& typeof object.references === "object");
 }
 export function instanceOfCommentThread(object: any): object is CommentThread {
-	return ("ID" in object
+    return ("ID" in object
 		&& typeof object.ID === "string"
 		&& "visibility" in object
 		&& typeof object.visibility === "string"
@@ -54,7 +54,7 @@ export function instanceOfCommentThread(object: any): object is CommentThread {
 		&& "references" in object);
 }
 export function instanceOfFile(object: any): object is File {
-	return ("ID" in object
+    return ("ID" in object
 		&& typeof object.ID === "string"
 		&& "name" in object
 		&& typeof object.name === "string"
@@ -63,17 +63,17 @@ export function instanceOfFile(object: any): object is File {
 		&& "references" in object);
 }
 export function instanceOfPermission(object: any): object is Permission {
-	return ("globalRole" in object
+    return ("globalRole" in object
 		&& typeof object.globalRole === "string"
 		&& "permissions" in object
 		&& typeof object.permissions === "number")
 		&& (
-			!("courseRole" in object)
+		    !("courseRole" in object)
 			|| typeof object.courseRole === "string"
 		);
 }
 export function instanceOfSnippet(object: any): object is Snippet {
-	return ("ID" in object
+    return ("ID" in object
 		&& typeof object.ID === "string"
 		&& "file" in object
 		&& instanceOfFile(object.file)
@@ -92,7 +92,7 @@ export function instanceOfSnippet(object: any): object is Snippet {
 		&& "references" in object);
 }
 export function instanceOfSubmission(object: any): object is Submission {
-	return ("ID" in object
+    return ("ID" in object
 		&& typeof object.ID === "string"
 		&& "name" in object
 		&& typeof object.name === "string"
@@ -107,7 +107,7 @@ export function instanceOfSubmission(object: any): object is Submission {
 		&& "references" in object);
 }
 export function instanceOfUser(object: any): object is User {
-	return ("ID" in object
+    return ("ID" in object
 		&& typeof object.ID === "string"
 		&& "name" in object
 		&& typeof object.ID === "string"
@@ -117,7 +117,7 @@ export function instanceOfUser(object: any): object is User {
 		&& instanceOfPermission(object.permission));
 }
 export function instanceOfCoursePartial(object: any): object is CoursePartial {
-	return ("ID" in object
+    return ("ID" in object
 		&& typeof object.ID === "string"
 		&& "name" in object
 		&& typeof object.name === "string"
@@ -125,15 +125,15 @@ export function instanceOfCoursePartial(object: any): object is CoursePartial {
 		&& typeof object.state === "string"
 		&& "creator" in object
 		&& instanceOfUser(object.creator)
-	);
+    );
 }
 export function instanceofCourse(object: any): object is Course {
-	return "currentUserPermission" in object
+    return "currentUserPermission" in object
 		&& instanceOfPermission(object.currentUserPermission)
 		&& instanceOfCoursePartial(object);
 }
 export function instanceOfCourseRegistration(object: any): object is CourseUser {
-	return ("courseID" in object
+    return ("courseID" in object
 		&& typeof object.courseID === "string"
 		&& "userID" in object
 		&& typeof object.userID === "string"
@@ -143,10 +143,10 @@ export function instanceOfCourseRegistration(object: any): object is CourseUser 
 		&& typeof object.email === "string"
 		&& "permission" in object
 		&& instanceOfPermission(object.permission)
-	);
+    );
 }
 export function instanceOfInvite(object: any): object is CourseInvite {
-	return ("inviteID" in object
+    return ("inviteID" in object
 		&& typeof object.inviteID === "string"
 		&& "creatorID" in object
 		&& typeof object.creatorID === "string"
@@ -156,22 +156,22 @@ export function instanceOfInvite(object: any): object is CourseInvite {
 		&& typeof object.type === "string"
 		&& "joinRole" in object
 		&& typeof object.joinRole === "string"
-	);
+    );
 }
 export function instanceOfSearchComment(object: any): object is SearchResultComment {
-	return "comment" in object
+    return "comment" in object
 		&& instanceOfComment(object.comment)
 		&& "submission" in object
 		&& instanceOfSubmission(object.submission);
 }
 export function instanceOfSearchFile(object: any): object is SearchResultFile {
-	return "file" in object
+    return "file" in object
 		&& instanceOfFile(object.file)
 		&& "submission" in object
 		&& instanceOfSubmission(object.submission);
 }
 export function instanceOfSearchSnippet(object: any): object is SearchResultSnippet {
-	return "snippet" in object
+    return "snippet" in object
 		&& instanceOfSnippet(object.snippet)
 		&& "file" in object
 		&& instanceOfFile(object.file)
@@ -179,7 +179,7 @@ export function instanceOfSearchSnippet(object: any): object is SearchResultSnip
 		&& instanceOfSubmission(object.submission);
 }
 export function instanceOfSearch(object: any): object is SearchResult {
-	return "courses" in object
+    return "courses" in object
 		&& object.courses.every(instanceofCourse)
 		&& "users" in object
 		&& object.users.every(instanceOfUser)

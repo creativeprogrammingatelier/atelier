@@ -16,17 +16,17 @@ interface MaybeTextareaProperties extends ParentalProperties {
  * Text are that is allowed to modified only if the modify flag is true.
  */
 export function MaybeTextarea({modify, placeholder, value, onChange, children}: MaybeTextareaProperties) {
-	return <Fragment>
-		{
-			modify ?
-				<Form.Control
-					as="textarea"
-					placeholder={placeholder}
-					value={value}
-					onChange={event => onChange && onChange((event.target as HTMLInputElement).value)}
-				/>
-				:
-				children ? children : <Form.Control as="textarea" readOnly value={value}/>
-		}
-	</Fragment>;
+    return <Fragment>
+        {
+            modify ?
+                <Form.Control
+                    as="textarea"
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={event => onChange && onChange((event.target as HTMLInputElement).value)}
+                />
+                :
+                children ? children : <Form.Control as="textarea" readOnly value={value}/>
+        }
+    </Fragment>;
 }

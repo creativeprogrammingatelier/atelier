@@ -20,9 +20,9 @@ class File {
 	 * @param transport File path
 	 */
 	constructor(name: string, type?: string, transport?: string) {
-		this.name = name;
-		this.type = type;
-		this.transport = transport;
+	    this.name = name;
+	    this.type = type;
+	    this.transport = transport;
 	}
 }
 /**
@@ -43,8 +43,8 @@ export class Node extends File {
 	 * @param transport Node path.
 	 */
 	constructor(name: string, children: Node[], type?: string, transport?: string) {
-		super(name, type, transport);
-		this.children = children;
+	    super(name, type, transport);
+	    this.children = children;
 	}
 }
 /**
@@ -64,8 +64,8 @@ export class TopLevelNode extends Node {
 	 * @param transport Path to node.
 	 */
 	constructor(name: string, children: Node[], paths: File[], type?: string, transport?: string) {
-		super(name, children, type, transport);
-		this.paths = paths;
+	    super(name, children, type, transport);
+	    this.paths = paths;
 	}
 }
 
@@ -77,51 +77,51 @@ interface DirectoryViewerProperties {
  * Function returning a list of DirectoryNodes from the filePaths specified.
  */
 export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
-	if (filePaths.length === 0) {
-		return null;
-	}
+    if (filePaths.length === 0) {
+        return null;
+    }
 	
-	const slashPrefixed = filePaths[0].name[0] === "/";
-	const projectFolder = filePaths[0].name.split("/")[slashPrefixed ? 1 : 0];
-	const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.type, path.transport));
+    const slashPrefixed = filePaths[0].name[0] === "/";
+    const projectFolder = filePaths[0].name.split("/")[slashPrefixed ? 1 : 0];
+    const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.type, path.transport));
 	
-	const topLevelNodes: {[folder: string]: TopLevelNode} = {};
-	for (const path of projectPaths) {
-		const folder = path.name.split("/")[0];
-		const file = path.name.substr(folder.length + 1);
+    const topLevelNodes: {[folder: string]: TopLevelNode} = {};
+    for (const path of projectPaths) {
+        const folder = path.name.split("/")[0];
+        const file = path.name.substr(folder.length + 1);
 		
-		if (file.length === 0) {
-			// This is a file in this folder
-			topLevelNodes[folder] = new TopLevelNode(folder, [], [], path.type, path.transport);
-		} else if (topLevelNodes.hasOwnProperty(folder)) {
-			// This is a file in a sub-folder that has been added
-			topLevelNodes[folder].paths.push(new File(file, path.type, path.transport));
-		} else {
-			// This is a file in a new sub-folder
-			topLevelNodes[folder] = new TopLevelNode(folder, [], [new File(path.name.substr(folder.length + 1), path.type, path.transport)], path.type, path.transport);
-		}
-	}
-	for (const folder in topLevelNodes) {
-		// TSLint wants this check
-		if (topLevelNodes.hasOwnProperty(folder)) {
-			for (const path of topLevelNodes[folder].paths) {
-				let current = topLevelNodes[folder] as Node;
-				for (const folder of path.name.split("/")) {
-					let next = current.children.find(child => child.name === folder);
-					if (next === undefined) {
-						next = new Node(folder, [], current.type);
-						current.children.push(next);
-					}
-					current = next;
-				}
-				current.transport = path.transport;
-			}
-		}
-	}
+        if (file.length === 0) {
+            // This is a file in this folder
+            topLevelNodes[folder] = new TopLevelNode(folder, [], [], path.type, path.transport);
+        } else if (topLevelNodes.hasOwnProperty(folder)) {
+            // This is a file in a sub-folder that has been added
+            topLevelNodes[folder].paths.push(new File(file, path.type, path.transport));
+        } else {
+            // This is a file in a new sub-folder
+            topLevelNodes[folder] = new TopLevelNode(folder, [], [new File(path.name.substr(folder.length + 1), path.type, path.transport)], path.type, path.transport);
+        }
+    }
+    for (const folder in topLevelNodes) {
+        // TSLint wants this check
+        if (topLevelNodes.hasOwnProperty(folder)) {
+            for (const path of topLevelNodes[folder].paths) {
+                let current = topLevelNodes[folder] as Node;
+                for (const folder of path.name.split("/")) {
+                    let next = current.children.find(child => child.name === folder);
+                    if (next === undefined) {
+                        next = new Node(folder, [], current.type);
+                        current.children.push(next);
+                    }
+                    current = next;
+                }
+                current.transport = path.transport;
+            }
+        }
+    }
 	
-	return <Fragment>
-		{
-			Object.values(topLevelNodes).map(node => <DirectoryNode key={node.transport || node.name} node={node}/>)
-		}
-	</Fragment>;
+    return <Fragment>
+        {
+            Object.values(topLevelNodes).map(node => <DirectoryNode key={node.transport || node.name} node={node}/>)
+        }
+    </Fragment>;
 }

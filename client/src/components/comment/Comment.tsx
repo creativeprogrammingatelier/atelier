@@ -29,57 +29,57 @@ interface CommentProperties {
  * @param comment Comment representation of the comment object.
  */
 export function Comment({comment}: CommentProperties) {
-	const [menuOpen, setMenuOpen] = useState(false);
-	const [deleteError, setDeleteError] = useState(false as FeedbackContent);
-	const comments = useComments(comment.references.commentThreadID);
-	const user = useCurrentUser();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [deleteError, setDeleteError] = useState(false as FeedbackContent);
+    const comments = useComments(comment.references.commentThreadID);
+    const user = useCurrentUser();
 	
-	let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout;
 	
-	const handleDown = () => {
-		if (menuOpen) {
-			setMenuOpen(false);
-		} else {
-			timer = setTimeout(() => {
-				setMenuOpen(true);
-			}, 1000);
-		}
-	};
-	const handleUp = () => {
-		window.clearTimeout(timer);
-	};
-	const handleCopy = () => {
-		CopyHelper.copy(comment.text);
-		setMenuOpen(false);
-	};
-	const handleDelete = () => {
-		comments.delete(comment.ID)
-			.then(() => setMenuOpen(false))
-			.catch(error => setDeleteError(error.message));
-	};
+    const handleDown = () => {
+        if (menuOpen) {
+            setMenuOpen(false);
+        } else {
+            timer = setTimeout(() => {
+                setMenuOpen(true);
+            }, 1000);
+        }
+    };
+    const handleUp = () => {
+        window.clearTimeout(timer);
+    };
+    const handleCopy = () => {
+        CopyHelper.copy(comment.text);
+        setMenuOpen(false);
+    };
+    const handleDelete = () => {
+        comments.delete(comment.ID)
+            .then(() => setMenuOpen(false))
+            .catch(error => setDeleteError(error.message));
+    };
 	
-	return <Fragment>
-		<div className="comment px-2 py-1" onMouseDown={handleDown} onMouseUp={handleUp} onTouchStart={handleDown} onTouchEnd={handleUp}>
-			<small><span>{comment.user.name}</span> at <span>{TimeHelper.toDateTimeString(TimeHelper.fromString(comment.created))}</span></small>
-			<div style={comment.text === "This comment was deleted" ? {fontStyle: "italic"} : {}}>
-				{comment.text.split(" ").map(text => text[0] == "#" ? <Tag key={text} large round theme="primary">{text}</Tag>: text + " ")
-				}
-			</div>
-		</div>
-		{
-			menuOpen &&
+    return <Fragment>
+        <div className="comment px-2 py-1" onMouseDown={handleDown} onMouseUp={handleUp} onTouchStart={handleDown} onTouchEnd={handleUp}>
+            <small><span>{comment.user.name}</span> at <span>{TimeHelper.toDateTimeString(TimeHelper.fromString(comment.created))}</span></small>
+            <div style={comment.text === "This comment was deleted" ? {fontStyle: "italic"} : {}}>
+                {comment.text.split(" ").map(text => text[0] == "#" ? <Tag key={text} large round theme="primary">{text}</Tag>: text + " ")
+                }
+            </div>
+        </div>
+        {
+            menuOpen &&
 			<ButtonBar transparent align="left">
-				<Button className="m-2" onClick={handleCopy}>Copy <FiClipboard/></Button>
-				<Cached cache={user}>
-					{user => user.ID === comment.user.ID &&
+			    <Button className="m-2" onClick={handleCopy}>Copy <FiClipboard/></Button>
+			    <Cached cache={user}>
+			        {user => user.ID === comment.user.ID &&
 						<ButtonMultistate variant="danger" className="mt-2 mb-2" states={[
-							<Fragment key={comment.ID + 'Delete'}>Delete <FiTrash/></Fragment>,
-							<Fragment key={comment.ID + 'Confirm'}>Confirm <FiTrash/></Fragment>,
+						    <Fragment key={comment.ID + "Delete"}>Delete <FiTrash/></Fragment>,
+						    <Fragment key={comment.ID + "Confirm"}>Confirm <FiTrash/></Fragment>,
 						]} finish={handleDelete}/>
-					}
-				</Cached>
-				<FeedbackError close={setDeleteError}>{deleteError}</FeedbackError>
+			        }
+			    </Cached>
+			    <FeedbackError close={setDeleteError}>{deleteError}</FeedbackError>
 			</ButtonBar>
-		}
-	</Fragment>;
+        }
+    </Fragment>;
 }

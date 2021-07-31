@@ -39,51 +39,51 @@ export {APISnippet};
 export type DBAPISnippet = DBSnippet & DBAPIFile
 
 export function filterNullSnippet(snippets: APISnippet[]) {
-	return snippets.filter(isNotNullSnippet);
+    return snippets.filter(isNotNullSnippet);
 }
 export function isNotNullSnippet(snippet: APISnippet) {
-	return snippet.start.line !== -1;
+    return snippet.start.line !== -1;
 }
 export function convertSnippet(db: DBSnippet): Snippet {
-	checkAvailable(["snippetid", "linestart", "charstart", "lineend", "charend", "body"], db);
-	// for (const key in db){
-	// 	if (key in keys) continue
-	// 	ret[key] = db[key]
-	// }
-	return {
-		snippetID: UUIDHelper.fromUUID(db.snippetid),
-		lineStart: db.linestart,
-		lineEnd: db.lineend,
-		charStart: db.charstart,
-		charEnd: db.charend,
-		body: db.body,
-		contextBefore: db.contextbefore,
-		contextAfter: db.contextafter
-	};
+    checkAvailable(["snippetid", "linestart", "charstart", "lineend", "charend", "body"], db);
+    // for (const key in db){
+    // 	if (key in keys) continue
+    // 	ret[key] = db[key]
+    // }
+    return {
+        snippetID: UUIDHelper.fromUUID(db.snippetid),
+        lineStart: db.linestart,
+        lineEnd: db.lineend,
+        charStart: db.charstart,
+        charEnd: db.charend,
+        body: db.body,
+        contextBefore: db.contextbefore,
+        contextAfter: db.contextafter
+    };
 }
 export function snippetToAPI(db: DBAPISnippet): APISnippet {
-	checkAvailable(["snippetid", "linestart", "charstart",
-		"lineend", "charend", "body",
-		"contextbefore", "contextafter",
-		"courseid", "submissionid", "commentthreadid"], db);
-	return {
-		ID: UUIDHelper.fromUUID(db.snippetid),
-		file: fileToAPI(db),
-		start: {
-			line: db.linestart,
-			character: db.charstart
-		},
-		end: {
-			line: db.lineend,
-			character: db.charend
-		},
-		body: db.body,
-		contextBefore: db.contextbefore,
-		contextAfter: db.contextafter,
-		references: {
-			courseID: UUIDHelper.fromUUID(db.courseid),
-			submissionID: UUIDHelper.fromUUID(db.submissionid),
-			commentThreadID: UUIDHelper.fromUUID(db.commentthreadid)
-		}
-	};
+    checkAvailable(["snippetid", "linestart", "charstart",
+        "lineend", "charend", "body",
+        "contextbefore", "contextafter",
+        "courseid", "submissionid", "commentthreadid"], db);
+    return {
+        ID: UUIDHelper.fromUUID(db.snippetid),
+        file: fileToAPI(db),
+        start: {
+            line: db.linestart,
+            character: db.charstart
+        },
+        end: {
+            line: db.lineend,
+            character: db.charend
+        },
+        body: db.body,
+        contextBefore: db.contextbefore,
+        contextAfter: db.contextafter,
+        references: {
+            courseID: UUIDHelper.fromUUID(db.courseid),
+            submissionID: UUIDHelper.fromUUID(db.submissionid),
+            commentThreadID: UUIDHelper.fromUUID(db.commentthreadid)
+        }
+    };
 }

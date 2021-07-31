@@ -28,9 +28,9 @@ declare global {
 }
 
 Array.prototype.skipWhile = function <T>(this: T[], predicate: (elem: T) => boolean) {
-	let i = 0;
-	while (i < this.length && predicate(this[i])) {
-		i++;
-	}
-	return this.slice(i);
+    let i = 0;
+    while (i < this.length && predicate(this[i])) {
+        i++;
+    }
+    return this.slice(i);
 };

@@ -54,8 +54,8 @@ function Feed({ feed, type, global, buttons }: FeedProperties) {
         combineLatest([feed.observable, filteredObservable]).pipe(
             map(([col, filtered]) => 
                 "items" in col
-                ? { ...col, items: col.items.filter(item => filtered.includes(item.value.type)) } 
-                : col
+                    ? { ...col, items: col.items.filter(item => filtered.includes(item.value.type)) } 
+                    : col
             ))
     );
     const filteredFeed = { ...feed, observable: filteredFeedObservable };
@@ -63,7 +63,7 @@ function Feed({ feed, type, global, buttons }: FeedProperties) {
     useEffect(() => {
         const storedFilter = localStorage.getItem(`feedFilter#${type}`);
         if (storedFilter) setFiltered(JSON.parse(storedFilter));
-    }, [])
+    }, []);
     useEffect(() => {
         localStorage.setItem(`feedFilter#${type}`, JSON.stringify(filtered));
     }, [filtered]);
@@ -150,8 +150,8 @@ function FilterBox({ tag, name, filtered, setFiltered }: FilterBoxProperties) {
             selected={filtered.includes(tag)}
             onChange={state => {
                 state 
-                ? setFiltered(filtered => filtered.concat(tag))
-                : setFiltered(filtered => filtered.filter(f => f !== tag));
+                    ? setFiltered(filtered => filtered.concat(tag))
+                    : setFiltered(filtered => filtered.filter(f => f !== tag));
             }} />
     );
 }

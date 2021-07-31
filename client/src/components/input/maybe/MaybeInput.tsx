@@ -16,17 +16,17 @@ interface MaybeInputProperties extends ParentalProperties {
  * Component that accepts an input only if the modify flag is true.
  */
 export function MaybeInput({modify, placeholder, value, onChange, children}: MaybeInputProperties) {
-	return <Fragment>
-		{
-			modify ?
-				<Form.Control
-					type="text"
-					placeholder={placeholder}
-					value={value}
-					onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange && onChange((event.target as HTMLInputElement).value)}
-				/>
-				:
-				children ? children : <Form.Control plaintext readOnly value={value}/>
-		}
-	</Fragment>;
+    return <Fragment>
+        {
+            modify ?
+                <Form.Control
+                    type="text"
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange && onChange((event.target as HTMLInputElement).value)}
+                />
+                :
+                children ? children : <Form.Control plaintext readOnly value={value}/>
+        }
+    </Fragment>;
 }

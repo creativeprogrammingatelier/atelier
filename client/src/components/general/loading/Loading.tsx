@@ -30,34 +30,34 @@ interface LoadingProperties<R, F extends LoadingFunc<R>> {
  * and gives the data
  */
 export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: promise, params: parameters, component, wrapper, cache}: LoadingProperties<R, F>) {
-	const [state, updateState] = useState(LoadingState.Loading);
-	const [result, updateResult] = useState(undefined as R | undefined);
-	const [error, updateError] = useState(undefined as {error: string, message: string} | undefined);
+    const [state, updateState] = useState(LoadingState.Loading);
+    const [result, updateResult] = useState(undefined as R | undefined);
+    const [error, updateError] = useState(undefined as {error: string, message: string} | undefined);
 	
-	const wrapped = (children: JSX.Element) => wrapper ?
-		<Fragment key="wrapped">{wrapper(children)}</Fragment>
-		:
-		children;
+    const wrapped = (children: JSX.Element) => wrapper ?
+        <Fragment key="wrapped">{wrapper(children)}</Fragment>
+        :
+        children;
 	
-	useEffect(() => {
-		(parameters ? promise(...parameters, cache) : promise(cache)).then(res => {
-			updateResult(res);
-			updateState(LoadingState.Loaded);
-		}).catch(err => {
-			updateError(err);
-			updateState(LoadingState.Error);
-		});
-	}, [parameters]);
+    useEffect(() => {
+        (parameters ? promise(...parameters, cache) : promise(cache)).then(res => {
+            updateResult(res);
+            updateState(LoadingState.Loaded);
+        }).catch(err => {
+            updateError(err);
+            updateState(LoadingState.Error);
+        });
+    }, [parameters]);
 	
-	if (state === LoadingState.Loaded) {
-		return Parent.constructChildren(component(result!));
-	} else if (state === LoadingState.Error) {
-		return wrapped(
-			<div>
+    if (state === LoadingState.Loaded) {
+        return Parent.constructChildren(component(result!));
+    } else if (state === LoadingState.Error) {
+        return wrapped(
+            <div>
 				An error occurred: {error!.message}.
-			</div>
-		);
-	} else { // state === LoadingState.Loading
-		return wrapped(<LoadingIcon/>);
-	}
+            </div>
+        );
+    } else { // state === LoadingState.Loading
+        return wrapped(<LoadingIcon/>);
+    }
 }

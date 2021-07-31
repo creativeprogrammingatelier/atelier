@@ -28,23 +28,23 @@ commentRouter.use(AuthMiddleware.requireAuth);
  * Get all comments by a user
  */
 commentRouter.get("/user/:userID", capture(async(request, response) => {
-	const userID = request.params.userID;
-	const comments = (await CommentDB.filterComment({userID})
+    const userID = request.params.userID;
+    const comments = (await CommentDB.filterComment({userID})
         .then(comments => filterComments(comments, userID)))
-		.map(comment => removePermissionsComment(comment));
-	response.status(200).send(comments);
+        .map(comment => removePermissionsComment(comment));
+    response.status(200).send(comments);
 }));
 
 /**
  * Get all comments by a user within a course
  */
 commentRouter.get("/course/:courseID/user/:userID", capture(async(request, response) => {
-	const courseID = request.params.courseID;
-	const userID = request.params.userID;
-	const comments = (await CommentDB.filterComment({courseID, userID})
+    const courseID = request.params.courseID;
+    const userID = request.params.userID;
+    const comments = (await CommentDB.filterComment({courseID, userID})
         .then(comments => filterComments(comments, userID)))
-		.map(comment => removePermissionsComment(comment));
-	response.status(200).send(comments);
+        .map(comment => removePermissionsComment(comment));
+    response.status(200).send(comments);
 }));
 
 /** Get all comments in a course */
@@ -60,7 +60,7 @@ commentRouter.get("/course/:courseID", capture(async (request, response) => {
         .then(comments => filterComments(comments, currentUserID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);
-}))
+}));
 
 // ---------- PUT REQUESTS ----------
 
@@ -72,31 +72,31 @@ commentRouter.get("/course/:courseID", capture(async (request, response) => {
  *  - user is registered in the course of the commentThread
  */
 commentRouter.put("/:commentThreadID", capture(async(request, response) => {
-	const commentThreadID = request.params.commentThreadID;
-	const currentUserID: string = await getCurrentUserID(request);
-	let commentBody: string = request.body.comment;
+    const commentThreadID = request.params.commentThreadID;
+    const currentUserID: string = await getCurrentUserID(request);
+    let commentBody: string = request.body.comment;
 
-	// Trim comment
-	commentBody = commentBody.trim();
+    // Trim comment
+    commentBody = commentBody.trim();
 
-	// User should be registered
-	await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
+    // User should be registered
+    await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 
-	const comment = await transaction(async (client) => {
-		const comment: Comment = await CommentDB.addComment({
-			commentThreadID,
-			userID: currentUserID,
-			body: commentBody,
-			client
-		});
+    const comment = await transaction(async (client) => {
+        const comment: Comment = await CommentDB.addComment({
+            commentThreadID,
+            userID: currentUserID,
+            body: commentBody,
+            client
+        });
 		
-		await createMentions(commentBody, comment.ID, comment.references.courseID, currentUserID, client);
-		await createTags(commentBody, comment.ID, client);
+        await createMentions(commentBody, comment.ID, comment.references.courseID, currentUserID, client);
+        await createTags(commentBody, comment.ID, client);
 		
-		return comment;
-	});
+        return comment;
+    });
 
-	response.status(200).send(comment);
+    response.status(200).send(comment);
 }));
 
 // ---------- DELETE REQUESTS ----------
@@ -107,19 +107,19 @@ commentRouter.put("/:commentThreadID", capture(async(request, response) => {
  *  - User is the author of the comment
  */
 commentRouter.delete("/:commentThreadID/:commentID", capture(async(request, response) => {
-	const currentUserID = await getCurrentUserID(request);
-	const commentID = request.params.commentID;
-	//const commentThreadID = request.params.commentThreadID;
+    const currentUserID = await getCurrentUserID(request);
+    const commentID = request.params.commentID;
+    //const commentThreadID = request.params.commentThreadID;
 	
-	let comment = await CommentDB.getCommentByID(commentID);
-	if (comment.user.ID !== currentUserID) {
-		throw new PermissionError("permission.notAllowed", "You should be the owner of the comment.");
-	}
+    let comment = await CommentDB.getCommentByID(commentID);
+    if (comment.user.ID !== currentUserID) {
+        throw new PermissionError("permission.notAllowed", "You should be the owner of the comment.");
+    }
 	
-	comment = await CommentDB.updateComment({
-		commentID,
-		body: "This comment was deleted"
-	});
+    comment = await CommentDB.updateComment({
+        commentID,
+        body: "This comment was deleted"
+    });
 	
-	response.status(200).send(comment);
+    response.status(200).send(comment);
 }));

@@ -10,16 +10,16 @@ import {UserSettingsGeneral} from "./UserSettingsGeneral";
  * Component for listing the user settings of a user.
  */
 export function UserSettings() {
-	return <Frame title="Settings" sidebar search>
-		<Jumbotron>
-			<h1>My Account</h1>
-			<p>Personalize your Atelier experience here</p>
-		</Jumbotron>
-		<DataList header="User Details">
-			<UserSettingsGeneral/>
-			<br/>
-			<UserCanvasLink/>
-		</DataList>
+    return <Frame title="Settings" sidebar search>
+        <Jumbotron>
+            <h1>My Account</h1>
+            <p>Personalize your Atelier experience here</p>
+        </Jumbotron>
+        <DataList header="User Details">
+            <UserSettingsGeneral/>
+            <br/>
+            <UserCanvasLink/>
+        </DataList>
 
-	</Frame>;
+    </Frame>;
 }

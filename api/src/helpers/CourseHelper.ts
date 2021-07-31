@@ -11,8 +11,8 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
 
     for (let user of users){
         try { 
-            let userDB: any  = await UserDB.getUserByEmail(user.email, client)
-            console.log(userDB)
+            let userDB: any  = await UserDB.getUserByEmail(user.email, client);
+            console.log(userDB);
             if (userDB != undefined){
                 await CourseRegistrationDB.addEntry({
                     courseID: course.ID,
@@ -21,7 +21,7 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
                     client
                 });
             } else if ( user.email != undefined ) { 
-                let createdUser: any = await UserDB.createUser({ userName: user.name , email: user.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client })
+                let createdUser: any = await UserDB.createUser({ userName: user.name , email: user.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client });
                 await CourseRegistrationDB.addEntry({
                     courseID: course.ID,
                     userID: createdUser.ID,
@@ -29,11 +29,11 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
                     client
                 });
             } else { 
-                console.log("No email found for user cannot link: ", user.name)
+                console.log("No email found for user cannot link: ", user.name);
             }
         } catch(e) {
-            console.log("No email found for user cannot link: ", user.name)
-            console.log(e)
+            console.log("No email found for user cannot link: ", user.name);
+            console.log(e);
         }
        
     }

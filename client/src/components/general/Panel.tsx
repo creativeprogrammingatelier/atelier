@@ -20,19 +20,19 @@ interface PanelProperties {
  * link to the data, otherwise it is undefined.
  */
 export function Panel({display, location, state = CacheState.Loaded}: PanelProperties) {
-	return <div className="panel">
-		<OptionalLink to={state && CacheState.Loaded ? location : undefined}>
-			<div className="panelText">
-				<h3>{display}</h3>
-			</div>
-			<div className="panelBottom text-right">
-				{
-					state === CacheState.Loaded ?
-						<FiChevronsRight size={32} strokeWidth={1.5}/>
-						:
-						<LoadingIcon/>
-				}
-			</div>
-		</OptionalLink>
-	</div>;
+    return <div className="panel">
+        <OptionalLink to={state && CacheState.Loaded ? location : undefined}>
+            <div className="panelText">
+                <h3>{display}</h3>
+            </div>
+            <div className="panelBottom text-right">
+                {
+                    state === CacheState.Loaded ?
+                        <FiChevronsRight size={32} strokeWidth={1.5}/>
+                        :
+                        <LoadingIcon/>
+                }
+            </div>
+        </OptionalLink>
+    </div>;
 }

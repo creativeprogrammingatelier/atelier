@@ -24,7 +24,7 @@ export function ResearchPermissionWrapper({ children }: ParentalProperties) {
                 </Fragment>;
             }
         }}
-    </Cached>
+    </Cached>;
 }
 
 /** 
@@ -50,7 +50,7 @@ function ResearchPermissionOverlay() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         currentUser.update({ researchAllowed });
-    } 
+    }; 
 
     return <Overlay>
         <Area className="p-4 mx-auto my-5 col-12 col-sm-10 col-md-8">

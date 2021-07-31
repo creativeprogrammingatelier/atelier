@@ -28,7 +28,7 @@ canvasRouter.delete("/link", capture(async (request: Request, response: Response
 }));
 
 canvasRouter.get("/link", capture(async (request: Request, response: Response) => {
-    response.json(setUpCanvasLinkJson())
+    response.json(setUpCanvasLinkJson());
 }));
 
 canvasRouter.get("/oauth_complete", capture(async (request: Request, response: Response) => {
@@ -36,7 +36,7 @@ canvasRouter.get("/oauth_complete", capture(async (request: Request, response: R
     let userID: string = await getCurrentUserID(request);
     let newUser = { userID: userID, canvasrefresh: refresh_token };
     await UserDB.updateUser(newUser);
-    response.redirect('/account');
+    response.redirect("/account");
 }));
 
 canvasRouter.get("/courses", capture(async (request: Request, response: Response) => {

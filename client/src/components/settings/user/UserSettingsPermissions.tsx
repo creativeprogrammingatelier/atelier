@@ -41,63 +41,63 @@ interface UserSettingsPermissionsSectionProperties {
  * Component managing the permission of a given user, in the specified course.
  */
 export function UserSettingsPermissions({courseID}: UserSettingsPermissionsProperties) {
-	const [user, setUser] = useState(undefined as User | undefined);
-	const [permissions, setPermissions] = useState({} as PermissionState);
+    const [user, setUser] = useState(undefined as User | undefined);
+    const [permissions, setPermissions] = useState({} as PermissionState);
 	
-	/**
+    /**
 	 * Sets the new permission given. 
 	 */
-	const setPermission = (permission: string, state: boolean) => {
-		setPermissions(permissions => ({...permissions, [permission]: state}));
-	};
-	/**
+    const setPermission = (permission: string, state: boolean) => {
+        setPermissions(permissions => ({...permissions, [permission]: state}));
+    };
+    /**
 	 * Function to handle updates to the permissions of the user.
 	 */
-	const handleUpdate = () => {
-		if (user) {
-			// Send local / global permission request
-			if (courseID) {
-				console.log("Local permissions");
-				setPermissionCourse(courseID, user.ID, permissions).then((courseUser: CourseUser) => {
-					console.log("Success");
-					console.log(courseUser);
-					// TODO handle response
-				});
-			} else {
-				console.log("Global permissions");
-				setPermissionGlobal(user.ID, permissions).then((courseUser: CourseUser) => {
-					console.log("Success");
-					console.log(courseUser);
-					// TODO handle response
-				});
-			}
-		}
-	};
+    const handleUpdate = () => {
+        if (user) {
+            // Send local / global permission request
+            if (courseID) {
+                console.log("Local permissions");
+                setPermissionCourse(courseID, user.ID, permissions).then((courseUser: CourseUser) => {
+                    console.log("Success");
+                    console.log(courseUser);
+                    // TODO handle response
+                });
+            } else {
+                console.log("Global permissions");
+                setPermissionGlobal(user.ID, permissions).then((courseUser: CourseUser) => {
+                    console.log("Success");
+                    console.log(courseUser);
+                    // TODO handle response
+                });
+            }
+        }
+    };
 	
-	useEffect(() => {
-		Object.keys({...permissionsSectionView, ...permissionsSectionManage}).map(permission => {
-			setPermission(permission, user ? containsPermission(getEnum(PermissionEnum, permission), user.permission.permissions) : false);
-		});
-	}, [user]);
+    useEffect(() => {
+        Object.keys({...permissionsSectionView, ...permissionsSectionManage}).map(permission => {
+            setPermission(permission, user ? containsPermission(getEnum(PermissionEnum, permission), user.permission.permissions) : false);
+        });
+    }, [user]);
 	
-	return <Form>
-		<UserSearch courseID={courseID} onSelected={setUser}/>
-		{
-			user &&
+    return <Form>
+        <UserSearch courseID={courseID} onSelected={setUser}/>
+        {
+            user &&
 			<Fragment>
-				<UserInfo user={user}/>
-				<Permissions course={courseID} single={PermissionEnum.manageUserPermissionsView}>
-					<UserSettingsPermissionsSection header="Viewing permissions" display={permissionsSectionView}
-						state={permissions} setState={setPermission}/>
-				</Permissions>
-				<Permissions course={courseID} single={PermissionEnum.manageUserPermissionsManager}>
-					<UserSettingsPermissionsSection header="Managing permissions" display={permissionsSectionManage}
-						state={permissions} setState={setPermission}/>
-				</Permissions>
-				<Button onClick={handleUpdate}>Update permissions</Button>
+			    <UserInfo user={user}/>
+			    <Permissions course={courseID} single={PermissionEnum.manageUserPermissionsView}>
+			        <UserSettingsPermissionsSection header="Viewing permissions" display={permissionsSectionView}
+			            state={permissions} setState={setPermission}/>
+			    </Permissions>
+			    <Permissions course={courseID} single={PermissionEnum.manageUserPermissionsManager}>
+			        <UserSettingsPermissionsSection header="Managing permissions" display={permissionsSectionManage}
+			            state={permissions} setState={setPermission}/>
+			    </Permissions>
+			    <Button onClick={handleUpdate}>Update permissions</Button>
 			</Fragment>
-		}
-	</Form>;
+        }
+    </Form>;
 }
 
 /**
@@ -105,17 +105,17 @@ export function UserSettingsPermissions({courseID}: UserSettingsPermissionsPrope
  * via a checkbox input for every permission in "display". 
  */
 function UserSettingsPermissionsSection({header, display, state, setState}: UserSettingsPermissionsSectionProperties) {
-	return <LabeledInput label={header}>
-		<Area className="ml-2">
-			{Object.entries(display).map(([name, display]: [string, string]) =>
-				<CheckboxInput
-					key={name}
-					value={name}
-					children={display}
-					selected={state[name]}
-					onChange={(state) => setState(name, state)}
-				/>
-			)}
-		</Area>
-	</LabeledInput>;
+    return <LabeledInput label={header}>
+        <Area className="ml-2">
+            {Object.entries(display).map(([name, display]: [string, string]) =>
+                <CheckboxInput
+                    key={name}
+                    value={name}
+                    children={display}
+                    selected={state[name]}
+                    onChange={(state) => setState(name, state)}
+                />
+            )}
+        </Area>
+    </LabeledInput>;
 }

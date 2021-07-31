@@ -30,79 +30,79 @@ interface CommentThreadProperties {
  * Adds the specified comment thread within the comment Block component.
  */
 export function CommentThread({thread}: CommentThreadProperties) {
-	const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
-	const [success, setSuccess] = useState(false as FeedbackContent);
-	const [error, setError] = useState(false as FeedbackContent);
-	const threadCache = useCommentThread(thread.references.submissionID, thread.ID, thread.file?.ID);
-	const comments = useComments(thread.ID);
-	const commentsCombined = {
-		observable: useCollectionCombined(comments.observable)
+    const [opened, setOpened] = useState(window.location.hash.substr(1) === thread.ID);
+    const [success, setSuccess] = useState(false as FeedbackContent);
+    const [error, setError] = useState(false as FeedbackContent);
+    const threadCache = useCommentThread(thread.references.submissionID, thread.ID, thread.file?.ID);
+    const comments = useComments(thread.ID);
+    const commentsCombined = {
+        observable: useCollectionCombined(comments.observable)
     };
     const commentCountObservable = useObservable(() => commentsCombined.observable.pipe(map(item => item.value.length)));
     const commentCount = useObservableState(commentCountObservable, 0);
 	
-	const handleCommentSend = async(comment: string) => {
-		const commentBody = comment.trim();
-		if (commentBody === "") {
-			// Should the user get an error message when sending an empty comment? or would they understand?
-			return Promise.resolve(false);
-		}
-		return comments.create(commentBody)
-			.then(() => true)
-			.catch((error: Error) => {
-				setError("Failed to create reply: " + error.message);
-				return false;
-			});
-	};
-	const handleDiscard = () => {
-		threadCache.delete()
-			.then(() => setSuccess("This thread of comments has been deleted."))
-			.catch((error: Error) => setError(`Thread could not be deleted: ${error.message}`));
-	};
-	const handleVisibility = () => {
-		threadCache.update(thread.visibility === ThreadState.public ? ThreadState.private : ThreadState.public)
-			.then(thread => setSuccess(`Visibility updated, now: ${thread.visibility}`))
-			.catch((error: Error) => setError(`Changing visibility failed: ${error.message}`));
-	};
+    const handleCommentSend = async(comment: string) => {
+        const commentBody = comment.trim();
+        if (commentBody === "") {
+            // Should the user get an error message when sending an empty comment? or would they understand?
+            return Promise.resolve(false);
+        }
+        return comments.create(commentBody)
+            .then(() => true)
+            .catch((error: Error) => {
+                setError("Failed to create reply: " + error.message);
+                return false;
+            });
+    };
+    const handleDiscard = () => {
+        threadCache.delete()
+            .then(() => setSuccess("This thread of comments has been deleted."))
+            .catch((error: Error) => setError(`Thread could not be deleted: ${error.message}`));
+    };
+    const handleVisibility = () => {
+        threadCache.update(thread.visibility === ThreadState.public ? ThreadState.private : ThreadState.public)
+            .then(thread => setSuccess(`Visibility updated, now: ${thread.visibility}`))
+            .catch((error: Error) => setError(`Changing visibility failed: ${error.message}`));
+    };
 	
-	return <div className="mb-3">
-		<Block id={thread.ID}
-			className={"commentThread" + (thread.visibility === ThreadState.private ? " restricted" : "")}>
-			{thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
-			<Cached cache={commentsCombined}>
-				{comments => opened ?
-					<Fragment>
-						{comments.map(comment => <CommentComponent key={comment.ID} comment={comment}/>)}
-						<CommentCreator transparent placeholder="Reply..."
-							mentions={{courseID: thread.references.courseID}}
-							sendHandler={handleCommentSend}
-						/>
-					</Fragment>
-					:
-					comments[0] !== undefined && <CommentComponent key={comments[0].ID} comment={comments[0]}/>
-				}
-			</Cached>
-			<ButtonBar align="right">
-				<ManageRestrictedButtons thread={thread} onToggle={handleVisibility} onDiscard={handleDiscard}/>
-				{
-					thread.file && thread.snippet &&
+    return <div className="mb-3">
+        <Block id={thread.ID}
+            className={"commentThread" + (thread.visibility === ThreadState.private ? " restricted" : "")}>
+            {thread.snippet && <Snippet snippet={thread.snippet} expanded={opened}/>}
+            <Cached cache={commentsCombined}>
+                {comments => opened ?
+                    <Fragment>
+                        {comments.map(comment => <CommentComponent key={comment.ID} comment={comment}/>)}
+                        <CommentCreator transparent placeholder="Reply..."
+                            mentions={{courseID: thread.references.courseID}}
+                            sendHandler={handleCommentSend}
+                        />
+                    </Fragment>
+                    :
+                    comments[0] !== undefined && <CommentComponent key={comments[0].ID} comment={comments[0]}/>
+                }
+            </Cached>
+            <ButtonBar align="right">
+                <ManageRestrictedButtons thread={thread} onToggle={handleVisibility} onDiscard={handleDiscard}/>
+                {
+                    thread.file && thread.snippet &&
 					<Link to={`/submission/${thread.references.submissionID}/${thread.file.ID}/view#${thread.snippet.start.line + 1}`}>
-						<Button>
-							<FiCode size={14} color="#FFFFFF"/>
-						</Button>
+					    <Button>
+					        <FiCode size={14} color="#FFFFFF"/>
+					    </Button>
 					</Link>
-				}
+                }
                 <Button className="commentThreadExpand" onClick={() => setOpened(!opened)}>
                     { opened 
-                      ? <FiChevronUp size={14} color="#FFFFFF"/>
-                      : <FiChevronDown size={14} color="#FFFFFF"/> }
+                        ? <FiChevronUp size={14} color="#FFFFFF"/>
+                        : <FiChevronDown size={14} color="#FFFFFF"/> }
                     { commentCount > 0 ? " " + commentCount : "" }
                 </Button>
-			</ButtonBar>
-		</Block>
-		<FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
-		<FeedbackError close={setError}>{error}</FeedbackError>
-	</div>;
+            </ButtonBar>
+        </Block>
+        <FeedbackSuccess close={setSuccess}>{success}</FeedbackSuccess>
+        <FeedbackError close={setError}>{error}</FeedbackError>
+    </div>;
 }
 
 interface ManageRestrictedButtonsProperties {
@@ -119,28 +119,28 @@ interface ManageRestrictedButtonsProperties {
  * @return Returns the comment if the user has permission to see it and an empty Fragment component if not.
  */
 function ManageRestrictedButtons({thread, onDiscard, onToggle}: ManageRestrictedButtonsProperties) {
-	const permission = useCoursePermission(thread.references.courseID);
-	const user = useCurrentUser();
+    const permission = useCoursePermission(thread.references.courseID);
+    const user = useCurrentUser();
 	
-	return <Cached cache={permission} wrapper={() => <Fragment/>}>
-		{permission =>
-			<Cached cache={user} wrapper={() => <Fragment/>}>
-				{user => {
-					if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions)
+    return <Cached cache={permission} wrapper={() => <Fragment/>}>
+        {permission =>
+            <Cached cache={user} wrapper={() => <Fragment/>}>
+                {user => {
+                    if (containsPermission(PermissionEnum.manageRestrictedComments, permission.permissions)
 						|| user.ID === commentThreadOwner(thread)) {
-						return (
-							<Fragment>
-								<Button onClick={onDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
-								<Button onClick={onToggle}>{thread.visibility === ThreadState.private ?
-									<FiEyeOff size={14} color="#FFFFFF"/> :
-									<FiEye size={14} color="#FFFFFF"/>}</Button>
-							</Fragment>
-						);
-					} else {
-						return <Fragment/>;
-					}
-				}}
-			</Cached>
-		}
-	</Cached>;
+                        return (
+                            <Fragment>
+                                <Button onClick={onDiscard}><FiTrash size={14} color="#FFFFFF"/></Button>
+                                <Button onClick={onToggle}>{thread.visibility === ThreadState.private ?
+                                    <FiEyeOff size={14} color="#FFFFFF"/> :
+                                    <FiEye size={14} color="#FFFFFF"/>}</Button>
+                            </Fragment>
+                        );
+                    } else {
+                        return <Fragment/>;
+                    }
+                }}
+            </Cached>
+        }
+    </Cached>;
 }

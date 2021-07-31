@@ -33,28 +33,28 @@ export interface DBAPIUser {
 }
 
 export function convertUser(db: DBUser): User {
-	checkAvailable(["userid", "username", "email", "globalrole", "permission"], db);
-	return {
-		userID: UUIDHelper.fromUUID(db.userid),
-		samlID: db.samlid,
-		userName: db.username,
-		email: db.email,
-		globalRole: getEnum(GlobalRole, db.globalrole),
+    checkAvailable(["userid", "username", "email", "globalrole", "permission"], db);
+    return {
+        userID: UUIDHelper.fromUUID(db.userid),
+        samlID: db.samlid,
+        userName: db.username,
+        email: db.email,
+        globalRole: getEnum(GlobalRole, db.globalrole),
         permission: toDec(db.permission),
         researchAllowed: db.researchallowed
-	}
+    };
 }
 export function userToAPI(db: DBAPIUser): APIUser {
-	checkAvailable(["userid", "username", "email", "globalrole", "permission"], db);
-	return {
-		ID: UUIDHelper.fromUUID(db.userid),
-		name: db.username,
-		email: db.email,
-		permission: {
-			globalRole: getEnum(GlobalRole, db.globalrole),
-			permissions: toDec(db.permission)
+    checkAvailable(["userid", "username", "email", "globalrole", "permission"], db);
+    return {
+        ID: UUIDHelper.fromUUID(db.userid),
+        name: db.username,
+        email: db.email,
+        permission: {
+            globalRole: getEnum(GlobalRole, db.globalrole),
+            permissions: toDec(db.permission)
         },
-		researchAllowed: db.researchallowed,
-		canvasrefresh: db.canvasrefresh
-	}
+        researchAllowed: db.researchallowed,
+        canvasrefresh: db.canvasrefresh
+    };
 }

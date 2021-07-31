@@ -3,6 +3,6 @@ export enum Sorting {
 	datetime = "datetime",
 }
 export const sortingNames: {[sorting: string]: string} = {
-	alphabetical: "Alphabetical",
-	datetime: "Most recent"
+    alphabetical: "Alphabetical",
+    datetime: "Most recent"
 };

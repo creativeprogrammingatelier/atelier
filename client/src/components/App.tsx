@@ -28,7 +28,7 @@ import {UserCourseOverview} from "./user/UserCourseOverview";
 import "../styles/base.scss";
 
 export function App() {
-	return (
+    return (
         <ErrorBoundary>
             <TimeProvider>
                 <CacheProvider>

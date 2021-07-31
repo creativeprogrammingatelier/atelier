@@ -34,7 +34,7 @@ function ResearchInfoPopup({ close }: ResearchInfoPopupProperties) {
                 </div>
             </div>
         </Area>
-    </Overlay>
+    </Overlay>;
 }
 
 /**
@@ -76,7 +76,7 @@ export function UserSettingsGeneral() {
     const handleResearchInformationClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         event.preventDefault();
         setShowResearchInfo(true);
-    }
+    };
     
     return <Fragment>
         {showResearchInfo && <ResearchInfoPopup close={() => setShowResearchInfo(false)} />}
@@ -87,7 +87,7 @@ export function UserSettingsGeneral() {
                     placeholder="Your name"
                     value={name}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => setName((event.target as HTMLInputElement).value)}
-                    />
+                />
             </LabeledInput>
             <LabeledInput label="Email">
                 <Form.Control
@@ -95,7 +95,7 @@ export function UserSettingsGeneral() {
                     placeholder="Your email"
                     value={email}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail((event.target as HTMLInputElement).value)}
-                    />
+                />
             </LabeledInput>
             <LabeledInput label="Research">
                 <Area className="ml-2 my-2">
@@ -114,5 +114,5 @@ export function UserSettingsGeneral() {
             <FeedbackSuccess close={setSuccess} timeout={3000}>{success}</FeedbackSuccess>
             <Button onClick={handleUpdate} disabled={loading}>Update</Button>
         </Form>
-    </Fragment>
+    </Fragment>;
 }

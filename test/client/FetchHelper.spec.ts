@@ -19,8 +19,8 @@ const fetchSpy = (body: any, status: number) =>
 
 const url = "https://example.com";
 
-describe('FetchHelper.fetch', () => {
-    it('should call fetch (the JS function) with the correct URL', async () => {
+describe("FetchHelper.fetch", () => {
+    it("should call fetch (the JS function) with the correct URL", async () => {
         g.fetch = fetchSpy({}, 200);
         await Fetch.fetch(url);
         expect(g.fetch).to.have.been.called.once.with(url);
@@ -32,9 +32,9 @@ describe('FetchHelper.fetch', () => {
     // });
 });
 
-describe('FetchHelper.fetchJson', () => {
-    it('should return the correct object', async () => {
-        const obj = { test: 'Some value', prop: { innerProp: [1, 2, 3] } };
+describe("FetchHelper.fetchJson", () => {
+    it("should return the correct object", async () => {
+        const obj = { test: "Some value", prop: { innerProp: [1, 2, 3] } };
         g.fetch = fetchSpy(obj, 200);
         const res = await Fetch.fetchJson(url);
         expect(res).to.deep.equal(obj);

@@ -1,8 +1,8 @@
-import React from 'react';
-import {Form} from 'react-bootstrap';
-import {Fetch} from '../../../helpers/api/FetchHelper';
-import {CanvasHelper} from '../../../helpers/CanvasHelper';
-import {LabeledInput} from '../../input/LabeledInput';
+import React from "react";
+import {Form} from "react-bootstrap";
+import {Fetch} from "../../../helpers/api/FetchHelper";
+import {CanvasHelper} from "../../../helpers/CanvasHelper";
+import {LabeledInput} from "../../input/LabeledInput";
 
 
 interface IStateCanvasCourseList {
@@ -18,13 +18,13 @@ interface IPropsCanvasCourseList {
 export default class CanvasCourseList extends React.Component<IPropsCanvasCourseList, IStateCanvasCourseList> {
 
     constructor(props: IPropsCanvasCourseList) {
-        super(props)
+        super(props);
         this.state = {
             enabled: false,
             data: null,
             selectedCourseId: "",
             onLinkCanvasCourse: props.onLinkCanvasCourse
-        }
+        };
         this.checkEnabled();
     }
 
@@ -32,7 +32,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
         if (this.state.enabled) {
             Fetch.fetch("/api/canvas/courses")
                 .then(res => res.json())
-                .then(res => this.setState({ data: res }))
+                .then(res => this.setState({ data: res }));
         }
     }
 
@@ -48,20 +48,20 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
 
     }
     handleSelect = (event: any) => {
-        this.setState({ selectedCourseId: event.target.value })
+        this.setState({ selectedCourseId: event.target.value });
     }
 
     getOptions() {
         if (this.state.data != null) {
-            let newOptions = [<option key={""} value={""} >No Canvas Link</option>]
+            let newOptions = [<option key={""} value={""} >No Canvas Link</option>];
             for (const course of this.state.data) {
-                newOptions.push(<option key={course["id"]} value={course["id"]} >{course["name"]}</option>)
+                newOptions.push(<option key={course["id"]} value={course["id"]} >{course["name"]}</option>);
             }
             // Ensuring default is sent to out component
-            this.state.onLinkCanvasCourse("")
+            this.state.onLinkCanvasCourse("");
             return newOptions;
         } else {
-            return [<option key={"no-link"} >{"You have not linked Atelier to your canvas please do so the setting page."}</option>]
+            return [<option key={"no-link"} >{"You have not linked Atelier to your canvas please do so the setting page."}</option>];
         }
     }
 
@@ -78,6 +78,6 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
                     {this.getOptions()}
                 </Form.Control>
             </LabeledInput>
-        )
+        );
     }
 }

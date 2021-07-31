@@ -45,112 +45,112 @@ export const viewPermissionBits = 71305280;
 export const managePermissionBits = 64835956894;
 
 export const viewPermissions = [
-	{
-		display: "View all user profiles",
-		name: "viewAllUserProfiles"
-	},
-	{
-		display: "View all courses",
-		name: "viewAllCourses"
-	},
-	{
-		display: "View all submissions",
-		name: "viewAllSubmissions"
-	},
-	{
-		display: "View restricted comments",
-		name: "viewRestrictedComments"
-	}
+    {
+        display: "View all user profiles",
+        name: "viewAllUserProfiles"
+    },
+    {
+        display: "View all courses",
+        name: "viewAllCourses"
+    },
+    {
+        display: "View all submissions",
+        name: "viewAllSubmissions"
+    },
+    {
+        display: "View restricted comments",
+        name: "viewRestrictedComments"
+    }
 ];
 export const managePermissions = [
-	{
-		display: "Manage user permissions view",
-		name: "manageUserPermissionsView"
-	},
-	{
-		display: "Manage user permissions manager",
-		name: "manageUserPermissionsManager"
-	},
-	{
-		display: "Manage user role",
-		name: "manageUserRole"
-	},
-	{
-		display: "Manage plugins",
-		name: "managePlugins"
-	},
-	{
-		display: "Manage user registration",
-		name: "manageUserRegistration"
-	},
-	{
-		display: "Add courses",
-		name: "addCourses"
-	},
-	{
-		display: "Manage courses",
-		name: "manageCourses"
-	}, {
-		display: "Add assignments - not used",
-		name: "addAssignments"
-	}
-	, {
-		display: "Manage Assignments",
-		name: "manageAssignments"
-	},
-	{
-		display: "Manage Submissions",
-		name: "manageSubmissions"
-	},
-	{
-		display: "Add restricted comments",
-		name: "addRestrictedComments"
-	},
-	{
-		display: "Manage restricted comments",
-		name: "manageRestrictedComments"
-	},
-	{
-		display: "Mention all students",
-		name: "mentionAllStudents"
-	},
-	{
-		display: "Mention all assistants",
-		name: "mentionAllAssistants"
-	},
-	{
-		display: "Mention all teachers",
-		name: "mentionAllTeachers"
-	},
-	{
-		display: "No mention limit",
-		name: "mentionNoLimit"
-	}
+    {
+        display: "Manage user permissions view",
+        name: "manageUserPermissionsView"
+    },
+    {
+        display: "Manage user permissions manager",
+        name: "manageUserPermissionsManager"
+    },
+    {
+        display: "Manage user role",
+        name: "manageUserRole"
+    },
+    {
+        display: "Manage plugins",
+        name: "managePlugins"
+    },
+    {
+        display: "Manage user registration",
+        name: "manageUserRegistration"
+    },
+    {
+        display: "Add courses",
+        name: "addCourses"
+    },
+    {
+        display: "Manage courses",
+        name: "manageCourses"
+    }, {
+        display: "Add assignments - not used",
+        name: "addAssignments"
+    }
+    , {
+        display: "Manage Assignments",
+        name: "manageAssignments"
+    },
+    {
+        display: "Manage Submissions",
+        name: "manageSubmissions"
+    },
+    {
+        display: "Add restricted comments",
+        name: "addRestrictedComments"
+    },
+    {
+        display: "Manage restricted comments",
+        name: "manageRestrictedComments"
+    },
+    {
+        display: "Mention all students",
+        name: "mentionAllStudents"
+    },
+    {
+        display: "Mention all assistants",
+        name: "mentionAllAssistants"
+    },
+    {
+        display: "Mention all teachers",
+        name: "mentionAllTeachers"
+    },
+    {
+        display: "No mention limit",
+        name: "mentionNoLimit"
+    }
 ];
 
 export const permissionsSectionView: {[key: string]: string} = {
-	viewAllUserProfiles: "View all user profiles",
-	viewAllCourses: "View all courses",
-	viewAllSubmissions: "View all submissions",
-	viewRestrictedComments: "View restricted comments"
+    viewAllUserProfiles: "View all user profiles",
+    viewAllCourses: "View all courses",
+    viewAllSubmissions: "View all submissions",
+    viewRestrictedComments: "View restricted comments"
 };
 export const permissionsSectionManage: {[key: string]: string} = {
-	manageUserPermissionsView: "Manage user permissions view",
-	manageUserPermissionsManager: "Manage user permissions manager",
-	manageUserRole: "Manage user role",
-	managePlugins: "Manage plugins",
-	manageUserRegistration: "Manage user registration",
-	addCourses: "Add courses",
-	manageCourses: "Manage courses",
-	addAssignments: "Add assignments (Unused)",
-	manageAssignments: "Manage Assignments (Unused)",
-	manageSubmissions: "Manage Submissions",
-	addRestrictedComments: "Add restricted comments",
-	manageRestrictedComments: "Manage restricted comments",
-	mentionAllStudents: "Mention all students",
-	mentionAllAssistants: "Mention all assistants",
-	mentionAllTeachers: "Mention all teachers",
-	mentionNoLimit: "No mention limit"
+    manageUserPermissionsView: "Manage user permissions view",
+    manageUserPermissionsManager: "Manage user permissions manager",
+    manageUserRole: "Manage user role",
+    managePlugins: "Manage plugins",
+    manageUserRegistration: "Manage user registration",
+    addCourses: "Add courses",
+    manageCourses: "Manage courses",
+    addAssignments: "Add assignments (Unused)",
+    manageAssignments: "Manage Assignments (Unused)",
+    manageSubmissions: "Manage Submissions",
+    addRestrictedComments: "Add restricted comments",
+    manageRestrictedComments: "Manage restricted comments",
+    mentionAllStudents: "Mention all students",
+    mentionAllAssistants: "Mention all assistants",
+    mentionAllTeachers: "Mention all teachers",
+    mentionNoLimit: "No mention limit"
 };
 
 const permissionBits = 40;
@@ -169,25 +169,25 @@ export const containsPermission = nativeSupportBigInt ? _containsPermissionWith 
  * containspermission implementtion using javascripts native bigInteger.
  */
 function _containsPermissionWith(permission: PermissionEnum, permissions: number) {
-	const permissionsBigInt = BigInt(permissions);
-	const permissionBit = BigInt(1) << BigInt(permission);
-	return (permissionBit & permissionsBigInt) > BigInt(0);
+    const permissionsBigInt = BigInt(permissions);
+    const permissionBit = BigInt(1) << BigInt(permission);
+    return (permissionBit & permissionsBigInt) > BigInt(0);
 }
 
 /**
  * containsPermission implementation using a custom bigInteger, for platforms that do not support it.
  */
 function _containsPermissionWithout(permission: PermissionEnum, permissions: number) {
-	const permissionsBigInt = toBig(permissions);
-	const permissionBit = toBig(2 ** permission);
-	return fromBig(bigAnd(permissionBit, permissionsBigInt)) > 0;
+    const permissionsBigInt = toBig(permissions);
+    const permissionBit = toBig(2 ** permission);
+    return fromBig(bigAnd(permissionBit, permissionsBigInt)) > 0;
 }
 
 export function containsPermissionAny(permission: PermissionEnum[], permissions: number) {
-	return permission.some((element) => containsPermission(element, permissions));
+    return permission.some((element) => containsPermission(element, permissions));
 }
 export function containsPermissionAll(permission: PermissionEnum[], permissions: number) {
-	return permission.every((element) => containsPermission(element, permissions));
+    return permission.every((element) => containsPermission(element, permissions));
 }
 
 /**
@@ -198,28 +198,28 @@ export function containsPermissionAll(permission: PermissionEnum[], permissions:
 
 //result[0] is lsb
 const toBig = (n: number): number[] => {
-		const res = [];
-		for (let i = 0; i < permissionBits; i++) {
-			res.push(n % 2);
-			n = Math.floor(n / 2);
-		}
-		return res;
-	};
+    const res = [];
+    for (let i = 0; i < permissionBits; i++) {
+        res.push(n % 2);
+        n = Math.floor(n / 2);
+    }
+    return res;
+};
 const fromBig = (n: number[]): number => {
-	let res = 0;
-	for (let i = 0; i < permissionBits; i++) {
-		res += n[i] * 2 ** i;
-	}
-	return res;
+    let res = 0;
+    for (let i = 0; i < permissionBits; i++) {
+        res += n[i] * 2 ** i;
+    }
+    return res;
 };
 
 // Assumes length === permissionBits
 const bigAnd = (n1: number[], n2: number[]): number[] => {
-	const res: number[] = [];
-	for (let i = 0; i < permissionBits; i++) {
-		res.push(n1[i] & n2[i]);
-	}
-	return res;
+    const res: number[] = [];
+    for (let i = 0; i < permissionBits; i++) {
+        res.push(n1[i] & n2[i]);
+    }
+    return res;
 };
 
 

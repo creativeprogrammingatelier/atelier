@@ -21,13 +21,13 @@ export interface TagProperties extends ParentalProperties {
  * a react Badge and the children are wrapper by it. 
  */
 export function Tag({children, large, round, light, color, click, theme}: TagProperties) {
-	return <Badge
-		pill={round}
-		variant={theme}
-		className={"buttonWrapper " + (light ? "text-dark" : "text-white") + (large ? " tagLarge" : "") + (click ? " tagClick" : "")}
-		style={{backgroundColor: color}}
-		onClick={click}
-	>
-		{children}
-	</Badge>;
+    return <Badge
+        pill={round}
+        variant={theme}
+        className={"buttonWrapper " + (light ? "text-dark" : "text-white") + (large ? " tagLarge" : "") + (click ? " tagClick" : "")}
+        style={{backgroundColor: color}}
+        onClick={click}
+    >
+        {children}
+    </Badge>;
 }

@@ -11,5 +11,5 @@ interface FakeButtonProperties extends ParentalProperties {
  * that has an onClick hook.
  */
 export function FakeButton({children, onClick}: FakeButtonProperties) {
-	return <p className="btn btn-primary m-0" onClick={onClick}>{children}</p>;
+    return <p className="btn btn-primary m-0" onClick={onClick}>{children}</p>;
 }

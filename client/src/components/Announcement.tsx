@@ -1,6 +1,6 @@
 import React from "react";
 
-import "../styles/announce.scss"
+import "../styles/announce.scss";
 
 interface AnnouncementProperties {
     /** Message to be displayed by announcement. */

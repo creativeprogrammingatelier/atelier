@@ -35,34 +35,34 @@ export interface DBCourseExt extends DBAPICourse {
 }
 
 export function convertCourse(db: DBCourse): Course {
-	checkAvailable(["courseid", "coursename", "creatorid", "state"], db);
-	return {
-		courseID: UUIDHelper.fromUUID(db.courseid),
-		courseName: db.coursename,
-		creatorID: UUIDHelper.fromUUID(db.creatorid),
-		state: getEnum(CourseState, db.state)
-	};
+    checkAvailable(["courseid", "coursename", "creatorid", "state"], db);
+    return {
+        courseID: UUIDHelper.fromUUID(db.courseid),
+        courseName: db.coursename,
+        creatorID: UUIDHelper.fromUUID(db.creatorid),
+        state: getEnum(CourseState, db.state)
+    };
 }
 export function courseToAPIPartial(db: DBAPICourse): APICoursePartial {
-	checkAvailable(["courseid", "coursename", "state", "creator"], db);
-	return {
-		ID: UUIDHelper.fromUUID(db.courseid),
-		name: db.coursename,
-		state: getEnum(CourseState, db.state),
-		creator: userToAPI(db)
-	};
+    checkAvailable(["courseid", "coursename", "state", "creator"], db);
+    return {
+        ID: UUIDHelper.fromUUID(db.courseid),
+        name: db.coursename,
+        state: getEnum(CourseState, db.state),
+        creator: userToAPI(db)
+    };
 }
 export function courseToAPI(db: DBCourseExt): APICourse {
-	checkAvailable(["courseid", "coursename", "state", "creator"], db);
-	return {
-		...courseToAPIPartial(db),
-		currentUserPermission: {
-			globalRole: getEnum(GlobalRole, db.currentglobalrole),
-			courseRole: getEnum(CourseRole, db.currentcourserole),
-			permissions: toDec(db.currentpermission)
-		}
-	};
+    checkAvailable(["courseid", "coursename", "state", "creator"], db);
+    return {
+        ...courseToAPIPartial(db),
+        currentUserPermission: {
+            globalRole: getEnum(GlobalRole, db.currentglobalrole),
+            courseRole: getEnum(CourseRole, db.currentcourserole),
+            permissions: toDec(db.currentpermission)
+        }
+    };
 }
 export function coursePartialToAPI(partial: APICoursePartial, permission: Permission): APICourse {
-	return {...partial, currentUserPermission: permission};
+    return {...partial, currentUserPermission: permission};
 }

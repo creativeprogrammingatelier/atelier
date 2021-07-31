@@ -14,8 +14,8 @@ export class PermissionError extends Error {
 	reason: string;
 	
 	constructor(reason: string, message: string) {
-		super(message);
-		this.reason = reason;
+	    super(message);
+	    this.reason = reason;
 	}
 }
 
@@ -29,20 +29,20 @@ export class PermissionError extends Error {
  */
 export async function requirePermissions(userID: string, requiredPermissions: PermissionEnum[], courseID?: string, anyPermission = false) {
 	
-	let permissions = 0;
-	if (courseID !== undefined) {
-		const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-		permissions = courseUser.permission.permissions;
-	} else {
-		permissions = (await UserDB.getUserByID(userID)).permission.permissions;
-	}
+    let permissions = 0;
+    if (courseID !== undefined) {
+        const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+        permissions = courseUser.permission.permissions;
+    } else {
+        permissions = (await UserDB.getUserByID(userID)).permission.permissions;
+    }
 	
-	const access: boolean = anyPermission ?
-		requiredPermissions.some((permission: PermissionEnum) => containsPermission(permission, permissions)) :
-		requiredPermissions.every((permission: PermissionEnum) => containsPermission(permission, permissions));
-	if (!access) {
-		throw new PermissionError("permission.notAllowed", "You don't have the permissions to view/manage this data.");
-	}
+    const access: boolean = anyPermission ?
+        requiredPermissions.some((permission: PermissionEnum) => containsPermission(permission, permissions)) :
+        requiredPermissions.every((permission: PermissionEnum) => containsPermission(permission, permissions));
+    if (!access) {
+        throw new PermissionError("permission.notAllowed", "You don't have the permissions to view/manage this data.");
+    }
 }
 
 /**
@@ -53,7 +53,7 @@ export async function requirePermissions(userID: string, requiredPermissions: Pe
  * @param courseID, ID of the course
  */
 export async function requirePermission(userID: string, requiredPermission: PermissionEnum, courseID?: string) {
-	await requirePermissions(userID, [requiredPermission], courseID);
+    await requirePermissions(userID, [requiredPermission], courseID);
 }
 
 /**
@@ -63,17 +63,17 @@ export async function requirePermission(userID: string, requiredPermission: Perm
  * @param courseID, ID of the course
  */
 export async function requireRegistered(userID: string, courseID: string) {
-	// If user has permission to view all courses, there is not need to be registered
-	const globalPermissions: number = await getGlobalPermissions(userID);
-	if (containsPermission(PermissionEnum.viewAllCourses, globalPermissions)) {
-		return;
-	}
+    // If user has permission to view all courses, there is not need to be registered
+    const globalPermissions: number = await getGlobalPermissions(userID);
+    if (containsPermission(PermissionEnum.viewAllCourses, globalPermissions)) {
+        return;
+    }
 	
-	// Check registration
-	const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-	if (courseUser.permission.courseRole === CourseRole.unregistered) {
-		throw new PermissionError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
-	}
+    // Check registration
+    const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    if (courseUser.permission.courseRole === CourseRole.unregistered) {
+        throw new PermissionError("permission.notRegistered", "You should be registered to the course to view/manage this data.");
+    }
 }
 
 /**
@@ -82,8 +82,8 @@ export async function requireRegistered(userID: string, courseID: string) {
  * @param fileID, ID of the file
  */
 export async function requireRegisteredFileID(userID: string, fileID: string) {
-	const courseID: string = (await FileDB.getFileByID(fileID)).references.courseID;
-	await requireRegistered(userID, courseID);
+    const courseID: string = (await FileDB.getFileByID(fileID)).references.courseID;
+    await requireRegistered(userID, courseID);
 }
 
 /**
@@ -92,13 +92,13 @@ export async function requireRegisteredFileID(userID: string, fileID: string) {
  * @param commentThreadID, ID of the commentThread
  */
 export async function requireRegisteredCommentThreadID(userID: string, commentThreadID: string) {
-	const courseID: string = (await ThreadDB.getThreadByID(commentThreadID)).references.courseID;
-	await requireRegistered(userID, courseID);
+    const courseID: string = (await ThreadDB.getThreadByID(commentThreadID)).references.courseID;
+    await requireRegistered(userID, courseID);
 }
 
 export async function requireRegisteredSubmissionID(userID: string, submissionID: string) {
-	const courseID: string = (await SubmissionDB.getSubmissionById(submissionID)).references.courseID;
-	await requireRegistered(userID, courseID);
+    const courseID: string = (await SubmissionDB.getSubmissionById(submissionID)).references.courseID;
+    await requireRegistered(userID, courseID);
 }
 
 /**
@@ -106,8 +106,8 @@ export async function requireRegisteredSubmissionID(userID: string, submissionID
  * @param userID, ID of the user
  */
 export async function getGlobalPermissions(userID: string) {
-	const user: User = await UserDB.getUserByID(userID);
-	return user.permission.permissions;
+    const user: User = await UserDB.getUserByID(userID);
+    return user.permission.permissions;
 }
 
 /**
@@ -116,8 +116,8 @@ export async function getGlobalPermissions(userID: string) {
  * @param courseID, ID of the course
  */
 export async function getCoursePermissions(userID: string, courseID: string) {
-	const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-	return courseUser.permission.permissions;
+    const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    return courseUser.permission.permissions;
 }
 
 /**
@@ -125,8 +125,8 @@ export async function getCoursePermissions(userID: string, courseID: string) {
  * @param userID, ID of the user
  */
 export async function getGlobalRole(userID: string) {
-	const user: User = await UserDB.getUserByID(userID);
-	return user.permission.globalRole;
+    const user: User = await UserDB.getUserByID(userID);
+    return user.permission.globalRole;
 }
 
 /**
@@ -135,8 +135,8 @@ export async function getGlobalRole(userID: string) {
  * @param courseID, ID of the course
  */
 export async function getCurrentRole(userID: string, courseID: string) {
-	const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
-	return courseUser.permission.courseRole;
+    const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
+    return courseUser.permission.courseRole;
 }
 
 /**
@@ -146,7 +146,7 @@ export async function getCurrentRole(userID: string, courseID: string) {
  *    clear what permissions certain roles have.
  */
 export function getPermissionNumber(permissions: PermissionEnum[]) {
-	let result = 0;
-	permissions.forEach(permission => result += 2 ** permission);
-	return result;
+    let result = 0;
+    permissions.forEach(permission => result += 2 ** permission);
+    return result;
 }

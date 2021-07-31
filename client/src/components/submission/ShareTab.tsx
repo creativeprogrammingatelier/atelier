@@ -9,9 +9,9 @@ interface ShareTabProperties {
 	url: string
 }
 export function ShareTab({url}: ShareTabProperties) {
-	return <div className="contentTab">
-		<div className="m-3">
-			<Sharing url={url}/>
-		</div>
-	</div>;
+    return <div className="contentTab">
+        <div className="m-3">
+            <Sharing url={url}/>
+        </div>
+    </div>;
 }

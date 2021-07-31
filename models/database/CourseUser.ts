@@ -39,38 +39,38 @@ export interface DBCourseUser {
 }
 
 export function convertCourseUser(db: DBCourseUser): CourseUserOutput {
-	checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"], db);
-	return {
-		userID: UUIDHelper.fromUUID(db.userid),
-		courseID: UUIDHelper.fromUUID(db.courseid),
-		userName: db.username,
-		email: db.email,
-		globalRole: getEnum(GlobalRole, db.globalrole),
-		courseRole: getEnum(CourseRole, db.courserole),
-		permission: toDec(db.permission)
-	};
+    checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"], db);
+    return {
+        userID: UUIDHelper.fromUUID(db.userid),
+        courseID: UUIDHelper.fromUUID(db.courseid),
+        userName: db.username,
+        email: db.email,
+        globalRole: getEnum(GlobalRole, db.globalrole),
+        courseRole: getEnum(CourseRole, db.courserole),
+        permission: toDec(db.permission)
+    };
 }
 export function CourseUserToAPI(db: DBCourseUser): APICourseUser {
-	checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"], db);
-	return {
-		userID: UUIDHelper.fromUUID(db.userid),
-		courseID: UUIDHelper.fromUUID(db.courseid),
-		userName: db.username,
-		email: db.email,
-		permission: {
-			globalRole: getEnum(GlobalRole, db.globalrole),
-			courseRole: getEnum(CourseRole, db.courserole),
-			permissions: toDec(db.permission)
-		},
-		canvasrefresh: db.canvasrefresh
-	};
+    checkAvailable(["userid", "courseid", "username", "email", "globalrole", "courserole", "permission"], db);
+    return {
+        userID: UUIDHelper.fromUUID(db.userid),
+        courseID: UUIDHelper.fromUUID(db.courseid),
+        userName: db.username,
+        email: db.email,
+        permission: {
+            globalRole: getEnum(GlobalRole, db.globalrole),
+            courseRole: getEnum(CourseRole, db.courserole),
+            permissions: toDec(db.permission)
+        },
+        canvasrefresh: db.canvasrefresh
+    };
 }
 export function CourseUserToUser(cu: APICourseUser): User {
-	return {
-		ID: cu.userID,
-		name: cu.userName,
-		email: cu.email,
-		permission: cu.permission,
-		canvasrefresh: cu.canvasrefresh
-	};
+    return {
+        ID: cu.userID,
+        name: cu.userName,
+        email: cu.email,
+        permission: cu.permission,
+        canvasrefresh: cu.canvasrefresh
+    };
 }

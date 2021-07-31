@@ -23,15 +23,15 @@ export interface DBCourseInvite {
 }
 
 export function convertCourseInvite(db: DBCourseInvite): Invite {
-	if (!(checkEnum(CourseRole, db.joinrole))) {
-		throw new DatabaseError("database gave a course role which was not recognised by the backend");
-	}
-	checkAvailable(["inviteid", "creatorid", "courseid", "type", "joinrole"], db);
-	return {
-		inviteID: UUIDHelper.fromUUID(db.inviteid),
-		creatorID: UUIDHelper.fromUUID(db.creatorid),
-		courseID: UUIDHelper.fromUUID(db.courseid),
-		type: db.type,
-		joinRole: getEnum(CourseRole, db.joinrole)
-	};
+    if (!(checkEnum(CourseRole, db.joinrole))) {
+        throw new DatabaseError("database gave a course role which was not recognised by the backend");
+    }
+    checkAvailable(["inviteid", "creatorid", "courseid", "type", "joinrole"], db);
+    return {
+        inviteID: UUIDHelper.fromUUID(db.inviteid),
+        creatorID: UUIDHelper.fromUUID(db.creatorid),
+        courseID: UUIDHelper.fromUUID(db.courseid),
+        type: db.type,
+        joinRole: getEnum(CourseRole, db.joinrole)
+    };
 }

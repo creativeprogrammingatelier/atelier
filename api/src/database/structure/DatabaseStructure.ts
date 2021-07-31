@@ -29,58 +29,58 @@ import {databaseSamples} from "./DatabaseSamples";
 ////////////////////////////////////|--------------------|////////////////////////////////////
 
 if (require.main === module) {
-	//args without node & path name
-	const args = process.argv.splice(2);
-	//check if the 'insert' option is specified
-	const insertToo = args.find((el) => el === "-i");
-	//create the database
-	(async() => {
-		const client = await getClient();
-		try {
-			await client.query("BEGIN");
-			await makeDB(client);
-			//if inserting too, then do insert as well
-			if (insertToo) {
-				await databaseSamples(client);
-			}
-			await client.query("COMMIT");
-		} catch (e) {
-			await client.query("ROLLBACK");
-			throw e;
-		} finally {
+    //args without node & path name
+    const args = process.argv.splice(2);
+    //check if the 'insert' option is specified
+    const insertToo = args.find((el) => el === "-i");
+    //create the database
+    (async() => {
+        const client = await getClient();
+        try {
+            await client.query("BEGIN");
+            await makeDB(client);
+            //if inserting too, then do insert as well
+            if (insertToo) {
+                await databaseSamples(client);
+            }
+            await client.query("COMMIT");
+        } catch (e) {
+            await client.query("ROLLBACK");
+            throw e;
+        } finally {
 
-			await client.release();
-			end();
-		}
-	})();
+            await client.release();
+            end();
+        }
+    })();
 } else {
-	// makeDB(()=>{console.log("made the database")}, console.error)
+    // makeDB(()=>{console.log("made the database")}, console.error)
 }
 
 async function makeDB(client: pgDB = pool) {
-	const query = dropViewQueries + dropTableQueries + createTableQueries + createViewQueries + createIndexQueries;
-	//  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
-	//  console.log(singles)
-	//  for (const item of singles){
-	// 	 await client.query(item).then(()=>
-	// 	 		console.log('database creation successful')
-	// 		).catch((e : Error) =>{
-	// 			if (isPostgresError(e) && e.position!==undefined){
-	// 				console.log(item.substring(Number(e.position)-60, Number(e.position)+60))
-	// 			}
-	// 			throw e
-	// 		});
-	//  };
-	//  return;
-	return client.query(query
-	).then(() =>
-		console.log("database creation successful")
-	).catch((e: Error) => {
-		if (isPostgresError(e) && e.position !== undefined) {
-			console.log(query.substring(Number(e.position) - 60, Number(e.position) + 60));
-		}
-		throw e;
-	});
+    const query = dropViewQueries + dropTableQueries + createTableQueries + createViewQueries + createIndexQueries;
+    //  const singles = query.split('CREATE').map(s=>'CREATE'+s).slice(1)
+    //  console.log(singles)
+    //  for (const item of singles){
+    // 	 await client.query(item).then(()=>
+    // 	 		console.log('database creation successful')
+    // 		).catch((e : Error) =>{
+    // 			if (isPostgresError(e) && e.position!==undefined){
+    // 				console.log(item.substring(Number(e.position)-60, Number(e.position)+60))
+    // 			}
+    // 			throw e
+    // 		});
+    //  };
+    //  return;
+    return client.query(query
+    ).then(() =>
+        console.log("database creation successful")
+    ).catch((e: Error) => {
+        if (isPostgresError(e) && e.position !== undefined) {
+            console.log(query.substring(Number(e.position) - 60, Number(e.position) + 60));
+        }
+        throw e;
+    });
 }
 
 export const dropViewQueries = `

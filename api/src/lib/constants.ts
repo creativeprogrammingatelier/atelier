@@ -1,8 +1,8 @@
-import path from 'path';
+import path from "path";
 import {generateKey} from "../helpers/KeyGeneration";
 
 let authKey = generateKey(path.join(__dirname, "../../keys/jwtRS256.key"));
-let tempKey = generateKey(path.join(__dirname, "../../keys/tempKey.key"))
+let tempKey = generateKey(path.join(__dirname, "../../keys/tempKey.key"));
 
 // Public constants
 export const UPLOADS_PATH = "uploads";

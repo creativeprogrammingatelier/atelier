@@ -18,77 +18,77 @@ import {UserDB} from "../../database/UserDB";
 setSchemaValidator(validator);
 
 export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
-	// Construct the SAML IDP from its metadata
-	const idp = IdentityProvider({
-		metadata:
+    // Construct the SAML IDP from its metadata
+    const idp = IdentityProvider({
+        metadata:
 			"url" in samlConfig.metadata ?
-				await fetch(samlConfig.metadata.url).then(res => res.text())
-				:
-				await readFileAsString(samlConfig.metadata.file)
-		}
-	);
+			    await fetch(samlConfig.metadata.url).then(res => res.text())
+			    :
+			    await readFileAsString(samlConfig.metadata.file)
+    }
+    );
 	
-	// Create the SAML SP metadata for our application
-	const urlBase = `${samlConfig.altBaseUrl || config.baseUrl}/api/auth/${samlConfig.id}`;
-	const sp = ServiceProvider({
-		entityID: urlBase,
-		nameIDFormat: [
-			"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
-		],
-		assertionConsumerService: [
-			{Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/login`}
-		],
-		// TODO: Figure out how Single logout works
-		// singleLogoutService: [
-		//     { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/logout` },
-		// ],
-		wantAssertionsSigned: true
-	});
+    // Create the SAML SP metadata for our application
+    const urlBase = `${samlConfig.altBaseUrl || config.baseUrl}/api/auth/${samlConfig.id}`;
+    const sp = ServiceProvider({
+        entityID: urlBase,
+        nameIDFormat: [
+            "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+        ],
+        assertionConsumerService: [
+            {Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/login`}
+        ],
+        // TODO: Figure out how Single logout works
+        // singleLogoutService: [
+        //     { Binding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", Location: `${urlBase}/logout` },
+        // ],
+        wantAssertionsSigned: true
+    });
 	
-	const extIDPrefix = samlConfig.id + "_";
+    const extIDPrefix = samlConfig.id + "_";
 	
-	const samlRouter = express.Router();
+    const samlRouter = express.Router();
 	
-	/** Get the metadata for our Service Provider */
-	samlRouter.get("/metadata.xml", capture(async(request, response) => {
-		response.status(200)
-			.set("Content-Type", "application/xml")
-			.send(sp.getMetadata());
-	}));
+    /** Get the metadata for our Service Provider */
+    samlRouter.get("/metadata.xml", capture(async(request, response) => {
+        response.status(200)
+            .set("Content-Type", "application/xml")
+            .send(sp.getMetadata());
+    }));
 	
-	/** Request login, redirects to the Identity Provider */
-	samlRouter.get("/login", capture(async(request, response) => {
-		const {context} = sp.createLoginRequest(idp, "redirect");
-		response.redirect(context);
-	}));
+    /** Request login, redirects to the Identity Provider */
+    samlRouter.get("/login", capture(async(request, response) => {
+        const {context} = sp.createLoginRequest(idp, "redirect");
+        response.redirect(context);
+    }));
 	
-	/** Post back the SAML response to finish logging in */
-	samlRouter.post("/login", capture(async(request, response) => {
+    /** Post back the SAML response to finish logging in */
+    samlRouter.post("/login", capture(async(request, response) => {
 
 
-		const {extract: result} = await sp.parseLoginResponse(idp, "post", request);
-		const extID = extIDPrefix + result.nameID;
-		// TODO: remove temporary logging
-		console.log("SAML response extract: ", result);
+        const {extract: result} = await sp.parseLoginResponse(idp, "post", request);
+        const extID = extIDPrefix + result.nameID;
+        // TODO: remove temporary logging
+        console.log("SAML response extract: ", result);
 
-		// Get email from SAML attributes
-		// TODO: find a better default value for email
-		let email = extID + "@example.com";
-		if (samlConfig.attributes?.email !== undefined) {
-			email = result.attributes[samlConfig.attributes.email] || email;
-		}
+        // Get email from SAML attributes
+        // TODO: find a better default value for email
+        let email = extID + "@example.com";
+        if (samlConfig.attributes?.email !== undefined) {
+            email = result.attributes[samlConfig.attributes.email] || email;
+        }
 
 
-		let user:any = undefined;
-		try {
-			user = await UserDB.getUserBySamlID(extID);
-		} catch (err) {
-			if (err instanceof NotFoundDatabaseError) {
+        let user:any = undefined;
+        try {
+            user = await UserDB.getUserBySamlID(extID);
+        } catch (err) {
+            if (err instanceof NotFoundDatabaseError) {
                 try {
                     // If the user doesn't exist by ID, try to find them by email (in case they were added via an integration)
-                    user = await UserDB.getUserByEmail(email)
+                    user = await UserDB.getUserByEmail(email);
                     // If the user was found, update it to include the ID
-                    UserDB.updateUser({...user, samlID: extID})
+                    UserDB.updateUser({...user, samlID: extID});
                 } catch (err) {
                     if (err instanceof NotFoundDatabaseError) {
                         // Create new user from SAML
@@ -129,43 +129,43 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                         throw err;
                     }
                 }
-			} else {
-				throw err;
-			}
+            } else {
+                throw err;
+            }
         }
         
         if (!samlConfig.altBaseUrl) {
             (await setTokenCookie(response, user.ID)).redirect("/");
         } else {
             const temporaryToken = issueTemporaryToken(user.ID);
-            response.redirect(`${config.baseUrl}/api/auth/login?token=${temporaryToken}`)
+            response.redirect(`${config.baseUrl}/api/auth/login?token=${temporaryToken}`);
         }
-	}));
+    }));
 	
-	// /** Initiate Single Logout with a logout request to the IDP */
-	// samlRouter.get('/logout', capture(async (request, response) => {
-	//     const userID = await getCurrentUserID(request);
-	//     const extID = await UserDB.getSamlIDForUserID(userID);
-	//     const samlID = extID.substring(extIDPrefix.length);
-	//     const { context } = sp.createLogoutRequest(idp, 'redirect', { logoutNameID: samlID });
-	//     clearTokenCookie(response).redirect(context);
-	// }));
+    // /** Initiate Single Logout with a logout request to the IDP */
+    // samlRouter.get('/logout', capture(async (request, response) => {
+    //     const userID = await getCurrentUserID(request);
+    //     const extID = await UserDB.getSamlIDForUserID(userID);
+    //     const samlID = extID.substring(extIDPrefix.length);
+    //     const { context } = sp.createLogoutRequest(idp, 'redirect', { logoutNameID: samlID });
+    //     clearTokenCookie(response).redirect(context);
+    // }));
 	
-	// /** Parse the logout response */
-	// samlRouter.post('/logout', capture(async (request, response) => {
-	//     await sp.parseLogoutResponse(idp, 'post', request);
-	//     clearTokenCookie(response).redirect("/");
-	// }));
+    // /** Parse the logout response */
+    // samlRouter.post('/logout', capture(async (request, response) => {
+    //     await sp.parseLogoutResponse(idp, 'post', request);
+    //     clearTokenCookie(response).redirect("/");
+    // }));
 	
-	/** Handle some SAML specific errors */
-	samlRouter.use((err: Error & {code?: string}, request: Request, response: Response, next: NextFunction) => {
-		if (err.code === "ERR_INVALID_ARG_TYPE") {
-			// This means that the input to the SAML response validator was not valid
-			next(new AuthError("saml.invalidResponse", "The login service returned an invalid response."));
-		} else {
-			next(err);
-		}
-	});
+    /** Handle some SAML specific errors */
+    samlRouter.use((err: Error & {code?: string}, request: Request, response: Response, next: NextFunction) => {
+        if (err.code === "ERR_INVALID_ARG_TYPE") {
+            // This means that the input to the SAML response validator was not valid
+            next(new AuthError("saml.invalidResponse", "The login service returned an invalid response."));
+        } else {
+            next(err);
+        }
+    });
 	
-	return samlRouter;
+    return samlRouter;
 }

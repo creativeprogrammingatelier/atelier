@@ -5,5 +5,5 @@ import {Feedback, FeedbackProperties} from "./Feedback";
  * Component for Error message.
  */
 export function FeedbackError(properties: FeedbackProperties) {
-	return <Feedback {...properties} variant="danger"/>;
+    return <Feedback {...properties} variant="danger"/>;
 }
