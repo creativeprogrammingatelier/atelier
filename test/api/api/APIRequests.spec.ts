@@ -9,7 +9,7 @@ import {inviteTest} from './testFunctions/InviteTest';
 import {permissionTest} from './testFunctions/PermissionTest';
 import {roleTest} from './testFunctions/RoleTest';
 import {searchTest} from './testFunctions/SearchTest';
-import {setup} from './testFunctions/setup';
+import {setup} from './testFunctions/setup'
 import {submissionTest} from './testFunctions/SubmissionTest';
 import {userTest} from './testFunctions/UserTest';
 

@@ -8,7 +8,7 @@
  *
  */
 export function usersView(userTable = `"Users"`) {
-  return `
+	return `
 		SELECT userID, 
 			userName, 
 			email,
@@ -26,7 +26,7 @@ export function usersView(userTable = `"Users"`) {
 }
 
 export function CourseUsersView(courseRegistrationTable = `"CourseRegistration"`) {
-  return `
+	return `
 		SELECT 
 			c.courseID, u.userID, e.courseRole,
 			u.userName, u.email, u.globalRole,
@@ -44,7 +44,7 @@ export function CourseUsersView(courseRegistrationTable = `"CourseRegistration"`
 
 /** NOTE: this is almost the same as CourseUsersView, but now non-existent rows are added with nulls in the right locations */
 export function CourseUsersViewAll(courseRegistrationTable = `"CourseRegistration"`) {
-  return `
+	return `
 		WITH allButPermissions AS (
 			SELECT 
 				c.courseID, 
@@ -86,7 +86,7 @@ export function CourseUsersViewAll(courseRegistrationTable = `"CourseRegistratio
 }
 
 export function CoursesView(coursesTable = `"Courses"`, usersView = `"UsersView"`) {
-  return `
+	return `
 		SELECT c.*, u.userName, u.globalrole, u.email, u.userID, u.permission
 		FROM ${coursesTable} as c, ${usersView} as u
 		WHERE c.creator = u.userID
@@ -94,7 +94,7 @@ export function CoursesView(coursesTable = `"Courses"`, usersView = `"UsersView"
 }
 
 export function submissionsView(submissionsTable = `"Submissions"`, usersView = `"UsersView"`) {
-  return `
+	return `
         SELECT s.*, c.courseName, u.userName, u.globalrole, u.email, u.permission,
             (SELECT COUNT(*) FROM "Files" as f WHERE f.submissionID = s.submissionID) as fileCount,
             (SELECT COUNT(*) FROM "CommentThread" as ct WHERE ct.submissionID = s.submissionID AND visibilityState = 'public') as threadCount
@@ -105,7 +105,7 @@ export function submissionsView(submissionsTable = `"Submissions"`, usersView = 
 }
 
 export function filesView(filesTable = `"Files"`) {
-  return `
+	return `
 		SELECT f.*, sr.courseID
 		FROM ${filesTable} as f, "SubmissionsRefs" as sr
 		WHERE f.submissionID = sr.submissionID
@@ -113,7 +113,7 @@ export function filesView(filesTable = `"Files"`) {
 }
 
 export function snippetsView(snippetsTable = `"Snippets"`, filesView = `"FilesView"`) {
-  return `
+	return `
 		SELECT s.*, fv.*, ctr.commentThreadID
 		FROM ${snippetsTable} as s, "CommentThreadRefs" as ctr, ${filesView} as fv
 		WHERE ctr.snippetID = s.snippetID
@@ -122,7 +122,7 @@ export function snippetsView(snippetsTable = `"Snippets"`, filesView = `"FilesVi
 }
 
 export function commentsView(commentsTable = `"Comments"`, usersView = `"UsersView"`) {
-  return `
+	return `
 		SELECT 
 			c.*, 
 			u.userName, u.globalrole, u.email, u.permission, 
@@ -141,7 +141,7 @@ export function commentsView(commentsTable = `"Comments"`, usersView = `"UsersVi
 }
 
 export function commentThreadView(commentThreadTable = `"CommentThread"`) {
-  return `
+	return `
 		SELECT
             s.courseID, s.submissionID, ct.commentThreadID, ct.snippetID, ct.fileID,
             s.title as submissionName, su.userID as submissionUserID, su.userName as submissionUserName,
@@ -161,7 +161,7 @@ export function commentThreadView(commentThreadTable = `"CommentThread"`) {
 }
 
 export function MentionsView(mentionsTable = `"Mentions"`) {
-  return `
+	return `
 		SELECT 
 			m.mentionID, m.userGroup,
 			cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 
@@ -220,7 +220,7 @@ export function MentionsView(mentionsTable = `"Mentions"`) {
 }
 
 export function TagsView(tagsTable = `"Tags"`) {
-  return `
+	return `
 		SELECT 
 			t.tagID, t.tagbody,
 			cv.commentID, cv.fileID, cv.commentThreadID, cv.snippetID, 

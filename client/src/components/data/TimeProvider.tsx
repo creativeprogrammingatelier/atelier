@@ -1,5 +1,5 @@
-import React, {useEffect, useState, createContext, useContext} from 'react';
-import {ParentalProperties} from '../../helpers/ParentHelper';
+import React, {useEffect, useState, createContext, useContext} from "react";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
 const timeContext = createContext(new Date());
 
@@ -20,12 +20,11 @@ export function TimeProvider({children}: ParentalProperties) {
       {children}
     </timeContext.Provider>
   );
-  // return <timeContext.Provider value={currentTime} children={children}/>;
 }
 
 /**
  * Passes the timeContext constant to the useContext hook.
  */
 export function useTime() {
-  return useContext(timeContext);
+	return useContext(timeContext);
 }

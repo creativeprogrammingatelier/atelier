@@ -1,11 +1,11 @@
 /** Helpers for reading configuration files */
-import fs from 'fs';
+import fs from "fs";
 
-const ENV = 'ENV::';
-const FILE = 'FILE::';
+const ENV = "ENV::";
+const FILE = "FILE::";
 
-const env = process.env.NODE_ENV || 'development';
-const file = fs.readFileSync(`config/${env}.json`, 'utf8');
+const env = process.env.NODE_ENV || "development";
+const file = fs.readFileSync(`config/${env}.json`, "utf8");
 const json = JSON.parse(file);
 
 export interface Configuration {
@@ -43,7 +43,7 @@ export interface Configuration {
 		}
 	},
 	/** Canvas API integration connection information, or undefined if the integration is not enabled */
-	canvas: {
+	canvas: { 
 		client_id: string,
 		client_secret: string,
 		/** Base URL of the Canvas instance */
@@ -62,7 +62,7 @@ interface LoginConfiguration {
 
 /** Use an external SAML Identity Provider to login */
 export interface SamlLoginConfiguration extends LoginConfiguration {
-	type: 'saml',
+	type: "saml",
 	/** The location for the metadata file of the Identity Provider */
     metadata: {url: string} | {file: string},
     /** Alternative base URL to use for redirecting back to Atelier */
@@ -78,35 +78,35 @@ export interface SamlLoginConfiguration extends LoginConfiguration {
 
 /** Use the built in login system */
 export interface BuiltinLoginConfiguration extends LoginConfiguration {
-	type: 'builtin',
+	type: "builtin",
 	/** Whether unauthenticated users are allowed to register accounts or not */
 	register: boolean
 }
 
 /** Error thrown when the configuration is invalid */
 export class ConfigurationError extends Error {
-  constructor(message: string) {
-    super(`Configuration: ${message}`);
-  }
+	constructor(message: string) {
+		super(`Configuration: ${message}`);
+	}
 }
 
 /** Helper method that reads out a leaf property in the configuration */
 function prop<T extends string | number | boolean>(name: string, value: T | undefined, defaultValue?: T): T {
-  if (value === undefined) {
-    if (defaultValue === undefined) {
-      throw new ConfigurationError(`Required property ${name} was not specified.`);
-    } else {
-      return defaultValue;
-    }
-  } else {
-    if (typeof value === 'string' && value.startsWith(ENV)) {
-      return prop(name, process.env[value.substring(ENV.length)] as T, defaultValue);
-    } else if (typeof value === 'string' && value.startsWith(FILE)) {
-      return prop(name, fs.readFileSync(value.substring(FILE.length), 'utf8') as T, defaultValue);
-    } else {
-      return value;
-    }
-  }
+	if (value === undefined) {
+		if (defaultValue === undefined) {
+			throw new ConfigurationError(`Required property ${name} was not specified.`);
+		} else {
+			return defaultValue;
+		}
+	} else {
+		if (typeof value === "string" && value.startsWith(ENV)) {
+			return prop(name, process.env[value.substring(ENV.length)] as T, defaultValue);
+		} else if (typeof value === "string" && value.startsWith(FILE)) {
+			return prop(name, fs.readFileSync(value.substring(FILE.length), "utf8") as T, defaultValue);
+		} else {
+			return value;
+		}
+	}
 }
 
 /**
@@ -116,70 +116,71 @@ function prop<T extends string | number | boolean>(name: string, value: T | unde
  * Because the optional fields may be leaf nodes, we have to dig in to all structures
  */
 export const config: Configuration = {
-  env,
-  baseUrl: prop('baseUrl', json.baseUrl),
-  hostname: prop('hostname', json.hostname, env === 'production' ? '0.0.0.0' : '127.0.0.1'),
-  port: prop('port', json.port, 5000),
-  openUnknownFiles: prop('openUnknownFiles', json.openUnknownFiles, false),
-  loginProviders:
+		env,
+		baseUrl: prop("baseUrl", json.baseUrl),
+		hostname: prop("hostname", json.hostname, env === "production" ? "0.0.0.0" : "127.0.0.1"),
+		port: prop("port", json.port, 5000),
+		openUnknownFiles: prop("openUnknownFiles", json.openUnknownFiles, false),
+		loginProviders:
 			json.loginProviders ?
 				// tslint:disable-next-line: no-any - It's fine, this is turning JSON into typed structure
 				json.loginProviders.map((provider: any, i: number) => {
-				  const base = {
-				    type: prop(`loginProvider[${i}].type`, provider.type),
-				    id: prop(`loginProvider[${i}].id`, provider.id),
-				    name: prop(`loginProvider[${i}].name`, provider.name),
-				    hidden: prop(`loginProviders[${i}].hidden`, provider.hidden, false),
-				  };
-				  switch (base.type) {
-				    case 'saml':
-				      if (provider.metadata === undefined || !('url' in provider.metadata || 'file' in provider.metadata)) {
-				        throw new ConfigurationError(`loginProviders[${i}].metadata is required and should specify a url or file.`);
-				      }
-				      return {
-				        ...base,
-				        altBaseUrl: prop(`loginProvider[${i}].altBaseUrl`, provider.altBaseUrl, null),
-				        metadata:
-									'url' in provider.metadata ?
-										{url: prop(`loginProvider[${i}].metadata.url`, provider.metadata.url)} :
-										{file: prop(`loginProvider[${i}].metadata.file`, provider.metadata.file)},
-				        attributes: provider.attributes,
-				      };
-				    case 'builtin':
-				      return {
-				        ...base,
-				        register: prop(`loginProvider[${i}].register`, provider.register, true),
-				      };
-				    default:
-				      throw new ConfigurationError(`Invalid login provider type "${base.type}"`);
-				  }
-				})				:
+					const base = {
+						type: prop(`loginProvider[${i}].type`, provider.type),
+						id: prop(`loginProvider[${i}].id`, provider.id),
+                        name: prop(`loginProvider[${i}].name`, provider.name),
+                        hidden: prop(`loginProviders[${i}].hidden`, provider.hidden, false)
+					};
+					switch (base.type) {
+						case "saml":
+							if (provider.metadata === undefined || !("url" in provider.metadata || "file" in provider.metadata)) {
+								throw new ConfigurationError(`loginProviders[${i}].metadata is required and should specify a url or file.`);
+							}
+							return {
+                                ...base,
+                                altBaseUrl: prop(`loginProvider[${i}].altBaseUrl`, provider.altBaseUrl, null),
+								metadata:
+									"url" in provider.metadata
+										? {url: prop(`loginProvider[${i}].metadata.url`, provider.metadata.url)}
+										: {file: prop(`loginProvider[${i}].metadata.file`, provider.metadata.file)},
+								attributes: provider.attributes
+							};
+						case "builtin":
+							return {
+								...base,
+								register: prop(`loginProvider[${i}].register`, provider.register, true)
+							};
+						default:
+							throw new ConfigurationError(`Invalid login provider type "${base.type}"`);
+					}
+				})
+				:
 				[{
-				  type: 'builtin',
-				  id: 'atelier',
-				  name: 'Atelier',
-				  hidden: false,
-				  register: true,
+					type: "builtin",
+					id: "atelier",
+                    name: "Atelier",
+                    hidden: false,
+					register: true
 				}],
-  database: {
-    host: prop('database.host', json.database.host, 'localhost'),
-    port: prop('database.port', json.database.port, 5432),
-    user: prop('database.user', json.database.user),
-    password: prop('database.password', json.database.password),
-    database: prop('database.database', json.database.database),
-    pool: {
-      max: json.database.pool.max,
-      connectionTimeoutMillis: json.database.pool.connectionTimeoutMillis,
-      idleTimeoutMillis: json.database.pool.idleTimeoutMillis,
-    },
-  },
-  canvas:
-            json.canvas ? {
-              client_id: prop('canvas.client_id', json.canvas.client_id),
-              client_secret: prop('canvas.client_secret', json.canvas.client_secret),
-              canvas_url_root: prop('canvas.canvas_url_root', json.canvas.canvas_url_root),
-            } : undefined,
-};
+		database: {
+			host: prop("database.host", json.database.host, "localhost"),
+			port: prop("database.port", json.database.port, 5432),
+			user: prop("database.user", json.database.user),
+			password: prop("database.password", json.database.password),
+			database: prop("database.database", json.database.database),
+			pool: {
+				max: json.database.pool.max,
+				connectionTimeoutMillis: json.database.pool.connectionTimeoutMillis,
+				idleTimeoutMillis: json.database.pool.idleTimeoutMillis
+			}
+		},
+        canvas: 
+            json.canvas ? { 
+                client_id: prop("canvas.client_id", json.canvas.client_id),
+                client_secret: prop("canvas.client_secret", json.canvas.client_secret),
+                canvas_url_root: prop("canvas.canvas_url_root", json.canvas.canvas_url_root)
+            } : undefined
+	};
 
 // Configuration is immutable
 Object.freeze(config);

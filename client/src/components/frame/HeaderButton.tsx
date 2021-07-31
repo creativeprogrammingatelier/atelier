@@ -1,5 +1,5 @@
-import React from 'react';
-import {IconType} from 'react-icons';
+import React from "react";
+import {IconType} from "react-icons";
 
 interface HeaderButtonProperties {
 	/** Icon of header button */
@@ -13,13 +13,14 @@ interface HeaderButtonProperties {
  * Component used for defining buttons that go on the header, eg. the Search button.
  */
 export function HeaderButton({icon, onClick, right}: HeaderButtonProperties) {
-  return icon ?
-		<div className={right ? 'float-right' : ''} onClick={onClick}>
-		  {icon({
-		    size: 38,
-		    strokeWidth: 1.5,
-		    color: '#FFFFFF',
-		  })}
-		</div>		:
+	return icon ?
+		<div className={right ? "float-right" : ""} onClick={onClick}>
+			{icon({
+				size: 38,
+				strokeWidth: 1.5,
+				color: "#FFFFFF"
+			})}
+		</div>
+		:
 		<div/>;
 }

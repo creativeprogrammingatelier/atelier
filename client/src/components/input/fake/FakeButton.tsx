@@ -1,5 +1,5 @@
-import React from 'react';
-import {ParentalProperties} from '../../../helpers/ParentHelper';
+import React from "react";
+import {ParentalProperties} from "../../../helpers/ParentHelper";
 
 interface FakeButtonProperties extends ParentalProperties {
 
@@ -7,9 +7,9 @@ interface FakeButtonProperties extends ParentalProperties {
 	onClick?: (event: React.MouseEvent) => void
 }
 /**
- * Component for a fake button, wrapping the children passed into a paragraph
+ * Component for a fake button, wrapping the children passed into a paragraph 
  * that has an onClick hook.
  */
 export function FakeButton({children, onClick}: FakeButtonProperties) {
-  return <p className="btn btn-primary m-0" onClick={onClick}>{children}</p>;
+	return <p className="btn btn-primary m-0" onClick={onClick}>{children}</p>;
 }

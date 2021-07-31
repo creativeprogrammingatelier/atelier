@@ -1,6 +1,6 @@
-import React from 'react';
-import {File} from '../../../../models/api/File';
-import {Sharing} from '../share/Sharing';
+import React from "react";
+import {File} from "../../../../models/api/File";
+import {Sharing} from "../share/Sharing";
 
 interface ShareTabProperties {
 	/** File the url goes to. */
@@ -9,9 +9,9 @@ interface ShareTabProperties {
 	url: string
 }
 export function ShareTab({url}: ShareTabProperties) {
-  return <div className="contentTab">
-    <div className="m-3">
-      <Sharing url={url}/>
-    </div>
-  </div>;
+	return <div className="contentTab">
+		<div className="m-3">
+			<Sharing url={url}/>
+		</div>
+	</div>;
 }

@@ -1,4 +1,4 @@
-import {ParentalProperties} from './ParentHelper';
+import {ParentalProperties} from "./ParentHelper";
 
 export interface HTMLProperties extends ParentalProperties {
 	className?: string,

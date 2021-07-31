@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, {Fragment} from "react";
 
 export interface ParentalProperties {
 	children?: Children
@@ -21,39 +21,39 @@ export type ChildrenConstructor =
 	| null
 	| JSX.Element
 export class Parent {
-  /**
+	/**
 	 * Counts the children of the parent.
-	 *
+	 * 
 	 * @param children Children of the parent object.
-	 * @return Returns the number of children;
+	 * @returns Returns the number of children; 
 	 * 		one if only one child is passed, zero if children is a boolean, undefined or has a length of one.
 	 */
-  static countChildren(children: Children) {
-    if (children === undefined || children === null || Object.keys(children).length === 0) {
-      return 0;
-    } else if (Array.isArray(children)) {
-      return children.length;
-    } else if ((typeof children) === 'boolean') {
-      return 0;
-    } else {
-      return 1;
-    }
-  }
-  /**
+	static countChildren(children: Children) {
+		if (children === undefined || children === null || Object.keys(children).length === 0) {
+			return 0;
+		} else if (Array.isArray(children)) {
+			return children.length;
+		} else if ((typeof children) === "boolean") {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+	/**
 	 * Constructs the children of the parent withing a Fragment component.
-	 *
+	 * 
 	 * @param children Children of the parent object.
-	 * @return Fragment component containing the child.
+	 * @returns Fragment component containing the child.
 	 */
-  static constructChildren(children: Children): ChildrenConstructor {
-    if (
-      children === undefined ||
+	static constructChildren(children: Children): ChildrenConstructor {
+		if (
+			children === undefined ||
 			children === null ||
-			typeof children === 'boolean'
-    ) {
-      return null;
-    } else {
-      return <Fragment>{children}</Fragment>;
-    }
-  }
+			typeof children === "boolean"
+		) {
+			return null;
+		} else {
+			return <Fragment>{children}</Fragment>;
+		}
+	}
 }

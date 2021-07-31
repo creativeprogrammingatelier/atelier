@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
-import {Button, InputGroup, Form} from 'react-bootstrap';
-import {FiPlus, FiX} from 'react-icons/all';
+import React, {useState} from "react";
+import {Button, InputGroup, Form} from "react-bootstrap";
+import {FiPlus, FiX} from "react-icons/all";
 
-import {CourseInvite as CourseInviteModel} from '../../../../../models/api/Invite';
-import {InviteRole} from '../../../../../models/enums/InviteRoleEnum';
+import {CourseInvite as CourseInviteModel} from "../../../../../models/api/Invite";
+import {InviteRole} from "../../../../../models/enums/InviteRoleEnum";
 
-import {deleteInviteLink, getInviteLink} from '../../../helpers/api/APIHelper';
+import {deleteInviteLink, getInviteLink} from "../../../helpers/api/APIHelper";
 
-import {LabeledInput} from '../../input/LabeledInput';
+import {LabeledInput} from "../../input/LabeledInput";
 
 interface CourseInviteProperties {
 	/** Name of labeled input of the component */
@@ -23,35 +23,36 @@ interface CourseInviteProperties {
  * Component for generating and deleting course invites for a specified role.
  */
 export function CourseInvite({name, link, role, courseID}: CourseInviteProperties) {
-  const [inviteLink, setInviteLink] = useState(link ? `${window.location.origin}/invite/${link}` : '');
-
-  /**
+	const [inviteLink, setInviteLink] = useState(link ? `${window.location.origin}/invite/${link}` : "");
+	
+	/**
 	 * Function for generating course invite.
 	 */
-  const createLink = (role: InviteRole) => {
-    getInviteLink(courseID, role)
-        .then((courseInvite: CourseInviteModel) => {
-          setInviteLink(`${window.location.origin}/invite/${courseInvite.inviteID}`);
-        });
-  };
-  /**
+	const createLink = (role: InviteRole) => {
+		getInviteLink(courseID, role)
+			.then((courseInvite: CourseInviteModel) => {
+				setInviteLink(`${window.location.origin}/invite/${courseInvite.inviteID}`);
+			});
+	};
+	/**
 	 * Course of disabling course invite.
 	 */
-  const deleteLink = () => {
-    deleteInviteLink(courseID, role)
-        .then(() => {
-          setInviteLink('');
-        });
-  };
-
-  return <LabeledInput label={name}>
-    <Form.Control plaintext readOnly placeholder="No invite link generated" value={inviteLink}/>
-    <InputGroup.Append>
-      {
+	const deleteLink = () => {
+		deleteInviteLink(courseID, role)
+			.then(() => {
+				setInviteLink("");
+			});
+	};
+	
+	return <LabeledInput label={name}>
+		<Form.Control plaintext readOnly placeholder="No invite link generated" value={inviteLink}/>
+		<InputGroup.Append>
+			{
 				inviteLink ?
-					<Button onClick={() => deleteLink()}>Remove link <FiX/></Button>					:
+					<Button onClick={() => deleteLink()}>Remove link <FiX/></Button>
+					:
 					<Button onClick={() => createLink(role)}>Create link <FiPlus/></Button>
-      }
-    </InputGroup.Append>
-  </LabeledInput>;
+			}
+		</InputGroup.Append>
+	</LabeledInput>;
 }
