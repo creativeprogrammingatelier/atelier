@@ -83,6 +83,9 @@ authRouter.get("/logout", (request, response) => {
 /** Get an access token for a plugin */
 authRouter.get("/token", capture(async (request, response) => {
     const token = getToken(request);
+    if (token === undefined) {
+        throw new AuthError("token.notProvided", "No token was provided with this request.");
+    }
     const {iss: userID} = decodeToken<{ iss: string }>(token);
     let plugin = undefined;
     try {
@@ -94,7 +97,7 @@ authRouter.get("/token", capture(async (request, response) => {
             throw err;
         }
     }
-    const {exp, iat} = await verifyToken(token, preparePublicKey(plugin.publicKey), {
+    const {exp, iat} = await verifyToken<Record<string, unknown>>(token, preparePublicKey(plugin.publicKey), {
         algorithms: ["RS256"],
         issuer: userID
     });
