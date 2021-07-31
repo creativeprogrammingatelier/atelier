@@ -1,6 +1,6 @@
 import * as pg from "pg";
 import {Sorting} from "../../../models/enums/SortingEnum";
-import {config} from "./helpers/ConfigurationHelper";
+import {config} from "../helpers/ConfigurationHelper";
 import {NotFoundDatabaseError, MissingFieldDatabaseError, InvalidDatabaseResponseError} from "./DatabaseErrors";
 
 /**
