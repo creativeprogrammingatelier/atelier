@@ -23,10 +23,13 @@ export function CourseSettingsDelete({courseID}: CourseSettingsDeleteProperties)
     };
 
     return <Fragment>
-        <FeedbackError>Deleting a course is permanent, and can not be undone. All the submissions and comments in this course will be gone forever.</FeedbackError>
+        <FeedbackError>
+            Deleting a course is permanent, and can not be undone.
+            All the submissions and comments in this course will be gone forever.
+        </FeedbackError>
         <ButtonMultistate variant="danger" states={[
-            <Fragment>Delete <FiTrash/></Fragment>,
-            <Fragment>Confirm <FiTrash/></Fragment>
+            <Fragment key="delete">Delete <FiTrash/></Fragment>,
+            <Fragment key="confirm">Confirm <FiTrash/></Fragment>
         ]} finish={handleDelete}/>
     </Fragment>;
 }

@@ -1,4 +1,5 @@
 import {SearchResultComment} from "../../../models/api/SearchResult";
+import {Comment as APIComment} from "../../../models/api/Comment";
 import {Comment, commentToAPI, DBAPIComment} from "../../../models/database/Comment";
 import {submissionToAPI, DBAPISubmission} from "../../../models/database/Submission";
 
@@ -22,9 +23,7 @@ export class CommentDB {
      * @returns an object, with keys = ids, and values all comments made within that one comment thread.
      */
     static async APIgetCommentsByThreads(ids: string[], client: pgDB = pool) {
-        //This mapping is a map of key=> comment[]. this is fine
-        // tslint:disable-next-line: no-any
-        const mapping: any = {};
+        const mapping: { [key: string]: APIComment[] } = {};
         ids.forEach(element => {
             mapping[element] = [];
         });
@@ -60,7 +59,9 @@ export class CommentDB {
         return CommentDB.filterComment({commentID, client}).then(one);
     }
 
-    static async getCommentsByThreadParticipation(userID: string, courseID?: string, onlyReplies = false, params: DBTools = {}) {
+    static async getCommentsByThreadParticipation(
+        userID: string, courseID?: string, onlyReplies = false, params: DBTools = {}
+    ) {
         const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
         const userid = UUIDHelper.toUUID(userID), courseid = UUIDHelper.toUUID(courseID);
         return client.query(`
@@ -77,7 +78,9 @@ export class CommentDB {
         `, [userid, courseid, limit, offset, after, before, onlyReplies]).then(extract).then(map(commentToAPI));
     }
 
-    static async getCommentsBySubmissionOwner(submissionOwnerID: string, courseID?: string, onlyReplies = false, params: DBTools = {}) {
+    static async getCommentsBySubmissionOwner(
+        submissionOwnerID: string, courseID?: string, onlyReplies = false, params: DBTools = {}
+    ) {
         const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
         const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
         return client.query(`
@@ -294,7 +297,8 @@ export class CommentDB {
     /**
      * delete a single comment from the database.
      * @param commentID ID of the comment to be deleted
-     * @param client optional; when using transactions, pass the client to this function so it can be used to perform this query.
+     * @param client optional; when using transactions, pass the client
+     *               to this function so it can be used to perform this query.
      */
     static async deleteComment(commentID: string, client: pgDB = pool) {
         const commentid = UUIDHelper.toUUID(commentID);

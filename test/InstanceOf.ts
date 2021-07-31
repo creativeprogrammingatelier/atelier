@@ -14,7 +14,10 @@ import {User} from "../models/api/User";
  * Interface type checking, because this is not built in...
  * Constructor takes any, as it should be able to check any object to match the interface.
  */
-/* tslint:disable:no-any */
+/* eslint-disable @typescript-eslint/no-explicit-any,
+    @typescript-eslint/no-unsafe-member-access,
+    @typescript-eslint/no-unsafe-return,
+    @typescript-eslint/no-unsafe-call */
 export function instanceOfCourseUser(object: any): object is CourseUser {
     return ("userID" in object
         && typeof object.userID === "string"

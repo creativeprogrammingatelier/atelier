@@ -6,7 +6,9 @@ const FILE = "FILE::";
 
 const env = process.env.NODE_ENV || "development";
 const file = fs.readFileSync(`config/${env}.json`, "utf8");
-const json = JSON.parse(file);
+// It's fine, the JSON structure will be checked
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const json: any = JSON.parse(file) as unknown;
 
 export interface Configuration {
     /** Value of the NODE_ENV environment variable */
@@ -113,21 +115,22 @@ function prop<T extends string | number | boolean>(name: string, value: T | unde
  * fields into a typed TypeScript object with all fields filled in
  * Because the optional fields may be leaf nodes, we have to dig in to all structures
  */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 export const config: Configuration = {
     env,
-    baseUrl: prop("baseUrl", json.baseUrl),
-    hostname: prop("hostname", json.hostname, env === "production" ? "0.0.0.0" : "127.0.0.1"),
-    port: prop("port", json.port, 5000),
-    openUnknownFiles: prop("openUnknownFiles", json.openUnknownFiles, false),
+    baseUrl: prop<string>("baseUrl", json.baseUrl),
+    hostname: prop<string>("hostname", json.hostname, env === "production" ? "0.0.0.0" : "127.0.0.1"),
+    port: prop<number>("port", json.port, 5000),
+    openUnknownFiles: prop<boolean>("openUnknownFiles", json.openUnknownFiles, false),
     loginProviders:
             json.loginProviders ?
-            // tslint:disable-next-line: no-any - It's fine, this is turning JSON into typed structure
-                json.loginProviders.map((provider: any, i: number) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (json.loginProviders as unknown[]).map((provider: any, i: number) => {
                     const base = {
                         type: prop(`loginProvider[${i}].type`, provider.type),
-                        id: prop(`loginProvider[${i}].id`, provider.id),
-                        name: prop(`loginProvider[${i}].name`, provider.name),
-                        hidden: prop(`loginProviders[${i}].hidden`, provider.hidden, false)
+                        id: prop<string>(`loginProvider[${i}].id`, provider.id),
+                        name: prop<string>(`loginProvider[${i}].name`, provider.name),
+                        hidden: prop<boolean>(`loginProviders[${i}].hidden`, provider.hidden, false)
                     };
                     switch (base.type) {
                     case "saml":
@@ -139,17 +142,18 @@ export const config: Configuration = {
                             altBaseUrl: prop(`loginProvider[${i}].altBaseUrl`, provider.altBaseUrl, null),
                             metadata:
                                     "url" in provider.metadata
-                                        ? {url: prop(`loginProvider[${i}].metadata.url`, provider.metadata.url)}
-                                        : {file: prop(`loginProvider[${i}].metadata.file`, provider.metadata.file)},
+                                        ? {url: prop<string>(`loginProvider[${i}].metadata.url`, provider.metadata.url)}
+                                        : {file: prop<string>(`loginProvider[${i}].metadata.file`, provider.metadata.file)},
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                             attributes: provider.attributes
                         };
                     case "builtin":
                         return {
                             ...base,
-                            register: prop(`loginProvider[${i}].register`, provider.register, true)
+                            register: prop<boolean>(`loginProvider[${i}].register`, provider.register, true)
                         };
                     default:
-                        throw new ConfigurationError(`Invalid login provider type "${base.type}"`);
+                        throw new ConfigurationError(`Invalid login provider type "${base.type as string}"`);
                     }
                 })
                 :
@@ -161,15 +165,15 @@ export const config: Configuration = {
                     register: true
                 }],
     database: {
-        host: prop("database.host", json.database.host, "localhost"),
-        port: prop("database.port", json.database.port, 5432),
-        user: prop("database.user", json.database.user),
-        password: prop("database.password", json.database.password),
-        database: prop("database.database", json.database.database),
+        host: prop<string>("database.host", json.database.host, "localhost"),
+        port: prop<number>("database.port", json.database.port, 5432),
+        user: prop<string>("database.user", json.database.user),
+        password: prop<string>("database.password", json.database.password),
+        database: prop<string>("database.database", json.database.database),
         pool: {
-            max: json.database.pool.max,
-            connectionTimeoutMillis: json.database.pool.connectionTimeoutMillis,
-            idleTimeoutMillis: json.database.pool.idleTimeoutMillis
+            max: json.database.pool.max as number | undefined,
+            connectionTimeoutMillis: json.database.pool.connectionTimeoutMillis as number | undefined,
+            idleTimeoutMillis: json.database.pool.idleTimeoutMillis as number | undefined
         }
     },
     canvas:

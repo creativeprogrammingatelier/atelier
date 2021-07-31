@@ -31,8 +31,9 @@ import {UserDB as UH} from "./UserDB";
 /**
  * This is a large test file that mainly runs all functions in the database directory, to see if they work.
  * Usually this means that a new entry is created, modified and then deleted within each test.
- * These functions log their output to a separate logger, which will output the logs if a test fails for debugging purposes.
- * Because of the fact that the tests do not operate independently from each other, these tests are not run using mocha's normal test suite,
+ * These functions log their output to a separate logger, which will output the logs if
+ * a test fails for debugging purposes. Because of the fact that the tests do not operate independently
+ * from each other, these tests are not run using mocha's normal test suite,
  * they are instead called as one big test, which will fail if any part fails.
  * Because of this, mocha will complain the test is slow, as it takes ~3 seconds
  */
@@ -311,8 +312,9 @@ async function DBpluginTest() {
 
     //disable warnings, this is what we want to do, as we are adding the same entry back in later
     const warn = console.warn;
-    console.warn = () => {
-    };
+    // Having an empty function is kind of the point here
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    console.warn = () => { };
     await promise(P.deletePlugin(plugin.pluginID), "deletePlugin");
     console.warn = warn;
 
@@ -327,21 +329,21 @@ async function DBpluginTest() {
         await promise(P.addHook({pluginID: ID, hook: el}), "addPlugin");
     }
 }
-async function run(...funs: Function[]) {
-    for (let i = 0; i < funs.length; i++) {
+async function run(...funs: Array<() => Promise<void>>) {
+    for (const fun of funs) {
         stored = "";
         try {
-            await funs[i]();
-            console.log("\t" + ok + " " + funs[i].name);
+            await fun();
+            console.log("\t" + ok + " " + fun.name);
         } catch (error) {
             const err = util.inspect(error).split("\n").map(s => "\n\t\t" + s);
-            console.log("\t" + fail + " " + funs[i].name + err);
+            console.log("\t" + fail + " " + fun.name + err.join(", "));
             console.log(stored);
             errors++;
         }
     }
-    const s = errors === 0 ? "all OK" : ("there were " + errors + " errors");
-    console.log("\n-----------------", errors === 0 ? "all OK\n" : "there were " + errors + " error(s)\n");
+    const s = errors === 0 ? "all OK" : ("there were " + errors.toString() + " errors");
+    console.log("\n-----------------", errors === 0 ? "all OK\n" : "there were " + errors.toString() + " error(s)\n");
     equal(errors === 0, true, s);
 }
 

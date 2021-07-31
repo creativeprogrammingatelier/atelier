@@ -10,5 +10,5 @@ interface BlockProperties extends HTMLProperties {
  * Defines an Area component as a Block.
  */
 export function Block({transparent, className, id, children}: BlockProperties) {
-    return <Area transparent={transparent} className={className + " block"} id={id}>{children}</Area>;
+    return <Area transparent={transparent} className={`${className || ""} block`} id={id}>{children}</Area>;
 }

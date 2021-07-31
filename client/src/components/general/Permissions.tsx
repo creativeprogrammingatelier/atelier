@@ -52,9 +52,13 @@ export function Permissions({course, children, error, ...props}: PermissionsProp
 
     const render = (permissions: number) => {
         if (permissionCheck(permissions)) {
-            return <Fragment children={children}/>;
+            return <Fragment>
+                {children}
+            </Fragment>;
         } else if (error) {
-            return <Fragment children={error}/>;
+            return <Fragment>
+                {error}
+            </Fragment>;
         } else {
             return <Fragment/>;
         }

@@ -93,7 +93,8 @@ export class CourseRoleDB {
             WHERE courseRoleID=$1
             RETURNING *`, [name])
             .then(extract).then(map(convertRolePermission)).then(one).then(res => {
-                //this will also remove the entry from the courseRole enum on the server, no longer allowing it as a valid item.
+                //this will also remove the entry from the courseRole enum on the server,
+                //no longer allowing it as a valid item.
                 removeItem(CourseRole, name);
                 return res;
             });

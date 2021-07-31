@@ -17,9 +17,7 @@ export class FileDB {
         const {
             client = pool
         } = params;
-        //this object is used as a map.
-        // tslint:disable-next-line: no-any
-        const mapping: any = {};
+        const mapping: { [key: string]: APIFile[] } = {};
         ids.forEach(id => {
             mapping[id] = [];
         });
@@ -31,7 +29,7 @@ export class FileDB {
         `, [uuids]).then(extract).then(map(fileToAPI));
         files.forEach(file => {
             if (file.references.submissionID in mapping) {
-                (mapping[file.references.submissionID] as APIFile[]).push(file);
+                mapping[file.references.submissionID].push(file);
             } else {
                 throw new Error("concurrent modification exception");
             }

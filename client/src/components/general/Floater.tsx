@@ -17,7 +17,7 @@ interface FloaterProperties extends ParentalProperties {
  * A floating component capable of wrapping it's children into a floating div.
  */
 export function Floater({top, right, bottom, left, width, height, className, children}: FloaterProperties) {
-    return <div className={"floater " + className}
+    return <div className={`floater ${className || ""}`}
         style={{top, right, bottom, left, minWidth: width, minHeight: height}}>
         {children}
     </div>;

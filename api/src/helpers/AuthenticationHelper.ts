@@ -50,7 +50,7 @@ export const verifyToken = async <T>(token: string, secretOrKey = AUTHSECRETKEY,
 
 /** Retrieve the JWT token from request headers */
 export function getToken(request: Request) {
-    return request.cookies?.atelierToken?.trim() ||
+    return (request.cookies as Record<string, string> | undefined)?.atelierToken?.trim() ||
         request.headers?.authorization?.replace("Bearer ", "")?.trim();
 }
 
@@ -103,7 +103,7 @@ class TokenInvalidator {
             return false;
         } else {
             this.tokens.add(token);
-            setTimeout(() => this.tokens.delete(token), exp * 1000 - Date.now() + 3000);
+            setTimeout(() => this.tokens.delete(token), (exp * 1000) - Date.now() + 3000);
             return true;
         }
     }
@@ -120,7 +120,8 @@ export function issueTemporaryToken(userID: string) {
 
 /** Verify that a temporary token is valid and indeed temporary. */
 export async function verifyTemporaryToken(token: string) {
-    const { userID, temporary, iat, exp } = await verifyToken<{ userID: string, temporary: boolean }>(token, TEMPSECRETKEY);
+    const { userID, temporary, iat, exp } =
+        await verifyToken<{ userID: string, temporary: boolean }>(token, TEMPSECRETKEY);
     if (!temporary || exp - iat > temporaryTokenExpiration)
         throw new AuthError("token.notTemporary", "This endpoint requires the use of a temporary token, but a different token was used.");
     if (!tokenInvalidator.checkAndInvalidate(token, exp))

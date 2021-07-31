@@ -48,8 +48,7 @@ if (require.main === module) {
             await client.query("ROLLBACK");
             throw e;
         } finally {
-
-            await client.release();
+            client.release();
             end();
         }
     })();

@@ -16,7 +16,7 @@ const migrations: Migrations = {
     // Let's do some indexing on these tables, shall we?
     // If you're new to indexing, go read https://use-the-index-luke.com. I can highly recommend it.
     6: async client => {
-        client.query(`
+        await client.query(`
             -- We need to get submissions by course for the feed, which is sorted by date
             CREATE INDEX submission_courseid_sorted_idx ON "Submissions" (courseid, date);
             -- Threads are often filtered on visibility, then sometimes on automatedness (for the feeds)
@@ -49,7 +49,7 @@ const migrations: Migrations = {
 
     // Add fields to users and courses for Canvas integration
     5: async client => {
-        client.query(`
+        await client.query(`
             ALTER TABLE "Users"
                 ADD COLUMN canvasrefresh text UNIQUE;
             ALTER TABLE "Courses"
@@ -60,7 +60,7 @@ const migrations: Migrations = {
     // Adds automated and sharedBy fields to CommentThread, to distinguish automated
     // comments and add the ability to show the user that made such a comment public
     4: async client => {
-        client.query(`
+        await client.query(`
             ALTER TABLE "CommentThread"
                 ADD COLUMN automated boolean NOT NULL DEFAULT FALSE,
                 ADD COLUMN sharedBy uuid REFERENCES "Users"(userID) ON DELETE SET NULL;
@@ -76,7 +76,7 @@ const migrations: Migrations = {
 
     // Adds a table with tag
     3: async client => {
-        client.query(`
+        await client.query(`
             CREATE TABLE "Tags" (
                     tagID      		uuid PRIMARY KEY DEFAULT gen_random_uuid(),
                     commentID      	uuid NOT NULL REFERENCES "Comments"(commentID) ON DELETE CASCADE,
@@ -87,13 +87,13 @@ const migrations: Migrations = {
 
     // Introduces a new researchAllowed column in the Users table
     2: async client => {
-        client.query(`
+        await client.query(`
             ALTER TABLE "Users" ADD COLUMN researchAllowed boolean
         `);
     },
 
     // The base schema when migrations were introduced
-    1: async client => {
+    1: async _client => {
         // There is no previous version, so this should never run
     }
 };
@@ -136,7 +136,8 @@ async function runMigration(version: number, client: pgDB) {
             await setVersion(version, client);
             console.log("Upgraded database to version", version);
         } catch (err) {
-            err.message = `Upgrading database to version ${version} failed. ` + err.message;
+            if (err instanceof Error)
+                err.message = `Upgrading database to version ${version} failed. ` + err.message;
             throw err;
         }
     } else {

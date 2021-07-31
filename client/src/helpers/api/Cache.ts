@@ -85,7 +85,10 @@ export interface CacheCollectionInterface<T> {
 
 /** Options for requesting a collection from the cache */
 export interface GetCacheCollectionOptions<T> {
-    /** Provide a unique subKey, if you want to treat the response as a separate collection. Often used in combination with filter. */
+    /**
+     * Provide a unique subKey, if you want to treat the response as a separate collection.
+     * Often used in combination with filter.
+     */
     subKey?: string,
     /** Filter the items in the collection to only the ones you're interested in */
     filter?: (value: T) => boolean,
@@ -100,9 +103,9 @@ export interface Store<T> {
 
 /** Exported version of the cache for persistent storage */
 export interface ExportedCache {
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     items: Store<CacheItem<any>>,
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     collections: Store<CacheCollection<any>>,
     subCollections: Store<Store<CacheProperties>>
 }
@@ -175,15 +178,15 @@ class LockQueue {
 /** A generic observable cache of items and collections */
 export class Cache {
     // The cache has to store any type of data
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private items: Store<BehaviorSubject<CacheItem<any>>>;
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private collections: Store<SubscribableCollection<any>>;
     private exported: BehaviorSubject<ExportedCache>;
 
     /** Create a new cache, optionally poviding existing data */
     // TODO: properly handle collection properties
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(items?: Store<CacheItem<any>>, collections?: Store<CacheCollection<any>>) {
         this.items = {};
         this.collections = {};

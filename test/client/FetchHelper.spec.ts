@@ -9,9 +9,9 @@ import { Fetch } from "../../client/src/helpers/api/FetchHelper";
 chai.use(chaiSpies);
 chai.use(chaiAsPromised);
 
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const g = global as any;
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetchSpy = (body: any, status: number) =>
     chai.spy(async (_url: RequestInfo, _options?: RequestInit) =>
         Promise.resolve(new Response(JSON.stringify(body), { status })),

@@ -100,7 +100,7 @@ upgradeDatabase().then(() => {
     app.use("/", indexRouter);
 
     // Handle all errors thrown in the pipeline
-    app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
+    app.use((error: Error, request: Request, response: Response, _next: NextFunction) => {
     // Log the full error to the console, we want to see what went wrong...
         console.log("\x1b[31m", error);
 

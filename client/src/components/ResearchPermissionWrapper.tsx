@@ -32,12 +32,14 @@ export function ResearchPermissionWrapper({ children }: ParentalProperties) {
  */
 export function ResearchPermissionInformation() {
     return <Fragment>
+        {/* eslint-disable max-len */}
         <p>You have been invited to use a research prototype of Atelier. This platform aims to improve the process of providing feedback to students on their programming assignments in a tutorial setting.</p>
         <p>Your participation in this study is entirely voluntary. You can indicate consent for your data being used below. You can update this choice later by going to your account settings within Atelier. We plan to take a snapshot of all data on Atelier at the end of the tutorial period. We will take another snapshot at the end of the module.</p>
         <p>If you consent, we will be using the programs that you upload, comments by students, student assistants, and automated tools, and an access count for research purposes. We will keep track of who consents to participate in this research, and who does not. All programs, comments, and usage statistics will be anonymized. Anonymized data may be used for future research studies, and researchers will not contact you for additional permission to use this data. Any data shared with other researchers will not include any information that can directly identify you.</p>
         <p>If you do not consent, you can still use the fully-featured prototype, but your data will not be used in our research.</p>
         <p>We believe there are no known risks associated with participating in this research study, other than the standard risks that are associated with any online activity. Do not share or save any passwords or access tokens.</p>
         <p>For question regarding this research, please contact dr. Ansgar Fehnker (<a href="mailto:ansgar.fehnker@utwente.nl">ansgar.fehnker@utwente.nl</a>).</p>
+        {/* eslint-enable max-len */}
     </Fragment>;
 }
 
@@ -49,7 +51,8 @@ function ResearchPermissionOverlay() {
     const [researchAllowed, setResearchAllowed] = useState(false);
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        currentUser.update({ researchAllowed });
+        // Ignore the result of the update, if it fails, we'll just ask the user again later
+        void currentUser.update({ researchAllowed });
     };
 
     return <Overlay>

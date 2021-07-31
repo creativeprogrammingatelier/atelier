@@ -65,7 +65,7 @@ export interface Refresh<T> extends APICache<T> {
  * You can create new items in this type of cache
  * The create function may take a generic list of arguments, of different types
  */
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Create<Arg extends any[], T> extends APICache<T> {
     /**
      * Takes a generic set of arguments, returning the created
@@ -78,7 +78,7 @@ export interface Create<Arg extends any[], T> extends APICache<T> {
  * You can update the items stored in this type of cache
  * The update function may take a generic list of arguments, of different types
  */
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Update<Arg extends any[], T> extends APICache<T> {
     /**
      * Takes a generic set of arguments, returning the updated
@@ -91,7 +91,7 @@ export interface Update<Arg extends any[], T> extends APICache<T> {
  * Items in this type of cache can be deleted
  * The delete function may take a generic list of arguments, of different types
  */
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Delete<Arg extends any[], T> extends APICache<T> {
     /**
      * Takes a generic set of arguments, returning the deleted
@@ -104,7 +104,7 @@ export interface Delete<Arg extends any[], T> extends APICache<T> {
  * Items in this type of cache support pagination, so you can load more items into the cache,
  * or check if new items have appeared. Both functions return the number of new items.
  */
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface LoadMore<T> extends APICache<T> {
     loadNew: () => Promise<number>,
     loadMore: (until: number) => Promise<number>
@@ -271,7 +271,7 @@ async function create<T extends { ID: string }>(promise: Promise<T>, item: T, ca
  */
 function updateModel<T>(old: T, update: Partial<T>): T {
     // The update object may have fields of any type
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateMap = update as { [key: string]: any };
     return Object.assign({},
         old,

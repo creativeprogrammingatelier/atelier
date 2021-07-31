@@ -45,7 +45,7 @@ export function Bootstrap() {
                 <Alert dismissible>
                     <Alert.Heading>Attention!</Alert.Heading>
                     This is an alert with a <Alert.Link>link</Alert.Link>
-                    <Button>There's even a button!</Button>
+                    <Button>There&apos;s even a button!</Button>
                 </Alert>
             </div>
             <h2>Accordions</h2>
@@ -58,7 +58,7 @@ export function Bootstrap() {
                             </Accordion.Toggle>
                         </Card.Header>
                         <Accordion.Collapse eventKey="0">
-                            <Card.Body>Hello! I'm the body</Card.Body>
+                            <Card.Body>Hello! I&apos;m the body</Card.Body>
                         </Accordion.Collapse>
                     </Card>
                     <Card>
@@ -68,7 +68,7 @@ export function Bootstrap() {
                             </Accordion.Toggle>
                         </Card.Header>
                         <Accordion.Collapse eventKey="1">
-                            <Card.Body>Hello! I'm another body</Card.Body>
+                            <Card.Body>Hello! I&apos;m another body</Card.Body>
                         </Accordion.Collapse>
                     </Card>
                 </Accordion>
@@ -130,7 +130,8 @@ export function Bootstrap() {
                         <Card.Title>Card Title</Card.Title>
                         <Card.Subtitle>Card Subtitle</Card.Subtitle>
                         <Card.Text>
-                            Some quick example text to build on the card title and make up the bulk of the card's content.
+                            Some quick example text to build on the card title
+                            and make up the bulk of the card&apos;s content.
                         </Card.Text>
                         <Button variant="primary">Go somewhere</Button>
                     </Card.Body>
@@ -140,7 +141,8 @@ export function Bootstrap() {
                     <Card.Body>
                         <Card.Title>Card Title</Card.Title>
                         <Card.Text>
-                            Some quick example text to build on the card title and make up the bulk of the card's content.
+                            Some quick example text to build on the card title
+                            and make up the bulk of the card&apos;s content.
                         </Card.Text>
                     </Card.Body>
                     <ListGroup>
@@ -159,7 +161,8 @@ export function Bootstrap() {
                     <Card.ImgOverlay>
                         <Card.Title>Card title</Card.Title>
                         <Card.Text>
-                            This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                            This is a wider card with supporting text below as a natural lead-in to additional content.
+                            This content is a little bit longer.
                         </Card.Text>
                         <Card.Text>Last updated 3 mins ago</Card.Text>
                     </Card.ImgOverlay>
@@ -171,7 +174,8 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-                                This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                                This is a wider card with supporting text below as a natural lead-in to additional content.
+                                This content is a little bit longer.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -211,7 +215,8 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title</Card.Title>
                             <Card.Text>
-                                This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                                This is a wider card with supporting text below as a natural lead-in to additional content.
+                                This content is a little bit longer.
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
@@ -251,7 +256,8 @@ export function Bootstrap() {
                         <Card.Body>
                             <Card.Title>Card title that wraps to a new line</Card.Title>
                             <Card.Text>
-                                This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                                This is a longer card with supporting text below as a natural lead-in to additional content.
+                                This content is a little bit longer.
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -384,7 +390,7 @@ export function Bootstrap() {
                         <Form.Label>Email address</Form.Label>
                         <Form.Control type="email" placeholder="Enter email"/>
                         <Form.Text className="text-muted">
-                            We'll never share your email with anyone else.
+                            We&apos;ll never share your email with anyone else.
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="formBasicPassword">
@@ -602,7 +608,7 @@ export function Bootstrap() {
                 <Popover id="popover" style={{position: "relative"}}>
                     <Popover.Title>Popover right</Popover.Title>
                     <Popover.Content>
-                        And here's some <strong>amazing</strong> content. It's very engaging.
+                        And here&apos;s some <strong>amazing</strong> content. It&apos;s very engaging.
                         right?
                     </Popover.Content>
                 </Popover>

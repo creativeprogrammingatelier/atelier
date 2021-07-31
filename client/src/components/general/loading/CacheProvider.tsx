@@ -41,7 +41,9 @@ export function CacheProvider({children}: {children: React.ReactNode}) {
         .pipe(debounceTime(750))
         .subscribe(exported => Cache.save("cache", exported));
 
-    return <cacheContext.Provider value={cache} children={children}/>;
+    return <cacheContext.Provider value={cache}>
+        {children}
+    </cacheContext.Provider>;
 }
 
 /** Hook to get access to specific CacheCollection */

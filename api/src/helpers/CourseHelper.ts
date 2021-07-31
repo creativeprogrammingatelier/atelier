@@ -21,6 +21,7 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
                     client
                 });
             } else if ( user.email != undefined ) {
+                // TODO: This never happens, userDB will never be undefined, instead an exception will be thrown
                 const createdUser: any = await UserDB.createUser({ userName: user.name, email: user.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client });
                 await CourseRegistrationDB.addEntry({
                     courseID: course.ID,

@@ -76,8 +76,8 @@ export interface DBMention {
 }
 
 export function convertMention(db: DBMention): Mention {
-    //can be null or undefined, this is way more readable
-    // tslint:disable-next-line: triple-equals
+    // can be null or undefined, this is way more readable
+    // eslint-disable-next-line eqeqeq
     if ((db.usergroup == undefined) === (db.userid == undefined)) {
         throw new InvalidDatabaseResponseError("a mention should have either a user, or a group as target.");
     }
@@ -112,7 +112,7 @@ export function mentionToAPI(db: DBMention): APIMention {
      c.courseName
      */
     //can be null or undefined, this is way more readable
-    // tslint:disable-next-line: triple-equals
+    // eslint-disable-next-line eqeqeq
     if ((db.usergroup == undefined) === (db.userid == undefined)) {
         throw new InvalidDatabaseResponseError("a mention should have either a user, or a group as target.");
     }

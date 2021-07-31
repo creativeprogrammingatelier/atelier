@@ -109,7 +109,10 @@
         "@typescript-eslint/prefer-string-starts-ends-with": "warn",
         "@typescript-eslint/promise-function-async": "error",
         "@typescript-eslint/switch-exhaustiveness-check": "warn",
-        "@typescript-eslint/type-annotation-spacing": "warn"
+        "@typescript-eslint/type-annotation-spacing": "warn",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        // TODO: There are a lot of these in here, they should be fixed at some point
+        "@typescript-eslint/no-floating-promises": "off"
     },
     "settings": {
         "react": {

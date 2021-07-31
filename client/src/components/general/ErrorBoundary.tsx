@@ -3,7 +3,7 @@ import React, {ErrorInfo} from "react";
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 
-interface ErrorBoundaryProperties { }
+type ErrorBoundaryProperties = Record<string, never>
 interface ErrorBoundaryState {
     error: FeedbackContent
 }
@@ -23,7 +23,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProperties, Erro
         };
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
         // TODO: log this somewhere
     }
 

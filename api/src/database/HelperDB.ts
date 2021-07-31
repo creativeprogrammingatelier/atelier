@@ -76,7 +76,7 @@ export function doIf<S>(cond: boolean, fun: (input: S) => S): (input: S) => S {
  * Check if a given name is a valid table name in postgres
  * @param name
  */
-export function isTableName(name: string) {
+export function isTableName(_name: string) {
     return true;
 }
 
@@ -106,7 +106,7 @@ export function toDec(n: string): number {
         if (digit !== "0" && digit !== "1") {
             throw new Error("a binary string should only contain 1s and 0s, but found: " + digit);
         }
-        x = x * 2 + Number(digit);
+        x = (x * 2) + Number(digit);
     });
     return x;
 }
@@ -118,7 +118,8 @@ export function toDec(n: string): number {
  * @param obj the object to check for availability
  * @throws MissingFieldDatabaseError if a property is missing.
  */
-export function checkAvailable(required: string[], obj: {}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function checkAvailable(required: string[], obj: any) {
     required.forEach(element => {
         if (!(element in obj)) {
             throw new MissingFieldDatabaseError("a required field is missing: " + element);
@@ -143,7 +144,7 @@ export function noNull<T>(obj: T | undefined | null): T {
  * @param key the key that might be in the map
  * @param map the map that might contain the key
  */
-export function keyInMap<T>(key: string, map: object): key is keyof typeof map {
+export function keyInMap(key: string, map: Record<string, unknown>): key is keyof typeof map {
     if (!(key in map)) {
         throw new MissingFieldDatabaseError("key " + key + " not found in map");
     }
@@ -153,7 +154,8 @@ export function keyInMap<T>(key: string, map: object): key is keyof typeof map {
 /**
  * Creates a string that can be used to search the database for some substring.
  * @param input the string to search for
- * Currently escapes special characters and allows the string to be a substring of the searched field, instead of a complete match.
+ * Currently escapes special characters and allows the string to be a
+ * substring of the searched field, instead of a complete match.
  */
 export function searchify(input: undefined): undefined
 export function searchify(input: string): string
@@ -162,7 +164,7 @@ export function searchify(input: string | undefined) {
     if (input === undefined) {
         return undefined;
     }
-    return "%" + input.replace(/\\/g, "\\\\").replace(/\%/g, "\\%").replace(/\_/g, "\\_") + "%";
+    return "%" + input.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_") + "%";
 }
 
 /**
@@ -171,10 +173,9 @@ export function searchify(input: string | undefined) {
  * @param query the query as it would have been passed to client.query()
  * @param params the parameters added with this call
  */
-// tslint:disable-next-line: no-any
-export function _insert(query: string, params: any[]) {
+export function _insert(query: string, params: Array<{ toString(): string }>) {
     for (let i = params.length; i > 0; i--) {
-        query = query.replace(new RegExp("\\$" + i, "g"), params[i - 1] === undefined ? "NULL" : "'" + params[i - 1] + "'");
+        query = query.replace(new RegExp("\\$" + i.toString(), "g"), params[i - 1] === undefined ? "NULL" : `'${params[i - 1].toString()}'`);
     }
     console.log(query);
     return query;
@@ -226,9 +227,11 @@ export function map<S, T>(fun: (element: S) => T) {
  * @param funs an array of functions
  */
 //This is the general case, but no idea how to convey the type.
-export function funmap(funs: Array<(el: object) => object>) {
-    const union = (element: object) => {
-        const reducer = (accumulator: object, fun: Function): object => ({...accumulator, ...fun(element)});
+export function funmap<T>(funs: Array<(el: T) => Record<string, unknown>>) {
+    const union = (element: T) => {
+        const reducer =
+            (accumulator: Record<string, unknown>, fun: (el: T) => Record<string, unknown>): Record<string, unknown> =>
+                ({...accumulator, ...fun(element)});
         return funs.reduce(reducer, {});
     };
     return map(union);

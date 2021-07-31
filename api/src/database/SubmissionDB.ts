@@ -180,12 +180,10 @@ export class SubmissionDB {
     }
     static async addFiles(query: Promise<APISubmission[]>, client: pgDB = pool) {
         const partials = await query;
-        return this._addFiles(partials);
+        return this._addFiles(partials, client);
     }
     static async _addFiles(partials: APISubmission[], client: pgDB = pool) {
-        //the mapping object is used as a map. this is fine
-        // tslint:disable-next-line: no-any
-        const mapping: any = {};
+        const mapping: { [key: string]: APISubmission } = {};
         partials.forEach(item => {
             mapping[item.ID] = item;
         });
@@ -196,7 +194,7 @@ export class SubmissionDB {
             if (!(id in files)) {
                 throw new Error("concurrentModificationException");
             }
-            (mapping[id] as APISubmission).files = files[id];
+            mapping[id].files = files[id];
         });
         return partials;
     }

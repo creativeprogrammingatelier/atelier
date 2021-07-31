@@ -10,10 +10,11 @@ export class UUIDHelper {
      * Convert a 22-character base 64 ID to the database internal UUID.
      * We use _ instead of the base 64 / and - instead of +
      */
-    static toUUID(id: string): UUID;
-    static toUUID(id: null | undefined): undefined;
-    static toUUID(id: string | null | undefined): UUID | undefined;
-    static toUUID(id: string | null | undefined): UUID | undefined {
+    // Use `this: void` to indicate it doesn't use a reference to this
+    static toUUID(this: void, id: string): UUID;
+    static toUUID(this: void, id: null | undefined): undefined;
+    static toUUID(this: void, id: string | null | undefined): UUID | undefined;
+    static toUUID(this: void, id: string | null | undefined): UUID | undefined {
         if (id === undefined || id === null) {
             return undefined;
         }

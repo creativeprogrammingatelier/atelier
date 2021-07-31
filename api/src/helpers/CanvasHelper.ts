@@ -1,9 +1,10 @@
+/* eslint-disable camelcase */
+
 import { UserDB } from "../database/UserDB";
 import { getCurrentUserID } from "./AuthenticationHelper";
 import { Request } from "express";
-import LinkHeader from "http-link-header";
-import fetch from "node-fetch";
 import Link from "http-link-header";
+import fetch from "node-fetch";
 import { config } from "./ConfigurationHelper";
 
 export class IntegrationNotEnabledError extends Error {
@@ -34,13 +35,13 @@ export async function getAccessToken(refreshToken: string) {
     const {canvas_url_root, client_id, client_secret, redirect_uri} = canvasConfig();
     const grant_type = "refresh_token";
     const result = await fetch(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&refresh_token=${refreshToken}`, { method: "POST" });
-    const { access_token }: { access_token: string } = await result.json();
+    const { access_token } = await result.json() as { access_token: string };
     return access_token;
 }
 
 export async function getRefreshToken(request: Request) {
     const userID: string = await getCurrentUserID(request);
-    const user: any = await UserDB.getUserByID(userID);
+    const user = await UserDB.getUserByID(userID);
     return user.canvasrefresh;
 }
 
@@ -51,10 +52,10 @@ export async function deleteCanvasLink(access_token: string) {
 
 export async function createRefreshToken(request: Request) {
     const {canvas_url_root, client_id, client_secret, redirect_uri} = canvasConfig();
-    const code = (request.query.code);
+    const code = request.query.code as string;
     const grant_type = "authorization_code";
     const result = await fetch(`${canvas_url_root}/login/oauth2/token?grant_type=${grant_type}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&code=${code}`, { method: "POST" });
-    const { refresh_token }: { refresh_token: string } = await result.json();
+    const { refresh_token } = await result.json() as { refresh_token: string };
     return refresh_token;
 }
 
@@ -84,13 +85,13 @@ export async function getCourseUsersStudents(course_id: string, access_token: st
 }
 
 
-export async function handlePagination(url: string): Promise<any> {
-    let results: any = [];
+export async function handlePagination<T>(url: string): Promise<T[]> {
+    let results: T[] = [];
     let next = false;
     do {
         const response = await fetch(url);
-        const link: Link = LinkHeader.parse(response.headers.get("link") || "");
-        const result = await response.json();
+        const link: Link = Link.parse(response.headers.get("link") || "");
+        const result = await response.json() as T;
         results = results.concat(result);
         if (link.has("rel", "next")) {
             next = true;

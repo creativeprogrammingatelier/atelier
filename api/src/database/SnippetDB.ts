@@ -99,7 +99,7 @@ export class SnippetDB {
             sorting = Sorting.datetime,
             currentUserID = undefined,
             client = pool,
-            includeNulls = false //exclude them normally
+            // includeNulls = false //exclude them normally
         } = extras;
         const snippetid = UUIDHelper.toUUID(snippetID),
             fileid = UUIDHelper.toUUID(fileID),
@@ -178,7 +178,7 @@ export class SnippetDB {
             VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7)
             RETURNING snippetID
             `, [lineStart, lineEnd, charStart, charEnd, body, contextBefore, contextAfter])
-            .then(extract).then(one).then(res => UUIDHelper.fromUUID(res.snippetid as string));
+            .then(extract).then(one).then((res: { snippetid: string }) => UUIDHelper.fromUUID(res.snippetid));
     }
     static async updateSnippet(snippet: Snippet) {
         checkAvailable(["snippetID"], snippet);

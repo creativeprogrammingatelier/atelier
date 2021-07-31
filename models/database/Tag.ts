@@ -48,7 +48,7 @@ export interface DBTag {
 
 export function convertTag(db: DBTag): Tag {
     //can be null or undefined, this is way more readable
-    // tslint:disable-next-line: triple-equals
+    // eslint-disable-next-line eqeqeq
     return {
         tagID: UUIDHelper.fromUUID(db.tagid),
         commentID: UUIDHelper.fromUUID(db.commentid)

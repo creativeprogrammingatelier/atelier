@@ -9,10 +9,10 @@ describe("AuthMiddleware.requireAuth", () => {
     const response = {} as unknown as Response;
     let nextCount = 0;
 
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function next(check: (args: any[]) => void = () => {
     }) {
-        // tslint:disable-next-line: no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return ((...args: any[]) => {
             nextCount++;
             check(args);

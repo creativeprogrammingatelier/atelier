@@ -15,7 +15,7 @@ export function Homepage() {
     const courses = useCourses();
 
     const redirect = localStorage.getItem("redirect");
-    console.log("Homepage: " + redirect);
+    console.log("Homepage: " + (redirect || "null"));
     if (redirect) {
         const history = useHistory();
         localStorage.removeItem("redirect");

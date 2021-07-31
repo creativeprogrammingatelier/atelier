@@ -42,7 +42,10 @@ export function CourseUsersView(courseRegistrationTable = "\"CourseRegistration\
     `;
 }
 
-/** NOTE: this is almost the same as CourseUsersView, but now non-existent rows are added with nulls in the right locations */
+/**
+ * NOTE: this is almost the same as CourseUsersView,
+ * but now non-existent rows are added with nulls in the right locations
+ */
 export function CourseUsersViewAll(courseRegistrationTable = "\"CourseRegistration\"") {
     return `
         WITH allButPermissions AS (

@@ -20,7 +20,7 @@ export function checkEnum<T>(enumer: T, item: string | number | symbol): item is
 }
 
 //this function adds `item` to enum( : any)
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function addItem(enumer: any, item: string): void {
     if (item in enumer) {
         throw new EnumError("tried to add an item to an enum that was already there: " + item + " , enum entries: " + enumer);
@@ -29,7 +29,7 @@ export function addItem(enumer: any, item: string): void {
 }
 
 //this function removes `item` from enum( : any)
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function removeItem(enumer: any, item: string): void {
     if (!(item in enumer)) {
         throw new EnumError("tried to remove an item from an enum that was not there: " + item + " , enum entries: " + enumer);

@@ -25,9 +25,7 @@ export class CourseRegistrationDB {
     static async addPermissionsCourse(partials: CoursePartial[], user: User, params: DBTools = {}) {
         checkAvailable(["userID"], user);
         const courseIDs = partials.map(part => part.ID);
-        //this object is used as a map.
-        // tslint:disable-next-line: no-any
-        const mapping: any = {};
+        const mapping: { [key: string]: Permission } = {};
         const {
             userID
         } = user;
@@ -40,7 +38,7 @@ export class CourseRegistrationDB {
             if (!(part.ID in mapping)) {
                 throw new InvalidDatabaseResponseError("getSubset somoehow did not return entries for a requested courseID.");
             }
-            return coursePartialToAPI(part, mapping[part.ID] as Permission);
+            return coursePartialToAPI(part, mapping[part.ID]);
         });
     }
 
@@ -53,7 +51,9 @@ export class CourseRegistrationDB {
      * @param registeredOnly
      * @param params
      */
-    static async getSubset(courses: string[] | undefined, users: string[] | undefined, registeredOnly = true, params: DBTools = {}) {
+    static async getSubset(
+        courses: string[] | undefined, users: string[] | undefined, registeredOnly = true, params: DBTools = {}
+    ) {
         const {client = pool} = params;
         if (courses) {
             courses = courses.map<string>(UUIDHelper.toUUID);

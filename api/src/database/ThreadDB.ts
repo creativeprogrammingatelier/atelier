@@ -130,7 +130,10 @@ export class ThreadDB {
         }
     }
 
-    static async getThreadsBySubmissionOwner(submissionOwnerID: string, courseID?: string, addComments = false, automatedOnlyIfShared = false, params: DBTools = {}) {
+    static async getThreadsBySubmissionOwner(
+        submissionOwnerID: string, courseID?: string, addComments = false,
+        automatedOnlyIfShared = false, params: DBTools = {}
+    ) {
         const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
         const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
         const query = client.query(`
@@ -171,8 +174,7 @@ export class ThreadDB {
         //receive first result, modify the incoming result to be of type ExtendedThread
         const res: APIThread[] = (await firstQuery);
         //create a mapping to later quickly insert comments
-        // tslint:disable-next-line: no-any
-        const mapping: any = {};
+        const mapping: { [key: string]: APIThread } = {};
         //fill the map
         res.forEach(element => {
             mapping[element.ID] = element;
