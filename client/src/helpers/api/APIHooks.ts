@@ -147,7 +147,7 @@ export function useCollectionCombined<T>(observable: Observable<CacheCollection<
 /**
  * Helper function for refreshing comments and threads
  */
-function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
+async function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollectionInterface<CommentThread>, cache: Cache) {
     return promise.then(result => {
         threads.transaction(threads => {
             for (const thread of result) {
@@ -166,7 +166,7 @@ function refreshComments(promise: Promise<CommentThread[]>, threads: CacheCollec
 /**
  * Helper function for creating a new comment thread
  */
-function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, getCurrentUser: () => User, cache: Cache) {
+async function createCommentThread(thread: CreateCommentThread, promise: Promise<CommentThread>, threads: CacheCollectionInterface<CommentThread>, getCurrentUser: () => User, cache: Cache) {
     const tempID = randomBytes(32).toString("hex");
     console.log("Creating", tempID);
     const comment = {
@@ -219,8 +219,7 @@ async function refreshCollection<T extends { ID: string }>(promise: Promise<T | 
     cache.transaction(cache => {
         if (result instanceof Array) {
             cache.addAll(result, CacheState.Loaded);
-        }
-        else {
+        } else {
             cache.add(result, CacheState.Loaded);
         }
     }, result instanceof Array ? CacheState.Loaded : CacheState.Uninitialized);
@@ -258,8 +257,7 @@ async function create<T extends { ID: string }>(promise: Promise<T>, item: T, ca
             cache.add(result, CacheState.Loaded);
         });
         return result;
-    }
-    catch (err) {
+    } catch (err) {
         console.log("Creation of", tempID, "failed:", err);
         cache.transaction(cache => {
             cache.remove(item => item.ID === tempID);
@@ -297,8 +295,7 @@ async function update<T extends { ID: string } & Res, Res>(promise: Promise<Res>
         const newItem = updateModel(oldItem.value, result);
         cache.transaction(cache => cache.add(newItem, CacheState.Loaded));
         return newItem;
-    }
-    catch (err) {
+    } catch (err) {
         cache.transaction(cache => cache.add(oldItem.value, oldItem.state));
         throw err;
     }
@@ -334,8 +331,7 @@ async function deleteItem<T extends { ID: string }>(promise: Promise<T>, selecto
     cache.transaction(cache => cache.remove(selector));
     try {
         return promise;
-    }
-    catch (err) {
+    } catch (err) {
         cache.transaction(cache => cache.addAll(oldItems.map(({ value }) => value), CacheState.Loaded));
         throw err;
     }
@@ -361,9 +357,9 @@ export function useCourses(): Refresh<Course> & Create<[{ name: string, state: C
     });
     return {
         observable: courses.observable,
-        refresh: () => refreshCollection(API.getCourses(), courses),
+        refresh: async () => refreshCollection(API.getCourses(), courses),
         defaultTimeout: 2 * 3600,
-        create: ({name, state, canvasCourseId}: { name: string, state: CourseState, canvasCourseId: string }) =>
+        create: async ({name, state, canvasCourseId}: { name: string, state: CourseState, canvasCourseId: string }) =>
             create(
                 API.createCourse({name, state, canvasCourseId}),
                 {ID: "", name, state, creator: {} as User, currentUserPermission: {} as Permission, canvasCourseId: canvasCourseId},
@@ -380,14 +376,14 @@ export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: 
     return {
         observable: course,
         defaultTimeout: 0,
-        refresh: () => refreshCollection(API.getCourse(courseID), courses),
-        update: ({name, state, canvasCourseId}: { name?: string, state?: CourseState, canvasCourseId?: string }) =>
+        refresh: async () => refreshCollection(API.getCourse(courseID), courses),
+        update: async ({name, state, canvasCourseId}: { name?: string, state?: CourseState, canvasCourseId?: string }) =>
             update(
                 API.updateCourse(courseID, {name, state, canvasCourseId}),
                 {ID: courseID, name, state},
                 courses
             ),
-        delete: () =>
+        delete: async () =>
             deleteItem(
                 API.deleteCourse(courseID).then(cp => ({ ...cp, currentUserPermission: {} as Permission })),
                 course => course.ID === courseID,
@@ -400,7 +396,7 @@ export function usePermission(): Refresh<Permission> {
     return {
         observable: permission.observable,
         defaultTimeout: 24 * 3600,
-        refresh: () => refreshItem(API.permission(), permission)
+        refresh: async () => refreshItem(API.permission(), permission)
     };
 }
 export function useCoursePermission(courseID: string): Refresh<Permission> {
@@ -408,7 +404,7 @@ export function useCoursePermission(courseID: string): Refresh<Permission> {
     return {
         observable: permission.observable,
         defaultTimeout: 24 * 3600,
-        refresh: () => refreshItem(API.coursePermission(courseID), permission)
+        refresh: async () => refreshItem(API.coursePermission(courseID), permission)
     };
 }
 export function useCourseSubmissions(courseID: string): Refresh<Submission> & Create<[string, File[]], Submission> & LoadMore<Submission> {
@@ -422,11 +418,11 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
     const getDates = () => submissions.getCurrentValue().items.map(x => new Date(x.value.date).getTime());
     return {
         observable: submissions.observable,
-        refresh: () => refreshCollection(API.getCourseSubmissions(courseID, { limit: 50 }), submissions),
+        refresh: async () => refreshCollection(API.getCourseSubmissions(courseID, { limit: 50 }), submissions),
         defaultTimeout: 60,
-        loadNew: () => refreshCollection(API.getCourseSubmissions(courseID, { after: Math.max(...getDates()) }), submissions),
-        loadMore: (until) => refreshCollection(API.getCourseSubmissions(courseID, { before: Math.min(...getDates()), after: until }), submissions),
-        create: (projectName: string, files: File[]) =>
+        loadNew: async () => refreshCollection(API.getCourseSubmissions(courseID, { after: Math.max(...getDates()) }), submissions),
+        loadMore: async until => refreshCollection(API.getCourseSubmissions(courseID, { before: Math.min(...getDates()), after: until }), submissions),
+        create: async (projectName: string, files: File[]) =>
             create(
                 API.createSubmission(courseID, projectName, files),
                 {
@@ -444,7 +440,7 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
             )
     };
 }
-function refreshFeedWithComments(promise: Promise<FeedItem[]>, feed: CacheCollectionInterface<FeedItem>, cache: Cache) {
+async function refreshFeedWithComments(promise: Promise<FeedItem[]>, feed: CacheCollectionInterface<FeedItem>, cache: Cache) {
     const res = refreshCollection(promise, feed);
     promise.then(data => {
         const threads = data.filter(x => x.type === "commentThread").map(x => x.data) as CommentThread[];
@@ -467,13 +463,13 @@ export function usePersonalFeed(courseID?: string): Refresh<FeedItem> & LoadMore
         sort: (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     });
     const getDates = () => feed.getCurrentValue().items.map(x => new Date(x.value.timestamp).getTime());
-    const apiGet = (params: PaginationParameters) => courseID ? API.getPersonalCourseFeed(courseID, params) : API.getPersonalFeed(params);
+    const apiGet = async (params: PaginationParameters) => courseID ? API.getPersonalCourseFeed(courseID, params) : API.getPersonalFeed(params);
     return {
         observable: feed.observable,
         defaultTimeout: 20,
-        refresh: () => refreshFeedWithComments(apiGet({ limit: 50 }), feed, cache),
-        loadNew: () => refreshFeedWithComments(apiGet({ after: Math.max(...getDates()) }), feed, cache),
-        loadMore: (until) => refreshFeedWithComments(apiGet({ before: Math.min(...getDates()), after: until }), feed, cache)
+        refresh: async () => refreshFeedWithComments(apiGet({ limit: 50 }), feed, cache),
+        loadNew: async () => refreshFeedWithComments(apiGet({ after: Math.max(...getDates()) }), feed, cache),
+        loadMore: async until => refreshFeedWithComments(apiGet({ before: Math.min(...getDates()), after: until }), feed, cache)
     };
 }
 export function useCourseFeed(courseID: string): Refresh<FeedItem> & LoadMore<FeedItem> {
@@ -486,9 +482,9 @@ export function useCourseFeed(courseID: string): Refresh<FeedItem> & LoadMore<Fe
     return {
         observable: feed.observable,
         defaultTimeout: 30,
-        refresh: () => refreshFeedWithComments(API.getCourseFeed(courseID, { limit: 50 }), feed, cache),
-        loadNew: () => refreshFeedWithComments(API.getCourseFeed(courseID, { after: Math.max(...getDates()) }), feed, cache),
-        loadMore: until => refreshFeedWithComments(API.getCourseFeed(courseID, { before: Math.min(...getDates()), after: until }), feed, cache)
+        refresh: async () => refreshFeedWithComments(API.getCourseFeed(courseID, { limit: 50 }), feed, cache),
+        loadNew: async () => refreshFeedWithComments(API.getCourseFeed(courseID, { after: Math.max(...getDates()) }), feed, cache),
+        loadMore: async until => refreshFeedWithComments(API.getCourseFeed(courseID, { before: Math.min(...getDates()), after: until }), feed, cache)
     };
 }
 export function useSubmission(submissionID: string): Refresh<Submission> & Delete<[], Submission> {
@@ -499,9 +495,9 @@ export function useSubmission(submissionID: string): Refresh<Submission> & Delet
     const submission = useCollectionAsSingle(submissions.observable);
     return {
         observable: submission,
-        refresh: () => refreshCollection(API.getSubmission(submissionID), submissions),
+        refresh: async () => refreshCollection(API.getSubmission(submissionID), submissions),
         defaultTimeout: 0,
-        delete: () =>
+        delete: async () =>
             deleteItem(
                 API.deleteSubmission(submissionID),
                 submission => submission.ID === submissionID,
@@ -516,10 +512,10 @@ export function useMentions(): Refresh<Mention> & LoadMore<Mention> {
     const getDates = () => mentions.getCurrentValue().items.map(x => new Date(x.value.comment.created).getTime());
     return {
         observable: mentions.observable,
-        refresh: () => refreshCollection(API.getMentions(), mentions),
+        refresh: async () => refreshCollection(API.getMentions(), mentions),
         defaultTimeout: 30,
-        loadNew: () => refreshCollection(API.getMentions({ after: Math.max(...getDates()) }), mentions),
-        loadMore: (until) => refreshCollection(API.getMentions({ before: Math.min(...getDates()), after: until }), mentions)
+        loadNew: async () => refreshCollection(API.getMentions({ after: Math.max(...getDates()) }), mentions),
+        loadMore: async until => refreshCollection(API.getMentions({ before: Math.min(...getDates()), after: until }), mentions)
     };
 }
 export function useCourseMentions(courseID: string): Refresh<Mention> & LoadMore<Mention> {
@@ -531,10 +527,10 @@ export function useCourseMentions(courseID: string): Refresh<Mention> & LoadMore
     const getDates = () => mentions.getCurrentValue().items.map(x => new Date(x.value.comment.created).getTime());
     return {
         observable: mentions.observable,
-        refresh: () => refreshCollection(API.getCourseMentions(courseID), mentions),
+        refresh: async () => refreshCollection(API.getCourseMentions(courseID), mentions),
         defaultTimeout: 30,
-        loadNew: () => refreshCollection(API.getCourseMentions(courseID, { after: Math.max(...getDates()) }), mentions),
-        loadMore: (until) => refreshCollection(API.getCourseMentions(courseID, { before: Math.min(...getDates()), after: until }), mentions)
+        loadNew: async () => refreshCollection(API.getCourseMentions(courseID, { after: Math.max(...getDates()) }), mentions),
+        loadMore: async until => refreshCollection(API.getCourseMentions(courseID, { before: Math.min(...getDates()), after: until }), mentions)
     };
 }
 export function useCurrentUser(): Refresh<User> & Update<[Partial<User>], User> {
@@ -542,8 +538,8 @@ export function useCurrentUser(): Refresh<User> & Update<[Partial<User>], User> 
     return {
         observable: currentUser.observable,
         defaultTimeout: 3 * 24 * 3600,
-        refresh: () => refreshItem(API.getCurrentUser(), currentUser),
-        update: (updatedUser) =>
+        refresh: async () => refreshItem(API.getCurrentUser(), currentUser),
+        update: async updatedUser =>
             updateItem(
                 API.setUser(updatedUser),
                 updatedUser,
@@ -559,9 +555,9 @@ export function useProjectComments(submissionID: string): Refresh<CommentThread>
     const getCurrentUser = useCurrentUserDirect();
     return {
         observable: threads.observable,
-        refresh: () => refreshComments(API.getProjectComments(submissionID), threads, cache),
+        refresh: async () => refreshComments(API.getProjectComments(submissionID), threads, cache),
         defaultTimeout: 30,
-        create: (thread: CreateCommentThread) =>
+        create: async (thread: CreateCommentThread) =>
             createCommentThread(
                 thread,
                 API.createSubmissionCommentThread(submissionID, thread),
@@ -579,13 +575,13 @@ export function useRecentComments(submissionID: string): Refresh<CommentThread> 
     return {
         observable: threads.observable,
         defaultTimeout: 30,
-        refresh: () => refreshComments(API.getRecentComments(submissionID), threads, raw)
+        refresh: async () => refreshComments(API.getRecentComments(submissionID), threads, raw)
     };
 }
 export function useFileComments(submissionID: string, fileID: string): Refresh<CommentThread> & Create<[CreateCommentThread], CommentThread> {
     const threads = useCacheCollection<CommentThread>(`commentThreads/submission/${submissionID}/files`, {
         subKey: fileID,
-        filter: thread => thread?.file?.ID === fileID,
+        filter: thread => thread.file?.ID === fileID,
         sort: (a, b) => {
             const as = a.snippet, bs = b.snippet;
             return (
@@ -604,9 +600,9 @@ export function useFileComments(submissionID: string, fileID: string): Refresh<C
     const getCurrentUser = useCurrentUserDirect();
     return {
         observable: threads.observable,
-        refresh: () => refreshComments(API.getFileComments(fileID), threads, cache),
+        refresh: async () => refreshComments(API.getFileComments(fileID), threads, cache),
         defaultTimeout: 30,
-        create: (thread: CreateCommentThread) =>
+        create: async (thread: CreateCommentThread) =>
             createCommentThread(
                 thread,
                 API.createFileCommentThread(fileID, thread),
@@ -627,7 +623,7 @@ export function useCommentThread(submissionID: string, threadID: string, fileID?
     const thread = useCollectionAsSingle(threads.observable);
     return {
         observable: thread,
-        update: (visibility: ThreadState) =>
+        update: async (visibility: ThreadState) =>
             update(
                 API.setCommentThreadVisibility(threadID, visibility).then(thread => ({
                     ...thread,
@@ -636,7 +632,7 @@ export function useCommentThread(submissionID: string, threadID: string, fileID?
                 {ID: threadID, visibility},
                 threads
             ),
-        delete: () => deleteItem(API.deleteCommentThread(threadID), thread => thread.ID === threadID, threads)
+        delete: async () => deleteItem(API.deleteCommentThread(threadID), thread => thread.ID === threadID, threads)
     };
 }
 export function useComments(commentThreadID: string): Create<[string], Comment> & Update<[string, string], Comment> & Delete<[string], Comment> {
@@ -646,7 +642,7 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
     const getCurrentUser = useCurrentUserDirect();
     return {
         observable: comments.observable,
-        create: (comment: string) =>
+        create: async (comment: string) =>
             create(
                 API.createComment(commentThreadID, comment),
                 {
@@ -661,13 +657,13 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
                 },
                 comments
             ),
-        update: (commentID: string, comment: string) =>
+        update: async (commentID: string, comment: string) =>
             update(
                 API.editComment(commentThreadID, commentID, comment),
                 {ID: commentID, text: comment},
                 comments
             ),
-        delete: (commentID: string) =>
+        delete: async (commentID: string) =>
             update(
                 API.deleteComment(commentThreadID, commentID),
                 {ID: commentID, text: "This comment was deleted"},
@@ -679,7 +675,7 @@ export function useFileBody(fileID: string): Refresh<string> {
     const fileBodies = useCacheItem<string>(`file/${fileID}/body`);
     return {
         observable: fileBodies.observable,
-        refresh: () => refreshItem(API.getFileContents(fileID), fileBodies),
+        refresh: async () => refreshItem(API.getFileContents(fileID), fileBodies),
         defaultTimeout: 0
     };
 }
@@ -688,7 +684,7 @@ export function useFiles(submissionID: string): Refresh<APIFile[]> {
     const fileList = useCollectionCombined(files.observable);
     return {
         observable: fileList,
-        refresh: () => refreshCollection(API.getFiles(submissionID), files),
+        refresh: async () => refreshCollection(API.getFiles(submissionID), files),
         defaultTimeout: 0
     };
 }
@@ -700,7 +696,7 @@ export function useFile(submissionID: string, fileID: string): Refresh<APIFile> 
     const file = useCollectionAsSingle(files.observable);
     return {
         observable: file,
-        refresh: () => refreshCollection(API.getFile(fileID), files),
+        refresh: async () => refreshCollection(API.getFile(fileID), files),
         defaultTimeout: 0
     };
 }

@@ -11,12 +11,10 @@ export function getPossibleTags(commentBody: string): string[] {
 /** Creates the tags for a comment */
 export async function createTags(commentBody: string, commentID: string, client?: pgDB) {
     const tags = getPossibleTags(commentBody);
-    const dbTags = await Promise.all(tags.map(t => {
-        return TagsDB.addTag({
-            tagbody: t,
-            commentID,
-            client
-        });
-    }));
-    return dbTags.filter(t => t !== undefined) as Tag[];
+    const dbTags = await Promise.all(tags.map(async t => TagsDB.addTag({
+        tagbody: t,
+        commentID,
+        client
+    })));
+    return dbTags.filter(t => t !== undefined);
 }

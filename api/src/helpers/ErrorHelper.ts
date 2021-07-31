@@ -17,7 +17,7 @@ import {Request, Response, RequestHandler, NextFunction} from "express";
  * });
  */
 export function capture<T>(func: (request: Request, response: Response) => Promise<T>): RequestHandler {
-    return captureNext((request, response, _next) => func(request, response));
+    return captureNext(async (request, response, _next) => func(request, response));
 }
 
 /** Does the same as `capture` for handlers using the `next` function */

@@ -142,7 +142,7 @@ submissionRouter.post("/course/:courseID", uploadMiddleware.array("files"), capt
         const oldPath = path.join(UPLOADS_PATH, fileLocation);
 
         const dbFiles = await Promise.all(
-            files.map(file =>
+            files.map(async file =>
                 FileDB.addFile({
                     pathname: file.path.replace(oldPath, "").replace(/\\/g, "/"),
                     type: getProperType(file.mimetype, file.path),
@@ -160,7 +160,7 @@ submissionRouter.post("/course/:courseID", uploadMiddleware.array("files"), capt
     response.send(submission);
 
     await Promise.all(
-        dbFiles.map(file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
+        dbFiles.map(async file => raiseWebhookEvent(request.params.courseID, WebhookEvent.SubmissionFile, file))
             .concat(raiseWebhookEvent(request.params.courseID, WebhookEvent.Submission, submission))
     );
 }));

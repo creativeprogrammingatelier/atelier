@@ -5,8 +5,7 @@ import {Submission} from "../../../../models/api/Submission";
 import {User} from "../../../../models/api/User";
 
 import {getCourseUserSubmissions, getUserSubmissions} from "../../helpers/api/APIHelper";
-import {TimeHelper} from "../../helpers/TimeHelper"
-;
+import {TimeHelper} from "../../helpers/TimeHelper";
 import {DataBlockList} from "../data/DataBlockList";
 import {Loading} from "../general/loading/Loading";
 
@@ -27,15 +26,13 @@ export function SubmissionTab({user, course}: SubmissionTabProperties) {
             component={submissions =>
                 <DataBlockList
                     header="Submissions"
-                    list={submissions.map(submission => {
-                        return {
-                            key: submission.ID,
-                            transport: `/submission/${submission.ID}`,
-                            title: submission.name,
-                            text: submission.name,
-                            time: TimeHelper.fromString(submission.date)
-                        };
-                    })}
+                    list={submissions.map(submission => ({
+                        key: submission.ID,
+                        transport: `/submission/${submission.ID}`,
+                        title: submission.name,
+                        text: submission.name,
+                        time: TimeHelper.fromString(submission.date)
+                    }))}
                 />
             }
         />

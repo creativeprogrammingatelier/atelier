@@ -13,7 +13,7 @@ chai.use(chaiAsPromised);
 const g = global as any;
 // tslint:disable-next-line: no-any
 const fetchSpy = (body: any, status: number) =>
-    chai.spy((_url: RequestInfo, _options?: RequestInit) =>
+    chai.spy(async (_url: RequestInfo, _options?: RequestInit) =>
         Promise.resolve(new Response(JSON.stringify(body), { status })),
     );
 

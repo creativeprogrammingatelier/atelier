@@ -17,8 +17,8 @@ export function PluginSettings() {
 
     return <Loading<Plugin[]>
         loader={getPlugins}
-        component={plugins => {
-            return <Fragment>
+        component={plugins =>
+            <Fragment>
                 {plugins.map(plugin =>
                     <Block key={plugin.pluginID} transparent className="mb-3 px-2">
                         <PluginInput plugin={plugin}/>
@@ -41,7 +41,6 @@ export function PluginSettings() {
                     :
                     <Button onClick={() => updateCreating(true)}>Add</Button>
                 }
-            </Fragment>;
-        }}
+            </Fragment>}
     />;
 }

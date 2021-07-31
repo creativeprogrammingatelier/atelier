@@ -58,16 +58,14 @@ export const before: (a: Range, b: Range) => boolean = (a: Range, b: Range) => {
  * Checks whether two ranges start at the
  * same position.
  */
-const equalStart: (a: Range, b: Range) => boolean = (a: Range, b: Range) => {
-    return a.startLine === b.startLine && a.startChar === b.startChar;
-};
+const equalStart: (a: Range, b: Range) => boolean = (a: Range, b: Range) =>
+    a.startLine === b.startLine && a.startChar === b.startChar;
 
 /**
  * Determine whether a range is non empty
  */
-const nonEmptyRange: (a: Range) => boolean = (a: Range) => {
-    return a.startLine !== a.endLine || a.startChar !== a.endChar;
-};
+const nonEmptyRange: (a: Range) => boolean = (a: Range) =>
+    a.startLine !== a.endLine || a.startChar !== a.endChar;
 
 /**
  * Return a set of non overlapping ranges from a

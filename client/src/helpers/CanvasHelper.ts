@@ -8,7 +8,7 @@ export class CanvasHelper {
 
     static async removeLink() {
         let options ={
-            method:"delete"
+            method: "delete"
         };
         const response = await Fetch.fetch("/api/canvas/link", options);
         return response;

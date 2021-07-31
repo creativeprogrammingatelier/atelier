@@ -18,7 +18,7 @@ interface CourseSettingsInvitesProperties {
  */
 export function CourseSettingsInvites({courseID}: CourseSettingsInvitesProperties) {
     return <Loading<[Permission, Invite]>
-        loader={(courseID: string) => Promise.all([coursePermission(courseID), getInviteLinks(courseID)])}
+        loader={async (courseID: string) => Promise.all([coursePermission(courseID), getInviteLinks(courseID)])}
         params={[courseID]}
         component={(response: [Permission, Invite]) =>
             <Fragment>

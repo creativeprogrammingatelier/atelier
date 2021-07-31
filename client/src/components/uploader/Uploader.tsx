@@ -155,7 +155,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
 
     return <Form onSubmit={handleSubmit}>
         <Form.Group>
-            <FileInput folders={folderUploadSupported} handleElement={(element) => inputElement = element}
+            <FileInput folders={folderUploadSupported} handleElement={element => inputElement = element}
                 handleSelected={handleFilesSelected}>
                 <InputGroup>
                     <InputGroup.Prepend>

@@ -33,9 +33,9 @@ interface SearchQueryProperties {
  */
 export function SearchQuery({state, onCourseChange, handleResponse}: SearchQueryProperties) {
     const [query, setQuery] = useState(state.query ? state.query : "");
-    const [course, setCourse] = useState(state.course as string | undefined);
-    const [user, setUser] = useState(state.user as string | undefined);
-    const [submission, setSubmission] = useState(state.submission as string | undefined);
+    const [course, setCourse] = useState(state.course);
+    const [user, setUser] = useState(state.user);
+    const [submission, setSubmission] = useState(state.submission);
     const [sorting, setSorting] = useState(state.sorting ? state.sorting : Sorting.datetime);
     const [error, setError] = useState(false as FeedbackContent);
     const [shift, setShift] = useState(false);

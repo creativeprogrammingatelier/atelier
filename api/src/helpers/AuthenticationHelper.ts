@@ -29,7 +29,7 @@ export const decodeToken = <T>(token: string) =>
     jwt.decode(token) as TokenProps & T;
 
 /** Asynchronously verify a token */
-export const verifyToken = <T>(token: string, secretOrKey = AUTHSECRETKEY, options?: jwt.VerifyOptions) =>
+export const verifyToken = async <T>(token: string, secretOrKey = AUTHSECRETKEY, options?: jwt.VerifyOptions) =>
     new Promise((resolve: (props: TokenProps & T) => void, reject: (err: Error) => void) =>
         jwt.verify(
             token,
@@ -115,7 +115,7 @@ const tokenInvalidator = new TokenInvalidator();
 
 /** Issue a temoprary token for login redirects. Valid once for 20 seconds. */
 export function issueTemporaryToken(userID: string) {
-    return jwt.sign({ userID, temporary : true }, TEMPSECRETKEY, { expiresIn: temporaryTokenExpiration });
+    return jwt.sign({ userID, temporary: true }, TEMPSECRETKEY, { expiresIn: temporaryTokenExpiration });
 }
 
 /** Verify that a temporary token is valid and indeed temporary. */

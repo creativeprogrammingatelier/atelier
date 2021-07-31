@@ -44,7 +44,7 @@ function jitter(time: number) {
 export function Cached<T>(
     {
         cache, timeout, extractDate, wrapper, onError,
-        updateCount = (count) => {},
+        updateCount = count => {},
         children,
     }: CachedProperties<T>,
 ) {
@@ -62,7 +62,7 @@ export function Cached<T>(
                 });
             } else if (actualTimeout !== 0) {
                 const expiration = Math.max(0, cached.updatedAt + actualTimeout * 1000 - Date.now());
-                const handle = setTimeout(() => cache.refresh(), jitter(expiration));
+                const handle = setTimeout(async () => cache.refresh(), jitter(expiration));
                 return () => clearTimeout(handle);
             }
         }
@@ -91,38 +91,36 @@ export function Cached<T>(
         } else {
             return content;
         }
+    } else if ("value" in cached) {
+        return (
+            <Fragment>
+                { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
+                {children(cached.value, cached.state)}
+            </Fragment>
+        );
     } else {
-        if ("value" in cached) {
-            return (
-                <Fragment>
-                    { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
-                    {children(cached.value, cached.state)}
-                </Fragment>
-            );
-        } else {
-            return (
-                <Fragment>
-                    { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
-                    {cached.items.map((item) => children(item.value, item.state))}
-                    {
-                        "loadMore" in cache && cache.loadMore && extractDate && (
-                            loadMoreEnabled ?
-                                (
-                                    <Button onClick={() => {
-                                        cache.loadMore(
-                                            Math.max(...cached.items.map((item) => extractDate(item.value).getTime())) +
+        return (
+            <Fragment>
+                { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
+                {cached.items.map(item => children(item.value, item.state))}
+                {
+                    "loadMore" in cache && cache.loadMore && extractDate && (
+                        loadMoreEnabled ?
+                            (
+                                <Button onClick={() => {
+                                    cache.loadMore(
+                                        Math.max(...cached.items.map(item => extractDate(item.value).getTime())) +
                                             3 * 24 * 60 * 60 * 1000,
-                                        ).then((res) => {
-                                            if (res === 0) setLoadMoreEnabled(false);
-                                        });
-                                    }}>
+                                    ).then(res => {
+                                        if (res === 0) setLoadMoreEnabled(false);
+                                    });
+                                }}>
                                     Load More
-                                    </Button>
-                                ) : <Button> Nothing More to Load</Button>
-                        )
-                    }
-                </Fragment>
-            );
-        }
+                                </Button>
+                            ) : <Button> Nothing More to Load</Button>
+                    )
+                }
+            </Fragment>
+        );
     }
 }

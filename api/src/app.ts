@@ -117,7 +117,7 @@ upgradeDatabase().then(() => {
         } else if (error instanceof IntegrationNotEnabledError) {
             response.status(400).send({error: `integrationNotEnabled.${error.integration}`, message: error.message});
         } else if (error instanceof Error && isPostgresError(error)) {
-            const code = parsePostgresErrorCode(error as PostgresError);
+            const code = parsePostgresErrorCode(error);
             response.status(500).send({error: code, message: "Something went wrong while connecting to the database."});
         } else {
             response.status(500).send({error: "unknown", message: "Something went wrong. Please try again later."});

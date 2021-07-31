@@ -98,14 +98,12 @@ function prop<T extends string | number | boolean>(name: string, value: T | unde
         } else {
             return defaultValue;
         }
+    } else if (typeof value === "string" && value.startsWith(ENV)) {
+        return prop(name, process.env[value.substring(ENV.length)] as T, defaultValue);
+    } else if (typeof value === "string" && value.startsWith(FILE)) {
+        return prop(name, fs.readFileSync(value.substring(FILE.length), "utf8") as T, defaultValue);
     } else {
-        if (typeof value === "string" && value.startsWith(ENV)) {
-            return prop(name, process.env[value.substring(ENV.length)] as T, defaultValue);
-        } else if (typeof value === "string" && value.startsWith(FILE)) {
-            return prop(name, fs.readFileSync(value.substring(FILE.length), "utf8") as T, defaultValue);
-        } else {
-            return value;
-        }
+        return value;
     }
 }
 

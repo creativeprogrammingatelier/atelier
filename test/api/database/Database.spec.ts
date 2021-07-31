@@ -6,7 +6,5 @@ describe("database testing", () => {
     // 	return makeDB(()=>console.log("done"), console.error)
     // })
 
-    it("database tests", () => {
-        return main();
-    });
+    it("database tests", async () => main());
 });

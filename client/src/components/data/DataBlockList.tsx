@@ -23,7 +23,7 @@ interface DataBlockListProperties extends DataListProperties {
  */
 export function DataBlockList({list, ...properties}: DataBlockListProperties) {
     return <DataList {...properties}>
-        {list.map((block) =>
+        {list.map(block =>
             <DataBlock
                 key={block.key}
                 transport={block.transport}

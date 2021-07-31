@@ -44,7 +44,7 @@ function getRoleForPossibleMention(possibleMention: string) {
 export async function getMentions(commentBody: string, courseID: string, client?: pgDB) {
     const users = await Promise.all(
         getPossibleMentions(commentBody)
-            .map(pm => getUserForPossibleMention(pm, courseID, client))
+            .map(async pm => getUserForPossibleMention(pm, courseID, client))
     );
     return users
         .map(userOrComment =>
@@ -57,7 +57,7 @@ export async function getMentions(commentBody: string, courseID: string, client?
 /** Add the mentions the user is allowed to make to the database */
 export async function createAllowedMentions(commentID: string, mentions: Array<CourseRole | User>, currentUserID: string, courseID: string, client?: pgDB) {
     const {permission: {permissions}} = await CourseRegistrationDB.getSingleEntry(courseID, currentUserID, {client});
-    const dbMentions = await Promise.all(mentions.map(mention => {
+    const dbMentions = await Promise.all(mentions.map(async mention => {
         if (typeof (mention) === "string") {
             let allowed;
             switch (mention) {

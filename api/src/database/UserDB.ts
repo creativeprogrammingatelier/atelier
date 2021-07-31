@@ -104,7 +104,7 @@ export class UserDB {
             .then(extract).then(map(userToAPI));
     }
 
-    static async getUserByEmail(email: String, client?: pgDB) {
+    static async getUserByEmail(email: string, client?: pgDB) {
         client = (client) ? client : pool;
         return client.query(`
         SELECT *

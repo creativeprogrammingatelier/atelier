@@ -49,9 +49,7 @@ export function MentionSuggestions({prefix, suggestionBase, round, courseID, onS
         return groups;
     })), [permission.observable]);
     const allowedGroups = useObservableState(allowedGroupsObservable, []);
-    const filterSuggestions = (suggestions: string[], base: string) => {
-        return suggestions.filter(user => user.toLowerCase().includes(base.toLowerCase()));
-    };
+    const filterSuggestions = (suggestions: string[], base: string) => suggestions.filter(user => user.toLowerCase().includes(base.toLowerCase()));
 
     useEffect(() => {
         if (allowedGroups === []) {

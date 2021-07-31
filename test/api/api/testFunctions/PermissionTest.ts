@@ -38,7 +38,7 @@ export function permissionTest() {
      * - user can set manage permission with permission to manage manage permissions
      */
     describe("Permissions", async() => {
-        function setManagePermissions(course: boolean, state: boolean) {
+        async function setManagePermissions(course: boolean, state: boolean) {
             const permissions = {
                 "manageUserPermissionsManager": state,
                 "manageUserPermissionsView": state,
@@ -61,7 +61,7 @@ export function permissionTest() {
                 setPermissionsGlobal(permissions);
         }
 
-        function setViewPermissions(course: boolean, state: boolean) {
+        async function setViewPermissions(course: boolean, state: boolean) {
             const permissions = {
                 "viewAllUserProfiles": state,
                 "viewAllCourses": state,

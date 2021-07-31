@@ -27,7 +27,7 @@ module.exports = {
             title: "Atelier",
             template: "client/index.html",
             files: {
-                main:{
+                main: {
                     entry: "main.js"
                 }
             }

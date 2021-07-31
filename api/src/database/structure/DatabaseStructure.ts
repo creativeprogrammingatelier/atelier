@@ -32,7 +32,7 @@ if (require.main === module) {
     //args without node & path name
     const args = process.argv.splice(2);
     //check if the 'insert' option is specified
-    const insertToo = args.find((el) => el === "-i");
+    const insertToo = args.find(el => el === "-i");
     //create the database
     (async() => {
         const client = await getClient();

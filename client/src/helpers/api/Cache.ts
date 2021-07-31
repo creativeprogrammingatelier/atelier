@@ -344,7 +344,7 @@ export class Cache {
                     update({
                         addAll,
                         add: (value, state) => addAll([value], state),
-                        remove: (selector) => {
+                        remove: selector => {
                             if (collection === undefined) {
                                 throw new CacheError("cleared", key);
                             }
@@ -356,7 +356,7 @@ export class Cache {
                                 items: collection.items.filter(item => !itemSelector(item))
                             };
                         },
-                        removeExpired: (expiration) => {
+                        removeExpired: expiration => {
                             if (collection === undefined) {
                                 throw new CacheError("cleared", key);
                             }

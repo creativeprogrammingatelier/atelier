@@ -30,7 +30,7 @@ export interface HighlightedCodeProperties extends CodeProperties {
 export function HighlightedCode({code, options, snippets, selecting, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
     const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
     const [click, setClick] = useState(noPosition);
-    let hasMoved: Boolean = false;
+    let hasMoved = false;
 
     /**
      * Highlights comments passed to the code viewer.
@@ -42,15 +42,13 @@ export function HighlightedCode({code, options, snippets, selecting, handleIniti
         // Highlight based on ranges
         if (codeMirror && snippets) {
             // Transform each snippet into a range of characters
-            const ranges: Range[] = snippets.map(snippet => {
-                return {
-                    startLine: snippet.start.line,
-                    startChar: snippet.start.character,
-                    endLine: snippet.end.line,
-                    endChar: snippet.end.character,
-                    overlap: 1
-                };
-            });
+            const ranges: Range[] = snippets.map(snippet => ({
+                startLine: snippet.start.line,
+                startChar: snippet.start.character,
+                endLine: snippet.end.line,
+                endChar: snippet.end.character,
+                overlap: 1
+            }));
 
             // Take care of overlap and things between the different ranges
             const highlightRanges: Range[] = getRanges(ranges);

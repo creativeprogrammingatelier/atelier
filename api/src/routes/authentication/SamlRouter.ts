@@ -22,7 +22,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     const idp = IdentityProvider({
         metadata:
             "url" in samlConfig.metadata ?
-                await fetch(samlConfig.metadata.url).then(res => res.text())
+                await fetch(samlConfig.metadata.url).then(async res => res.text())
                 :
                 await readFileAsString(samlConfig.metadata.file)
     }

@@ -113,7 +113,7 @@ function UserSettingsPermissionsSection({header, display, state, setState}: User
                     value={name}
                     children={display}
                     selected={state[name]}
-                    onChange={(state) => setState(name, state)}
+                    onChange={state => setState(name, state)}
                 />
             )}
         </Area>

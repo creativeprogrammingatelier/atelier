@@ -24,8 +24,8 @@ export function ImageViewer({file, sendComment}: FileViewerProperties) {
      * @param comment Text of comment to be created.
      * @param restricted Whether comment visibility is restricted, i.e. ony teachers and TAs can see it.
      */
-    const handleCommentSend = async(comment: string, restricted: boolean) => {
-        return sendComment(comment, restricted).then(feedback => {
+    const handleCommentSend = async(comment: string, restricted: boolean) =>
+        sendComment(comment, restricted).then(feedback => {
             if (feedback.type === "success") {
                 setSuccess(feedback.content);
                 return true;
@@ -35,7 +35,6 @@ export function ImageViewer({file, sendComment}: FileViewerProperties) {
             }
             return false;
         });
-    };
 
     return <Fragment>
         <CommentCreator sendHandler={handleCommentSend}/>

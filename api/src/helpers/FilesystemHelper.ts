@@ -67,7 +67,7 @@ export const uploadMiddleware = multer({
 });
 
 /** Asynchronously rename a file or folder, returning the new path */
-export const renamePath = (oldPath: string, newPath: string) =>
+export const renamePath = async (oldPath: string, newPath: string) =>
     new Promise((resolve: (newPath: string) => void, reject: (err: NodeJS.ErrnoException) => void) =>
         fs.rename(oldPath, newPath, err => err ? reject(err) : resolve(newPath))
     );
@@ -77,7 +77,7 @@ export const renamePath = (oldPath: string, newPath: string) =>
  * @param reqFileLocation foldername for all files in a request
  * @param projectName name of the project
  */
-export const archiveProject = (reqFileLocation: string, projectName: string) =>
+export const archiveProject = async (reqFileLocation: string, projectName: string) =>
     new Promise((resolve: (fileName: string) => void, reject: (error: ArchiverError) => void) => {
         const archive = archiver("zip", {zlib: {level: 7}});
         const filesPath = getFolderForFile(reqFileLocation, projectName);
@@ -104,19 +104,19 @@ export const archiveProject = (reqFileLocation: string, projectName: string) =>
     });
 
 /** Asynchronously delete a file */
-export const deleteFile = (filePath: fs.PathLike): Promise<void> =>
+export const deleteFile = async (filePath: fs.PathLike): Promise<void> =>
     new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) =>
         fs.unlink(filePath, err => err ? reject(err) : resolve())
     );
 
 /** Asynchronously delete a folder recursively */
-export const deleteFolder = (folderPath: fs.PathLike): Promise<void> =>
+export const deleteFolder = async (folderPath: fs.PathLike): Promise<void> =>
     new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) =>
         fs.rmdir(folderPath, { recursive: true }, err => err ? reject(err) : resolve())
     );
 
 /** Read a file as a string with UTF-8 encoding */
-export const readFileAsString = (filePath: fs.PathLike) =>
+export const readFileAsString = async (filePath: fs.PathLike) =>
     new Promise((resolve: (data: string) => void, reject: (err: NodeJS.ErrnoException) => void) =>
         fs.readFile(
             filePath,
@@ -126,7 +126,7 @@ export const readFileAsString = (filePath: fs.PathLike) =>
     );
 
 /** Read a file to a buffer */
-export const readFile = (filePath: fs.PathLike) =>
+export const readFile = async (filePath: fs.PathLike) =>
     new Promise((resolve: (data: Buffer) => void, reject: (err: NodeJS.ErrnoException) => void) =>
         fs.readFile(filePath, (err, data) => err ? reject(err) : resolve(data))
     );

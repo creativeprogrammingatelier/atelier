@@ -27,9 +27,7 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
     const fileBody = useFileBody(file.ID);
     const fileComments = useFileComments(file.references.submissionID, file.ID);
     const combinedCommentsObservable = useCollectionCombined(fileComments.observable);
-    const snippetsObservable = useObservable(() => {
-        return combinedCommentsObservable.pipe(map(item => ({...item, value: getSnippets(item.value)})));
-    }, [combinedCommentsObservable]);
+    const snippetsObservable = useObservable(() => combinedCommentsObservable.pipe(map(item => ({...item, value: getSnippets(item.value)}))), [combinedCommentsObservable]);
     const snippets: Refresh<SnippetHighlight[]> = {
         observable: snippetsObservable,
         defaultTimeout: fileComments.defaultTimeout,
@@ -64,16 +62,14 @@ export function CodeViewer({file, sendComment}: FileViewerProperties) {
      * @param selection Snippets selection of comment.
      * @returns False if it fails and true if it succeeds.
      */
-    const handleCommentSend = async(comment: string, restricted: boolean, selection: Selection) => {
-        return sendComment(comment, restricted, selection).then(feedback => {
-            if (feedback.type === "error") {
-                setError(feedback.content);
-                return false;
-            }
-            // Maybe a success message can be added, although a highlighted snippet should appear to indicate success
-            return true;
-        });
-    };
+    const handleCommentSend = async(comment: string, restricted: boolean, selection: Selection) => sendComment(comment, restricted, selection).then(feedback => {
+        if (feedback.type === "error") {
+            setError(feedback.content);
+            return false;
+        }
+        // Maybe a success message can be added, although a highlighted snippet should appear to indicate success
+        return true;
+    });
 
     return <Fragment>
         <Cached cache={snippets}>

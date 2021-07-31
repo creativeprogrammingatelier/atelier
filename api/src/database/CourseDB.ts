@@ -99,10 +99,7 @@ export class CourseDB {
         ${CoursesView("insert")}
         `, [courseName, state, creatorid, canvasCourseID])
             .then(extract).then(map(courseToAPIPartial)).then(one)
-            .then(res => {
-
-                return res;
-            });
+            .then(res => res);
     }
 
     /**

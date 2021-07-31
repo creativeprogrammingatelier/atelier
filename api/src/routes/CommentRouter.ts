@@ -30,7 +30,7 @@ commentRouter.use(AuthMiddleware.requireAuth);
 commentRouter.get("/user/:userID", capture(async(request, response) => {
     const userID = request.params.userID;
     const comments = (await CommentDB.filterComment({userID})
-        .then(comments => filterComments(comments, userID)))
+        .then(async comments => filterComments(comments, userID)))
         .map(comment => removePermissionsComment(comment));
     response.status(200).send(comments);
 }));
@@ -42,7 +42,7 @@ commentRouter.get("/course/:courseID/user/:userID", capture(async(request, respo
     const courseID = request.params.courseID;
     const userID = request.params.userID;
     const comments = (await CommentDB.filterComment({courseID, userID})
-        .then(comments => filterComments(comments, userID)))
+        .then(async comments => filterComments(comments, userID)))
         .map(comment => removePermissionsComment(comment));
     response.status(200).send(comments);
 }));
@@ -57,7 +57,7 @@ commentRouter.get("/course/:courseID", capture(async (request, response) => {
     await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 
     const comments = (await CommentDB.filterComment({ courseID, ...params })
-        .then(comments => filterComments(comments, currentUserID)))
+        .then(async comments => filterComments(comments, currentUserID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);
 }));
@@ -82,7 +82,7 @@ commentRouter.put("/:commentThreadID", capture(async(request, response) => {
     // User should be registered
     await requireRegisteredCommentThreadID(currentUserID, commentThreadID);
 
-    const comment = await transaction(async (client) => {
+    const comment = await transaction(async client => {
         const comment: Comment = await CommentDB.addComment({
             commentThreadID,
             userID: currentUserID,

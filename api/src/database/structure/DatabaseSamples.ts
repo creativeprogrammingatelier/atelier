@@ -21,7 +21,7 @@ const uuid0 = "'00000000-0000-0000-0000-000000000000'",
     uuid6 = "'00000000-0000-0000-0000-000000000006'",
     permissionType = `0::bit(${permissionBits})`;
 
-export function databaseSamples(client: pgDB = pool): Promise<void> {
+export async function databaseSamples(client: pgDB = pool): Promise<void> {
     const query = `
      INSERT INTO "Users" VALUES
           (${uuid5}, NULL, 'normal', 'Cas@Caaas', 'admin', ${permissionType}, '$2b$10$/AP8x6x1K3r.bWVZR8B.l.LmySZwKqoUv8WYqcZTzo/w6.CHt7TOu'),

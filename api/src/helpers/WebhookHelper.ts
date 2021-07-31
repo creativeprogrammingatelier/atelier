@@ -15,7 +15,7 @@ interface WebhookRequest<T> {
  * Get all the plugins in a course that are subscribed to the event. You
  * most likely don't need to call this, use `raiseWebhookEvent` instead.
  */
-export function getSubscribedPlugins(courseID: string, event: WebhookEvent) {
+export async function getSubscribedPlugins(courseID: string, event: WebhookEvent) {
     return PluginsDB.getRelevantPlugins(courseID, event);
 }
 
@@ -26,7 +26,7 @@ export function getSubscribedPlugins(courseID: string, event: WebhookEvent) {
  */
 export async function raiseWebhookEvent<T>(courseID: string, event: WebhookEvent, body: T) {
     const plugins = await getSubscribedPlugins(courseID, event);
-    return Promise.all(plugins.map(plugin => postWebhook(plugin, event, body)));
+    return Promise.all(plugins.map(async plugin => postWebhook(plugin, event, body)));
 }
 
 /**

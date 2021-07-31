@@ -71,7 +71,7 @@ commentThreadRouter.get("/mysubmissions", capture(async (request, response) => {
     const params = getCommonQueryParams(request);
     const userID = await getCurrentUserID(request);
     const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, undefined, true, true, params)
-        .then(threads => filterCommentThread(threads, userID))
+        .then(async threads => filterCommentThread(threads, userID))
         .then(threads => threads.map(removePermissionsCommentThread));
     response.status(200).send(threads);
 }));
@@ -82,7 +82,7 @@ commentThreadRouter.get("/course/:courseID/mysubmissions", capture(async (reques
     const userID = await getCurrentUserID(request);
     const courseID = request.params.courseID;
     const threads = await ThreadDB.getThreadsBySubmissionOwner(userID, courseID, true, true, params)
-        .then(threads => filterCommentThread(threads, userID))
+        .then(async threads => filterCommentThread(threads, userID))
         .then(threads => threads.map(removePermissionsCommentThread));
     response.status(200).send(threads);
 }));
@@ -97,7 +97,7 @@ commentThreadRouter.get("/course/:courseID", capture(async (request, response) =
     await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 
     const threads = await ThreadDB.filterThread({ courseID, addComments: true, ...params })
-        .then(threads => filterCommentThread(threads, currentUserID))
+        .then(async threads => filterCommentThread(threads, currentUserID))
         .then(threads => threads.map(removePermissionsCommentThread));
     response.status(200).send(threads);
 }));

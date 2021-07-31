@@ -29,15 +29,15 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
             .then(map(removePermissionsMention))
             .then(map(mention => ({ type: "mention", data: mention, timestamp: mention.comment.created, ID: mention.ID }))),
         ThreadDB.getThreadsBySubmissionOwner(userID, courseID, true, true, params)
-            .then(threads => filterCommentThread(threads, userID))
+            .then(async threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
             .then(map(thread => ({ type: "commentThread", data: thread, relation: "yourSubmission", timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
         CommentDB.getCommentsBySubmissionOwner(userID, courseID, true, params)
-            .then(comments => filterComments(comments, userID))
+            .then(async comments => filterComments(comments, userID))
             .then(map(removePermissionsComment))
             .then(map(comment => ({ type: "comment", data: comment, relation: "yourSubmission", timestamp: comment.created, ID: comment.ID }))),
         CommentDB.getCommentsByThreadParticipation(userID, courseID, true, params)
-            .then(comments => filterComments(comments, userID))
+            .then(async comments => filterComments(comments, userID))
             .then(map(removePermissionsComment))
             .then(map(comment => ({ type: "comment", data: comment, relation: "participated", timestamp: comment.created, ID: comment.ID })))
     ]);
@@ -108,11 +108,11 @@ feedRouter.get("/course/:courseID", capture(async (request, response) => {
             .then(map(removePermissionsSubmission))
             .then(map(submission => ({ type: "submission", data: submission, timestamp: submission.date, ID: submission.ID }))),
         ThreadDB.filterThread({ courseID, addComments: true, automatedOnlyIfShared: true, ...params })
-            .then(threads => filterCommentThread(threads, userID))
+            .then(async threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
             .then(map(thread => ({ type: "commentThread", data: thread, timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
         CommentDB.filterComment({ courseID, onlyReplies: true, ...params })
-            .then(comments => filterComments(comments, userID))
+            .then(async comments => filterComments(comments, userID))
             .then(map(removePermissionsComment))
             .then(map(comment => ({ type: "comment", data: comment, timestamp: comment.created, ID: comment.ID })))
     ]);

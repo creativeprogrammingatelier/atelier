@@ -16,7 +16,7 @@ export class AuthHelper {
             ?.split("=")[1];
         // The JWT expiration is stored in seconds, Date.now() in milliseconds
         return exp !== undefined && Number(exp) * 1000 > Date.now();
-    };
+    }
 
-    static logout = () => Fetch.fetch("/api/auth/logout");
+    static logout = async () => Fetch.fetch("/api/auth/logout");
 }

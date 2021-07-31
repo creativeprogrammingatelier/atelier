@@ -32,7 +32,7 @@ export function CourseCreator() {
             const course = await courses.create({
                 name: courseName,
                 state: CourseState.open,
-                canvasCourseId:  canvasCourseId
+                canvasCourseId: canvasCourseId
             });
             setCourseName("");
             history.push(`/course/${course.ID}/settings`);
@@ -53,7 +53,7 @@ export function CourseCreator() {
                 value={courseName}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => setCourseName((event.target as HTMLInputElement).value,)}
             />
-            <Button onClick={() => handleSubmission(courseName, canvasCourseId)}>Create Course</Button>
+            <Button onClick={async () => handleSubmission(courseName, canvasCourseId)}>Create Course</Button>
         </LabeledInput>
         <FeedbackError close={setError}>{error}</FeedbackError>
         <CanvasCourseList onLinkCanvasCourse = {linkCanvasCourse}	/>

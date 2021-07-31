@@ -25,7 +25,7 @@ interface TabBarProperties {
  */
 export function TabBar({active, tabs}: TabBarProperties) {
     return <Nav fill justify variant="pills" className="fixed-bottom position-sticky">
-        {tabs.map((tab) =>
+        {tabs.map(tab =>
             <TabButton
                 key={tab.id || tab.text}
                 icon={tab.icon}

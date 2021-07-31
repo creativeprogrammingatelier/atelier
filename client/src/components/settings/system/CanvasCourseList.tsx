@@ -31,7 +31,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
     loadCourses() {
         if (this.state.enabled) {
             Fetch.fetch("/api/canvas/courses")
-                .then(res => res.json())
+                .then(async res => res.json())
                 .then(res => this.setState({ data: res }));
         }
     }

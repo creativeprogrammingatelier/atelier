@@ -193,7 +193,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
                         value={event}
                         selected={hooks.includes(event)}
                         disabled={!editing}
-                        onChange={(state) => {
+                        onChange={state => {
                             state ?
                                 setHooks(hooks => hooks.concat(event))
                                 :

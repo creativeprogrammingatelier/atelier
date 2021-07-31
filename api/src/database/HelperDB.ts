@@ -243,9 +243,7 @@ export function funmap2<A, a, B, b>(
     funA: (el: A) => a,
     funB: (el: B) => b
 ): (el: Array<A & B>) => Array<a & b> {
-    const union = (element: A & B) => {
-        return {...funA(element), ...funB(element)};
-    };
+    const union = (element: A & B) => ({...funA(element), ...funB(element)});
     return map(union);
 }
 
@@ -257,9 +255,7 @@ export function funmap3<A, a, B, b, C, c>(
     funB: (el: B) => b,
     funC: (el: C) => c
 ): (el: Array<A & B & C>) => Array<a & b & c> {
-    const union = (element: A & B & C) => {
-        return {...funA(element), ...funB(element), ...funC(element)};
-    };
+    const union = (element: A & B & C) => ({...funA(element), ...funB(element), ...funC(element)});
     return map(union);
 }
 

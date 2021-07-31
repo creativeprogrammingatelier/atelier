@@ -38,7 +38,7 @@ export function setup() {
         let response;
         do {
             // Wait for 100 ms
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 100));
             console.log("[Test Setup] Pinging server...");
             // Ping the server and see if it is up
             response = await ping();

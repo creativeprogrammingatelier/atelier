@@ -25,7 +25,7 @@ export function DataItemList({header, list}: DataItemListProperties) {
     return <div>
         <Heading title={header}/>
         <div className="m-3">
-            {list.map((block) => <DataItem transport={block.transport} text={block.text} tags={block.tags}/>)}
+            {list.map(block => <DataItem transport={block.transport} text={block.text} tags={block.tags}/>)}
         </div>
     </div>;
 }

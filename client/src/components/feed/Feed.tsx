@@ -47,7 +47,7 @@ interface FeedProperties {
  */
 function Feed({ feed, type, global, buttons }: FeedProperties) {
     const [filtersExpanded, setFiltersExpanded] = useState(false);
-    const [filtered, setFiltered] = useState([ "submission", "mention", "commentThread" ].concat(...(type === "personal" ? [ "comment" ] : [])));
+    const [filtered, setFiltered] = useState(["submission", "mention", "commentThread"].concat(...(type === "personal" ? ["comment"] : [])));
     const [count, setCount] = useState(0);
     const filteredObservable = useObservable(pluckFirst, [filtered]);
     const filteredFeedObservable = useObservable(() =>

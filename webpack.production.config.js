@@ -24,7 +24,7 @@ module.exports = {
             title: "Atelier",
             template: "client/index.html",
             files: {
-                main:{
+                main: {
                     entry: "main.js"
                 }
             }
@@ -32,7 +32,7 @@ module.exports = {
         }),
         new webpack.ProvidePlugin({
             "React": "react",
-            "ReactDOM":   "react-dom",
+            "ReactDOM": "react-dom",
         }),
     ],
     module: {

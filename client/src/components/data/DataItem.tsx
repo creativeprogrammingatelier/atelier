@@ -24,7 +24,7 @@ export function DataItem({transport, text, tags, className, id, key, children}: 
                 <ToastBody style={{display: "flex"}}>
                     <span className="mr-auto">
                         <p className="m-0 mr-1 d-inline">{text}</p>
-                        {tags !== undefined && tags.map((tag) => <Tag {...tag}/>)}
+                        {tags !== undefined && tags.map(tag => <Tag {...tag}/>)}
                     </span>
                     {children}
                 </ToastBody>

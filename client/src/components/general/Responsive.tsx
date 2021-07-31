@@ -12,7 +12,7 @@ interface ResponsiveProperties extends ParentalProperties {
 export function Responsive({breakpoints, children}: ResponsiveProperties) {
     const [width, setWidth] = useState(windowWidth());
     const [height, setHeight] = useState(windowHeight());
-    const [breakpoint, setBreakpoint] = useState(currentBreakpoint(width) as Breakpoint);
+    const [breakpoint, setBreakpoint] = useState(currentBreakpoint(width));
 
     const handleWindowResize = () => {
         setWidth(windowWidth());

@@ -93,8 +93,8 @@ export const managePermissions = [
     }, {
         display: "Add assignments - not used",
         name: "addAssignments"
-    }
-    , {
+    },
+    {
         display: "Manage Assignments",
         name: "manageAssignments"
     },
@@ -184,10 +184,10 @@ function _containsPermissionWithout(permission: PermissionEnum, permissions: num
 }
 
 export function containsPermissionAny(permission: PermissionEnum[], permissions: number) {
-    return permission.some((element) => containsPermission(element, permissions));
+    return permission.some(element => containsPermission(element, permissions));
 }
 export function containsPermissionAll(permission: PermissionEnum[], permissions: number) {
-    return permission.every((element) => containsPermission(element, permissions));
+    return permission.every(element => containsPermission(element, permissions));
 }
 
 /**

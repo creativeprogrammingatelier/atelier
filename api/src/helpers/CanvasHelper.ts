@@ -44,7 +44,7 @@ export async function getRefreshToken(request: Request) {
     return user.canvasrefresh;
 }
 
-export async function deleteCanvasLink(access_token: String) {
+export async function deleteCanvasLink(access_token: string) {
     const {canvas_url_root} = canvasConfig();
     await fetch(`${canvas_url_root}/login/oauth2/token?access_token=${access_token}`, { method: "DELETE" });
 }
@@ -64,20 +64,20 @@ export function setUpCanvasLinkJson() {
 }
 
 
-export async function getCourses(access_token: String) {
+export async function getCourses(access_token: string) {
     const { canvas_url_root } = canvasConfig();
     const url = (`${canvas_url_root}/api/v1/courses?access_token=${access_token}&per_page=${100}`);
     return handlePagination(url);
 }
 
 
-export async function getCourseUsersTAs(course_id: String, access_token: String) {
+export async function getCourseUsersTAs(course_id: string, access_token: string) {
     const { canvas_url_root } = canvasConfig();
     const url = `${canvas_url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=ta&per_page=${100}`;
     return await handlePagination(url);
 }
 
-export async function getCourseUsersStudents(course_id: String, access_token: String) {
+export async function getCourseUsersStudents(course_id: string, access_token: string) {
     const { canvas_url_root } = canvasConfig();
     const url = `${canvas_url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=student&per_page=${100}`;
     return await handlePagination(url);

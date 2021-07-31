@@ -27,18 +27,16 @@ export function CommentTab({user, course}: CommentTabProperties) {
             component={comments =>
                 <DataBlockList
                     header="Comments"
-                    list={comments.map((comment: Comment) => {
-                        return {
-                            key: comment.ID,
-                            title: comment.user.name,
-                            text: comment.text,
-                            time: TimeHelper.fromString(comment.created),
-                            transport: comment.references.fileID === undefined ?
-                                `/submission/${comment.references.submissionID}#${comment.references.commentThreadID}`
-                                :
-                                `/submission/${comment.references.submissionID}/${comment.references.fileID}/comments#${comment.references.commentThreadID}`
-                        };
-                    })}
+                    list={comments.map((comment: Comment) => ({
+                        key: comment.ID,
+                        title: comment.user.name,
+                        text: comment.text,
+                        time: TimeHelper.fromString(comment.created),
+                        transport: comment.references.fileID === undefined ?
+                            `/submission/${comment.references.submissionID}#${comment.references.commentThreadID}`
+                            :
+                            `/submission/${comment.references.submissionID}/${comment.references.fileID}/comments#${comment.references.commentThreadID}`
+                    }))}
                 />
             }
         />

@@ -84,7 +84,7 @@ export function CommentSelector<T>({codeViewer, codeProperties, mentions, sendHa
                     round
                     allowRestricted
                     mentions={mentions}
-                    sendHandler={(comment, restricted) => {
+                    sendHandler={async (comment, restricted) => {
                         setSelecting(false);
                         return sendHandler(comment, restricted, selection);
                     }}

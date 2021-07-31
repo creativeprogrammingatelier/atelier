@@ -30,7 +30,7 @@ export function DataBlock({transport, title, text, time, tags, children}: DataBl
                 <ToastHeader closeButton={false}>
                     <strong className="mr-auto">
                         <p className="m-0 mr-1 d-inline">{title}</p>
-                        {tags !== undefined && tags.map((tag) => <Tag {...tag}/>)}
+                        {tags !== undefined && tags.map(tag => <Tag {...tag}/>)}
                     </strong>
                     <small className="text-muted text-right">{typeof time === "string" ? time : TimeHelper.howLongAgo(time, currentTime)}</small>
                 </ToastHeader>

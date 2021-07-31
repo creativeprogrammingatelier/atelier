@@ -30,7 +30,7 @@ export function AuthenticatedRoute<T>({path, component, location}: Authenticated
         </ResearchPermissionWrapper>;
     } else {
         console.log("route" + (location ? location.pathname : path));
-        return <Route render={props => <Login {...props} location={{state : {from : location ? location.pathname : path}}} />}/>;
+        return <Route render={props => <Login {...props} location={{state: {from: location ? location.pathname : path}}} />}/>;
         //return <Redirect to={{pathname: "/login", state: {from: location ? location.pathname : path}}}/>;
     }
 }

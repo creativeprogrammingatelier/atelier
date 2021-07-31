@@ -42,7 +42,7 @@ inviteRouter.get("/:inviteID", capture(async(request: Request, response: Respons
     const courseInvite: CourseInvite = invite[0];
 
     // Check if user is already enrolled
-    const courseID: string = courseInvite.courseID!;
+    const courseID: string = courseInvite.courseID;
     const enrolledCourses: CourseUser[] = await CourseRegistrationDB.getSubset([courseID], [currentUserID]);
     if (enrolledCourses.length > 0) {
         response.status(200).send(enrolledCourses[0]);
@@ -128,7 +128,7 @@ inviteRouter.delete("/course/:courseID/role/:role", capture(async(request: Reque
         joinRole: role as CourseRole
     });
 
-    await Promise.all(courseInvites.map((courseInvite: CourseInvite) =>
+    await Promise.all(courseInvites.map(async (courseInvite: CourseInvite) =>
         CourseInviteDB.deleteInvite(courseInvite.inviteID))
     );
 

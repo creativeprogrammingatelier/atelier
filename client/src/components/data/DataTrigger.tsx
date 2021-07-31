@@ -23,7 +23,7 @@ export function DataTrigger({text, tags, trigger}: DataTriggerProperties) {
         <Toast onClick={trigger.click}>
             <ToastBody>
                 <p className="m-0 mr-1 d-inline">{text}</p>
-                {tags !== undefined && tags.map((tag) => <Tag {...tag}/>)}
+                {tags !== undefined && tags.map(tag => <Tag {...tag}/>)}
                 <div className="d-inline-block float-right">
                     {trigger.icon({color: "#000000"})}
                 </div>

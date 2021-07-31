@@ -93,7 +93,7 @@ export function threadToAPI(db: DBAPIThread): APIThread {
             }
         },
         sharedBy: db.sharedByID === undefined ? undefined : {
-            ID: UUIDHelper.fromUUID(db.sharedByID!),
+            ID: UUIDHelper.fromUUID(db.sharedByID),
             name: db.sharedByName!,
             email: db.sharedByEmail!,
             permission: {
@@ -101,7 +101,7 @@ export function threadToAPI(db: DBAPIThread): APIThread {
                 courseRole: getEnum(CourseRole, db.sharedByCourseRole!),
                 permissions: toDec(db.sharedByPermission!)
             },
-            canvasrefresh : db.sharedBycanvasrefresh!
+            canvasrefresh: db.sharedBycanvasrefresh!
         },
         comments: [],
         references: {

@@ -74,7 +74,7 @@ function error(pre: string) {
 }
 
 // Wrapper that logs result & error with an identifying string, and sends them through.
-function promise<T>(pr: Promise<T>, s: string): Promise<T> {
+async function promise<T>(pr: Promise<T>, s: string): Promise<T> {
     return pr.then(logger(s)).catch(error(s));
 }
 
@@ -96,7 +96,7 @@ async function DBusersTest() {
     equal(p1, 15, "addPermissions");
     const {permission: {permissions: p2}} = await promise(UH.removePermissionsUser(userID, 6), "addPermissions");
     equal(p2, 9);
-    await promise(UH.deleteUser(userID!), "deleteUser");
+    await promise(UH.deleteUser(userID), "deleteUser");
 }
 async function DBcoursesTest() {
     log("\n\nCOURSESTEST\n\n");
@@ -293,13 +293,13 @@ async function DBmentionTest() {
     m1.mentionID = (await promise(M.addMention(m1), "addMention")).ID;
     await promise(M.updateMention(m1), "updateMention");
     await promise(M.updateMention({mentionID: m1.mentionID}), "updateMention2");
-    await promise(M.deleteMention(m1.mentionID!), "deleteMention");
+    await promise(M.deleteMention(m1.mentionID), "deleteMention");
 }
 async function courseIDBnviteTest() {
     const invite = {creatorID: uuid0, courseID: uuid0, type: "", joinRole: CourseRole.TA};
     await promise(CI.filterInvite({}), "filterInvite");
     const resinv = await promise(CI.addInvite(invite), "addInvite");
-    await (promise(CI.deleteInvite(resinv.inviteID!), "deleteInvite"));
+    await (promise(CI.deleteInvite(resinv.inviteID), "deleteInvite"));
 }
 async function DBpluginTest() {
     const plugins = await promise(P.filterPlugins({}), "filterPlugin");

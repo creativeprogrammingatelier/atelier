@@ -50,7 +50,7 @@ fileRouter.get("/:fileID/download", capture(async (request, response) => {
     const file: File = await FileDB.getFileByID(fileID);
     const fileBody: Buffer = await readFile(getFilePathOnDisk(file));
     response.status(200)
-        .set("Content-Type", file.type!)
-        .set("Content-Disposition", `attachment; filename="${path.basename(file.name!)}"`)
+        .set("Content-Type", file.type)
+        .set("Content-Disposition", `attachment; filename="${path.basename(file.name)}"`)
         .send(fileBody);
 }));

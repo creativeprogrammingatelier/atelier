@@ -29,7 +29,7 @@ export function ViewTab({file, viewer: viewer}: ViewTabProperties) {
      * @param restricted Whether visibility is retroacted, i.e. only teachers and TAs can see it.
      * @param selection The source selection of the new comment.
      */
-    const sendComment: FileCommentHandler = (comment: string, restricted: boolean, selection?: Selection | undefined) => {
+    const sendComment: FileCommentHandler = async (comment: string, restricted: boolean, selection?: Selection | undefined) => {
         const commentBody = comment.trim();
         if (commentBody === "") {
             // Should the user get an error message when sending an empty comment? or would they understand?
@@ -42,9 +42,7 @@ export function ViewTab({file, viewer: viewer}: ViewTabProperties) {
             visibility: restricted ? ThreadState.private : ThreadState.public
         })
             .then(() => new FeedbackMessage("success", "Comment created successfully"))
-            .catch((error: ServerError) => {
-                return new FeedbackMessage("error", error.message);
-            });
+            .catch((error: ServerError) => new FeedbackMessage("error", error.message));
     };
 
     return <div className="contentTab">

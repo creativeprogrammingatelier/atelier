@@ -33,7 +33,7 @@ export function App() {
             <TimeProvider>
                 <CacheProvider>
                     <Switch>
-                        <Route path='/register' render={(props) => <Register {...props} />}/>
+                        <Route path='/register' render={props => <Register {...props} />}/>
                         <Route path='/login' render={() => <Login/>}/>
                         <AuthenticatedRoute path='/logout' component={Logout}/>
                         <AuthenticatedRoute path='/submission/:submissionId/share' component={SubmissionShare}/>

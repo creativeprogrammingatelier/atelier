@@ -31,7 +31,7 @@ export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole:
             } else {
                 console.log("No email found for user cannot link: ", user.name);
             }
-        } catch(e) {
+        } catch (e) {
             console.log("No email found for user cannot link: ", user.name);
             console.log(e);
         }
