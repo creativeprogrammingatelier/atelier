@@ -1,6 +1,5 @@
 import {pgDB} from "../database/HelperDB";
 import {TagsDB} from "../database/TagsDB";
-import {Tag} from "../../../models/api/Tag";
 
 
 /** Get the parts of the a comment following the #-sign, which starts a tag */

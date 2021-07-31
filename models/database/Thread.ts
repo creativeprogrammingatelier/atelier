@@ -7,7 +7,6 @@ import {ThreadState} from "../enums/ThreadStateEnum";
 
 import {fileToAPI, DBAPIFile, isNotNullFile} from "./File";
 import {snippetToAPI, DBAPISnippet, isNotNullSnippet} from "./Snippet";
-import { DBAPIUser } from "./User";
 import { GlobalRole } from "../enums/GlobalRoleEnum";
 import { CourseRole } from "../enums/CourseRoleEnum";
 

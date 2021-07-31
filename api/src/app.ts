@@ -6,7 +6,7 @@ import path from "path";
 
 import {AuthError} from "./helpers/AuthenticationHelper";
 import {config} from "./helpers/ConfigurationHelper";
-import {parsePostgresErrorCode, isPostgresError, PostgresError} from "./helpers/DatabaseErrorHelper";
+import {parsePostgresErrorCode, isPostgresError} from "./helpers/DatabaseErrorHelper";
 import {InvalidParamsError} from "./helpers/ParamsHelper";
 import {PermissionError} from "./helpers/PermissionHelper";
 import {ProjectValidationError} from "../../helpers/ProjectValidationHelper";

@@ -4,7 +4,7 @@ import { assert } from "console";
 import { CoursePartial } from "../../../../models/api/Course";
 import { CourseState } from "../../../../models/enums/CourseStateEnum";
 
-import { instanceOfCoursePartial, instanceOfCourseUser } from "../../../InstanceOf";
+import { instanceOfCoursePartial } from "../../../InstanceOf";
 import {
     getCourse,
     getCourses,
@@ -13,12 +13,7 @@ import {
     adminRegisterCourse,
     adminUnregisterCourse,
     adminSetPermissions,
-    createCourse,
-    updateCourse,
-    registerUserCourse,
-    USER_ID,
-    unregisterUserCourse,
-    deleteCourse
+    createCourse
 } from "../APIRequestHelper";
 
 export function courseTest() {

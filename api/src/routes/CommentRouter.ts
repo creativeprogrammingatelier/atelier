@@ -2,7 +2,7 @@ import express from "express";
 
 import {Comment} from "../../../models/api/Comment";
 
-import {removePermissionsComment, removePermissions, filterComments} from "../helpers/APIFilterHelper";
+import {removePermissionsComment, filterComments} from "../helpers/APIFilterHelper";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {createMentions} from "../helpers/MentionsHelper";
