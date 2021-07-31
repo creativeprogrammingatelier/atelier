@@ -22,7 +22,8 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "unused-imports"
     ],
     "rules": {
         "indent": [
@@ -42,9 +43,11 @@
             "error",
             "always"
         ],
-        "@typescript-eslint/no-unused-vars": [
+        "@typescript-eslint/no-unused-vars": "off",
+        "unused-imports/no-unused-imports": "warn",
+        "unused-imports/no-unused-vars": [
             "warn",
-            { "varsIgnorePattern": "^_" }
+            { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
         ],
         "key-spacing": "error",
         "keyword-spacing": "error",
