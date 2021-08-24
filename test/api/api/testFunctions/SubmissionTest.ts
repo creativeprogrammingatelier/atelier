@@ -47,17 +47,17 @@ export function submissionTest() {
             // User can get submissions with permission
             response = await getSubmissionsByCourse();
             expect(response).to.have.status(200);
-            assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
+            assert((response.body as Submission[]).every((submission: Submission) => instanceOfSubmission(submission)));
 
             // User can get own submissions in a course if registered
             response = await getSubmissionsByOwnCourseUser();
             expect(response).to.have.status(200);
-            assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
+            assert((response.body as Submission[]).every((submission: Submission) => instanceOfSubmission(submission)));
 
             // User can get own submissions in a course if registered
             response = await getSubmissionsByOwnUser();
             expect(response).to.have.status(200);
-            assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
+            assert((response.body as Submission[]).every((submission: Submission) => instanceOfSubmission(submission)));
 
             // User can only get other users submissions with permission
             response = await getSubmissionsByOtherUser();
@@ -65,7 +65,7 @@ export function submissionTest() {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
+                assert((response.body as Submission[]).every((submission: Submission) => instanceOfSubmission(submission)));
             }
 
             // User can only get other users submission with permission
@@ -74,7 +74,7 @@ export function submissionTest() {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                assert(response.body.every((submission: Submission) => instanceOfSubmission(submission)));
+                assert((response.body as Submission[]).every((submission: Submission) => instanceOfSubmission(submission)));
             }
         }
 

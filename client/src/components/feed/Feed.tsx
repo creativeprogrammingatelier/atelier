@@ -89,7 +89,7 @@ function Feed({ feed, type, global, buttons }: FeedProperties) {
                 {count === 0 && <Announcement msg="No Submissions Yet"/>}
             </div>
             <Cached cache={filteredFeed} extractDate={item => new Date(item.timestamp)} updateCount={setCount}>
-                {item => <FeedBlock key={item.ID} data={item} global={global} />}
+                {item => <FeedBlock key={item.ID} data={item} isGlobal={global} />}
             </Cached>
         </div>
     );
@@ -144,7 +144,6 @@ interface FilterBoxProperties {
 function FilterBox({ tag, name, filtered, setFiltered }: FilterBoxProperties) {
     return (
         <CheckboxInput
-            children={name}
             key={tag}
             value={tag}
             selected={filtered.includes(tag)}
@@ -152,6 +151,8 @@ function FilterBox({ tag, name, filtered, setFiltered }: FilterBoxProperties) {
                 state
                     ? setFiltered(filtered => filtered.concat(tag))
                     : setFiltered(filtered => filtered.filter(f => f !== tag));
-            }} />
+            }}>
+            {name}
+        </CheckboxInput>
     );
 }

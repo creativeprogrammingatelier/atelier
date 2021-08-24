@@ -14,6 +14,7 @@ import {readFileAsString} from "../../helpers/FilesystemHelper";
 
 import {NotFoundDatabaseError} from "../../database/DatabaseErrors";
 import {UserDB} from "../../database/UserDB";
+import { User } from "../../../../models/api/User";
 
 setSchemaValidator(validator);
 
@@ -50,6 +51,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     const samlRouter = express.Router();
 
     /** Get the metadata for our Service Provider */
+    // eslint-disable-next-line @typescript-eslint/require-await
     samlRouter.get("/metadata.xml", capture(async(request, response) => {
         response.status(200)
             .set("Content-Type", "application/xml")
@@ -57,6 +59,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     }));
 
     /** Request login, redirects to the Identity Provider */
+    // eslint-disable-next-line @typescript-eslint/require-await
     samlRouter.get("/login", capture(async(request, response) => {
         const {context} = sp.createLoginRequest(idp, "redirect");
         response.redirect(context);
@@ -66,7 +69,8 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
     samlRouter.post("/login", capture(async(request, response) => {
 
 
-        const {extract: result} = await sp.parseLoginResponse(idp, "post", request);
+        const loginResponse = await sp.parseLoginResponse(idp, "post", request);
+        const result = loginResponse.extract as { nameID: string, attributes: Record<string, string> };
         const extID = extIDPrefix + result.nameID;
         // TODO: remove temporary logging
         console.log("SAML response extract: ", result);
@@ -79,16 +83,17 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
         }
 
 
-        let user: any = undefined;
+        let user: User;
         try {
             user = await UserDB.getUserBySamlID(extID);
         } catch (err) {
             if (err instanceof NotFoundDatabaseError) {
                 try {
-                    // If the user doesn't exist by ID, try to find them by email (in case they were added via an integration)
+                    // If the user doesn't exist by ID, try to find them by email
+                    // (in case they were added via an integration)
                     user = await UserDB.getUserByEmail(email);
                     // If the user was found, update it to include the ID
-                    UserDB.updateUser({...user, samlID: extID});
+                    UserDB.updateUser({ userID: user.ID, samlID: extID });
                 } catch (err) {
                     if (err instanceof NotFoundDatabaseError) {
                         // Create new user from SAML

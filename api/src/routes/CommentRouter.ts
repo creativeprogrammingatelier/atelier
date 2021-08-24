@@ -14,6 +14,7 @@ import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {createTags} from "../helpers/TagsHelper";
 import { getCommonQueryParams } from "../helpers/ParamsHelper";
 import { PermissionEnum } from "../../../models/enums/PermissionEnum";
+import { RequestB } from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to comments
@@ -71,7 +72,7 @@ commentRouter.get("/course/:courseID", capture(async (request, response) => {
  * - requirements:
  *  - user is registered in the course of the commentThread
  */
-commentRouter.put("/:commentThreadID", capture(async(request, response) => {
+commentRouter.put("/:commentThreadID", capture(async(request: RequestB<{ comment: string }>, response) => {
     const commentThreadID = request.params.commentThreadID;
     const currentUserID: string = await getCurrentUserID(request);
     let commentBody: string = request.body.comment;

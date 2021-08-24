@@ -1,6 +1,8 @@
 import {expect} from "chai";
 import {assert} from "console";
 
+import {Permission} from "../../../../models/api/Permission";
+import {User} from "../../../../models/api/User";
 import {viewPermissions, PermissionEnum, containsPermission, managePermissions} from "../../../../models/enums/PermissionEnum";
 import {getEnum} from "../../../../helpers/EnumHelper";
 
@@ -37,7 +39,7 @@ export function permissionTest() {
      * - user can set view permissions with permission to manage view permissions
      * - user can set manage permission with permission to manage manage permissions
      */
-    describe("Permissions", async() => {
+    describe("Permissions", () => {
         async function setManagePermissions(course: boolean, state: boolean) {
             const permissions = {
                 "manageUserPermissionsManager": state,
@@ -99,14 +101,14 @@ export function permissionTest() {
             const response = await getPermissionByCourse();
             expect(response).to.have.status(200);
             assert(instanceOfPermission(response.body));
-            expect(response.body.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
+            expect((response.body as Permission).permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
         it("Should not be possible to update global user permissions without permission.", async() => {
             const response = await setAllPermissions(false, true);
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
+            expect((response.body as User).permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
         });
 
         it("Should not be possible to set course permissions without being enrolled.", async() => {
@@ -120,7 +122,7 @@ export function permissionTest() {
             const response = await setAllPermissions(true, true);
             expect(response).to.have.status(200);
             assert(instanceOfCourseUser(response.body));
-            expect(response.body.permission.permissions).to.equal(DEFAULT_COURSE_PERMISSIONS);
+            expect((response.body as User).permission.permissions).to.equal(DEFAULT_COURSE_PERMISSIONS);
         });
 
         it("Should be possible to update view user permissions with 'manageUserPermissionsView' permission, but not manage permissions.", async() => {
@@ -133,14 +135,14 @@ export function permissionTest() {
             // Views permissions should be set with manage view permission
             viewPermissions.forEach(permission => {
                 const bit = getEnum(PermissionEnum, permission.name);
-                assert(containsPermission(bit, response.body.permission.permissions));
+                assert(containsPermission(bit, (response.body as User).permission.permissions));
             });
 
             // Manage permissions should not be set with manage view permissions
             managePermissions.forEach(permission => {
                 const bit = getEnum(PermissionEnum, permission.name);
                 if (bit !== PermissionEnum.manageUserPermissionsView) {
-                    assert(!containsPermission(bit, response.body.permission.permissions));
+                    assert(!containsPermission(bit, (response.body as User).permission.permissions));
                 }
             });
 
@@ -157,13 +159,13 @@ export function permissionTest() {
             // View permissions should not be set with manage permissions permission
             viewPermissions.forEach(permission => {
                 const bit = getEnum(PermissionEnum, permission.name);
-                assert(!containsPermission(bit, response.body.permission.permissions));
+                assert(!containsPermission(bit, (response.body as User).permission.permissions));
             });
 
             // Manage permissions should be set with manage permissions permission
             managePermissions.forEach(permission => {
                 const bit = getEnum(PermissionEnum, permission.name);
-                assert(containsPermission(bit, response.body.permission.permissions));
+                assert(containsPermission(bit, (response.body as User).permission.permissions));
             });
 
             await adminSetPermissions({"manageUserPermissionsManager": false});

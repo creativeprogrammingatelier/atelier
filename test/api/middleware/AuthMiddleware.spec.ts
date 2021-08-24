@@ -1,17 +1,19 @@
+/* eslint-disable @typescript-eslint/await-thenable */
+// ESLint doesn't think a RequestHandler is 'thenable', but it really just returns a Promise
+
 import {expect} from "chai";
 import {Request, Response, NextFunction} from "express";
 import "mocha";
 
-import {issueToken} from "../../../api/src/helpers/AuthenticationHelper";
+import {AuthError, issueToken} from "../../../api/src/helpers/AuthenticationHelper";
 import {AuthMiddleware} from "../../../api/src/middleware/AuthMiddleware";
 
 describe("AuthMiddleware.requireAuth", () => {
     const response = {} as unknown as Response;
     let nextCount = 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function next(check: (args: any[]) => void = () => {
-    }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-function
+    function next(check: (args: any[]) => void = () => {}) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return ((...args: any[]) => {
             nextCount++;
@@ -29,7 +31,7 @@ describe("AuthMiddleware.requireAuth", () => {
             response,
             next(args => {
                 expect(args).to.have.length(1);
-                expect(args[0].reason).to.equal("token.notProvided");
+                expect((args[0] as AuthError).reason).to.equal("token.notProvided");
             })
         );
         expect(nextCount).to.equal(1);
@@ -41,7 +43,7 @@ describe("AuthMiddleware.requireAuth", () => {
             response,
             next(args => {
                 expect(args).to.have.length(1);
-                expect(args[0].reason).to.equal("token.expired");
+                expect((args[0] as AuthError).reason).to.equal("token.expired");
             })
         );
         expect(nextCount).to.equal(1);
@@ -52,7 +54,7 @@ describe("AuthMiddleware.requireAuth", () => {
             response,
             next(args => {
                 expect(args).to.have.length(1);
-                expect(args[0].reason).to.equal("token.invalid");
+                expect((args[0] as AuthError).reason).to.equal("token.invalid");
             })
         );
         expect(nextCount).to.equal(1);

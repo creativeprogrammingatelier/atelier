@@ -1,6 +1,5 @@
 import React from "react";
-import {Route} from "react-router-dom";
-import {RouteComponentProps} from "react-router-dom";
+import {Route, RouteComponentProps} from "react-router-dom";
 
 import {AuthHelper} from "../helpers/AuthHelper";
 import {Login} from "./Login";
@@ -30,7 +29,9 @@ export function AuthenticatedRoute<T>({path, component, location}: Authenticated
         </ResearchPermissionWrapper>;
     } else {
         console.log("route" + (location ? location.pathname : path));
-        return <Route render={props => <Login {...props} location={{state: {from: location ? location.pathname : path}}} />}/>;
+        return <Route render={props =>
+            <Login {...props} location={{state: {from: location ? location.pathname : path}}} />
+        }/>;
         //return <Redirect to={{pathname: "/login", state: {from: location ? location.pathname : path}}}/>;
     }
 }

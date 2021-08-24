@@ -44,7 +44,8 @@ function jitter(time: number) {
 export function Cached<T>(
     {
         cache, timeout, extractDate, wrapper, onError,
-        updateCount = count => {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        updateCount = _count => {},
         children,
     }: CachedProperties<T>,
 ) {
@@ -61,8 +62,8 @@ export function Cached<T>(
                     setError(err.message);
                 });
             } else if (actualTimeout !== 0) {
-                const expiration = Math.max(0, cached.updatedAt + actualTimeout * 1000 - Date.now());
-                const handle = setTimeout(async () => cache.refresh(), jitter(expiration));
+                const expiration = Math.max(0, cached.updatedAt + (actualTimeout * 1000) - Date.now());
+                const handle = setTimeout(() => { cache.refresh(); }, jitter(expiration));
                 return () => clearTimeout(handle);
             }
         }
@@ -82,26 +83,26 @@ export function Cached<T>(
     if (cached === undefined || cached.state !== CacheState.Loaded) {
         const content = (
             <Fragment>
-                { onError === undefined && <FeedbackError children={error} close={setError} /> }
+                { onError === undefined && <FeedbackError close={setError}>{error}</FeedbackError> }
                 <LoadingIcon />
             </Fragment>
         );
         if (wrapper) {
-            return <Fragment children={wrapper(content)}/>;
+            return <Fragment>{wrapper(content)}</Fragment>;
         } else {
             return content;
         }
     } else if ("value" in cached) {
         return (
             <Fragment>
-                { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
+                { onError === undefined && <FeedbackError timeout={3000} close={setError}>{error}</FeedbackError> }
                 {children(cached.value, cached.state)}
             </Fragment>
         );
     } else {
         return (
             <Fragment>
-                { onError === undefined && <FeedbackError children={error} timeout={3000} close={setError} /> }
+                { onError === undefined && <FeedbackError timeout={3000} close={setError}>{error}</FeedbackError> }
                 {cached.items.map(item => children(item.value, item.state))}
                 {
                     "loadMore" in cache && cache.loadMore && extractDate && (

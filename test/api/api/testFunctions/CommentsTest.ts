@@ -23,12 +23,12 @@ export function commentTest() {
      * - response should be Comment[]
      * - comments should belong to userID and courseID
      */
-    describe("Comments", async() => {
+    describe("Comments", () => {
         it("Should be possible to get user comments", async() => {
             const response = await getCommentsUser();
             expect(response).to.have.status(200);
             console.log("??????", response.body);
-            assert(response.body.every((comment: Comment) =>
+            assert((response.body as Comment[]).every((comment: Comment) =>
                 instanceOfComment(comment) &&
                 comment.user.ID === USER_ID
             ));
@@ -37,7 +37,7 @@ export function commentTest() {
         it("Should be possible to get user comments in a course", async() => {
             const response = await getCommentsByUserAndCourse();
             expect(response).to.have.status(200);
-            assert(response.body.every((comment: Comment) =>
+            assert((response.body as Comment[]).every((comment: Comment) =>
                 instanceOfComment(comment) &&
                 comment.references.courseID === COURSE_ID &&
                 comment.user.ID === USER_ID,
@@ -48,8 +48,8 @@ export function commentTest() {
             await adminRegisterCourse();
             const response = await putComment("this is a comment used for testing");
             expect(response).to.have.status(200);
-            const comment = response.body;
-            assert(instanceOfComment(comment), "Body should be comment, but was" + comment);
+            const comment = response.body as Comment;
+            assert(instanceOfComment(comment), `Body should be comment, but was ${comment}`);
         });
 
         it("Should trim white space on comments", async() => {
@@ -68,8 +68,8 @@ export function commentTest() {
 
                 const response = await putComment(comment);
                 expect(response).to.have.status(200);
-                assert(instanceOfComment(response.body), "Body should be comment, but was" + response.body);
-                const result: Comment = response.body;
+                assert(instanceOfComment(response.body), `Body should be comment, but was ${response.body}`);
+                const result = response.body as Comment;
                 assert(result.text === expected, 'Result comment should be "' + expected + '", but was "' +result.text + '".');
 
 

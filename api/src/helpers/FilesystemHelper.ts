@@ -1,6 +1,6 @@
 import archiver, {ArchiverError} from "archiver";
 import {randomBytes} from "crypto";
-import {Request} from "express";
+import {RequestB} from "./RequestHelper";
 import fs from "fs";
 import multer from "multer";
 import path from "path";
@@ -12,7 +12,7 @@ import {MAX_FILE_SIZE} from "../../../helpers/Constants";
 import {UPLOADS_PATH} from "../lib/constants";
 
 /** A version of `express.Request` that keeps the location where files are stored. */
-export type FileUploadRequest = Request & { fileLocation?: string };
+export type FileUploadRequest = RequestB<{ project: string }> & { fileLocation?: string };
 
 /**
  * Get the correct folder name for a file or project

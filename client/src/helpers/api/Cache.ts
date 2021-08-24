@@ -213,7 +213,9 @@ export class Cache {
 
     /** Create a new cache with the data from a key in localStorage */
     static load(storageKey: string) {
-        const {items, collections} = JSON.parse(localStorage.getItem(storageKey) || "{ \"items\": [], \"collections\": [] }");
+        const {items, collections} =
+            JSON.parse(localStorage.getItem(storageKey) || "{ \"items\": [], \"collections\": [] }") as
+                ({ items?: Store<CacheItem<unknown>>, collections?: Store<CacheCollection<unknown>> });
         return new Cache(items, collections);
     }
 
@@ -225,9 +227,18 @@ export class Cache {
     /** Export the cache structure into an ExportedCache object */
     private export(): ExportedCache {
         return {
-            items: Object.assign({}, ...Object.keys(this.items).map(key => ({[key]: this.items[key].value}))),
-            collections: Object.assign({}, ...Object.keys(this.collections).map(key => ({[key]: this.collections[key].collection}))),
-            subCollections: Object.assign({}, ...Object.keys(this.collections).map(key => ({[key]: this.collections[key].properties})))
+            items:
+                Object.assign({},
+                    ...Object.keys(this.items).map(key => ({[key]: this.items[key].value}))
+                ) as Store<CacheItem<unknown>>,
+            collections:
+                Object.assign({},
+                    ...Object.keys(this.collections).map(key => ({[key]: this.collections[key].collection}))
+                ) as Store<CacheCollection<unknown>>,
+            subCollections:
+                Object.assign({},
+                    ...Object.keys(this.collections).map(key => ({[key]: this.collections[key].properties}))
+                ) as Store<Store<CacheProperties>>
         };
     }
 
@@ -255,14 +266,14 @@ export class Cache {
             this.items[key] = new BehaviorSubject(emptyCacheItem(defaultValue));
         }
         return {
-            observable: this.items[key].asObservable(),
+            observable: this.items[key].asObservable() as Observable<CacheItem<T>>,
             getCurrentValue: () => this.items[key].value as CacheItem<T>,
             updateItem: (update, state, date = Date.now()) => {
                 if (!this.items[key]) {
                     throw new CacheError("cleared", key);
                 }
 
-                const item: CacheItem<T> = this.items[key].value;
+                const item = this.items[key].value;
                 this.items[key].next({
                     createdAt: item.createdAt || date,
                     updatedAt: date,

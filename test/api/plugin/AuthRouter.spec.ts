@@ -18,7 +18,8 @@ describe("GET /api/auth/token", () => {
         const res = await chai.request(app).get("/api/auth/token").auth(reqToken, {type: "bearer"});
 
         expect(res).to.have.status(200);
-        expect(res.body.token).to.not.equal(undefined);
-        expect(decodeToken<{userID: string}>(res.body.token).userID).to.equal(plugin.pluginID);
+        const token = (res.body as { token: string }).token;
+        expect(token).to.not.equal(undefined);
+        expect(decodeToken<{userID: string}>(token).userID).to.equal(plugin.pluginID);
     });
 });

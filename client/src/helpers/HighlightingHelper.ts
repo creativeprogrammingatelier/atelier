@@ -1,4 +1,4 @@
-import FastPriorityQueue = require("fastpriorityqueue");
+import FastPriorityQueue from "fastpriorityqueue";
 
 const DEBUGGING = false;
 

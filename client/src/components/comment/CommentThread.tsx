@@ -96,7 +96,7 @@ export function CommentThread({thread}: CommentThreadProperties) {
                     { opened
                         ? <FiChevronUp size={14} color="#FFFFFF"/>
                         : <FiChevronDown size={14} color="#FFFFFF"/> }
-                    { commentCount > 0 ? " " + commentCount : "" }
+                    { commentCount > 0 ? ` ${commentCount}` : "" }
                 </Button>
             </ButtonBar>
         </Block>

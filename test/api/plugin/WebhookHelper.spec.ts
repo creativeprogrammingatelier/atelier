@@ -28,7 +28,7 @@ describe("WebhookHelper.createWebhookRequest", () => {
     });
     it("should set the correct event and payload", async() => {
         const req = createWebhookRequest(plugin, event, body);
-        const reqBody = await req.json();
+        const reqBody = await req.json() as { event: WebhookEvent, payload: unknown };
 
         expect(reqBody.event).to.equal(event);
         expect(reqBody.payload).to.deep.equal(body);

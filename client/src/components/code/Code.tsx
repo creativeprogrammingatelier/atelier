@@ -41,8 +41,17 @@ export interface CodeProperties {
  * @param code Code to be passed into CodeMirror
  * @param options Options for configuring CodeMirror
  */
-export function Code({code, options = {}, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: CodeProperties) {
-    useEffect(ScrollHelper.scrollToHash, []);
+export function Code(
+    {
+        code,
+        options = {},
+        handleInitialize = defaultHandler,
+        handleSelect = defaultHandler,
+        handleClick = defaultHandler,
+        handleChange = defaultHandler
+    }: CodeProperties
+) {
+    useEffect(() => ScrollHelper.scrollToHash(), []);
 
     /**
      * Add ID's to line in the code to allow #lineNumber in the url
@@ -91,5 +100,6 @@ export const defaultOptions = {
 /**
  * Default Handler
  */
-export const defaultHandler = () => {
-};
+// The default handler doesn't do anything, so it should be empty
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const defaultHandler = () => {};

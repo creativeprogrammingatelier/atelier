@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { assert } from "console";
 
-import { CoursePartial } from "../../../../models/api/Course";
+import { Course, CoursePartial } from "../../../../models/api/Course";
 import { User } from "../../../../models/api/User";
 
 import { UserDB } from "../../../../api/src/database/UserDB";
@@ -43,7 +43,7 @@ export function setup() {
             // Ping the server and see if it is up
             response = await ping();
             console.log(`[Test Setup] Got ${response.status}: ${response.text}`);
-        } while (response.status != 204);
+        } while (response.status !== 204);
         console.log("[Test Setup] Server is up.");
     });
 
@@ -83,8 +83,7 @@ export function setup() {
 
     async function removeAllRegistrations() {
         const response = await adminCoursesToUnregister();
-        for (let i = 0; i < response.body.length; i++) {
-            const course: CoursePartial = response.body[i];
+        for (const course of response.body as CoursePartial[]) {
             assert(instanceOfCoursePartial(course));
             await adminUnregisterCourse(course.ID);
         }
@@ -103,7 +102,7 @@ export function setup() {
         const response = await getOwnUser1();
         expect(response).to.have.status(200);
 
-        const user: User = response.body;
+        const user = response.body as User;
         assert(instanceOfUser(user));
         expect(user.permission.permissions).to.equal(DEFAULT_GLOBAL_PERMISSIONS);
     });
@@ -114,9 +113,9 @@ export function setup() {
     it("Should have no course registrations at the start of the test", async () => {
         let response = await getCourses();
         expect(response).to.have.status(200);
-        expect(response.body.length).to.equal(0);
+        expect((response.body as Course[]).length).to.equal(0);
 
         response = await adminCoursesToUnregister();
-        expect(response.body.length).to.equal(0);
+        expect((response.body as Course[]).length).to.equal(0);
     });
 }

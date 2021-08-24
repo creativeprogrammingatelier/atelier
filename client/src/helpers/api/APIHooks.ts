@@ -270,15 +270,13 @@ async function create<T extends { ID: string }>(promise: Promise<T>, item: T, ca
  * Create a new object with new values for some fields, while keeping other fields the same
  */
 function updateModel<T>(old: T, update: Partial<T>): T {
-    // The update object may have fields of any type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateMap = update as { [key: string]: any };
+    const updateMap = update as { [key: string]: unknown };
     return Object.assign({},
         old,
         ...Object.keys(updateMap)
             .filter(key => updateMap[key] !== undefined)
             .map(key => ({[key]: updateMap[key]}))
-    );
+    ) as T;
 }
 
 /**

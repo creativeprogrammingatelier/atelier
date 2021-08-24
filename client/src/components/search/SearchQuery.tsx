@@ -19,6 +19,7 @@ import {Loading} from "../general/loading/Loading";
 import {Tag} from "../general/Tag";
 import {LabeledInput} from "../input/LabeledInput";
 import {SearchProperties} from "./SearchOverview";
+import { getErrorMessage } from "../../../../helpers/ErrorHelper";
 
 interface SearchQueryProperties {
     /** SearchProperties of query*/
@@ -94,7 +95,7 @@ export function SearchQuery({state, onCourseChange, handleResponse}: SearchQuery
                 handleResponse(results);
             }
         } catch (error) {
-            setError(`Could not search for '${query}': ${error}`);
+            setError(`Could not search for '${query}': ${getErrorMessage(error)}`);
         }
     };
 

@@ -48,6 +48,8 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
             switch (next.type) {
             case "submission":
                 // A submission is not equivalent to a comment, so group it by its own ID
+                commentID = next.ID;
+                break;
             case "comment":
                 commentID = next.ID;
                 break;

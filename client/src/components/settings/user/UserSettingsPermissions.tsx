@@ -111,10 +111,10 @@ function UserSettingsPermissionsSection({header, display, state, setState}: User
                 <CheckboxInput
                     key={name}
                     value={name}
-                    children={display}
                     selected={state[name]}
-                    onChange={state => setState(name, state)}
-                />
+                    onChange={state => setState(name, state)}>
+                    {display}
+                </CheckboxInput>
             )}
         </Area>
     </LabeledInput>;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Key } from "react";
 
 import {TagProperties} from "../general/Tag";
 
@@ -12,7 +12,7 @@ export interface DataListEntryProperties {
     title: string,
     text: string,
     time: Date,
-    tags?: TagProperties[]
+    tags?: (TagProperties & { key: Key })[]
 }
 interface DataBlockListProperties extends DataListProperties {
     /** List of DataBlockProperties for all DataBlocks within the list. */

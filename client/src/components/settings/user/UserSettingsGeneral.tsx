@@ -15,6 +15,7 @@ import {LabeledInput} from "../../input/LabeledInput";
 import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
 import {Overlay} from "../../general/Overlay";
 import {ResearchPermissionInformation} from "../../ResearchPermissionWrapper";
+import { getErrorMessage } from "../../../../../helpers/ErrorHelper";
 
 interface ResearchInfoPopupProperties {
     /** Function to handle close of the popup. */
@@ -67,7 +68,7 @@ export function UserSettingsGeneral() {
         setError(false);
         user.update({name, email, researchAllowed})
             .then(_ => setSuccess("Your settings were successfully updated"))
-            .catch(error => setError(`Failed to update course: ${error}`));
+            .catch(error => setError(`Failed to update course: ${getErrorMessage(error)}`));
     };
 
     /**

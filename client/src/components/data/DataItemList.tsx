@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Key } from "react";
 
 import {Heading} from "../general/Heading";
 import {TagProperties} from "../general/Tag";
@@ -10,7 +10,7 @@ import {DataItem} from "./DataItem";
 interface DataListEntryProperties {
     transport?: string,
     text: string,
-    tags?: TagProperties[]
+    tags?: (TagProperties & { key: Key })[]
 }
 interface DataItemListProperties {
     /** Header for the DataItemList */
@@ -25,7 +25,12 @@ export function DataItemList({header, list}: DataItemListProperties) {
     return <div>
         <Heading title={header}/>
         <div className="m-3">
-            {list.map(block => <DataItem transport={block.transport} text={block.text} tags={block.tags}/>)}
+            {list.map(block =>
+                <DataItem key={block.transport || block.text}
+                    transport={block.transport}
+                    text={block.text}
+                    tags={block.tags} />
+            )}
         </div>
     </div>;
 }

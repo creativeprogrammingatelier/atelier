@@ -35,5 +35,7 @@ export function Crumb({ link, text }: CrumbProperties) {
 
 /** Crumb that only shows a link if the user has the correct permissions, otherwise displayed as text */
 export function PermissionsCrumb({ link, text, ...perm }: CrumbProperties & PermissionsProperties) {
-    return Permissions({ ...perm, children: <Crumb text={text} link={link} />, error: <Crumb text={text} /> });
+    return <Permissions {...perm} error={<Crumb text={text} />}>
+        <Crumb text={text} link={link} />
+    </Permissions>;
 }

@@ -161,7 +161,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
                     <InputGroup.Prepend>
                         <FakeButton>Choose files</FakeButton>
                     </InputGroup.Prepend>
-                    <FakeReadOnlyInput>{selectedFiles ? (selectedFiles.length === 1 ? selectedFiles[0].name : (selectedFiles.length + " files selected")) : "No files selected"}</FakeReadOnlyInput>
+                    <FakeReadOnlyInput>{selectedFiles ? (selectedFiles.length === 1 ? selectedFiles[0].name : `${selectedFiles.length} files selected`) : "No files selected"}</FakeReadOnlyInput>
                 </InputGroup>
             </FileInput>
             <div>
@@ -189,7 +189,7 @@ export function Uploader({courseId, onUploadComplete}: UploaderProperties) {
                     </Form.Group>
                 }
                 <FeedbackError show={uploadableFiles.length < selectedFiles.length}>
-                    These files won't be uploaded, because they are too large
+                    These files won&apos;t be uploaded, because they are too large
                     {validation.projectTooLarge && " or the project as a whole would be too large"}:
                 </FeedbackError>
                 <DirectoryViewer

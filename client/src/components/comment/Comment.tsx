@@ -14,6 +14,7 @@ import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import {Cached} from "../general/loading/Cached";
 import {Tag} from "../general/Tag";
+import { getErrorMessage } from "../../../../helpers/ErrorHelper";
 
 
 /**
@@ -55,12 +56,18 @@ export function Comment({comment}: CommentProperties) {
     const handleDelete = () => {
         comments.delete(comment.ID)
             .then(() => setMenuOpen(false))
-            .catch(error => setDeleteError(error.message));
+            .catch(error => {
+                setDeleteError(getErrorMessage(error));
+            });
     };
 
     return <Fragment>
         <div className="comment px-2 py-1" onMouseDown={handleDown} onMouseUp={handleUp} onTouchStart={handleDown} onTouchEnd={handleUp}>
-            <small><span>{comment.user.name}</span> at <span>{TimeHelper.toDateTimeString(TimeHelper.fromString(comment.created))}</span></small>
+            <small>
+                <span>{comment.user.name}</span>
+                <span> at </span>
+                <span>{TimeHelper.toDateTimeString(TimeHelper.fromString(comment.created))}</span>
+            </small>
             <div style={comment.text === "This comment was deleted" ? {fontStyle: "italic"} : {}}>
                 {comment.text.split(" ").map(text => text.startsWith("#") ? <Tag key={text} large round theme="primary">{text}</Tag>: text + " ")
                 }

@@ -52,7 +52,7 @@ export function commentThreadTest() {
             // User can access comment threads of a file with permission
             response = await getCommentThreadByFile();
             expect(response).to.have.status(200);
-            assert(response.body.every((commentThread: CommentThread) =>
+            assert((response.body as CommentThread[]).every((commentThread: CommentThread) =>
                 instanceOfCommentThread(commentThread) &&
                 threadStates.includes(commentThread.visibility)
             ));
@@ -60,7 +60,7 @@ export function commentThreadTest() {
             // User can access comment threads of a submission with permission
             response = await getCommentThreadBySubmission();
             expect(response).to.have.status(200);
-            assert(response.body.every((commentThread: CommentThread) =>
+            assert((response.body as CommentThread[]).every((commentThread: CommentThread) =>
                 instanceOfCommentThread(commentThread) &&
                 threadStates.includes(commentThread.visibility)
             ));
@@ -68,7 +68,7 @@ export function commentThreadTest() {
             // User can access recent comment threads of a submission with permission
             response = await getCommentThreadBySubmissionRecent();
             expect(response).to.have.status(200);
-            assert(response.body.every((commentThread: CommentThread) =>
+            assert((response.body as CommentThread[]).every((commentThread: CommentThread) =>
                 instanceOfCommentThread(commentThread) &&
                 threadStates.includes(commentThread.visibility)
             ));
@@ -97,13 +97,13 @@ export function commentThreadTest() {
             let response = await setCommentThreadPrivate();
             expect(response).to.have.status(200);
             expect(instanceOfCommentThread(response.body));
-            expect(response.body.visibility === "private");
+            expect((response.body as { visibility: string }).visibility === "private");
 
             // Change comment thread to public
             response = await setCommentThreadPublic();
             expect(response).to.have.status(200);
             expect(instanceOfCommentThread(response.body));
-            expect(response.body.visibility === "public");
+            expect((response.body as { visibility: string }).visibility === "public");
         }
 
         it("Should not be possible to view comment threads without permission.", async() => {

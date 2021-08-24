@@ -1,4 +1,5 @@
 import {expect, assert} from "chai";
+import { User } from "../../../../models/api/User";
 
 import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
 import {GlobalRole} from "../../../../models/enums/GlobalRoleEnum";
@@ -41,7 +42,7 @@ export function roleTest() {
                 const response = await setGlobalRole(roles[i]);
                 expect(response).to.have.status(200);
                 assert(instanceOfUser(response.body));
-                expect(response.body.permission.globalRole).to.equal(roles[i]);
+                expect((response.body as User).permission.globalRole).to.equal(roles[i]);
             }
 
             await adminSetPermissions({"manageUserRole": false});
@@ -56,7 +57,7 @@ export function roleTest() {
                 const response = await setCourseRole(roles[i]);
                 expect(response).to.have.status(200);
                 assert(instanceOfCourseUser(response.body));
-                expect(response.body.permission.courseRole).to.equal(roles[i]);
+                expect((response.body as User).permission.courseRole).to.equal(roles[i]);
             }
 
             await adminSetPermissions({"manageUserRole": false});

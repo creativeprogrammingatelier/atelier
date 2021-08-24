@@ -56,8 +56,8 @@ export function searchTest() {
             await adminRegisterCourse();
         });
 
-        it("should be possible to search", async() => {
-            await equalResults({query: "s"});
+        it("should be possible to search", () => {
+            equalResults({query: "s"});
         });
 
         it("should not give back every kind of item", async() => {
@@ -112,12 +112,12 @@ export function searchTest() {
             await badCourses(params);
         });
 
-        it("should be possible to add limit", async() => {
-            await equalResults({query: "s", limit: 2});
+        it("should be possible to add limit", () => {
+            equalResults({query: "s", limit: 2});
         });
 
-        it("should be possible to add an offset", async() => {
-            await equalResults({query: "s", limit: 2, offset: 1});
+        it("should be possible to add an offset", () => {
+            equalResults({query: "s", limit: 2, offset: 1});
         });
 
         it("should receive a maximum of limit items", async() => {
@@ -150,8 +150,8 @@ export function searchTest() {
     });
 }
 
-async function equalResults(params: SearchParameters) {
-    it("should contain the same result for all and specific paths, input=" + params, async() => {
+function equalResults(params: SearchParameters) {
+    it(`should contain the same result for all and specific paths, input=${params}`, async() => {
         await equalResultsGlobal(params);
         await equalResultsCourse(params);
     });

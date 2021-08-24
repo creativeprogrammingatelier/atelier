@@ -17,6 +17,7 @@ import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import { getAccessToken, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken } from "../helpers/CanvasHelper";
 import { addUsersFromCanvas } from "../helpers/CourseHelper";
+import { RequestB } from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to a course
@@ -81,16 +82,22 @@ courseRouter.get("/:courseID", capture(async (request: Request, response: Respon
 
 // ---------- POST REQUESTS ----------
 
+interface CreateCourseBody {
+    name: string,
+    state: CourseState,
+    canvasCourseId: string
+}
+
 /**
  * Create a course
  * - requirements:
  *  - AddCourses permission
  */
-courseRouter.post("/", capture(async (request: Request, response: Response) => {
-    const name: string = request.body.name;
-    const state: CourseState = request.body.state;
-    const canvasCourseID: string = request.body.canvasCourseId;
-    const currentUserID: string = await getCurrentUserID(request);
+courseRouter.post("/", capture(async (request: RequestB<CreateCourseBody>, response: Response) => {
+    const name = request.body.name;
+    const state = request.body.state;
+    const canvasCourseID = request.body.canvasCourseId;
+    const currentUserID = await getCurrentUserID(request);
 
     /**
      * Once creation of course and adding users via canvas has been stressed tested the transaction could be merged
@@ -144,11 +151,11 @@ courseRouter.post("/", capture(async (request: Request, response: Response) => {
  *  - requirements:
  *   - manageCourses permission
  */
-courseRouter.put("/:courseID", capture(async (request: Request, response: Response) => {
+courseRouter.put("/:courseID", capture(async (request: RequestB<Partial<CreateCourseBody>>, response: Response) => {
     const courseID: string = request.params.courseID;
     const currentUserID: string = await getCurrentUserID(request);
-    const name: string | undefined = request.body.name;
-    const canvasCourseID: string = (request.body.canvasCourseId == "") ? undefined: request.body.canvasCourseId;
+    const name = request.body.name;
+    const canvasCourseID = (request.body.canvasCourseId === "") ? undefined: request.body.canvasCourseId;
     const state: CourseState | undefined = request.body.state as CourseState;
 
     // Require manageCourses permission

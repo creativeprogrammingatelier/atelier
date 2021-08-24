@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {useHistory} from "react-router-dom";
 import {Button, Form} from "react-bootstrap";
+import { getErrorMessage } from "../../../../../helpers/ErrorHelper";
 
 import {CourseState} from "../../../../../models/enums/CourseStateEnum";
 import {FeedbackContent} from "../../feedback/Feedback";
@@ -37,7 +38,7 @@ export function CourseCreator() {
             setCourseName("");
             history.push(`/course/${course.ID}/settings`);
         } catch (error) {
-            setError(`Failed to create new course: ${error}`);
+            setError(`Failed to create new course: ${getErrorMessage(error)}`);
         }
     }
 

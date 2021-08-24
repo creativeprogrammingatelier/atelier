@@ -39,7 +39,7 @@ export class TimeHelper {
         for (const {method, name} of times) {
             const t = method(difference);
             if (t > 0) {
-                return t + " " + name + (t === 1 ? singularAgo : pluralAgo);
+                return `${t} ${name}${t === 1 ? singularAgo : pluralAgo}`;
             }
         }
 
@@ -49,43 +49,43 @@ export class TimeHelper {
     /**
      * Resolves the year difference between a given date and 1970.
      */
-    static yearsAgo(date: Date) {
+    static yearsAgo(this: void, date: Date) {
         return date.getUTCFullYear() - 1970;
     }
     /**
      * Resolves the month of the date given.
      */
-    static monthsAgo(date: Date) {
+    static monthsAgo(this: void, date: Date) {
         return date.getUTCMonth();
     }
     /**
      * Resolves the week of the date given.
      */
-    static weeksAgo(date: Date) {
+    static weeksAgo(this: void, date: Date) {
         return Math.round((date.getUTCDate() - 1) / 7);
     }
     /**
      * Resolves the day of the date object given.
      */
-    static daysAgo(date: Date) {
+    static daysAgo(this: void, date: Date) {
         return date.getUTCDate() - 1;
     }
     /**
      * Resolves the hour of the date object given.
      */
-    static hoursAgo(date: Date) {
+    static hoursAgo(this: void, date: Date) {
         return date.getUTCHours();
     }
     /**
      * Resolves the minuets of the date object given.
      */
-    static minutesAgo(date: Date) {
+    static minutesAgo(this: void, date: Date) {
         return date.getUTCMinutes();
     }
     /**
      * Resolves the seconds of the date object given.
      */
-    static secondsAgo(date: Date) {
+    static secondsAgo(this: void, date: Date) {
         return date.getUTCSeconds();
     }
 

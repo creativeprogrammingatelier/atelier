@@ -11,8 +11,18 @@ import {requirePermission} from "../helpers/PermissionHelper";
 import {transaction, one, map} from "../database/HelperDB";
 import {PluginsDB} from "../database/PluginsDB";
 import {UserDB} from "../database/UserDB";
+import { User } from "../../../models/api/User";
+import { RequestB } from "../helpers/RequestHelper";
 
 export const pluginRouter = express.Router();
+
+interface CreatePluginBody {
+    user: User,
+    webhookUrl: string,
+    webhookSecret: string,
+    publicKey: string,
+    hooks: string[]
+}
 
 /** All endpoints require the managePlugins permission */
 pluginRouter.use(captureNext(async(request, response, next) => {
@@ -34,9 +44,9 @@ pluginRouter.get("/", capture(async(request, response) => {
 }));
 
 /** Create a new plugin */
-pluginRouter.post("/", capture(async(request, response) => {
-    let userName: string = request.body.user?.name;
-    if (!userName?.endsWith("(Plugin)")) {
+pluginRouter.post("/", capture(async(request: RequestB<CreatePluginBody>, response) => {
+    let userName = request.body.user.name;
+    if (!userName.endsWith("(Plugin)")) {
         userName = userName + " (Plugin)";
     }
     const email: string = request.body.user?.email;
@@ -59,8 +69,7 @@ pluginRouter.post("/", capture(async(request, response) => {
         });
 
         const hooks = await Promise.all(
-            (request.body.hooks as string[])
-                .map(async hook => PluginsDB.addHook({pluginID: plugin.pluginID, hook, client}))
+            request.body.hooks.map(async hook => PluginsDB.addHook({pluginID: plugin.pluginID, hook, client}))
         );
 
         return {...plugin, hooks: hooks.map(ph => ph.hook), user};
@@ -70,11 +79,11 @@ pluginRouter.post("/", capture(async(request, response) => {
 }));
 
 /** Update an already registered plugin */
-pluginRouter.put("/:userID", capture(async(request, response) => {
+pluginRouter.put("/:userID", capture(async(request: RequestB<Partial<CreatePluginBody>>, response) => {
     const userID = request.params.userID;
 
     const plugin: Plugin = await transaction(async client => {
-        let userName: string = request.body.user?.name;
+        let userName = request.body.user?.name;
         if (userName !== undefined && !userName.endsWith("(Plugin)")) {
             userName = userName + " (Plugin)";
         }
@@ -105,14 +114,15 @@ pluginRouter.put("/:userID", capture(async(request, response) => {
         }
 
         let hooks = await PluginsDB.filterHooks({pluginID: userID, client}).then(map(ph => ph.hook));
-        if (request.body.hooks) {
-            const add = (request.body.hooks as string[]).filter(h => !hooks.some(ph => ph === h));
-            const remove = hooks.filter(h => !request.body.hooks.includes(h));
+        const newHooks = request.body.hooks;
+        if (newHooks !== undefined) {
+            const add = newHooks.filter(h => !hooks.some(ph => ph === h));
+            const remove = hooks.filter(h => !newHooks.includes(h));
 
             await Promise.all(add.map(async hook => PluginsDB.addHook({pluginID: userID, hook, client})));
             await Promise.all(remove.map(async hook => PluginsDB.deleteHook({pluginID: userID, hook, client})));
 
-            hooks = request.body.hooks;
+            hooks = newHooks;
         }
 
         return {...plugin, hooks, user};

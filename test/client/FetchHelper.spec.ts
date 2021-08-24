@@ -2,26 +2,24 @@ import chai, { expect } from "chai";
 import chaiSpies from "chai-spies";
 import chaiAsPromised from "chai-as-promised";
 import "mocha";
-import { Response } from "node-fetch";
+import { Response as FetchResponse } from "node-fetch";
 
 import { Fetch } from "../../client/src/helpers/api/FetchHelper";
 
 chai.use(chaiSpies);
 chai.use(chaiAsPromised);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const g = global as any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fetchSpy = (body: any, status: number) =>
+const g = global;
+const fetchSpy = (body: unknown, status: number) =>
     chai.spy(async (_url: RequestInfo, _options?: RequestInit) =>
-        Promise.resolve(new Response(JSON.stringify(body), { status })),
+        Promise.resolve(new FetchResponse(JSON.stringify(body), { status }) as unknown as Response),
     );
 
 const url = "https://example.com";
 
 describe("FetchHelper.fetch", () => {
     it("should call fetch (the JS function) with the correct URL", async () => {
-        g.fetch = fetchSpy({}, 200);
+        g.fetch = fetchSpy({}, 200) as (input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>;
         await Fetch.fetch(url);
         expect(g.fetch).to.have.been.called.once.with(url);
     });

@@ -1,5 +1,4 @@
-import React, {useEffect} from "react";
-import {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Form} from "react-bootstrap";
 import {User} from "../../../../../models/api/User";
 import {searchUsers} from "../../../helpers/api/APIHelper";

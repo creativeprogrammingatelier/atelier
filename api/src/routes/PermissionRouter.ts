@@ -12,6 +12,7 @@ import {capture} from "../helpers/ErrorHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {UserDB} from "../database/UserDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import { RequestB } from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to comments
@@ -25,14 +26,18 @@ async function getPermissions(setPermissions: Permissions, currentUserID: string
     const user: User = await UserDB.getUserByID(currentUserID);
     const userPermissions = user.permission.permissions;
     const permissionsToSet =
-        (containsPermission(PermissionEnum.manageUserPermissionsView, userPermissions) ? BigInt(viewPermissionBits) : BigInt(0)) |
-        (containsPermission(PermissionEnum.manageUserPermissionsManager, userPermissions) ? BigInt(managePermissionBits) : BigInt(0));
+        (containsPermission(PermissionEnum.manageUserPermissionsView, userPermissions)
+            ? BigInt(viewPermissionBits)
+            : BigInt(0))
+        | (containsPermission(PermissionEnum.manageUserPermissionsManager, userPermissions)
+            ? BigInt(managePermissionBits)
+            : BigInt(0));
 
     let addPermissions = BigInt(0);
     let removePermissions = BigInt(0);
 
     const permissions = Object.keys(setPermissions);
-    const add: boolean[] = Object.values(setPermissions);
+    const add: (boolean | undefined)[] = Object.values(setPermissions);
 
     for (let i = 0; i < permissions.length; i++) {
         const permissionType: PermissionEnum = getEnum(PermissionEnum, permissions[i]);
@@ -82,12 +87,16 @@ permissionRouter.get("/course/:courseID", capture(async(request: Request, respon
 
 // ---------- PUT REQUESTS ----------
 
+interface PermissionsBody {
+    permissions: Permissions
+}
+
 /**
  * Add user permissions in a course
  * - requirements:
  *  - manageUserPermissionsManager permission
  */
-permissionRouter.put("/course/:courseID/user/:userID/", capture(async(request: Request, response: Response) => {
+permissionRouter.put("/course/:courseID/user/:userID/", capture(async(request: RequestB<PermissionsBody>, response) => {
     const currentUserID: string = await getCurrentUserID(request);
     const courseID: string = request.params.courseID;
 
@@ -115,7 +124,7 @@ permissionRouter.put("/course/:courseID/user/:userID/", capture(async(request: R
  * - requirements:
  *  - manageUserPermissionsManager or manageUserPermissionsView depending on the permission
  */
-permissionRouter.put("/user/:userID/", capture(async(request: Request, response: Response) => {
+permissionRouter.put("/user/:userID/", capture(async(request: RequestB<PermissionsBody>, response) => {
     const currentUserID: string = await getCurrentUserID(request);
 
     const setPermissions = request.body.permissions;

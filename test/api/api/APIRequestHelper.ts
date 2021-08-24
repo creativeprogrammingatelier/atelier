@@ -57,10 +57,10 @@ function parseParams({query, courseID, submissionID, userID, limit, offset}: Sea
         opts.push("userID=" + USER_ID);
     }
     if (limit !== undefined) {
-        opts.push("limit=" + limit);
+        opts.push(`limit=${limit}`);
     }
     if (offset !== undefined) {
-        opts.push("offset=" + offset);
+        opts.push(`offset=${offset}`);
     }
     return opts.join("&");
 }

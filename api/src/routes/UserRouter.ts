@@ -11,6 +11,7 @@ import {requirePermission, requirePermissions} from "../helpers/PermissionHelper
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {UserDB} from "../database/UserDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import { RequestB } from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to user information
@@ -107,12 +108,18 @@ userRouter.get("/:userID/course/:courseID/", capture(async(request: Request, res
 
 // ---------- PUT REQUESTS ----------
 
+interface UpdateUserBody {
+    email?: string,
+    name?: string,
+    researchAllowed?: boolean
+}
+
 /** Set details for current user */
-userRouter.put("/", capture(async(request: Request, response: Response) => {
+userRouter.put("/", capture(async(request: RequestB<UpdateUserBody>, response: Response) => {
     const currentUserID: string = await getCurrentUserID(request);
-    const updatedEmail: string | undefined = request.body.email;
-    const updatedName: string | undefined = request.body.name;
-    const updatedResearchAllowed: boolean | undefined = request.body.researchAllowed;
+    const updatedEmail = request.body.email;
+    const updatedName = request.body.name;
+    const updatedResearchAllowed = request.body.researchAllowed;
 
     const user: User = await UserDB.updateUser({
         userID: currentUserID,

@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {Controlled as CodeMirror} from "react-codemirror2";
 
 import {noPosition, Snippet} from "../../../../models/api/Snippet";
 
@@ -11,7 +10,7 @@ import {Code, CodeProperties, defaultHandler} from "./Code";
 
 export interface SnippetHighlight extends Snippet {
     /** Function to be called onClick event */
-    onClick: Function,
+    onClick: () => void,
 }
 export interface HighlightedCodeProperties extends CodeProperties {
     /** Snippets included in the highlighted code.  */
@@ -27,7 +26,18 @@ export interface HighlightedCodeProperties extends CodeProperties {
  * @param snippets Code snippets contained in the highlighted code.
  * @param selecting Whether it is selected.
  */
-export function HighlightedCode({code, options, snippets, selecting, handleInitialize = defaultHandler, handleSelect = defaultHandler, handleClick = defaultHandler, handleChange = defaultHandler}: HighlightedCodeProperties) {
+export function HighlightedCode(
+    {
+        code,
+        options,
+        snippets,
+        selecting,
+        handleInitialize = defaultHandler,
+        handleSelect = defaultHandler,
+        handleClick = defaultHandler,
+        handleChange = defaultHandler
+    }: HighlightedCodeProperties
+) {
     const [codeMirror, setCodeMirror] = useState(undefined as unknown as CodeMirror.Editor);
     const [click, setClick] = useState(noPosition);
     let hasMoved = false;

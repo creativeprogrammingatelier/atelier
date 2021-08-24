@@ -10,11 +10,12 @@ import {captureNext} from "../helpers/ErrorHelper";
 export class AuthMiddleware {
     /** Middleware function that will refresh tokens in cookies */
     static refreshCookieToken: RequestHandler = captureNext(async(request, response, next) => {
-        if (request.cookies.atelierToken) {
+        const cookies = request.cookies as { atelierToken: string };
+        if (cookies.atelierToken) {
             try {
-                const token = await verifyToken<{userID: string}>(request.cookies.atelierToken);
+                const token = await verifyToken<{userID: string}>(cookies.atelierToken);
                 // The JWT expiration is stored in seconds, Date.now() in milliseconds
-                if (token.iat * 1000 + 600000 < Date.now()) {
+                if ((token.iat * 1000) + 600000 < Date.now()) {
                     await setTokenCookie(response, token.userID);
                 }
             } catch (err) {

@@ -8,7 +8,7 @@ import {UserDB} from "../../database/UserDB";
 export const loginRouter = express.Router();
 
 /** Login endpoint, returns a token to use for subsequent requests */
-loginRouter.post("/login", capture(async(request, response) => {
+loginRouter.post("/login", capture(async (request, response) =>
     UserDB.loginUser(
         request.body,
         // Success
@@ -24,8 +24,7 @@ loginRouter.post("/login", capture(async(request, response) => {
         err => {
             throw err;
         }
-    );
-}));
+    )));
 
 /** Registration endpoint for new users */
 loginRouter.post("/register", capture(async(request, response) => {

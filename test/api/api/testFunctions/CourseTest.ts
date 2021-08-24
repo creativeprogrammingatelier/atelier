@@ -62,12 +62,12 @@ export function courseTest() {
             // User can get own courses
             response = await getCourses();
             expect(response).to.have.status(200);
-            expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+            expect((response.body as CoursePartial[]).every((course: CoursePartial) => instanceOfCoursePartial(course)));
 
             // User can get own courses
             response = await getCoursesByOwnUser();
             expect(response).to.have.status(200);
-            expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+            expect((response.body as CoursePartial[]).every((course: CoursePartial) => instanceOfCoursePartial(course)));
 
             // User can get other users courses with permission only.
             response = await getCoursesByOtherUser();
@@ -75,7 +75,7 @@ export function courseTest() {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                expect(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+                expect((response.body as CoursePartial[]).every((course: CoursePartial) => instanceOfCoursePartial(course)));
             }
         }
 
@@ -87,12 +87,12 @@ export function courseTest() {
             // User can enrolled courses without permission
             response = await getCourses();
             expect(response).to.have.status(200);
-            expect(response.body.length).to.equal(0);
+            expect((response.body as CoursePartial[]).length).to.equal(0);
 
             // User can get own courses without permission
             response = await getCoursesByOwnUser();
             expect(response).to.have.status(200);
-            expect(response.body.length).to.equal(0);
+            expect((response.body as CoursePartial[]).length).to.equal(0);
 
             // User cannot get other users courses without permission
             response = await getCoursesByOtherUser();

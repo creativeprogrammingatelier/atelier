@@ -124,12 +124,15 @@ submissionRouter.get("/:submissionID/archive", capture(async(request, response) 
 /**
  * Create a new submission containing the files submitted in the body of the request
  */
-submissionRouter.post("/course/:courseID", uploadMiddleware.array("files"), capture(async(request, response) => {
+submissionRouter.post("/course/:courseID", uploadMiddleware.array("files"), capture(async(request: FileUploadRequest, response) => {
     const userID = await getCurrentUserID(request);
     await requireRegistered(userID, request.params.courseID);
 
     const files = request.files as Express.Multer.File[];
-    const fileLocation = (request as FileUploadRequest).fileLocation!;
+    // If the fileLocation was not supplied, it will be set to a value in the Multer middleware, so
+    // when we get here, it should not be undefined anymore.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const fileLocation = request.fileLocation!;
     validateProjectServer(request.body["project"], files);
 
     const {submission, dbFiles} = await transaction(async client => {

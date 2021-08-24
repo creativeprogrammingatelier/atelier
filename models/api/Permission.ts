@@ -9,7 +9,7 @@ export interface CoursePermission {
     permissions: number,
 }
 
-export interface Permissions {
+export interface Permissions extends Record<string, boolean | undefined> {
     admin?: boolean,
     manageUserPermissionsView?: boolean,
     manageUserPermissionsManager?: boolean,

@@ -83,7 +83,8 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
 
     const slashPrefixed = filePaths[0].name.startsWith("/");
     const projectFolder = filePaths[0].name.split("/")[slashPrefixed ? 1 : 0];
-    const projectPaths = filePaths.map(path => new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.type, path.transport));
+    const projectPaths = filePaths.map(path =>
+        new File(path.name.substr(projectFolder.length + (slashPrefixed ? 2 : 1)), path.type, path.transport));
 
     const topLevelNodes: {[folder: string]: TopLevelNode} = {};
     for (const path of projectPaths) {
@@ -93,17 +94,23 @@ export function DirectoryViewer({filePaths}: DirectoryViewerProperties) {
         if (file.length === 0) {
             // This is a file in this folder
             topLevelNodes[folder] = new TopLevelNode(folder, [], [], path.type, path.transport);
-        } else if (topLevelNodes.hasOwnProperty(folder)) {
+        } else if (Object.prototype.hasOwnProperty.call(topLevelNodes, folder)) {
             // This is a file in a sub-folder that has been added
             topLevelNodes[folder].paths.push(new File(file, path.type, path.transport));
         } else {
             // This is a file in a new sub-folder
-            topLevelNodes[folder] = new TopLevelNode(folder, [], [new File(path.name.substr(folder.length + 1), path.type, path.transport)], path.type, path.transport);
+            topLevelNodes[folder] = new TopLevelNode(
+                folder,
+                [],
+                [new File(path.name.substr(folder.length + 1), path.type, path.transport)],
+                path.type,
+                path.transport
+            );
         }
     }
     for (const folder in topLevelNodes) {
         // TSLint wants this check
-        if (topLevelNodes.hasOwnProperty(folder)) {
+        if (Object.prototype.hasOwnProperty.call(topLevelNodes, folder)) {
             for (const path of topLevelNodes[folder].paths) {
                 let current = topLevelNodes[folder] as Node;
                 for (const folder of path.name.split("/")) {

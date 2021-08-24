@@ -77,7 +77,7 @@ export function userTest() {
 
             const response = await getUsersByCourse();
             expect(response).to.have.status(200);
-            assert(response.body.every((user: CourseUser) => instanceOfCourseUser(user)));
+            assert((response.body as CourseUser[]).every((user: CourseUser) => instanceOfCourseUser(user)));
 
             await adminSetPermissions({"viewAllUserProfiles": false});
         });
@@ -87,7 +87,7 @@ export function userTest() {
 
             const response = await getUsers();
             expect(response).to.have.status(200);
-            assert(response.body.every((user: User) => instanceOfUser(user)));
+            assert((response.body as User[]).every((user: User) => instanceOfUser(user)));
 
             await adminSetPermissions({"viewAllUserProfiles": false});
         });
@@ -97,7 +97,7 @@ export function userTest() {
             const response = await updateUserName(newName);
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
-            expect(response.body.name).to.equal(newName);
+            expect((response.body as User).name).to.equal(newName);
 
             await updateUserName("test user");
         });
@@ -107,7 +107,7 @@ export function userTest() {
             const response = await updateUserEmail(newEmail);
             expect(response).to.have.status(200);
             assert(instanceOfUser(response.body));
-            expect(response.body.email).to.equal(newEmail);
+            expect((response.body as User).email).to.equal(newEmail);
         });
 
     });

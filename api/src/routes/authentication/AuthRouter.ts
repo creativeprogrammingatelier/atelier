@@ -60,6 +60,7 @@ function preparePublicKey(keyOrCertificate: string) {
 }
 
 /** Get list of login providers, to let the user choose how to login */
+// eslint-disable-next-line @typescript-eslint/require-await
 authRouter.get("/providers", capture(async (request, response) => {
     const providers: LoginProvider[] =
         config.loginProviders

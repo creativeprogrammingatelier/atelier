@@ -118,7 +118,7 @@ interface SearchResultSectionProperties extends ParentalProperties {
  * of the search results within the section.
  */
 function SearchResultSection({header, query, children}: SearchResultSectionProperties) {
-    const loadMore = (limit: number, offset: number) => <p>Loaded more</p>; // TODO: Finish and actually load more
+    const loadMore = async (limit: number, offset: number) => Promise.resolve(<p>Loaded more</p>); // TODO: Finish and actually load more
 
     return <DataList collapse header={header} more={loadMore}>
         {children}

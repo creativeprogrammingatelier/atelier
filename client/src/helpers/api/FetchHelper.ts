@@ -39,7 +39,7 @@ export class Fetch {
 
         try {
             const res = await Fetch.fetch(url, Fetch.combineHeaders(options, headers));
-            return res.json();
+            return res.json() as Promise<T>;
         } catch (err) {
             if (err instanceof FetchError) {
                 throw await JsonFetchError.create(err.response);
@@ -95,7 +95,7 @@ export class JsonFetchError extends FetchError {
     }
 
     static async create(response: Response) {
-        const err: ServerError = await response.json();
+        const err = await response.json() as ServerError;
         return new JsonFetchError(response, err);
     }
 }

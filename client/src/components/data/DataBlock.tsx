@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Key } from "react";
 import {Toast, ToastBody, ToastHeader} from "react-bootstrap";
 import {TimeHelper} from "../../helpers/TimeHelper";
 
@@ -17,7 +17,7 @@ interface DataBlockProperties extends ParentalProperties {
     /** Timestamp*/
     time: Date | string,
     /** Tags associated with DataBlock  */
-    tags?: TagProperties[]
+    tags?: (TagProperties & { key: Key })[]
 }
 /**
  * Returns the DataBlock component from specified parameters.
@@ -30,7 +30,7 @@ export function DataBlock({transport, title, text, time, tags, children}: DataBl
                 <ToastHeader closeButton={false}>
                     <strong className="mr-auto">
                         <p className="m-0 mr-1 d-inline">{title}</p>
-                        {tags !== undefined && tags.map(tag => <Tag {...tag}/>)}
+                        {tags !== undefined && tags.map(tag => <Tag {...tag} key={tag.key} />)}
                     </strong>
                     <small className="text-muted text-right">{typeof time === "string" ? time : TimeHelper.howLongAgo(time, currentTime)}</small>
                 </ToastHeader>

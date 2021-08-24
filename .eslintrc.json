@@ -62,7 +62,10 @@
                 "ignoreRegExpLiterals": true
             }
         ],
-        "new-cap": "error",
+        "new-cap": [
+            "error",
+            { "capIsNewExceptions": ["Router", "IdentityProvider", "ServiceProvider"] }
+        ],
         "no-lonely-if": "error",
         "no-mixed-operators": "warn",
         "no-trailing-spaces": "warn",

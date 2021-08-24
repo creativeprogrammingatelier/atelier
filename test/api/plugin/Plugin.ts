@@ -11,6 +11,7 @@ export const plugin: Plugin = {
 };
 
 // Mock PluginsDB to return this plugin when looking for it
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const filterPluginsOrig = PluginsDB.filterPlugins;
 PluginsDB.filterPlugins = async p => {
     if (p.pluginID === plugin.pluginID) {

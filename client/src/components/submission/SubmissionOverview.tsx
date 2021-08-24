@@ -136,8 +136,8 @@ export function SubmissionOverview({match: {params: {submissionId}}}: Submission
                             <ButtonMultistate
                                 variant="danger"
                                 states={[
-                                    <Fragment>Delete <FiTrash/></Fragment>,
-                                    <Fragment>Confirm <FiTrash/></Fragment>
+                                    <Fragment key="delete">Delete <FiTrash/></Fragment>,
+                                    <Fragment key="confirm">Confirm <FiTrash/></Fragment>
                                 ]}
                                 finish={() => handleDelete(submission.references.courseID)}/>
                         </DataList>

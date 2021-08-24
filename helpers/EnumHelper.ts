@@ -23,8 +23,10 @@ export function checkEnum<T>(enumer: T, item: string | number | symbol): item is
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function addItem(enumer: any, item: string): void {
     if (item in enumer) {
-        throw new EnumError("tried to add an item to an enum that was already there: " + item + " , enum entries: " + enumer);
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        throw new EnumError(`tried to add an item to an enum that was already there: ${item}, enum entries: ${enumer}`);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     enumer[item] = item;
 }
 
@@ -32,8 +34,10 @@ export function addItem(enumer: any, item: string): void {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function removeItem(enumer: any, item: string): void {
     if (!(item in enumer)) {
-        throw new EnumError("tried to remove an item from an enum that was not there: " + item + " , enum entries: " + enumer);
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        throw new EnumError(`tried to remove an item from an enum that was not there: ${item}, enum entries: ${enumer}`);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     delete enumer[item];
 }
 /**

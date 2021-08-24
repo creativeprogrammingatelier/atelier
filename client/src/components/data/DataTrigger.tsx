@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Key } from "react";
 import {Toast, ToastBody} from "react-bootstrap";
 import {IconType} from "react-icons";
 
@@ -8,7 +8,7 @@ interface DataTriggerProperties {
     /** Text of the DataTrigger */
     text: string,
     /** Tags associated with the DataTrigger */
-    tags?: TagProperties[],
+    tags?: (TagProperties & { key: Key })[],
     /** Trigger consisting of an icon and a function to be called when trigger is clicked. */
     trigger: {
         icon: IconType,
@@ -23,7 +23,7 @@ export function DataTrigger({text, tags, trigger}: DataTriggerProperties) {
         <Toast onClick={trigger.click}>
             <ToastBody>
                 <p className="m-0 mr-1 d-inline">{text}</p>
-                {tags !== undefined && tags.map(tag => <Tag {...tag}/>)}
+                {tags !== undefined && tags.map(tag => <Tag {...tag} key={tag.key} />)}
                 <div className="d-inline-block float-right">
                     {trigger.icon({color: "#000000"})}
                 </div>

@@ -8,12 +8,12 @@ import {LabeledInput} from "../../input/LabeledInput";
 interface IStateCanvasCourseList {
     enabled: boolean,
     data: any
-    onLinkCanvasCourse: Function,
+    onLinkCanvasCourse: (selectedCourseId: string) => void,
     selectedCourseId: string
 }
 
 interface IPropsCanvasCourseList {
-    onLinkCanvasCourse: Function
+    onLinkCanvasCourse: (selectedCourseId: string) => void
 }
 export default class CanvasCourseList extends React.Component<IPropsCanvasCourseList, IStateCanvasCourseList> {
 

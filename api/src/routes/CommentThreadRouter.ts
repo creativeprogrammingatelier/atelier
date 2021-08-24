@@ -21,6 +21,7 @@ import {ThreadDB} from "../database/ThreadDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {createTags} from "../helpers/TagsHelper";
 import { getCommonQueryParams } from "../helpers/ParamsHelper";
+import { RequestB } from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to comment threads
@@ -28,6 +29,12 @@ import { getCommonQueryParams } from "../helpers/ParamsHelper";
 
 export const commentThreadRouter = express.Router();
 commentThreadRouter.use(AuthMiddleware.requireAuth);
+
+interface CreateRequestBody {
+    visibility?: ThreadState,
+    automated?: boolean,
+    comment: string
+}
 
 /**
  * Create a comment thread
@@ -37,7 +44,11 @@ commentThreadRouter.use(AuthMiddleware.requireAuth);
  * @param request, request from the user
  * @param client, database client for transaction
  */
-async function createCommentThread(request: Request, client: pgDB, snippetID?: string, fileID?: string, submissionID?: string) {
+async function createCommentThread(
+    request: RequestB<CreateRequestBody>,
+    client: pgDB, snippetID?: string,
+    fileID?: string, submissionID?: string
+) {
     const commentThread: CommentThread = await ThreadDB.addThread({
         submissionID,
         fileID,
@@ -177,7 +188,7 @@ commentThreadRouter.get("/submission/:submissionID/recent", capture(async (reque
     await requireRegisteredSubmissionID(currentUserID, submissionID);
 
     // Retrieve comment threads, and filter out restricted comment threads if user does not have access
-    let commentThreads: CommentThread[] = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
+    let commentThreads = await ThreadDB.addComments(ThreadDB.getThreadsBySubmission(submissionID, {limit}));
     // Recent comment threads should not include submission comments
     commentThreads = commentThreads.filter((commentThread: CommentThread) => commentThread.snippet);
     commentThreads = (await filterCommentThread(commentThreads, currentUserID))
@@ -193,7 +204,7 @@ commentThreadRouter.get("/submission/:submissionID/recent", capture(async (reque
  *  - user is the owner of the comment thread (first comment)
  *  - user has permission to manage restricted comment threads
  */
-commentThreadRouter.put("/:commentThreadID", capture(async (request, response) => {
+commentThreadRouter.put("/:commentThreadID", capture(async (request: RequestB<{ visibility?: ThreadState }>, response) => {
     const commentThreadID: string = request.params.commentThreadID;
     const visibilityState: ThreadState | undefined = request.body.visibility as ThreadState;
 
@@ -260,7 +271,8 @@ commentThreadRouter.post("/file/:fileID", capture(async (request, response) => {
         } else {
             const file = await FileDB.getFileByID(fileID, {client});
             const fileContent = await readFileAsString(getFilePathOnDisk(file));
-            const {contextBefore, body, contextAfter} = getContextLines(fileContent, data.snippet.start.line, data.snippet.end.line);
+            const {contextBefore, body, contextAfter} =
+                getContextLines(fileContent, data.snippet.start.line, data.snippet.end.line);
             snippetID = await SnippetDB.addSnippet({
                 lineStart: data.snippet.start.line,
                 charStart: data.snippet.start.character,

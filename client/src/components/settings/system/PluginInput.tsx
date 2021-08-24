@@ -15,6 +15,7 @@ import {MaybeInput} from "../../input/maybe/MaybeInput";
 import {MaybeTextarea} from "../../input/maybe/MaybeTextarea";
 import {CheckboxInput} from "../../input/CheckboxInput";
 import {LabeledInput} from "../../input/LabeledInput";
+import { getErrorMessage } from "../../../../../helpers/ErrorHelper";
 
 interface PluginInputProperties {
     /** Plugin to be handled */
@@ -91,7 +92,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
                 newPlugin.create(plugin);
                 setSuccess(`Added new plugin ${plugin.user.name}`);
             } catch (error) {
-                setError(`Failed to add plugin: ${error}`);
+                setError(`Failed to add plugin: ${getErrorMessage(error)}`);
             } finally {
                 setSaving(false);
             }
@@ -121,7 +122,7 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
                 setEditing(false);
                 setSuccess("Updated plugin");
             } catch (error) {
-                setError(`Could not save changed: ${error}`);
+                setError(`Could not save changed: ${getErrorMessage(error)}`);
             } finally {
                 setSaving(false);
             }
@@ -188,7 +189,6 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
             <Area className="ml-2">
                 {Object.values(WebhookEvent).map(event =>
                     <CheckboxInput
-                        children={event}
                         key={event}
                         value={event}
                         selected={hooks.includes(event)}
@@ -198,8 +198,9 @@ export function PluginInput({plugin, newPlugin}: PluginInputProperties) {
                                 setHooks(hooks => hooks.concat(event))
                                 :
                                 setHooks(hooks => hooks.filter(hook => hook !== event));
-                        }}
-                    />
+                        }}>
+                        {event}
+                    </CheckboxInput>
                 )}
             </Area>
         </LabeledInput>

@@ -7,7 +7,7 @@ export interface ParentalProperties {
 export type Children =
     | undefined
     | null
-    | {}
+    | Record<string, unknown>
     | boolean
     | boolean[]
     | number

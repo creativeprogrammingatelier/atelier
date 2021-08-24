@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Button, Form} from "react-bootstrap";
 import {useSubscription} from "observable-hooks";
+import {getErrorMessage} from "../../../../../helpers/ErrorHelper";
 
 import {Course} from "../../../../../models/api/Course";
 import {CourseState} from "../../../../../models/enums/CourseStateEnum";
@@ -39,8 +40,9 @@ export function CourseSettingsGeneral({courseID}: CourseSettingsGeneralPropertie
      * @throws Error when it fails to update the course.
      */
     const handleUpdate = async() => {
-        course.update({name, state})
-            .catch(error => setError(`Failed to update course: ${error}`));
+        await course
+            .update({name, state})
+            .catch(error => setError(`Failed to update course: ${getErrorMessage(error)}`));
     };
 
     return <Form>

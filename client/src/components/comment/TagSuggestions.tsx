@@ -27,7 +27,7 @@ export function TagSuggestions({prefix, tagIndex, round, onSelected}: TagSuggest
         });
     }, [tagIndex]);
 
-    return tagIndex != undefined ?
+    return tagIndex !== undefined ?
         <ul className={"mentions m-0 w-100" + (round ? " px-2 pt-2 mb-2" : " px-1 pt-1 mb-1 ")}>
             {suggestions.map(tag => <Tag key={tag} large round theme="primary" click={() => onSelected(tag)}>{displayPrefix}{tag}</Tag>)}
         </ul>

@@ -24,7 +24,7 @@ export interface DataListProperties extends ParentalProperties {
     /** Boolean for whether the list is collapsed or not */
     collapse?: boolean,
     /** Function to be called when user wants to load more items from list. */
-    more?: (limit: number, offset: number) => Children
+    more?: (limit: number, offset: number) => Promise<Children>
     /** Size of DataList */
     size?: number,
     empty?: Children,
