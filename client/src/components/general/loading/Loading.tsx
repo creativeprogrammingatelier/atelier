@@ -3,7 +3,7 @@ import {Children, Parent} from "../../../helpers/ParentHelper";
 import {LoadingIcon} from "./LoadingIcon";
 
 // Disable the warning, it's how you define a generic function in TypeScript
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type LoadingFunc<R> = (...args: any[]) => Promise<R>;
 
 export enum LoadingState {
@@ -49,15 +49,22 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
         });
     }, [parameters]);
 
-    if (state === LoadingState.Loaded) {
-        return Parent.constructChildren(component(result!));
-    } else if (state === LoadingState.Error) {
+    if (state === LoadingState.Loaded && result !== undefined) {
+        return Parent.constructChildren(component(result));
+    } else if (state === LoadingState.Error && error !== undefined) {
         return wrapped(
             <div>
-                An error occurred: {error!.message}.
+                An error occurred: {error.message}.
             </div>
         );
-    } else { // state === LoadingState.Loading
+    } else if (state === LoadingState.Loading) {
         return wrapped(<LoadingIcon/>);
+    } else {
+        return wrapped(
+            <div>
+                Something got confused, the current state is {state}, but there is no result and no error.
+                This should not happen.
+            </div>
+        );
     }
 }

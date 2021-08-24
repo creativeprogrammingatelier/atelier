@@ -13,9 +13,9 @@ export class ParameterHelper {
     static getQueryParameters(parameters: string) {
         const query: {[key: string]: string} = {};
         const pairs = (parameters.startsWith("?") ? parameters.substr(1) : parameters).split("&");
-        for (let i = 0; i < pairs.length; i++) {
-            const pair = pairs[i].split("=");
-            query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+        for (const pair of pairs) {
+            const [name, value] = pair.split("=");
+            query[decodeURIComponent(name)] = decodeURIComponent(value || "");
         }
         return query;
     }
@@ -30,8 +30,9 @@ export class ParameterHelper {
             return "";
         }
         const items = Object.keys(parameters)
-            .filter(key => parameters[key] !== undefined)
-            .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(parameters[key]!));
+            .map(key => ({ key, value: parameters[key] }))
+            .filter((pair): pair is { key: string, value: string | number | boolean } => pair.value !== undefined)
+            .map(({ key, value }) => encodeURIComponent(key) + "=" + encodeURIComponent(value));
         if (items.length > 0) {
             return "?" + items.join("&");
         } else {

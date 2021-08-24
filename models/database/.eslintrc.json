@@ -1,0 +1,7 @@
+{
+    "rules": {
+        // Database type construction may use some flags to indicate whether other values can be
+        // null/undefined or not, so non-null-assertions may occasionaly be used here for conciseness
+        "@typescript-eslint/no-non-null-assertion" : "off"
+    }
+}

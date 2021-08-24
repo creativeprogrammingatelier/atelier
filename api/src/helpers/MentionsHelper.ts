@@ -55,7 +55,13 @@ export async function getMentions(commentBody: string, courseID: string, client?
 }
 
 /** Add the mentions the user is allowed to make to the database */
-export async function createAllowedMentions(commentID: string, mentions: Array<CourseRole | User>, currentUserID: string, courseID: string, client?: pgDB) {
+export async function createAllowedMentions(
+    commentID: string,
+    mentions: Array<CourseRole | User>,
+    currentUserID: string,
+    courseID: string,
+    client?: pgDB
+) {
     const {permission: {permissions}} = await CourseRegistrationDB.getSingleEntry(courseID, currentUserID, {client});
     const dbMentions = await Promise.all(mentions.map(async mention => {
         if (typeof (mention) === "string") {
@@ -94,7 +100,13 @@ export async function createAllowedMentions(commentID: string, mentions: Array<C
 }
 
 /** Create the mentions for a comment */
-export async function createMentions(commentBody: string, commentID: string, courseID: string, currentUserID: string, client?: pgDB) {
+export async function createMentions(
+    commentBody: string,
+    commentID: string,
+    courseID: string,
+    currentUserID: string,
+    client?: pgDB
+) {
     const mentions = await getMentions(commentBody, courseID, client);
     return createAllowedMentions(commentID, mentions, currentUserID, courseID, client);
 }

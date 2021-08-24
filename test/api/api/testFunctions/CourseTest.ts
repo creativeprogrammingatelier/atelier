@@ -17,7 +17,7 @@ import {
 } from "../APIRequestHelper";
 
 export function courseTest() {
-    const createdCourseID: string | undefined = undefined;
+    // const createdCourseID: string | undefined = undefined;
     /**
      * GET requests:
      * /api/course
@@ -62,12 +62,14 @@ export function courseTest() {
             // User can get own courses
             response = await getCourses();
             expect(response).to.have.status(200);
-            expect((response.body as CoursePartial[]).every((course: CoursePartial) => instanceOfCoursePartial(course)));
+            expect((response.body as CoursePartial[])
+                .every((course: CoursePartial) => instanceOfCoursePartial(course)));
 
             // User can get own courses
             response = await getCoursesByOwnUser();
             expect(response).to.have.status(200);
-            expect((response.body as CoursePartial[]).every((course: CoursePartial) => instanceOfCoursePartial(course)));
+            expect((response.body as CoursePartial[])
+                .every((course: CoursePartial) => instanceOfCoursePartial(course)));
 
             // User can get other users courses with permission only.
             response = await getCoursesByOtherUser();
@@ -75,7 +77,8 @@ export function courseTest() {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                expect((response.body as CoursePartial[]).every((course: CoursePartial) => instanceOfCoursePartial(course)));
+                expect((response.body as CoursePartial[])
+                    .every((course: CoursePartial) => instanceOfCoursePartial(course)));
             }
         }
 
@@ -121,7 +124,8 @@ export function courseTest() {
         });
 
         // TODO [TEST]: Fails
-        // it('Should be possible to create a course with \'addCourse\' permission, and have user be enrolled.', async () => {
+        // it('Should be possible to create a course with \'addCourse\' permission, ' +
+        //    ' and have user be enrolled.', async () => {
         //   await adminSetPermissions({'addCourses': true});
 
         //   // Create course
@@ -172,7 +176,8 @@ export function courseTest() {
         // });
 
         // TODO [TEST]: Fails
-        // it('Should be possible to enroll a user in a course with \'manageUserRegistration\' permission, and unregister.', async () => {
+        // it('Should be possible to enroll a user in a course with \'manageUserRegistration\'' +
+        //    ' permission, and unregister.', async () => {
         //   await adminSetPermissions({'manageUserRegistration': true});
 
         //   // Enroll user ins course

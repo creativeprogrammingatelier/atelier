@@ -76,7 +76,10 @@ function acceptableFiles<T>(files: Array<ProjectFile<T>>) {
 // Validation execution
 ///////////////////////
 /** Execute all checks and return the result */
-function validateProjectInternal<T extends Fileish<T>>(projectName: string, files: Array<ProjectFile<T>>): ProjectValidation<T> {
+function validateProjectInternal<T extends Fileish<T>>(
+    projectName: string,
+    files: Array<ProjectFile<T>>
+): ProjectValidation<T> {
     const acceptable = acceptableFiles(files);
     return {
         containsNoCodeFiles: containsNoCodeFiles(acceptable),

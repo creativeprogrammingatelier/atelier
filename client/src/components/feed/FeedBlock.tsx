@@ -4,7 +4,6 @@ import {CommentThread} from "../comment/CommentThread";
 import {Link} from "react-router-dom";
 import {Comment} from "../comment/Comment";
 import {Block} from "../general/Block";
-import {useTime} from "../data/TimeProvider";
 import {DataBlock} from "../data/DataBlock";
 import {FiFile, FiMessageSquare} from "react-icons/fi";
 import {Permissions} from "../general/Permissions";

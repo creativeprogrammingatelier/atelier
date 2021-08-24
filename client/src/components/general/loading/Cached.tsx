@@ -111,7 +111,7 @@ export function Cached<T>(
                                 <Button onClick={() => {
                                     cache.loadMore(
                                         Math.max(...cached.items.map(item => extractDate(item.value).getTime())) +
-                                            3 * 24 * 60 * 60 * 1000,
+                                            (3 * 24 * 60 * 60 * 1000),
                                     ).then(res => {
                                         if (res === 0) setLoadMoreEnabled(false);
                                     });

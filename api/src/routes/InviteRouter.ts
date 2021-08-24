@@ -73,9 +73,9 @@ inviteRouter.get("/course/:courseID/all", capture(async(request: Request, respon
         courseID
     });
 
-    const studentInvites: CourseInvite[] = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.student);
-    const taInvites: CourseInvite[] = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.TA);
-    const teacherInvites: CourseInvite[] = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.teacher);
+    const studentInvites = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.student);
+    const taInvites = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.TA);
+    const teacherInvites = invites.filter((invite: CourseInvite) => invite.joinRole === CourseRole.teacher);
 
     response.status(200).send({
         student: studentInvites.length > 0 ? studentInvites[0].inviteID : undefined,

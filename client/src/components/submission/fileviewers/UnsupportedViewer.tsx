@@ -6,21 +6,21 @@ import {FileViewer, FileViewerProperties} from "../FileOverview";
 /**
  * Component for UnsupportedViewer message.
  */
-export function UnsupportedViewer({file, sendComment}: FileViewerProperties) {
+export function UnsupportedViewer({file}: FileViewerProperties) {
     return <p>Displaying files of type <b>{file.type}</b> is not supported.</p>;
 }
 
 /**
  * AcceptType returns false since type is not supported.
  */
-function acceptsType(type: string) {
+function acceptsType(_type: string) {
     return false;
 }
 
 /**
  * AcceptsFile returns false since file is not supported.
  */
-function acceptsFile(file: File) {
+function acceptsFile(_file: File) {
     return false;
 }
 

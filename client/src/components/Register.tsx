@@ -9,12 +9,11 @@ import {Form} from "react-bootstrap";
 class Register extends Component {
 
     state: {email: string, password: string, passwordConfirmation: string, role: string, user: User | null, response: string, redirectToReferrer: boolean};
-    props: any;
 
     /**
      * Constructor initializes all state variables.
      */
-    constructor(props: any) {
+    constructor(props: Record<string, never>) {
         super(props);
         this.state = {
             email: "",

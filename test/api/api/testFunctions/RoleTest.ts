@@ -38,11 +38,11 @@ export function roleTest() {
             await adminSetPermissions({"manageUserRole": true});
 
             const roles = [GlobalRole.user, GlobalRole.plugin, GlobalRole.staff, GlobalRole.admin];
-            for (let i = 0; i < roles.length; i++) {
-                const response = await setGlobalRole(roles[i]);
+            for (const role of roles) {
+                const response = await setGlobalRole(role);
                 expect(response).to.have.status(200);
                 assert(instanceOfUser(response.body));
-                expect((response.body as User).permission.globalRole).to.equal(roles[i]);
+                expect((response.body as User).permission.globalRole).to.equal(role);
             }
 
             await adminSetPermissions({"manageUserRole": false});
@@ -52,12 +52,18 @@ export function roleTest() {
             await adminRegisterCourse();
             await adminSetPermissions({"manageUserRole": true});
 
-            const roles = [CourseRole.plugin, CourseRole.student, CourseRole.TA, CourseRole.teacher, CourseRole.moduleCoordinator];
-            for (let i = 0; i < roles.length; i++) {
-                const response = await setCourseRole(roles[i]);
+            const roles = [
+                CourseRole.plugin,
+                CourseRole.student,
+                CourseRole.TA,
+                CourseRole.teacher,
+                CourseRole.moduleCoordinator
+            ];
+            for (const role of roles) {
+                const response = await setCourseRole(role);
                 expect(response).to.have.status(200);
                 assert(instanceOfCourseUser(response.body));
-                expect((response.body as User).permission.courseRole).to.equal(roles[i]);
+                expect((response.body as User).permission.courseRole).to.equal(role);
             }
 
             await adminSetPermissions({"manageUserRole": false});

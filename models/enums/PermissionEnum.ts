@@ -208,7 +208,7 @@ const toBig = (n: number): number[] => {
 const fromBig = (n: number[]): number => {
     let res = 0;
     for (let i = 0; i < permissionBits; i++) {
-        res += n[i] * 2 ** i;
+        res += n[i] * (2 ** i);
     }
     return res;
 };

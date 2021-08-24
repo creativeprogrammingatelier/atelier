@@ -65,7 +65,8 @@ export function submissionTest() {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                assert((response.body as Submission[]).every((submission: Submission) => instanceOfSubmission(submission)));
+                assert((response.body as Submission[])
+                    .every((submission: Submission) => instanceOfSubmission(submission)));
             }
 
             // User can only get other users submission with permission
@@ -74,7 +75,8 @@ export function submissionTest() {
                 expect(response).to.have.status(401);
             } else {
                 expect(response).to.have.status(200);
-                assert((response.body as Submission[]).every((submission: Submission) => instanceOfSubmission(submission)));
+                assert((response.body as Submission[])
+                    .every((submission: Submission) => instanceOfSubmission(submission)));
             }
         }
 

@@ -21,7 +21,9 @@ export function capture<T>(func: (request: Request, response: Response) => Promi
 }
 
 /** Does the same as `capture` for handlers using the `next` function */
-export function captureNext<T>(func: (request: Request, response: Response, next: NextFunction) => Promise<T>): RequestHandler {
+export function captureNext<T>(
+    func: (request: Request, response: Response, next: NextFunction) => Promise<T>
+): RequestHandler {
     return async(request, response, next) => {
         try {
             return await func(request, response, next);

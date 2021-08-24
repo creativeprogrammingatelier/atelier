@@ -70,11 +70,15 @@ async function getPersonalFeed(userID: string, params: DBTools, courseID?: strin
             return acc;
         }, {} as { [ID: string]: FeedItem[] });
     return Object.values(byCommentId)
+        // For each commentId, we want to only show one item, so first take the submission if there is one,
+        // then take the mention, if there's none take the thread and else take the comment
         .map(arr =>
             arr.find(f => f.type === "submission")
             || arr.find(f => f.type === "mention")
             || arr.find(f => f.type === "commentThread")
-            || arr.find(f => f.type === "comment")!)
+            || arr.find(f => f.type === "comment"))
+        // Filter out the undefined ones (there shouldn't be any by construction, but this makes TS happy)
+        .filter((x): x is FeedItem => x !== undefined)
         // Sort by date descending
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 }

@@ -1,4 +1,4 @@
-import express, {Request} from "express";
+import express from "express";
 
 import {CommentThread, CreateCommentThread} from "../../../models/api/CommentThread";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";

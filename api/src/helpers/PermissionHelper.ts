@@ -27,8 +27,12 @@ export class PermissionError extends Error {
  * @param courseID, ID of the course if applicable
  * @param anyPermission, true if 1 or more of the permissions should be set
  */
-export async function requirePermissions(userID: string, requiredPermissions: PermissionEnum[], courseID?: string, anyPermission = false) {
-
+export async function requirePermissions(
+    userID: string,
+    requiredPermissions: PermissionEnum[],
+    courseID?: string,
+    anyPermission = false
+) {
     let permissions = 0;
     if (courseID !== undefined) {
         const courseUser: CourseUser = await CourseRegistrationDB.getSingleEntry(courseID, userID);
@@ -77,7 +81,8 @@ export async function requireRegistered(userID: string, courseID: string) {
 }
 
 /**
- * Check whether a user is registered in a course. Uses the fileID to determine the course. Throws an error if this is not the case.
+ * Check whether a user is registered in a course. Uses the fileID to determine the course.
+ * Throws an error if this is not the case.
  * @param userID, ID of the user
  * @param fileID, ID of the file
  */
@@ -87,7 +92,8 @@ export async function requireRegisteredFileID(userID: string, fileID: string) {
 }
 
 /**
- * Check whether a user is registed in a course. Uses the commentThreaDID to determine the course. Throws an error if this is not the case.
+ * Check whether a user is registed in a course. Uses the commentThreaDID to determine the course.
+ * Throws an error if this is not the case.
  * @param userID, ID of the user
  * @param commentThreadID, ID of the commentThread
  */

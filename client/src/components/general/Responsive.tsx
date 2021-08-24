@@ -11,12 +11,10 @@ interface ResponsiveProperties extends ParentalProperties {
  */
 export function Responsive({breakpoints, children}: ResponsiveProperties) {
     const [width, setWidth] = useState(windowWidth());
-    const [height, setHeight] = useState(windowHeight());
     const [breakpoint, setBreakpoint] = useState(currentBreakpoint(width));
 
     const handleWindowResize = () => {
         setWidth(windowWidth());
-        setHeight(windowHeight());
     };
 
     useEffect(() => {
@@ -30,27 +28,12 @@ export function Responsive({breakpoints, children}: ResponsiveProperties) {
 }
 
 /**
- * Function for getting the window size. Window size is a tuple of
- * the width and height of the window.
- */
-function windowSize() {
-    return {windowWidth, windowHeight};
-}
-/**
  * Function for getting the width of the current window.
  */
 function windowWidth() {
     return window.innerWidth
         || document.documentElement.clientWidth
         || document.body.clientWidth;
-}
-/**
- * Function for getting height of the window.
- */
-function windowHeight() {
-    return window.innerHeight
-        || document.documentElement.clientHeight
-        || document.body.clientHeight;
 }
 
 /**
