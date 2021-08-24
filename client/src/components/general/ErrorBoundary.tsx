@@ -1,9 +1,10 @@
 import React, {ErrorInfo} from "react";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
 import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 
-type ErrorBoundaryProperties = Record<string, never>
+type ErrorBoundaryProperties = ParentalProperties
 interface ErrorBoundaryState {
     error: FeedbackContent
 }
