@@ -26,27 +26,65 @@
         "unused-imports"
     ],
     "rules": {
-        "indent": [
-            "error",
-            4
-        ],
-        "quotes": [
-            "error",
-            "double",
-            { "avoidEscape": true }
-        ],
-        "semi": [
-            "error",
-            "always"
-        ],
-        "@typescript-eslint/no-unused-vars": "off",
+        // Imports
         "unused-imports/no-unused-imports": "warn",
+        "no-duplicate-imports": "error",
+        "@typescript-eslint/no-require-imports": "error",
+
+        // Variables
+        "@typescript-eslint/no-unused-vars": "off",
         "unused-imports/no-unused-vars": [
             "warn",
             { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
         ],
-        "key-spacing": "error",
-        "keyword-spacing": "error",
+        "no-var": "error",
+        "prefer-const": "warn",
+
+        // Operators
+        "no-mixed-operators": "warn",
+        "eqeqeq": [
+            "error",
+            "smart"
+        ],
+
+        // Logic
+        "no-lonely-if": "error",
+        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
+
+        // More concise/expressive alternatives
+        "@typescript-eslint/prefer-for-of": "warn",
+        "@typescript-eslint/prefer-includes": "warn",
+        "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+
+        // Likely errors
+        "@typescript-eslint/promise-function-async": "error",
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+
+        // Typing
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+
+        // Style - Naming
+        "camelcase": [
+            "error",
+            {
+                "ignoreDestructuring": true,
+                "ignoreImports": true,
+                "ignoreGlobals": true
+            }
+        ],
+        "new-cap": [
+            "error",
+            { "capIsNewExceptions": ["Router", "IdentityProvider", "ServiceProvider"] }
+        ],
+
+        // Style - File spacing (also set in .editorconfig)
+        "indent": [
+            "error",
+            4
+        ],
+        "no-trailing-spaces": "warn",
+        "eol-last": "warn",
+
         "max-len": [
             "warn",
             {
@@ -58,16 +96,34 @@
                 "ignoreRegExpLiterals": true
             }
         ],
-        "new-cap": [
+
+        // Style - Semicolons
+        "semi": [
             "error",
-            { "capIsNewExceptions": ["Router", "IdentityProvider", "ServiceProvider"] }
+            "always"
         ],
-        "no-lonely-if": "error",
-        "no-mixed-operators": "warn",
-        "no-trailing-spaces": "warn",
-        "semi-spacing": "error",
         "semi-style": "error",
+        "semi-spacing": "error",
+
+        // Style - Commas
+        "comma-spacing": "error",
+        "comma-style": "error",
+
+        // Style - General spacing
+        "key-spacing": "error",
+        "object-curly-spacing": "error",
+        "array-bracket-spacing": "error",
+        "keyword-spacing": "error",
+        "func-call-spacing": "error",
         "arrow-spacing": "error",
+        "@typescript-eslint/type-annotation-spacing": "error",
+
+        // Style - Braces and parentheses
+        "brace-style": [
+            "error",
+            "1tbs",
+            { "allowSingleLine": true }
+        ],
         "arrow-parens": [
             "error",
             "as-needed"
@@ -76,41 +132,14 @@
             "error",
             "as-needed"
         ],
-        "no-duplicate-imports": "error",
-        "object-curly-spacing": "error",
-        "no-var": "error",
-        "prefer-const": "warn",
-        "eqeqeq": [
+
+        // Style - Strings
+        "quotes": [
             "error",
-            "smart"
+            "double",
+            { "avoidEscape": true }
         ],
-        "array-bracket-spacing": "error",
-        "brace-style": [
-            "error",
-            "1tbs",
-            { "allowSingleLine": true }
-        ],
-        "camelcase": [
-            "error",
-            {
-                "ignoreDestructuring": true,
-                "ignoreImports": true,
-                "ignoreGlobals": true
-            }
-        ],
-        "eol-last": "warn",
-        "comma-spacing": "warn",
-        "comma-style": "error",
-        "func-call-spacing": "error",
-        "@typescript-eslint/no-require-imports": "error",
-        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
-        "@typescript-eslint/prefer-for-of": "warn",
-        "@typescript-eslint/prefer-includes": "warn",
-        "@typescript-eslint/prefer-string-starts-ends-with": "warn",
-        "@typescript-eslint/promise-function-async": "error",
-        "@typescript-eslint/switch-exhaustiveness-check": "warn",
-        "@typescript-eslint/type-annotation-spacing": "warn",
-        "@typescript-eslint/explicit-module-boundary-types": "off",
+
         // TODO: There are a lot of these in here, they should be fixed at some point
         "@typescript-eslint/no-floating-promises": "off"
     },

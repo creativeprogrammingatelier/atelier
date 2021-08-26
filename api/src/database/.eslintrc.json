@@ -1,5 +1,7 @@
 {
     "rules": {
+        // Database code uses the table/view names for the corresponding SQL strings,
+        // which are in PascalCase.
         "new-cap" : "off"
     }
 }

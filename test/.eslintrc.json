@@ -1,5 +1,6 @@
 {
     "rules": {
+        // Tests often want to print the object when something fails
         "@typescript-eslint/restrict-template-expressions" : "off"
     }
 }
