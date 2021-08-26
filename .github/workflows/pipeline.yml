@@ -40,8 +40,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14.x
-        # Install build dependencies
-      - run: npm install -g typescript webpack
         # Restore all dependencies (ci is the install command recommended for CI environments)
       - run: npm ci
         # Run ESLint
