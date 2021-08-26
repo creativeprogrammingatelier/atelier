@@ -140,8 +140,11 @@
             { "avoidEscape": true }
         ],
 
-        // TODO: There are a lot of these in here, they should be fixed at some point
-        "@typescript-eslint/no-floating-promises": "off"
+        // TODO - This rule should become an error, but doesn't have a quick fix.
+        // This is actually a serious problem: there are unhandled errors,
+        // but it takes some changes in the component structure to fully fix it.
+        // Consider this an error when working on new components.
+        "@typescript-eslint/no-floating-promises": "warn"
     },
     "settings": {
         "react": {
