@@ -61,23 +61,21 @@ jobs:
           MOCHA_REPORTER: mocha-github-actions-reporter
         # Get a coverage report from nyc and add a comment to the commit or pull-request
       - run: echo "\`\`\`" > ./coverage/report.txt
-      - run: npx nyc report --reporter=text-summary >> ./coverage/report.txt
+        # Print the summary report, the sed command removes the leading blank line
+      - run: npx nyc report --reporter=text-summary | sed '/./,$!d' >> ./coverage/report.txt
       - run: echo "\`\`\`" >> ./coverage/report.txt
+        # Print the table inside a details section, so it's collapsed by default
+      - run: echo "<details>" >> ./coverage/report.txt
+      - run: echo "<summary>View details</summary>" >> ./coverage/report.txt
       - run: echo "" >> ./coverage/report.txt
       - run: npx nyc report --reporter=text >> ./coverage/report.txt
+      - run: echo "</details>" >> ./coverage/report.txt
       - uses: actions/github-script@v4
         with:
           script: |
             require("fs").readFile("./coverage/report.txt", "utf8", (error, data) => {
               if (error) {
                 console.log(error);
-              } else if (context.eventName === "pull_request") {
-                github.issues.createComment({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: data
-                });
               } else if (context.eventName === "push") {
                 github.repos.createCommitComment({
                   commit_sha: context.sha,
