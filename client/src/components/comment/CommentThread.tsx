@@ -19,8 +19,8 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {FeedbackSuccess} from "../feedback/FeedbackSuccess";
 import {Comment as CommentComponent} from "./Comment";
 import {CommentCreator} from "./CommentCreator";
-import { useObservableState, useObservable } from "observable-hooks";
-import { map } from "rxjs/operators";
+import {useObservableState, useObservable} from "observable-hooks";
+import {map} from "rxjs/operators";
 
 interface CommentThreadProperties {
     /** The id for the CommentThread in the databaseRoutes */

@@ -1,6 +1,6 @@
-import React, { Fragment, ReactElement } from "react";
-import { Permissions, PermissionsProperties } from "./Permissions";
-import { OptionalLink } from "./OptionalLink";
+import React, {Fragment, ReactElement} from "react";
+import {Permissions, PermissionsProperties} from "./Permissions";
+import {OptionalLink} from "./OptionalLink";
 
 interface BreadcrumbsProperties {
     /** Children to be passed into the BreadCrumbs component  */
@@ -10,7 +10,7 @@ interface BreadcrumbsProperties {
 /**
  * BreadCrumbs component used for listing the links of its children.
  */
-export function Breadcrumbs({ children }: BreadcrumbsProperties) {
+export function Breadcrumbs({children}: BreadcrumbsProperties) {
     const items = children instanceof Array ? children : [children];
     return (
         <div className="breadcrumbs">
@@ -29,12 +29,12 @@ interface CrumbProperties {
 /**
  * Defines the crumb link, OptionalLink is used since crumb link could be undefined.
  */
-export function Crumb({ link, text }: CrumbProperties) {
+export function Crumb({link, text}: CrumbProperties) {
     return (<OptionalLink to={link}>{text}</OptionalLink>);
 }
 
 /** Crumb that only shows a link if the user has the correct permissions, otherwise displayed as text */
-export function PermissionsCrumb({ link, text, ...perm }: CrumbProperties & PermissionsProperties) {
+export function PermissionsCrumb({link, text, ...perm}: CrumbProperties & PermissionsProperties) {
     return <Permissions {...perm} error={<Crumb text={text} />}>
         <Crumb text={text} link={link} />
     </Permissions>;

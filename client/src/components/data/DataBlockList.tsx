@@ -1,4 +1,4 @@
-import React, { Key } from "react";
+import React, {Key} from "react";
 
 import {TagProperties} from "../general/Tag";
 

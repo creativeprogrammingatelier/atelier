@@ -6,8 +6,8 @@ import {useSubmission} from "../../helpers/api/APIHooks";
 import {Frame} from "../frame/Frame";
 import {Cached} from "../general/loading/Cached";
 import {Sharing} from "../share/Sharing";
-import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
-import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
+import {Breadcrumbs, Crumb, PermissionsCrumb} from "../general/Breadcrumbs";
+import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
 interface SubmissionShareProperties {
     match: {

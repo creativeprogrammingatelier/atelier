@@ -2,7 +2,7 @@ import {Selection, Snippet} from "./Snippet";
 import {Comment} from "./Comment";
 import {File} from "./File";
 import {ThreadState} from "../enums/ThreadStateEnum";
-import { User } from "./User";
+import {User} from "./User";
 
 export interface CommentThread {
     ID: string,

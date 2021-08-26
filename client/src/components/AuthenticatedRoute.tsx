@@ -3,7 +3,7 @@ import {Route, RouteComponentProps} from "react-router-dom";
 
 import {AuthHelper} from "../helpers/AuthHelper";
 import {Login} from "./Login";
-import { ResearchPermissionWrapper } from "./ResearchPermissionWrapper";
+import {ResearchPermissionWrapper} from "./ResearchPermissionWrapper";
 
 interface LocationProperties {
     /** String representation of the location */

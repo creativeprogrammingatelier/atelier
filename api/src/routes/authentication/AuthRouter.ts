@@ -20,7 +20,7 @@ import {one} from "../../database/HelperDB";
 import {PluginsDB} from "../../database/PluginsDB";
 import {loginRouter} from "./LoginRouter";
 import {getSamlRouter} from "./SamlRouter";
-import { assertNever } from "../../../../helpers/Never";
+import {assertNever} from "../../../../helpers/Never";
 
 /**
  * Authentication Routes file

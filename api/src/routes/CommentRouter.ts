@@ -12,9 +12,9 @@ import {CommentDB} from "../database/CommentDB";
 import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {createTags} from "../helpers/TagsHelper";
-import { getCommonQueryParams } from "../helpers/ParamsHelper";
-import { PermissionEnum } from "../../../models/enums/PermissionEnum";
-import { RequestB } from "../helpers/RequestHelper";
+import {getCommonQueryParams} from "../helpers/ParamsHelper";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
+import {RequestB} from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to comments
@@ -57,7 +57,7 @@ commentRouter.get("/course/:courseID", capture(async (request, response) => {
     await requireRegistered(currentUserID, courseID);
     await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 
-    const comments = (await CommentDB.filterComment({ courseID, ...params })
+    const comments = (await CommentDB.filterComment({courseID, ...params})
         .then(async comments => filterComments(comments, currentUserID)))
         .map(removePermissionsComment);
     response.status(200).send(comments);

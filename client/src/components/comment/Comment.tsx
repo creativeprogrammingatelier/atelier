@@ -14,7 +14,7 @@ import {FeedbackContent} from "../feedback/Feedback";
 import {FeedbackError} from "../feedback/FeedbackError";
 import {Cached} from "../general/loading/Cached";
 import {Tag} from "../general/Tag";
-import { getErrorMessage } from "../../../../helpers/ErrorHelper";
+import {getErrorMessage} from "../../../../helpers/ErrorHelper";
 
 
 /**

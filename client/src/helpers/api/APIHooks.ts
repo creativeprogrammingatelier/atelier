@@ -27,8 +27,8 @@ import {
     emptyCacheItem,
     CacheItemInterface
 } from "./Cache";
-import { FeedItem } from "../../../../models/api/FeedItem";
-import { PaginationParameters } from "../ParameterHelper";
+import {FeedItem} from "../../../../models/api/FeedItem";
+import {PaginationParameters} from "../ParameterHelper";
 
 /**
  * API Hooks for using data from the API in React
@@ -175,8 +175,8 @@ async function createCommentThread(thread: CreateCommentThread, promise: Promise
         text: thread.comment,
         created: new Date(Date.now()).toISOString(),
         edited: new Date(Date.now()).toISOString(),
-        thread: { visibility: thread.visibility || ThreadState.public, automated: thread.automated || false },
-        submission: { name: "", user: { userName: "", ID: "" } },
+        thread: {visibility: thread.visibility || ThreadState.public, automated: thread.automated || false},
+        submission: {name: "", user: {userName: "", ID: ""}},
         references: {submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: ""}
     };
     threads.transaction(threads => threads.add({
@@ -330,7 +330,7 @@ async function deleteItem<T extends { ID: string }>(promise: Promise<T>, selecto
     try {
         return promise;
     } catch (err) {
-        cache.transaction(cache => cache.addAll(oldItems.map(({ value }) => value), CacheState.Loaded));
+        cache.transaction(cache => cache.addAll(oldItems.map(({value}) => value), CacheState.Loaded));
         throw err;
     }
 }
@@ -383,7 +383,7 @@ export function useCourse(courseID: string): Refresh<Course> & Update<[{ name?: 
             ),
         delete: async () =>
             deleteItem(
-                API.deleteCourse(courseID).then(cp => ({ ...cp, currentUserPermission: {} as Permission })),
+                API.deleteCourse(courseID).then(cp => ({...cp, currentUserPermission: {} as Permission})),
                 course => course.ID === courseID,
                 courses
             )
@@ -416,10 +416,10 @@ export function useCourseSubmissions(courseID: string): Refresh<Submission> & Cr
     const getDates = () => submissions.getCurrentValue().items.map(x => new Date(x.value.date).getTime());
     return {
         observable: submissions.observable,
-        refresh: async () => refreshCollection(API.getCourseSubmissions(courseID, { limit: 50 }), submissions),
+        refresh: async () => refreshCollection(API.getCourseSubmissions(courseID, {limit: 50}), submissions),
         defaultTimeout: 60,
-        loadNew: async () => refreshCollection(API.getCourseSubmissions(courseID, { after: Math.max(...getDates()) }), submissions),
-        loadMore: async until => refreshCollection(API.getCourseSubmissions(courseID, { before: Math.min(...getDates()), after: until }), submissions),
+        loadNew: async () => refreshCollection(API.getCourseSubmissions(courseID, {after: Math.max(...getDates())}), submissions),
+        loadMore: async until => refreshCollection(API.getCourseSubmissions(courseID, {before: Math.min(...getDates()), after: until}), submissions),
         create: async (projectName: string, files: File[]) =>
             create(
                 API.createSubmission(courseID, projectName, files),
@@ -465,9 +465,9 @@ export function usePersonalFeed(courseID?: string): Refresh<FeedItem> & LoadMore
     return {
         observable: feed.observable,
         defaultTimeout: 20,
-        refresh: async () => refreshFeedWithComments(apiGet({ limit: 50 }), feed, cache),
-        loadNew: async () => refreshFeedWithComments(apiGet({ after: Math.max(...getDates()) }), feed, cache),
-        loadMore: async until => refreshFeedWithComments(apiGet({ before: Math.min(...getDates()), after: until }), feed, cache)
+        refresh: async () => refreshFeedWithComments(apiGet({limit: 50}), feed, cache),
+        loadNew: async () => refreshFeedWithComments(apiGet({after: Math.max(...getDates())}), feed, cache),
+        loadMore: async until => refreshFeedWithComments(apiGet({before: Math.min(...getDates()), after: until}), feed, cache)
     };
 }
 export function useCourseFeed(courseID: string): Refresh<FeedItem> & LoadMore<FeedItem> {
@@ -480,9 +480,9 @@ export function useCourseFeed(courseID: string): Refresh<FeedItem> & LoadMore<Fe
     return {
         observable: feed.observable,
         defaultTimeout: 30,
-        refresh: async () => refreshFeedWithComments(API.getCourseFeed(courseID, { limit: 50 }), feed, cache),
-        loadNew: async () => refreshFeedWithComments(API.getCourseFeed(courseID, { after: Math.max(...getDates()) }), feed, cache),
-        loadMore: async until => refreshFeedWithComments(API.getCourseFeed(courseID, { before: Math.min(...getDates()), after: until }), feed, cache)
+        refresh: async () => refreshFeedWithComments(API.getCourseFeed(courseID, {limit: 50}), feed, cache),
+        loadNew: async () => refreshFeedWithComments(API.getCourseFeed(courseID, {after: Math.max(...getDates())}), feed, cache),
+        loadMore: async until => refreshFeedWithComments(API.getCourseFeed(courseID, {before: Math.min(...getDates()), after: until}), feed, cache)
     };
 }
 export function useSubmission(submissionID: string): Refresh<Submission> & Delete<[], Submission> {
@@ -512,8 +512,8 @@ export function useMentions(): Refresh<Mention> & LoadMore<Mention> {
         observable: mentions.observable,
         refresh: async () => refreshCollection(API.getMentions(), mentions),
         defaultTimeout: 30,
-        loadNew: async () => refreshCollection(API.getMentions({ after: Math.max(...getDates()) }), mentions),
-        loadMore: async until => refreshCollection(API.getMentions({ before: Math.min(...getDates()), after: until }), mentions)
+        loadNew: async () => refreshCollection(API.getMentions({after: Math.max(...getDates())}), mentions),
+        loadMore: async until => refreshCollection(API.getMentions({before: Math.min(...getDates()), after: until}), mentions)
     };
 }
 export function useCourseMentions(courseID: string): Refresh<Mention> & LoadMore<Mention> {
@@ -527,8 +527,8 @@ export function useCourseMentions(courseID: string): Refresh<Mention> & LoadMore
         observable: mentions.observable,
         refresh: async () => refreshCollection(API.getCourseMentions(courseID), mentions),
         defaultTimeout: 30,
-        loadNew: async () => refreshCollection(API.getCourseMentions(courseID, { after: Math.max(...getDates()) }), mentions),
-        loadMore: async until => refreshCollection(API.getCourseMentions(courseID, { before: Math.min(...getDates()), after: until }), mentions)
+        loadNew: async () => refreshCollection(API.getCourseMentions(courseID, {after: Math.max(...getDates())}), mentions),
+        loadMore: async until => refreshCollection(API.getCourseMentions(courseID, {before: Math.min(...getDates()), after: until}), mentions)
     };
 }
 export function useCurrentUser(): Refresh<User> & Update<[Partial<User>], User> {
@@ -649,8 +649,8 @@ export function useComments(commentThreadID: string): Create<[string], Comment> 
                     text: comment,
                     created: new Date(Date.now()).toISOString(),
                     edited: new Date(Date.now()).toISOString(),
-                    thread: { visibility: ThreadState.public, automated: false },
-                    submission: { name: "", user: { userName: "", ID: "" } },
+                    thread: {visibility: ThreadState.public, automated: false},
+                    submission: {name: "", user: {userName: "", ID: ""}},
                     references: {submissionID: "", courseID: "", fileID: "", snippetID: "", commentThreadID: ""}
                 },
                 comments

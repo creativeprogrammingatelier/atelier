@@ -20,8 +20,8 @@ import {SnippetDB} from "../database/SnippetDB";
 import {ThreadDB} from "../database/ThreadDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {createTags} from "../helpers/TagsHelper";
-import { getCommonQueryParams } from "../helpers/ParamsHelper";
-import { RequestB } from "../helpers/RequestHelper";
+import {getCommonQueryParams} from "../helpers/ParamsHelper";
+import {RequestB} from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to comment threads
@@ -107,7 +107,7 @@ commentThreadRouter.get("/course/:courseID", capture(async (request, response) =
     await requireRegistered(currentUserID, courseID);
     await requirePermission(currentUserID, PermissionEnum.viewAllSubmissions, courseID);
 
-    const threads = await ThreadDB.filterThread({ courseID, addComments: true, ...params })
+    const threads = await ThreadDB.filterThread({courseID, addComments: true, ...params})
         .then(async threads => filterCommentThread(threads, currentUserID))
         .then(threads => threads.map(removePermissionsCommentThread));
     response.status(200).send(threads);

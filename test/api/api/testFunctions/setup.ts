@@ -1,13 +1,13 @@
-import { expect } from "chai";
-import { assert } from "console";
+import {expect} from "chai";
+import {assert} from "console";
 
-import { Course, CoursePartial } from "../../../../models/api/Course";
-import { User } from "../../../../models/api/User";
+import {Course, CoursePartial} from "../../../../models/api/Course";
+import {User} from "../../../../models/api/User";
 
-import { UserDB } from "../../../../api/src/database/UserDB";
-import { issueToken } from "../../../../api/src/helpers/AuthenticationHelper";
+import {UserDB} from "../../../../api/src/database/UserDB";
+import {issueToken} from "../../../../api/src/helpers/AuthenticationHelper";
 
-import { instanceOfCoursePartial, instanceOfUser } from "../../../InstanceOf";
+import {instanceOfCoursePartial, instanceOfUser} from "../../../InstanceOf";
 import {
     setAPITestUserValues,
     adminSetPermissions,
@@ -30,7 +30,7 @@ export function setup() {
 
     before(async function () {
         // Get test user and set token
-        const USER_ID = (await UserDB.filterUser({ userName: "test user", limit: 1 }))[0].ID;
+        const USER_ID = (await UserDB.filterUser({userName: "test user", limit: 1}))[0].ID;
         const USER_AUTHORIZATION_KEY = issueToken(USER_ID);
         setAPITestUserValues(USER_ID, USER_AUTHORIZATION_KEY);
 

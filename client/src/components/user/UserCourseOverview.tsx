@@ -13,8 +13,8 @@ import {ErrorBoundary} from "../general/ErrorBoundary";
 import {TabBar} from "../tab/TabBar";
 import {CommentTab} from "./CommentTab";
 import {SubmissionTab} from "./SubmissionTab";
-import { Breadcrumbs, Crumb } from "../general/Breadcrumbs";
-import { CourseUser, courseUserToUser } from "../../../../models/api/CourseUser";
+import {Breadcrumbs, Crumb} from "../general/Breadcrumbs";
+import {CourseUser, courseUserToUser} from "../../../../models/api/CourseUser";
 
 interface UserOverviewProperties {
     match: {

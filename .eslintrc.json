@@ -81,6 +81,7 @@
             "as-needed"
         ],
         "no-duplicate-imports": "error",
+        "object-curly-spacing": "error",
         "no-var": "error",
         "prefer-const": "warn",
         "eqeqeq": [

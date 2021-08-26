@@ -17,7 +17,7 @@ import {CourseSettingsDisenrollment} from "./CourseSettingsDisenrollment";
 import {CourseSettingsEnrollment} from "./CourseSettingsEnrollment";
 import {CourseSettingsInvites} from "./CourseSettingsInvites";
 import {CourseSettingsGeneral} from "./CourseSettingsGeneral";
-import { Breadcrumbs, Crumb } from "../../general/Breadcrumbs";
+import {Breadcrumbs, Crumb} from "../../general/Breadcrumbs";
 
 interface CourseSettingsProperties {
     match: {

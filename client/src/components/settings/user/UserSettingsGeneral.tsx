@@ -15,7 +15,7 @@ import {LabeledInput} from "../../input/LabeledInput";
 import {FeedbackSuccess} from "../../feedback/FeedbackSuccess";
 import {Overlay} from "../../general/Overlay";
 import {ResearchPermissionInformation} from "../../ResearchPermissionWrapper";
-import { getErrorMessage } from "../../../../../helpers/ErrorHelper";
+import {getErrorMessage} from "../../../../../helpers/ErrorHelper";
 
 interface ResearchInfoPopupProperties {
     /** Function to handle close of the popup. */
@@ -25,12 +25,12 @@ interface ResearchInfoPopupProperties {
 /**
  * Component for the popup for the research info.
  */
-function ResearchInfoPopup({ close }: ResearchInfoPopupProperties) {
+function ResearchInfoPopup({close}: ResearchInfoPopupProperties) {
     return <Overlay>
         <Area className="p-4 mx-auto my-5 col-12 col-sm-10 col-md-8">
             <div className="col-10 mx-auto">
                 <ResearchPermissionInformation />
-                <div style={{ textAlign: "center" }}>
+                <div style={{textAlign: "center"}}>
                     <Button onClick={close}>Close</Button>
                 </div>
             </div>

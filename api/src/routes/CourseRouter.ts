@@ -15,9 +15,9 @@ import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {CourseState} from "../../../models/enums/CourseStateEnum";
 import {transaction} from "../database/HelperDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import { getAccessToken, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken } from "../helpers/CanvasHelper";
-import { addUsersFromCanvas } from "../helpers/CourseHelper";
-import { RequestB } from "../helpers/RequestHelper";
+import {getAccessToken, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken} from "../helpers/CanvasHelper";
+import {addUsersFromCanvas} from "../helpers/CourseHelper";
+import {RequestB} from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to a course

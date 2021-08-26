@@ -17,8 +17,8 @@ import {FeedbackError} from "../feedback/FeedbackError";
 import {Frame} from "../frame/Frame";
 import {Cached} from "../general/loading/Cached";
 import {ButtonMultistate} from "../input/button/ButtonMultistate";
-import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
-import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
+import {Breadcrumbs, Crumb, PermissionsCrumb} from "../general/Breadcrumbs";
+import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
 interface SubmissionOverviewProperties {
     match: {

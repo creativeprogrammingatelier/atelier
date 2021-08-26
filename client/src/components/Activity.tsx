@@ -1,7 +1,7 @@
 import React from "react";
 import {Frame} from "./frame/Frame";
 import {Jumbotron} from "react-bootstrap";
-import { PersonalFeed } from "./feed/Feed";
+import {PersonalFeed} from "./feed/Feed";
 
 /**
  * Activity tab on the sidebar. It retrieves all

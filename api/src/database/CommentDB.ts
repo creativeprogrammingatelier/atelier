@@ -62,7 +62,7 @@ export class CommentDB {
     static async getCommentsByThreadParticipation(
         userID: string, courseID?: string, onlyReplies = false, params: DBTools = {}
     ) {
-        const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
+        const {client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined} = params;
         const userid = UUIDHelper.toUUID(userID), courseid = UUIDHelper.toUUID(courseID);
         return client.query(`
             SELECT DISTINCT cv.* FROM "CommentsView" AS cv
@@ -81,7 +81,7 @@ export class CommentDB {
     static async getCommentsBySubmissionOwner(
         submissionOwnerID: string, courseID?: string, onlyReplies = false, params: DBTools = {}
     ) {
-        const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
+        const {client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined} = params;
         const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
         return client.query(`
             SELECT cv.* FROM "CommentsView" AS cv

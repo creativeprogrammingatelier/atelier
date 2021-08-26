@@ -1,6 +1,6 @@
 import "mocha";
 import {expect} from "chai";
-import { UUIDHelper, UUIDError } from "../../../api/src/helpers/UUIDHelper";
+import {UUIDHelper, UUIDError} from "../../../api/src/helpers/UUIDHelper";
 
 describe("UUID helper", () => {
     const BASE0 = "AAAAAAAAAAAAAAAAAAAAAA";

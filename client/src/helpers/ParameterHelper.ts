@@ -30,9 +30,9 @@ export class ParameterHelper {
             return "";
         }
         const items = Object.keys(parameters)
-            .map(key => ({ key, value: parameters[key] }))
+            .map(key => ({key, value: parameters[key]}))
             .filter((pair): pair is { key: string, value: string | number | boolean } => pair.value !== undefined)
-            .map(({ key, value }) => encodeURIComponent(key) + "=" + encodeURIComponent(value));
+            .map(({key, value}) => encodeURIComponent(key) + "=" + encodeURIComponent(value));
         if (items.length > 0) {
             return "?" + items.join("&");
         } else {

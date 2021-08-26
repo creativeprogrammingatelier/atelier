@@ -112,7 +112,7 @@ export const deleteFile = async (filePath: fs.PathLike): Promise<void> =>
 /** Asynchronously delete a folder recursively */
 export const deleteFolder = async (folderPath: fs.PathLike): Promise<void> =>
     new Promise((resolve: () => void, reject: (err: NodeJS.ErrnoException) => void) =>
-        fs.rmdir(folderPath, { recursive: true }, err => err ? reject(err) : resolve())
+        fs.rmdir(folderPath, {recursive: true}, err => err ? reject(err) : resolve())
     );
 
 /** Read a file as a string with UTF-8 encoding */

@@ -1,4 +1,4 @@
-import React, { Key } from "react";
+import React, {Key} from "react";
 import {Toast, ToastBody} from "react-bootstrap";
 import {IconType} from "react-icons";
 

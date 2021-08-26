@@ -19,7 +19,7 @@ import {Loading} from "../general/loading/Loading";
 import {Tag} from "../general/Tag";
 import {LabeledInput} from "../input/LabeledInput";
 import {SearchProperties} from "./SearchOverview";
-import { getErrorMessage } from "../../../../helpers/ErrorHelper";
+import {getErrorMessage} from "../../../../helpers/ErrorHelper";
 
 interface SearchQueryProperties {
     /** SearchProperties of query*/

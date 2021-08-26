@@ -13,10 +13,10 @@ import {Frame} from "./frame/Frame";
 import {Permissions} from "./general/Permissions";
 import {Cached} from "./general/loading/Cached";
 import {Uploader} from "./uploader/Uploader";
-import { PersonalFeed, CourseFeed } from "./feed/Feed";
-import { TabBar } from "./tab/TabBar";
-import { Overlay } from "./general/Overlay";
-import { Area } from "./general/Area";
+import {PersonalFeed, CourseFeed} from "./feed/Feed";
+import {TabBar} from "./tab/TabBar";
+import {Overlay} from "./general/Overlay";
+import {Area} from "./general/Area";
 
 interface CourseOverviewProperties {
     match: {
@@ -37,7 +37,7 @@ export function CourseOverview({match: {params: {courseId, tab = "personal"}}}: 
     const course = useCourse(courseId);
     const url = `/course/${courseId}`;
 
-    const uploadButton = { icon: FiUpload, text: "Upload", onClick: () => setUploading(true) };
+    const uploadButton = {icon: FiUpload, text: "Upload", onClick: () => setUploading(true)};
 
     return <Cached
         cache={course}

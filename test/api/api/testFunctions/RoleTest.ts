@@ -1,5 +1,5 @@
 import {expect, assert} from "chai";
-import { User } from "../../../../models/api/User";
+import {User} from "../../../../models/api/User";
 
 import {CourseRole} from "../../../../models/enums/CourseRoleEnum";
 import {GlobalRole} from "../../../../models/enums/GlobalRoleEnum";

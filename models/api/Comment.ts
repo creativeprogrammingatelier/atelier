@@ -1,5 +1,5 @@
 import {User} from "./User";
-import { ThreadState } from "../enums/ThreadStateEnum";
+import {ThreadState} from "../enums/ThreadStateEnum";
 
 export interface Comment {
     ID: string,

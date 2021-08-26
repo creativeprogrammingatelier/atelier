@@ -1,5 +1,5 @@
 import {Permission} from "./Permission";
-import { User } from "./User";
+import {User} from "./User";
 
 export interface CourseUser {
     userID: string,

@@ -1,5 +1,5 @@
-import { pool, extract, one, pgDB } from "./HelperDB";
-import { getValue } from "../../../models/database/Metadata";
+import {pool, extract, one, pgDB} from "./HelperDB";
+import {getValue} from "../../../models/database/Metadata";
 
 export class MetadataDB {
     static async get(key: string, client: pgDB = pool) {

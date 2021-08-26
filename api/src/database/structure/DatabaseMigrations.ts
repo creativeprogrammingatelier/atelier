@@ -1,6 +1,6 @@
-import { MetadataDB } from "../MetadataDB";
-import { pgDB, transaction } from "../HelperDB";
-import { dropViewQueries, createViewQueries } from "./DatabaseStructure";
+import {MetadataDB} from "../MetadataDB";
+import {pgDB, transaction} from "../HelperDB";
+import {dropViewQueries, createViewQueries} from "./DatabaseStructure";
 /**
  * Database Migrations - Contains function for permforming database migrations including upgrading of the database.
  */

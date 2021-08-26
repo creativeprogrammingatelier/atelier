@@ -1,17 +1,17 @@
-import React, { Fragment, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import React, {Fragment, useState} from "react";
+import {Button, Form} from "react-bootstrap";
 
-import { useCurrentUser } from "../helpers/api/APIHooks";
-import { Cached } from "./general/loading/Cached";
-import { Area } from "./general/Area";
-import { Overlay } from "./general/Overlay";
-import { CheckboxInput } from "./input/CheckboxInput";
-import { ParentalProperties } from "../helpers/ParentHelper";
+import {useCurrentUser} from "../helpers/api/APIHooks";
+import {Cached} from "./general/loading/Cached";
+import {Area} from "./general/Area";
+import {Overlay} from "./general/Overlay";
+import {CheckboxInput} from "./input/CheckboxInput";
+import {ParentalProperties} from "../helpers/ParentHelper";
 
 /**
  * Component used to warp the research permissions.
  */
-export function ResearchPermissionWrapper({ children }: ParentalProperties) {
+export function ResearchPermissionWrapper({children}: ParentalProperties) {
     const currentUser = useCurrentUser();
     return <Cached cache={currentUser} wrapper={() => children}>
         {user => {
@@ -52,7 +52,7 @@ function ResearchPermissionOverlay() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // Ignore the result of the update, if it fails, we'll just ask the user again later
-        void currentUser.update({ researchAllowed });
+        void currentUser.update({researchAllowed});
     };
 
     return <Overlay>
@@ -68,7 +68,7 @@ function ResearchPermissionOverlay() {
                         be used for research purposes, as described above.
                     </CheckboxInput>
                 </Form.Group>
-                <Form.Group style={{ textAlign: "center" }}>
+                <Form.Group style={{textAlign: "center"}}>
                     <Button type="submit">{researchAllowed ? "Accept" : "Decline"}</Button>
                 </Form.Group>
             </Form>

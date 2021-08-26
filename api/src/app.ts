@@ -10,7 +10,7 @@ import {parsePostgresErrorCode, isPostgresError} from "./helpers/DatabaseErrorHe
 import {InvalidParamsError} from "./helpers/ParamsHelper";
 import {PermissionError} from "./helpers/PermissionHelper";
 import {ProjectValidationError} from "../../helpers/ProjectValidationHelper";
-import { IntegrationNotEnabledError } from "./helpers/CanvasHelper";
+import {IntegrationNotEnabledError} from "./helpers/CanvasHelper";
 
 import {upgradeDatabase} from "./database/structure/DatabaseMigrations";
 import {NotFoundDatabaseError} from "./database/DatabaseErrors";
@@ -32,7 +32,7 @@ import {submissionRouter} from "./routes/SubmissionRouter";
 import {permissionRouter} from "./routes/PermissionRouter";
 import {pluginRouter} from "./routes/PluginRouter";
 import {userRouter} from "./routes/UserRouter";
-import { canvasRouter } from "./routes/CanvasRouter";
+import {canvasRouter} from "./routes/CanvasRouter";
 
 /**
  * The main file of express.js app

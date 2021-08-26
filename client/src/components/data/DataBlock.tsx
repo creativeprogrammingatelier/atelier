@@ -1,11 +1,11 @@
-import React, { Key } from "react";
+import React, {Key} from "react";
 import {Toast, ToastBody, ToastHeader} from "react-bootstrap";
 import {TimeHelper} from "../../helpers/TimeHelper";
 
 import {OptionalLink} from "../general/OptionalLink";
 import {Tag, TagProperties} from "../general/Tag";
 import {useTime} from "./TimeProvider";
-import { ParentalProperties } from "../../helpers/ParentHelper";
+import {ParentalProperties} from "../../helpers/ParentHelper";
 
 interface DataBlockProperties extends ParentalProperties {
     /** Destination of OptionalLink component */

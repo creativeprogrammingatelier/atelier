@@ -19,7 +19,7 @@ import {transaction} from "../database/HelperDB";
 import {SubmissionDB} from "../database/SubmissionDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {UPLOADS_PATH} from "../lib/constants";
-import { getPaginationQueryParams } from "../helpers/ParamsHelper";
+import {getPaginationQueryParams} from "../helpers/ParamsHelper";
 
 /**
  * Api routes relating to submission information

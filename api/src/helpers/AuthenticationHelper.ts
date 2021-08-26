@@ -115,12 +115,12 @@ const tokenInvalidator = new TokenInvalidator();
 
 /** Issue a temoprary token for login redirects. Valid once for 20 seconds. */
 export function issueTemporaryToken(userID: string) {
-    return jwt.sign({ userID, temporary: true }, TEMPSECRETKEY, { expiresIn: temporaryTokenExpiration });
+    return jwt.sign({userID, temporary: true}, TEMPSECRETKEY, {expiresIn: temporaryTokenExpiration});
 }
 
 /** Verify that a temporary token is valid and indeed temporary. */
 export async function verifyTemporaryToken(token: string) {
-    const { userID, temporary, iat, exp } =
+    const {userID, temporary, iat, exp} =
         await verifyToken<{ userID: string, temporary: boolean }>(token, TEMPSECRETKEY);
     if (!temporary || exp - iat > temporaryTokenExpiration)
         throw new AuthError("token.notTemporary", "This endpoint requires the use of a temporary token, but a different token was used.");

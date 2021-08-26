@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, {ChangeEvent} from "react";
 import {Form} from "react-bootstrap";
 import {Fetch} from "../../../helpers/api/FetchHelper";
 import {CanvasHelper} from "../../../helpers/CanvasHelper";
@@ -37,7 +37,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
         if (this.state.enabled) {
             Fetch.fetch("/api/canvas/courses")
                 .then(async res => await res.json() as CanvasCourse[])
-                .then(res => this.setState({ data: res }));
+                .then(res => this.setState({data: res}));
         }
     }
 
@@ -53,7 +53,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
 
     }
     handleSelect = (event: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ selectedCourseId: event.target.value });
+        this.setState({selectedCourseId: event.target.value});
     }
 
     getOptions() {
@@ -72,7 +72,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
 
     /** Check if Canvas integration is enabled */
     private checkEnabled() {
-        CanvasHelper.isEnabled().then(res => this.setState({ enabled: res }));
+        CanvasHelper.isEnabled().then(res => this.setState({enabled: res}));
     }
 
     render() {

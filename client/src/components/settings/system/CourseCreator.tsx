@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {useHistory} from "react-router-dom";
 import {Button, Form} from "react-bootstrap";
-import { getErrorMessage } from "../../../../../helpers/ErrorHelper";
+import {getErrorMessage} from "../../../../../helpers/ErrorHelper";
 
 import {CourseState} from "../../../../../models/enums/CourseStateEnum";
 import {FeedbackContent} from "../../feedback/Feedback";

@@ -7,8 +7,8 @@ import {ThreadState} from "../enums/ThreadStateEnum";
 
 import {fileToAPI, DBAPIFile, isNotNullFile} from "./File";
 import {snippetToAPI, DBAPISnippet, isNotNullSnippet} from "./Snippet";
-import { GlobalRole } from "../enums/GlobalRoleEnum";
-import { CourseRole } from "../enums/CourseRoleEnum";
+import {GlobalRole} from "../enums/GlobalRoleEnum";
+import {CourseRole} from "../enums/CourseRoleEnum";
 
 export interface Thread extends DBTools {
     commentThreadID?: string,

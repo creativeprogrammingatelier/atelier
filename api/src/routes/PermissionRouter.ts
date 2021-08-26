@@ -12,7 +12,7 @@ import {capture} from "../helpers/ErrorHelper";
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {UserDB} from "../database/UserDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import { RequestB } from "../helpers/RequestHelper";
+import {RequestB} from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to comments

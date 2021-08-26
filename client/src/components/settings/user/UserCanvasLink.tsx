@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Form, FormLabel} from "react-bootstrap";
-import { CanvasHelper } from "../../../helpers/CanvasHelper";
+import {CanvasHelper} from "../../../helpers/CanvasHelper";
 
 interface UserCanvasLinkState {
     enabled: boolean,
@@ -29,7 +29,7 @@ export default class UserCanvasLink extends React.Component<Record<string, never
             // As far as I can tell, the /api/canvas/link enpoint only returns a 'redirect' field,
             // this.setState({ linked: res.linked });
             // I've replaced it with this line for now, as I think it's equivalent to the old behavior:
-            this.setState({ linked: false });
+            this.setState({linked: false});
         });
     }
 
@@ -45,13 +45,13 @@ export default class UserCanvasLink extends React.Component<Record<string, never
      */
     private checkLinkedCanvas() {
         CanvasHelper.getLinked().then(res =>
-            this.setState({ linked: res.linked })
+            this.setState({linked: res.linked})
         );
     }
 
     /** Check if Canvas integration is enabled */
     private checkEnabled() {
-        CanvasHelper.isEnabled().then(res => this.setState({ enabled: res }));
+        CanvasHelper.isEnabled().then(res => this.setState({enabled: res}));
     }
 
     render(){

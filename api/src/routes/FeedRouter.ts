@@ -6,40 +6,40 @@ import {capture} from "../helpers/ErrorHelper";
 import {getCommonQueryParams} from "../helpers/ParamsHelper";
 
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import { map, DBTools } from "../database/HelperDB";
-import { requireRegistered, requirePermission } from "../helpers/PermissionHelper";
-import { PermissionEnum } from "../../../models/enums/PermissionEnum";
-import { FeedItem } from "../../../models/api/FeedItem";
+import {map, DBTools} from "../database/HelperDB";
+import {requireRegistered, requirePermission} from "../helpers/PermissionHelper";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
+import {FeedItem} from "../../../models/api/FeedItem";
 
 import {MentionsDB} from "../database/MentionsDB";
-import { SubmissionDB } from "../database/SubmissionDB";
-import { ThreadDB } from "../database/ThreadDB";
-import { CommentDB } from "../database/CommentDB";
-import { assertNever } from "../../../helpers/Never";
+import {SubmissionDB} from "../database/SubmissionDB";
+import {ThreadDB} from "../database/ThreadDB";
+import {CommentDB} from "../database/CommentDB";
+import {assertNever} from "../../../helpers/Never";
 
 export const feedRouter = express.Router();
 feedRouter.use(AuthMiddleware.requireAuth);
 
 async function getPersonalFeed(userID: string, params: DBTools, courseID?: string) {
     const data: FeedItem[][] = await Promise.all([
-        SubmissionDB.getRecents({ userID, courseID, ...params })
+        SubmissionDB.getRecents({userID, courseID, ...params})
             .then(map(removePermissionsSubmission))
-            .then(map(submission => ({ type: "submission", data: submission, timestamp: submission.date, ID: submission.ID }))),
+            .then(map(submission => ({type: "submission", data: submission, timestamp: submission.date, ID: submission.ID}))),
         MentionsDB.getMentionsByUser(userID, courseID, params)
             .then(map(removePermissionsMention))
-            .then(map(mention => ({ type: "mention", data: mention, timestamp: mention.comment.created, ID: mention.ID }))),
+            .then(map(mention => ({type: "mention", data: mention, timestamp: mention.comment.created, ID: mention.ID}))),
         ThreadDB.getThreadsBySubmissionOwner(userID, courseID, true, true, params)
             .then(async threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
-            .then(map(thread => ({ type: "commentThread", data: thread, relation: "yourSubmission", timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
+            .then(map(thread => ({type: "commentThread", data: thread, relation: "yourSubmission", timestamp: thread.comments[0]?.created || "", ID: thread.ID}))),
         CommentDB.getCommentsBySubmissionOwner(userID, courseID, true, params)
             .then(async comments => filterComments(comments, userID))
             .then(map(removePermissionsComment))
-            .then(map(comment => ({ type: "comment", data: comment, relation: "yourSubmission", timestamp: comment.created, ID: comment.ID }))),
+            .then(map(comment => ({type: "comment", data: comment, relation: "yourSubmission", timestamp: comment.created, ID: comment.ID}))),
         CommentDB.getCommentsByThreadParticipation(userID, courseID, true, params)
             .then(async comments => filterComments(comments, userID))
             .then(map(removePermissionsComment))
-            .then(map(comment => ({ type: "comment", data: comment, relation: "participated", timestamp: comment.created, ID: comment.ID })))
+            .then(map(comment => ({type: "comment", data: comment, relation: "participated", timestamp: comment.created, ID: comment.ID})))
     ]);
     const byCommentId = ([] as FeedItem[]).concat(...data)
         // Group all items related to a single comment together, so we'll only show one of them in the feed
@@ -112,15 +112,15 @@ feedRouter.get("/course/:courseID", capture(async (request, response) => {
     const data: FeedItem[][] = await Promise.all([
         SubmissionDB.getSubmissionsByCourse(courseID, params)
             .then(map(removePermissionsSubmission))
-            .then(map(submission => ({ type: "submission", data: submission, timestamp: submission.date, ID: submission.ID }))),
-        ThreadDB.filterThread({ courseID, addComments: true, automatedOnlyIfShared: true, ...params })
+            .then(map(submission => ({type: "submission", data: submission, timestamp: submission.date, ID: submission.ID}))),
+        ThreadDB.filterThread({courseID, addComments: true, automatedOnlyIfShared: true, ...params})
             .then(async threads => filterCommentThread(threads, userID))
             .then(map(removePermissionsCommentThread))
-            .then(map(thread => ({ type: "commentThread", data: thread, timestamp: thread.comments[0]?.created || "", ID: thread.ID }))),
-        CommentDB.filterComment({ courseID, onlyReplies: true, ...params })
+            .then(map(thread => ({type: "commentThread", data: thread, timestamp: thread.comments[0]?.created || "", ID: thread.ID}))),
+        CommentDB.filterComment({courseID, onlyReplies: true, ...params})
             .then(async comments => filterComments(comments, userID))
             .then(map(removePermissionsComment))
-            .then(map(comment => ({ type: "comment", data: comment, timestamp: comment.created, ID: comment.ID })))
+            .then(map(comment => ({type: "comment", data: comment, timestamp: comment.created, ID: comment.ID})))
     ]);
     const sortedData = ([] as FeedItem[]).concat(...data)
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());

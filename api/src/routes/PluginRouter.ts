@@ -11,8 +11,8 @@ import {requirePermission} from "../helpers/PermissionHelper";
 import {transaction, one, map} from "../database/HelperDB";
 import {PluginsDB} from "../database/PluginsDB";
 import {UserDB} from "../database/UserDB";
-import { User } from "../../../models/api/User";
-import { RequestB } from "../helpers/RequestHelper";
+import {User} from "../../../models/api/User";
+import {RequestB} from "../helpers/RequestHelper";
 
 export const pluginRouter = express.Router();
 

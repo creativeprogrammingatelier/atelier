@@ -1,10 +1,10 @@
-import { expect } from "chai";
-import { assert } from "console";
+import {expect} from "chai";
+import {assert} from "console";
 
-import { CoursePartial } from "../../../../models/api/Course";
-import { CourseState } from "../../../../models/enums/CourseStateEnum";
+import {CoursePartial} from "../../../../models/api/Course";
+import {CourseState} from "../../../../models/enums/CourseStateEnum";
 
-import { instanceOfCoursePartial } from "../../../InstanceOf";
+import {instanceOfCoursePartial} from "../../../InstanceOf";
 import {
     getCourse,
     getCourses,
@@ -113,9 +113,9 @@ export function courseTest() {
         });
 
         it("Should be possible to view courses with 'viewAllCourses' permission.", async () => {
-            await adminSetPermissions({ "viewAllCourses": true });
+            await adminSetPermissions({"viewAllCourses": true});
             await coursePermissions();
-            await adminSetPermissions({ "viewAllCourses": false });
+            await adminSetPermissions({"viewAllCourses": false});
         });
 
         it("Should not be possible to create a course without permission.", async () => {

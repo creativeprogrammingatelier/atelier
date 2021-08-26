@@ -23,8 +23,8 @@ import {FileViewerUnsupported} from "./fileviewers/UnsupportedViewer";
 import {CommentTab} from "./CommentTab";
 import {ShareTab} from "./ShareTab";
 import {ViewTab} from "./ViewTab";
-import { Breadcrumbs, Crumb, PermissionsCrumb } from "../general/Breadcrumbs";
-import { PermissionEnum } from "../../../../models/enums/PermissionEnum";
+import {Breadcrumbs, Crumb, PermissionsCrumb} from "../general/Breadcrumbs";
+import {PermissionEnum} from "../../../../models/enums/PermissionEnum";
 
 interface FileOverviewProperties {
     match: {

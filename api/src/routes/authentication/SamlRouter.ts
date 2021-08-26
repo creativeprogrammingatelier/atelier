@@ -14,7 +14,7 @@ import {readFileAsString} from "../../helpers/FilesystemHelper";
 
 import {NotFoundDatabaseError} from "../../database/DatabaseErrors";
 import {UserDB} from "../../database/UserDB";
-import { User } from "../../../../models/api/User";
+import {User} from "../../../../models/api/User";
 
 setSchemaValidator(validator);
 
@@ -93,7 +93,7 @@ export async function getSamlRouter(samlConfig: SamlLoginConfiguration) {
                     // (in case they were added via an integration)
                     user = await UserDB.getUserByEmail(email);
                     // If the user was found, update it to include the ID
-                    UserDB.updateUser({ userID: user.ID, samlID: extID });
+                    UserDB.updateUser({userID: user.ID, samlID: extID});
                 } catch (err) {
                     if (err instanceof NotFoundDatabaseError) {
                         // Create new user from SAML

@@ -11,7 +11,7 @@ import {requirePermission, requirePermissions} from "../helpers/PermissionHelper
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
 import {UserDB} from "../database/UserDB";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
-import { RequestB } from "../helpers/RequestHelper";
+import {RequestB} from "../helpers/RequestHelper";
 
 /**
  * Api routes relating to user information

@@ -1,12 +1,12 @@
-import { CoursePartial } from "../../../models/api/Course";
-import { User } from "../../../models/api/User";
-import { CourseRole } from "../../../models/enums/CourseRoleEnum";
-import { GlobalRole } from "../../../models/enums/GlobalRoleEnum";
-import { CourseRegistrationDB } from "../database/CourseRegistrationDB";
-import { NotFoundDatabaseError } from "../database/DatabaseErrors";
-import { pgDB } from "../database/HelperDB";
-import { UserDB } from "../database/UserDB";
-import { CanvasUser } from "./CanvasHelper";
+import {CoursePartial} from "../../../models/api/Course";
+import {User} from "../../../models/api/User";
+import {CourseRole} from "../../../models/enums/CourseRoleEnum";
+import {GlobalRole} from "../../../models/enums/GlobalRoleEnum";
+import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
+import {NotFoundDatabaseError} from "../database/DatabaseErrors";
+import {pgDB} from "../database/HelperDB";
+import {UserDB} from "../database/UserDB";
+import {CanvasUser} from "./CanvasHelper";
 
 export async function addUsersFromCanvas(
     users: CanvasUser[],

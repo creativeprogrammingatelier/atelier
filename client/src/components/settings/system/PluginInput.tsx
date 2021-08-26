@@ -15,7 +15,7 @@ import {MaybeInput} from "../../input/maybe/MaybeInput";
 import {MaybeTextarea} from "../../input/maybe/MaybeTextarea";
 import {CheckboxInput} from "../../input/CheckboxInput";
 import {LabeledInput} from "../../input/LabeledInput";
-import { getErrorMessage } from "../../../../../helpers/ErrorHelper";
+import {getErrorMessage} from "../../../../../helpers/ErrorHelper";
 
 interface PluginInputProperties {
     /** Plugin to be handled */

@@ -134,7 +134,7 @@ export class ThreadDB {
         submissionOwnerID: string, courseID?: string, addComments = false,
         automatedOnlyIfShared = false, params: DBTools = {}
     ) {
-        const { client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined } = params;
+        const {client = pool, limit = undefined, offset = undefined, after = undefined, before = undefined} = params;
         const userid = UUIDHelper.toUUID(submissionOwnerID), courseid = UUIDHelper.toUUID(courseID);
         const query = client.query(`
             SELECT ct.*
