@@ -1,13 +1,17 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import {Form} from "react-bootstrap";
 import {Fetch} from "../../../helpers/api/FetchHelper";
 import {CanvasHelper} from "../../../helpers/CanvasHelper";
 import {LabeledInput} from "../../input/LabeledInput";
 
+interface CanvasCourse {
+    id: string,
+    name: string
+}
 
 interface IStateCanvasCourseList {
     enabled: boolean,
-    data: any
+    data: CanvasCourse[] | null,
     onLinkCanvasCourse: (selectedCourseId: string) => void,
     selectedCourseId: string
 }
@@ -15,6 +19,7 @@ interface IStateCanvasCourseList {
 interface IPropsCanvasCourseList {
     onLinkCanvasCourse: (selectedCourseId: string) => void
 }
+
 export default class CanvasCourseList extends React.Component<IPropsCanvasCourseList, IStateCanvasCourseList> {
 
     constructor(props: IPropsCanvasCourseList) {
@@ -31,7 +36,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
     loadCourses() {
         if (this.state.enabled) {
             Fetch.fetch("/api/canvas/courses")
-                .then(async res => res.json())
+                .then(async res => await res.json() as CanvasCourse[])
                 .then(res => this.setState({ data: res }));
         }
     }
@@ -47,7 +52,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
         }
 
     }
-    handleSelect = (event: any) => {
+    handleSelect = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({ selectedCourseId: event.target.value });
     }
 

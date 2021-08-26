@@ -1,3 +1,5 @@
+// The Canvas API uses snake_case everywhere, so for consistency with that we'll
+// allow sake_case in this file
 /* eslint-disable camelcase */
 
 import { UserDB } from "../database/UserDB";
@@ -16,14 +18,19 @@ export class IntegrationNotEnabledError extends Error {
     }
 }
 
+export interface CanvasUser {
+    name: string
+    email?: string
+}
+
 function canvasConfig() {
     const cnv = config.canvas;
     if (cnv === undefined) throw new IntegrationNotEnabledError("Canvas");
     return {
-        canvas_url_root: cnv.canvas_url_root,
+        canvas_url_root: cnv.baseUrl,
         redirect_uri: config.baseUrl + "/api/canvas/oauth_complete",
-        client_id: cnv.client_id,
-        client_secret: cnv.client_secret
+        client_id: cnv.clientId,
+        client_secret: cnv.clientSecret
     };
 }
 
@@ -75,13 +82,13 @@ export async function getCourses(access_token: string) {
 export async function getCourseUsersTAs(course_id: string, access_token: string) {
     const { canvas_url_root } = canvasConfig();
     const url = `${canvas_url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=ta&per_page=${100}`;
-    return await handlePagination(url);
+    return await handlePagination<CanvasUser>(url);
 }
 
 export async function getCourseUsersStudents(course_id: string, access_token: string) {
     const { canvas_url_root } = canvasConfig();
     const url = `${canvas_url_root}/api/v1/courses/${course_id}/users?access_token=${access_token}&enrollment_type[]=student&per_page=${100}`;
-    return await handlePagination(url);
+    return await handlePagination<CanvasUser>(url);
 }
 
 

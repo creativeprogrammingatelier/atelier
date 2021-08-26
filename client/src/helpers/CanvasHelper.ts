@@ -14,14 +14,12 @@ export class CanvasHelper {
         return response;
     }
 
-    static async getLinked(){
-        const response = await Fetch.fetch("/api/canvas/linked");
-        return response.json();
+    static async getLinked() {
+        return Fetch.fetchJson<{ linked: boolean }>("/api/canvas/linked");
     }
 
-    static async createLink(){
-        const response = await Fetch.fetch("/api/canvas/link", {redirect: "follow"});
-        return response.json();
+    static async createLink() {
+        return Fetch.fetchJson<{ redirect: string }>("/api/canvas/link", {redirect: "follow"});
     }
 
 }

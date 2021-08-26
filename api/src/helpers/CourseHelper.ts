@@ -1,41 +1,47 @@
 import { CoursePartial } from "../../../models/api/Course";
+import { User } from "../../../models/api/User";
 import { CourseRole } from "../../../models/enums/CourseRoleEnum";
 import { GlobalRole } from "../../../models/enums/GlobalRoleEnum";
 import { CourseRegistrationDB } from "../database/CourseRegistrationDB";
+import { NotFoundDatabaseError } from "../database/DatabaseErrors";
 import { pgDB } from "../database/HelperDB";
 import { UserDB } from "../database/UserDB";
+import { CanvasUser } from "./CanvasHelper";
 
-
-
-export async function addUsersFromCanvas(users: any[], client: pgDB, courseRole: CourseRole, course: CoursePartial){
-
+export async function addUsersFromCanvas(
+    users: CanvasUser[],
+    client: pgDB,
+    courseRole: CourseRole,
+    course: CoursePartial
+){
     for (const user of users){
-        try {
-            const userDB: any  = await UserDB.getUserByEmail(user.email, client);
-            console.log(userDB);
-            if (userDB != undefined){
-                await CourseRegistrationDB.addEntry({
-                    courseID: course.ID,
-                    userID: userDB.ID,
-                    courseRole: courseRole,
-                    client
-                });
-            } else if ( user.email != undefined ) {
-                // TODO: This never happens, userDB will never be undefined, instead an exception will be thrown
-                const createdUser: any = await UserDB.createUser({ userName: user.name, email: user.email, password: UserDB.invalidPassword(), globalRole: GlobalRole.user, client: client });
-                await CourseRegistrationDB.addEntry({
-                    courseID: course.ID,
-                    userID: createdUser.ID,
-                    courseRole: courseRole,
-                    client
-                });
-            } else {
-                console.log("No email found for user cannot link: ", user.name);
-            }
-        } catch (e) {
-            console.log("No email found for user cannot link: ", user.name);
-            console.log(e);
+        if (user.email === undefined) {
+            console.log(`[Canvas import] Received no email for user ${user.name}.`);
+            continue;
         }
 
+        let userDB: User;
+        try {
+            userDB = await UserDB.getUserByEmail(user.email, client);
+        } catch (e) {
+            if (e instanceof NotFoundDatabaseError) {
+                userDB = await UserDB.createUser({
+                    userName: user.name,
+                    email: user.email,
+                    password: UserDB.invalidPassword(),
+                    globalRole: GlobalRole.user,
+                    client: client
+                });
+            } else {
+                throw e;
+            }
+        }
+
+        await CourseRegistrationDB.addEntry({
+            courseID: course.ID,
+            userID: userDB.ID,
+            courseRole: courseRole,
+            client
+        });
     }
 }

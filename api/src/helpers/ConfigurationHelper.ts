@@ -46,10 +46,10 @@ export interface Configuration {
     },
     /** Canvas API integration connection information, or undefined if the integration is not enabled */
     canvas: {
-        client_id: string,
-        client_secret: string,
+        clientId: string,
+        clientSecret: string,
         /** Base URL of the Canvas instance */
-        canvas_url_root: string
+        baseUrl: string
     } | undefined
 }
 
@@ -177,11 +177,11 @@ export const config: Configuration = {
         }
     },
     canvas:
-            json.canvas ? {
-                client_id: prop("canvas.client_id", json.canvas.client_id),
-                client_secret: prop("canvas.client_secret", json.canvas.client_secret),
-                canvas_url_root: prop("canvas.canvas_url_root", json.canvas.canvas_url_root)
-            } : undefined
+        json.canvas ? {
+            clientId: prop("canvas.clientId", json.canvas.clientId),
+            clientSecret: prop("canvas.clientSecret", json.canvas.clientSecret),
+            baseUrl: prop("canvas.baseUrl", json.canvas.baseUrl)
+        } : undefined
 };
 
 // Configuration is immutable

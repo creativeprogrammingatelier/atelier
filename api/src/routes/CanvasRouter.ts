@@ -8,33 +8,35 @@ import { isCanvasIntegrationEnabled, createRefreshToken, deleteCanvasLink, getAc
 export const canvasRouter = express.Router();
 canvasRouter.use(AuthMiddleware.requireAuth);
 
+// eslint-disable-next-line @typescript-eslint/require-await
 canvasRouter.get("/enabled", capture(async (request: Request, response: Response) => {
     response.json({ enabled: isCanvasIntegrationEnabled() });
 }));
 
 canvasRouter.get("/linked", capture(async (request: Request, response: Response) => {
-    const refresh_token = await getRefreshToken(request);
-    const linked: boolean = (refresh_token != null && refresh_token != "");
+    const refreshToken = await getRefreshToken(request);
+    const linked: boolean = (refreshToken != null && refreshToken !== "");
     response.json({ linked: linked });
 }));
 
 canvasRouter.delete("/link", capture(async (request: Request, response: Response) => {
-    const userID: string = await getCurrentUserID(request);
-    const access_token = await getAccessToken(await getRefreshToken(request));
+    const userID = await getCurrentUserID(request);
+    const accessToken = await getAccessToken(await getRefreshToken(request));
     const newUser = { userID: userID, canvasrefresh: "" };
     await UserDB.updateUser(newUser);
-    deleteCanvasLink(access_token);
+    deleteCanvasLink(accessToken);
     response.status(200).send();
 }));
 
+// eslint-disable-next-line @typescript-eslint/require-await
 canvasRouter.get("/link", capture(async (request: Request, response: Response) => {
     response.json(setUpCanvasLinkJson());
 }));
 
 canvasRouter.get("/oauth_complete", capture(async (request: Request, response: Response) => {
-    const refresh_token: string = await createRefreshToken(request);
-    const userID: string = await getCurrentUserID(request);
-    const newUser = { userID: userID, canvasrefresh: refresh_token };
+    const refreshToken = await createRefreshToken(request);
+    const userID = await getCurrentUserID(request);
+    const newUser = { userID: userID, canvasrefresh: refreshToken };
     await UserDB.updateUser(newUser);
     response.redirect("/account");
 }));
