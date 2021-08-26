@@ -44,7 +44,6 @@ jobs:
       - run: npm ci
         # Run ESLint
       - run: npm run lint-nowarn
-        continue-on-error: true
         # Compile the backend
       - run: npm run compile
         # Compile the frontend
