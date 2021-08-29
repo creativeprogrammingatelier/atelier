@@ -4,7 +4,7 @@ import chaiAsPromised from "chai-as-promised";
 import "mocha";
 import {Response as FetchResponse} from "node-fetch";
 
-import {Fetch} from "../../client/src/helpers/api/FetchHelper";
+import {Fetch, FetchError, JsonFetchError} from "../../client/src/helpers/api/FetchHelper";
 
 chai.use(chaiSpies);
 chai.use(chaiAsPromised);
@@ -23,11 +23,11 @@ describe("FetchHelper.fetch", () => {
         await Fetch.fetch(url);
         expect(g.fetch).to.have.been.called.once.with(url);
     });
-    // TODO [TEST]: Fails (probably chai broke again with async things)
-    // it('should throw on status 401', () => {
-    //   g.fetch = fetchSpy({}, 401);
-    //   expect(Fetch.fetch(url)).to.eventually.throw(FetchError);
-    // });
+
+    it("should throw on status 401", () => {
+        g.fetch = fetchSpy({}, 401);
+        return expect(Fetch.fetch(url)).to.eventually.be.rejectedWith(FetchError);
+    });
 });
 
 describe("FetchHelper.fetchJson", () => {
@@ -37,10 +37,10 @@ describe("FetchHelper.fetchJson", () => {
         const res = await Fetch.fetchJson(url);
         expect(res).to.deep.equal(obj);
     });
-    // TODO [TEST]: Fails
-    // it('should throw on status 401', () => {
-    //   const err = {error: 'token.expired', message: 'Your token has expired.'};
-    //   g.fetch = fetchSpy(err, 401);
-    //   expect(Fetch.fetchJson(url)).to.eventually.throw(JsonFetchError, err.message);
-    // });
+
+    it("should throw on status 401", () => {
+        const err = {error: "token.expired", message: "Your token has expired."};
+        g.fetch = fetchSpy(err, 401);
+        return expect(Fetch.fetchJson(url)).to.eventually.be.rejectedWith(JsonFetchError, err.message);
+    });
 });
