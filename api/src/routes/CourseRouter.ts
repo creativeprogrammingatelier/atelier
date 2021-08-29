@@ -85,7 +85,7 @@ courseRouter.get("/:courseID", capture(async (request: Request, response: Respon
 interface CreateCourseBody {
     name: string,
     state: CourseState,
-    canvasCourseId: string
+    canvasCourseId?: string
 }
 
 /**
@@ -128,7 +128,7 @@ courseRouter.post("/", capture(async (request: RequestB<CreateCourseBody>, respo
     /**
      * Adds all users in canvas linked course
      * */
-    if (canvasCourseID !== ""){
+    if (canvasCourseID){
         const students = await getCourseUsersStudents(
             canvasCourseID,
             await getAccessToken(await getRefreshToken(request))
