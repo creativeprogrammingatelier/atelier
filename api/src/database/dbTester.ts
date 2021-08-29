@@ -366,6 +366,8 @@ if (require.main === module) {
     (async() => {
         // await makeDB(()=>{console.log("fin")}, console.error)
         await main();
-        end();
-    })();
+        await end();
+    })().catch(err =>
+        console.error("An error occured in the database tests:", err)
+    );
 }
