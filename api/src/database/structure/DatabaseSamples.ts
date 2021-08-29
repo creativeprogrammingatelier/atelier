@@ -185,7 +185,7 @@ all @teachers in one go!'),
         (${uuid2}, ${uuid2}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Bad names'),
         (${uuid3}, ${uuid3}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'All these names are totally incomprehensible to anyone, horrible to do this!'),
           (${uuid4}, ${uuid4}, (SELECT userID from "Users" WHERE samlID='samling_teacher'), DEFAULT, DEFAULT, 'Youre missing some planets, Pluto example'),
-          (${uuid5}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is a comment about nothing at all..');
+          (${uuid5}, ${uuid5}, ${uuid0}, DEFAULT, DEFAULT, 'This is a comment about nothing at all..');
 
           INSERT INTO "Mentions" VALUES
                (${uuid0}, ${uuid0}, (SELECT userID FROM "Users" WHERE samlid='samling_TA'), null),
