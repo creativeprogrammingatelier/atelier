@@ -6,7 +6,7 @@ import {User} from "../../../models/database/User";
 import {PermissionEnum} from "../../../models/enums/PermissionEnum";
 import {Sorting} from "../../../models/enums/SortingEnum";
 
-import {removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets, removePermissionsSubmission} from "../helpers/APIFilterHelper";
+import {removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets, removePermissionsSubmission, removePermissionsUser} from "../helpers/APIFilterHelper";
 import {getCurrentUserID} from "../helpers/AuthenticationHelper";
 import {capture} from "../helpers/ErrorHelper";
 import {PermissionError, requirePermissions, requireRegistered} from "../helpers/PermissionHelper";
@@ -63,7 +63,15 @@ async function getSearchParams(request: Request): Promise<{query: string, common
 }
 async function filterUser(query: string, common: Common) {
     try {
-        await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles], common.courseID);
+        if (!common.courseID) {
+            // If we are not in a course, you need permissions to view all the user profiles
+            await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles]);
+        } else {
+            // In a course, everyone should be able to search for other users, even if they don't have
+            // the viewAllUserProfiles permission, because they should be able to mention all users.
+            // Actually viewing the user profile does require the permission, but listing users does not.
+            await requireRegistered(common.currentUserID, common.courseID);
+        }
     } catch (e) {
         // This operation is not permitted. return an empty array.
         if (e instanceof PermissionError) {
@@ -73,9 +81,10 @@ async function filterUser(query: string, common: Common) {
         }
     }
     const user: User = {...common, userName: query};
-    return common.courseID
-        ? CourseRegistrationDB.filterCourseUser(user).then(map(CourseUserToUser))
-        : UserDB.filterUser(user);
+    const result = common.courseID
+        ? await CourseRegistrationDB.filterCourseUser(user).then(map(CourseUserToUser))
+        : await UserDB.filterUser(user);
+    return result.map(removePermissionsUser);
 }
 
 /** Generic search */
