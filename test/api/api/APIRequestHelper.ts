@@ -264,13 +264,13 @@ export const setPermissionsCourse = (permissions: Permissions) => chai.request(a
     .set({'Authorization': USER_AUTHORIZATION_KEY, 'Content-Type': 'application/json'});
 
 /** Admin requests */
-export const adminRegisterCourse = () => chai.request(app)
-    .put(`/api/course/${COURSE_ID}/user/${USER_ID}/role/student`)
-    .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
-export const adminUnregisterCourse = (course = COURSE_ID) => chai.request(app)
-    .delete(`/api/course/${course}/user/${USER_ID}`)
-    .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
-export const adminCoursesToUnregister = () => chai.request(app)
+export const adminRegisterCourse = async (user = USER_ID) => chai.request(app)
+    .put(`/api/course/${COURSE_ID}/user/${user}/role/student`)
+    .set({"Authorization": ADMIN_AUTHORIZATION_KEY});
+export const adminUnregisterCourse = async (course = COURSE_ID, user = USER_ID) => chai.request(app)
+    .delete(`/api/course/${course}/user/${user}`)
+    .set({"Authorization": ADMIN_AUTHORIZATION_KEY});
+export const adminCoursesToUnregister = async () => chai.request(app)
     .get(`/api/course/user/${USER_ID}`)
     .set({'Authorization': ADMIN_AUTHORIZATION_KEY});
 export const adminSetPermissions = (permissions: Permissions) => chai.request(app)
