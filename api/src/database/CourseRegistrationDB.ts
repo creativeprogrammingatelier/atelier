@@ -81,27 +81,31 @@ export class CourseRegistrationDB {
       globalRole = undefined,
       courseRole = undefined,
       permission = undefined,
-
-      registeredOnly = true,
-      client = pool,
+        registeredOnly = true,
+        client = pool,
+        limit,
+        offset
     } = registration;
-    const userid = UUIDHelper.toUUID(userID);
-    const courseid = UUIDHelper.toUUID(courseID);
-    const searchName = searchify(userName);
+    const userid = UUIDHelper.toUUID(userID),
+        courseid = UUIDHelper.toUUID(courseID),
+        searchName = searchify(userName);
     return client.query(`
-			SELECT *
-			FROM "${registeredOnly ? 'CourseUsersView' : 'CourseUsersViewAll'}"
-			WHERE
-				($1::uuid IS NULL OR userID = $1)
-			AND ($2::uuid IS NULL OR courseID = $2)
-			AND ($3::text IS NULL OR userName ILIKE $3)
-			AND ($4::text IS NULL OR email =$4)
-			AND ($5::text IS NULL OR globalRole =$5)
-			AND ($6::text IS NULL OR courseRole =$6)
-			AND ($7::bit(${permissionBits}) IS NULL OR (permission & $7) = $7)
-		`, [userid, courseid, searchName, email, globalRole, courseRole, toBin(permission)])
+        SELECT *
+        FROM "${registeredOnly ? "CourseUsersView" : "CourseUsersViewAll"}"
+        WHERE
+            ($1::uuid IS NULL OR userID = $1)
+        AND ($2::uuid IS NULL OR courseID = $2)
+        AND ($3::text IS NULL OR userName ILIKE $3)
+        AND ($4::text IS NULL OR email =$4)
+        AND ($5::text IS NULL OR globalRole =$5)
+        AND ($6::text IS NULL OR courseRole =$6)
+        AND ($7::bit(${permissionBits}) IS NULL OR (permission & $7) = $7)
+        ORDER BY userName, email --email is unique, so unique ordering
+        LIMIT $8
+        OFFSET $9
+    `, [userid, courseid, searchName, email, globalRole, courseRole, toBin(permission), limit, offset])
         .then(extract).then(map(CourseUserToAPI));
-  }
+    }
 
   /**
 	 * return all entries in this table, with permissions set correctly
