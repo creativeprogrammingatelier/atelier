@@ -83,7 +83,9 @@ export class CourseRegistrationDB {
             permission = undefined,
 
             registeredOnly = true,
-            client = pool
+            client = pool,
+            limit,
+            offset
         } = registration;
         const userid = UUIDHelper.toUUID(userID),
             courseid = UUIDHelper.toUUID(courseID),
@@ -99,7 +101,10 @@ export class CourseRegistrationDB {
             AND ($5::text IS NULL OR globalRole =$5)
             AND ($6::text IS NULL OR courseRole =$6)
             AND ($7::bit(${permissionBits}) IS NULL OR (permission & $7) = $7)
-        `, [userid, courseid, searchName, email, globalRole, courseRole, toBin(permission)])
+            ORDER BY userName, email --email is unique, so unique ordering
+            LIMIT $8
+            OFFSET $9
+        `, [userid, courseid, searchName, email, globalRole, courseRole, toBin(permission), limit, offset])
             .then(extract).then(map(CourseUserToAPI));
     }
 
