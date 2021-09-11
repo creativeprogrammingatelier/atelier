@@ -4,6 +4,7 @@ import {Course} from "../../../../models/api/Course";
 import {SearchResult, SearchResultFile, SearchResultComment, SearchResultSnippet} from "../../../../models/api/SearchResult";
 import {Submission} from "../../../../models/api/Submission";
 import {User} from "../../../../models/api/User";
+import {UserDB} from "../../../../api/src/database/UserDB";
 
 import {
     instanceOfUser,
@@ -23,7 +24,8 @@ import {
     getFileSearch,
     getSnippetSearch,
     adminRegisterCourse,
-    SearchParameters
+    SearchParameters,
+    USER_ID
 } from "../APIRequestHelper";
 
 export function searchTest() {
@@ -137,6 +139,15 @@ export function searchTest() {
             expect(result.files).length.to.be.below(2);
             expect(result.courses.length).to.be.below(2);
             expect(result.comments.length).to.be.below(2);
+        });
+
+        it("should be possible to search for users in a course as a student", async() => {
+            // Find some other user and register them too
+            const otherUser = (await UserDB.filterUser({limit: 2})).find(u => u.ID !== USER_ID);
+            await adminRegisterCourse(otherUser?.ID);
+
+            const result = await fetchUser({query: "s", courseID: true});
+            expect(result.length).to.be.above(0);
         });
 
         it("should be possible to search within a user", async() => {
