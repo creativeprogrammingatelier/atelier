@@ -94,8 +94,8 @@ jobs:
 
     # Only run after build_test ran succesfully
     needs: build_test
-    # Only run on the master branch
-    if: ${{ github.ref == 'refs/heads/master' }}
+    # Only run on the master and rc branches
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' }}
 
     steps:
         # Check out the repository in the $GITHUB_WORKSPACE folder
@@ -103,6 +103,13 @@ jobs:
         # Get the short hash for the current commit (to use later)
       - id: git_sha
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        # Get the tag to use for the Docker image, depending on which branch we're on
+      - id: image_tag
+        run: |
+          if [ ${{ github.ref }} == "refs/heads/master" ]
+          then echo "::set-output name=tag::latest"
+          else echo "::set-output name=tag::rc"
+          fi
         # Login to the GitHub Container Registry, so that we can push the image
       - name: Login to ghcr
         uses: docker/login-action@v1
@@ -118,5 +125,5 @@ jobs:
           push: true # Push the image after building
           # Push to the latest tag and to a tag that is the commit hash
           tags: |
-            ghcr.io/creativeprogrammingatelier/atelier:latest
+            ghcr.io/creativeprogrammingatelier/atelier:${{ steps.image_tag.outputs.tag }}
             ghcr.io/creativeprogrammingatelier/atelier:${{ steps.git_sha.outputs.sha_short }}
