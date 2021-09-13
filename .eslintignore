@@ -3,3 +3,8 @@
 *.json
 *.pub
 *.key
+
+build/
+docs/typedoc/
+node_modules/
+uploads/

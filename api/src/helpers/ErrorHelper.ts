@@ -1,4 +1,4 @@
-import {Request, Response, RequestHandler, NextFunction} from 'express';
+import {Request, Response, RequestHandler, NextFunction} from "express";
 
 /**
  * Catches promise rejections and errors thrown in a request handler and handles them with the next function.
@@ -17,16 +17,18 @@ import {Request, Response, RequestHandler, NextFunction} from 'express';
  * });
  */
 export function capture<T>(func: (request: Request, response: Response) => Promise<T>): RequestHandler {
-  return captureNext((request, response, _next) => func(request, response));
+    return captureNext(async (request, response, _next) => func(request, response));
 }
 
 /** Does the same as `capture` for handlers using the `next` function */
-export function captureNext<T>(func: (request: Request, response: Response, next: NextFunction) => Promise<T>): RequestHandler {
-  return async (request, response, next) => {
-    try {
-      return await func(request, response, next);
-    } catch (err) {
-      next(err);
-    }
-  };
+export function captureNext<T>(
+    func: (request: Request, response: Response, next: NextFunction) => Promise<T>
+): RequestHandler {
+    return async(request, response, next) => {
+        try {
+            return await func(request, response, next);
+        } catch (err) {
+            next(err);
+        }
+    };
 }

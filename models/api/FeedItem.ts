@@ -1,7 +1,7 @@
-import { Submission } from "./Submission";
-import { Mention } from "./Mention";
-import { CommentThread } from "./CommentThread";
-import { Comment } from "./Comment";
+import {Submission} from "./Submission";
+import {Mention} from "./Mention";
+import {CommentThread} from "./CommentThread";
+import {Comment} from "./Comment";
 
 export type FeedItem =
     { ID: string; timestamp: string } & (

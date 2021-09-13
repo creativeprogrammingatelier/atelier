@@ -1,4 +1,4 @@
-import { DBTools, checkAvailable } from "../../api/src/database/HelperDB";
+import {DBTools, checkAvailable} from "../../api/src/database/HelperDB";
 
 export interface Metadata extends DBTools {
     key?: string,

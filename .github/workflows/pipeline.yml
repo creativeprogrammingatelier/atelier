@@ -43,8 +43,7 @@ jobs:
         # Restore all dependencies (ci is the install command recommended for CI environments)
       - run: npm ci
         # Run ESLint
-      - run: npx eslint "api/**" "client/**" "helpers/**" "test/**" --quiet
-        continue-on-error: true
+      - run: npm run lint-nowarn
         # Compile the backend
       - run: npm run compile
         # Compile the frontend

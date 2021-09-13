@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import '../styles/announce.scss';
+import "../styles/announce.scss";
 
 interface AnnouncementProperties {
     /** Message to be displayed by announcement. */
@@ -11,9 +11,9 @@ interface AnnouncementProperties {
  *  a stylized way on the page, rather then using paragraphs.
  */
 export function Announcement({msg}: AnnouncementProperties) {
-  return (
-    <div className="announcement">
-      <h5 className="announce-message"><em>{msg}</em></h5>
-    </div>
-  );
+    return (
+        <div className="announcement">
+            <h5 className="announce-message"><em>{msg}</em></h5>
+        </div>
+    );
 }

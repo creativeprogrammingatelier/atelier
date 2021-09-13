@@ -1,6 +1,8 @@
-const webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports */
+
+const webpack = require("webpack");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     mode: "production",
@@ -16,44 +18,44 @@ module.exports = {
     },
     entry: "main.js",
     output: {
-		path: __dirname + "/build/client",
+        path: __dirname + "/build/client",
     },
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "Atelier",
-            template: 'client/index.html',
+            template: "client/index.html",
             files: {
-                main:{
+                main: {
                     entry: "main.js"
                 }
             }
-            
+
         }),
         new webpack.ProvidePlugin({
             "React": "react",
-            'ReactDOM':   'react-dom',
+            "ReactDOM": "react-dom",
         }),
     ],
     module: {
         rules: [{
-                test: /\.ts(x?)$/,
-                exclude: /node_modules/,
-                use: [{
-                    loader: "ts-loader"
-                }]
-            },
-            {
-                test: /\.(js|jsx) $/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader"
-                }
-            },
-            {
-                test: /\.(s*)css$/i,
-                use: ['style-loader', 'css-loader', 'sass-loader'],
-            },
+            test: /\.ts(x?)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: "ts-loader"
+            }]
+        },
+        {
+            test: /\.(js|jsx) $/,
+            exclude: /node_modules/,
+            use: {
+                loader: "babel-loader"
+            }
+        },
+        {
+            test: /\.(s*)css$/i,
+            use: ["style-loader", "css-loader", "sass-loader"],
+        },
         ],
 
     },

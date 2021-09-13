@@ -5,8 +5,10 @@
         "node": true
     },
     "extends": [
+        "eslint:recommended",
         "plugin:react/recommended",
-        "google"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -14,20 +16,135 @@
             "jsx": true
         },
         "ecmaVersion": 12,
-        "sourceType": "module"
+        "sourceType": "module",
+        "tsconfigRootDir": ".",
+        "project": [ "./tsconfig.json", "./client/tsconfig.json" ]
     },
     "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "unused-imports"
     ],
     "rules": {
-        "max-len" : "warn",
-        "no-tabs": "warn",
-        "no-mixed-spaces-and-tabs": "warn",
-        "valid-jsdoc": "warn",
-        "require-jsdoc": "warn",
-        "linebreak-style": "off"
+        // Imports
+        "unused-imports/no-unused-imports": "warn",
+        "no-duplicate-imports": "error",
+        "@typescript-eslint/no-require-imports": "error",
 
+        // Variables
+        "@typescript-eslint/no-unused-vars": "off",
+        "unused-imports/no-unused-vars": [
+            "warn",
+            { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
+        ],
+        "no-var": "error",
+        "prefer-const": "warn",
+
+        // Operators
+        "no-mixed-operators": "warn",
+        "eqeqeq": [
+            "error",
+            "smart"
+        ],
+
+        // Logic
+        "no-lonely-if": "error",
+        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
+
+        // More concise/expressive alternatives
+        "@typescript-eslint/prefer-for-of": "warn",
+        "@typescript-eslint/prefer-includes": "warn",
+        "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+
+        // Likely errors
+        "@typescript-eslint/promise-function-async": "error",
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+
+        // Typing
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+
+        // Style - Naming
+        "camelcase": [
+            "error",
+            {
+                "ignoreDestructuring": true,
+                "ignoreImports": true,
+                "ignoreGlobals": true
+            }
+        ],
+        "new-cap": [
+            "error",
+            { "capIsNewExceptions": ["Router", "IdentityProvider", "ServiceProvider"] }
+        ],
+
+        // Style - File spacing (also set in .editorconfig)
+        "indent": [
+            "error",
+            4
+        ],
+        "no-trailing-spaces": "warn",
+        "eol-last": "warn",
+
+        "max-len": [
+            "warn",
+            {
+                "code": 120,
+                "ignoreTrailingComments": true,
+                "ignoreUrls": true,
+                "ignoreStrings": true,
+                "ignoreTemplateLiterals": true,
+                "ignoreRegExpLiterals": true
+            }
+        ],
+
+        // Style - Semicolons
+        "semi": [
+            "error",
+            "always"
+        ],
+        "semi-style": "error",
+        "semi-spacing": "error",
+
+        // Style - Commas
+        "comma-spacing": "error",
+        "comma-style": "error",
+
+        // Style - General spacing
+        "key-spacing": "error",
+        "object-curly-spacing": "error",
+        "array-bracket-spacing": "error",
+        "keyword-spacing": "error",
+        "func-call-spacing": "error",
+        "arrow-spacing": "error",
+        "@typescript-eslint/type-annotation-spacing": "error",
+
+        // Style - Braces and parentheses
+        "brace-style": [
+            "error",
+            "1tbs",
+            { "allowSingleLine": true }
+        ],
+        "arrow-parens": [
+            "error",
+            "as-needed"
+        ],
+        "arrow-body-style": [
+            "error",
+            "as-needed"
+        ],
+
+        // Style - Strings
+        "quotes": [
+            "error",
+            "double",
+            { "avoidEscape": true }
+        ],
+
+        // TODO - This rule should become an error, but doesn't have a quick fix.
+        // This is actually a serious problem: there are unhandled errors,
+        // but it takes some changes in the component structure to fully fix it.
+        // Consider this an error when working on new components.
+        "@typescript-eslint/no-floating-promises": "warn"
     },
     "settings": {
         "react": {

@@ -27,9 +27,11 @@ The [README](/README.md) contains information about the tools needed to run Atel
 
 ### Coding styles
 
-We use ESLint to enforce some coding style rules. Please look at how other code is written and try to make your code fit in. Consistency is [not](https://blog.ploeh.dk/2021/05/17/against-consistency/) the most important thing in the world, so if you have a good reason to do something in a different way than in the rest of the codebase, please do so. In the absence of good reasons, try to make your code fit in with the rest.
+We use ESLint to enforce some coding style rules, so please make sure to use an editor with integrated ESLint support, or be sure to regularly run the `npm run lint` command while developing. ESLint is also integrated in the CI pipeline, so it will also be checked as part of the pull request process.
 
-As for the style of working with Git: 
+With regards to style: please look at how other code is written and try to make your code fit in. Consistency is [not](https://blog.ploeh.dk/2021/05/17/against-consistency/) the most important thing in the world, so if you have a good reason to do something in a different way than in the rest of the codebase, please do so. In the absence of good reasons, try to make your code fit in with the rest.
+
+As for the style of working with Git:
 
 - Make small commits that change one thing. If you can't fit the title of your commit message in 72 characters, or it requires use of the word 'and' to describe the changes, the commit is probably too large. You can only add some files to the commit using `git add path/to/some/file` before committing. If you made multiple changes to the same file, use [`git add -p path/to/some/file`](https://stackoverflow.com/a/1085191) (or `git add -i` for the interactive adding mode) to add only some parts of a file to the commit.
 - Keep the commit title less than 72 characters. If you feel the need to explain yourself (or write an essay), you may do so in the message body, but make sure that the title gives a clear idea of what the commit does.
