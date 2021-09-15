@@ -1,27 +1,27 @@
-import express, {Request} from 'express';
+import express, {Request} from "express";
 
-import {SearchResult} from '../../../models/api/SearchResult';
-import {CourseUserToUser} from '../../../models/database/CourseUser';
-import {User} from '../../../models/database/User';
-import {PermissionEnum} from '../../../models/enums/PermissionEnum';
-import {Sorting} from '../../../models/enums/SortingEnum';
+import {SearchResult} from "../../../models/api/SearchResult";
+import {CourseUserToUser} from "../../../models/database/CourseUser";
+import {User} from "../../../models/database/User";
+import {PermissionEnum} from "../../../models/enums/PermissionEnum";
+import {Sorting} from "../../../models/enums/SortingEnum";
 
-import {removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets, removePermissionsSubmission} from '../helpers/APIFilterHelper';
-import {getCurrentUserID} from '../helpers/AuthenticationHelper';
-import {capture} from '../helpers/ErrorHelper';
-import {PermissionError, requirePermissions, requireRegistered} from '../helpers/PermissionHelper';
-import {getCommonQueryParams, InvalidParamsError} from '../helpers/ParamsHelper';
+import {removePermissionsCoursePartial, removePermissionsSearchResultComments, removePermissionsSearchResultSnippets, removePermissionsSubmission, removePermissionsUser} from "../helpers/APIFilterHelper";
+import {getCurrentUserID} from "../helpers/AuthenticationHelper";
+import {capture} from "../helpers/ErrorHelper";
+import {PermissionError, requirePermissions, requireRegistered} from "../helpers/PermissionHelper";
+import {getCommonQueryParams, InvalidParamsError} from "../helpers/ParamsHelper";
 
-import {CourseDB} from '../database/CourseDB';
-import {CourseRegistrationDB} from '../database/CourseRegistrationDB';
-import {CommentDB} from '../database/CommentDB';
-import {FileDB} from '../database/FileDB';
-import {map} from '../database/HelperDB';
-import {SnippetDB} from '../database/SnippetDB';
-import {SubmissionDB} from '../database/SubmissionDB';
-import {UserDB} from '../database/UserDB';
-import {AuthMiddleware} from '../middleware/AuthMiddleware';
-import {TagsDB} from '../database/TagsDB';
+import {CourseDB} from "../database/CourseDB";
+import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
+import {CommentDB} from "../database/CommentDB";
+import {FileDB} from "../database/FileDB";
+import {map} from "../database/HelperDB";
+import {SnippetDB} from "../database/SnippetDB";
+import {SubmissionDB} from "../database/SubmissionDB";
+import {UserDB} from "../database/UserDB";
+import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {TagsDB} from "../database/TagsDB";
 /**
  * Routes for searching.
  * All routes accept these query parameters:
@@ -62,20 +62,29 @@ async function getSearchParams(request: Request): Promise<{query: string, common
   return {query, common: {...common, courseID, userID, submissionID, currentUserID}};
 }
 async function filterUser(query: string, common: Common) {
-  try {
-    await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles], common.courseID);
-  } catch (e) {
-    // This operation is not permitted. return an empty array.
-    if (e instanceof PermissionError) {
-      return [];
-    } else {
-      throw e;
+    try {
+        if (!common.courseID) {
+            // If we are not in a course, you need permissions to view all the user profiles
+            await requirePermissions(common.currentUserID, [PermissionEnum.viewAllUserProfiles]);
+        } else {
+            // In a course, everyone should be able to search for other users, even if they don't have
+            // the viewAllUserProfiles permission, because they should be able to mention all users.
+            // Actually viewing the user profile does require the permission, but listing users does not.
+            await requireRegistered(common.currentUserID, common.courseID);
+        }
+    } catch (e) {
+        // This operation is not permitted. return an empty array.
+        if (e instanceof PermissionError) {
+            return [];
+        } else {
+            throw e;
+        }
     }
-  }
-  const user: User = {...common, userName: query};
-  return common.courseID ?
-		CourseRegistrationDB.filterCourseUser(user).then(map(CourseUserToUser)) :
-		UserDB.filterUser(user);
+    const user: User = {...common, userName: query};
+    const result = common.courseID
+        ? await CourseRegistrationDB.filterCourseUser(user).then(map(CourseUserToUser))
+        : await UserDB.filterUser(user);
+    return result.map(removePermissionsUser);
 }
 
 /** Generic search */

@@ -1,9 +1,10 @@
-import {deepStrictEqual, equal} from 'assert';
-import {expect, assert} from 'chai';
-import {Course} from '../../../../models/api/Course';
-import {SearchResult, SearchResultFile, SearchResultComment, SearchResultSnippet} from '../../../../models/api/SearchResult';
-import {Submission} from '../../../../models/api/Submission';
-import {User} from '../../../../models/api/User';
+import {deepStrictEqual, equal} from "assert";
+import {expect, assert} from "chai";
+import {Course} from "../../../../models/api/Course";
+import {SearchResult, SearchResultFile, SearchResultComment, SearchResultSnippet} from "../../../../models/api/SearchResult";
+import {Submission} from "../../../../models/api/Submission";
+import {User} from "../../../../models/api/User";
+import {UserDB} from "../../../../api/src/database/UserDB";
 
 import {
   instanceOfUser,
@@ -15,46 +16,47 @@ import {
   instanceOfSearchSnippet,
 } from '../../../InstanceOf';
 import {
-  getAllSearch,
-  getUserSearch,
-  getCourseSearch,
-  getSubmissionSearch,
-  getThreadSearch,
-  getFileSearch,
-  getSnippetSearch,
-  adminRegisterCourse,
-  SearchParameters,
-} from '../APIRequestHelper';
+    getAllSearch,
+    getUserSearch,
+    getCourseSearch,
+    getSubmissionSearch,
+    getThreadSearch,
+    getFileSearch,
+    getSnippetSearch,
+    adminRegisterCourse,
+    SearchParameters,
+    USER_ID
+} from "../APIRequestHelper";
 
 export function searchTest() {
-  /**
-	 * GET requests: @TODO
-	 * /api/search?q={string}[&limit={number}][&offset={number}][&courseID={id}]
-	 * - response should be {large object}
-	 * - when Q is not given: bad request
-	 * - when limit is given: all entries limited to that amount.
-	 * - when offset is given, receive a later part of the list.
-	 * - when course is given, allow items from within a course (submission, snippet, file, comment)
-	 * - when course is not given, allow course
-	 * - when having adequate permissions, receive a list of all users.
-	 * /api/search/courses? ...
-	 *
-	 * /api/search/users? ...
-	 *
-	 * /api/search/comments? ...
-	 *
-	 * /api/search/snippets? ...
-	 *
-	 * /api/search/submissions? ...
-	 *
-	 * /api/search/files? ...
-	 *
-	 *
-	 */
-  describe('Search', () => {
-    beforeEach(async () => {
-      await adminRegisterCourse();
-    });
+    /**
+     * GET requests: @TODO
+     * /api/search?q={string}[&limit={number}][&offset={number}][&courseID={id}]
+     * - response should be {large object}
+     * - when Q is not given: bad request
+     * - when limit is given: all entries limited to that amount.
+     * - when offset is given, receive a later part of the list.
+     * - when course is given, allow items from within a course (submission, snippet, file, comment)
+     * - when course is not given, allow course
+     * - when having adequate permissions, receive a list of all users.
+     * /api/search/courses? ...
+     *
+     * /api/search/users? ...
+     *
+     * /api/search/comments? ...
+     *
+     * /api/search/snippets? ...
+     *
+     * /api/search/submissions? ...
+     *
+     * /api/search/files? ...
+     *
+     *
+     */
+    describe("Search", () => {
+        beforeEach(async() => {
+            await adminRegisterCourse();
+        });
 
     it('should be possible to search', async () => {
       await equalResults({query: 's'});
@@ -139,13 +141,22 @@ export function searchTest() {
       expect(result.comments.length).to.be.below(2);
     });
 
-    it('should be possible to search within a user', async () => {
-      await fetchAll({query: 's', userID: true});
-    });
+    it("should be possible to search for users in a course as a student", async() => {
+      // Find some other user and register them too
+      const otherUser = (await UserDB.filterUser({limit: 2})).find(u => u.ID !== USER_ID);
+      await adminRegisterCourse(otherUser?.ID);
 
-    it('should be possible to search within a submission', async () => {
-      await fetchAll({query: 's', submissionID: true});
-    });
+      const result = await fetchUser({query: "s", courseID: true});
+      expect(result.length).to.be.above(0);
+  });
+
+  it("should be possible to search within a user", async() => {
+      await fetchAll({query: "s", userID: true});
+  });
+
+  it("should be possible to search within a submission", async() => {
+      await fetchAll({query: "s", submissionID: true});
+  });
   });
 }
 
