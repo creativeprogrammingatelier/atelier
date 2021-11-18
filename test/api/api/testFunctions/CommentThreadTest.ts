@@ -122,10 +122,9 @@ export function commentThreadTest() {
             await adminSetPermissions({"viewAllCourses": false});
         });
 
-        // TODO [TEST]: Fails
-        // it('Should be possible to set visibility as owner without permission.', async () => {
-        //   await setVisibility();
-        // });
+        it("Should be possible to set visibility as owner without permission.", async () => {
+            await setVisibility();
+        });
 
         it("Should be possible to set visibility with 'manageRestrictedComment' permission", async() => {
             await adminSetPermissions({"manageRestrictedComments": true});

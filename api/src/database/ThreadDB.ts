@@ -90,7 +90,7 @@ export class ThreadDB {
             -- date
             AND ($18::timestamp IS NULL OR created > $18)
             AND ($19::timestamp IS NULL OR created < $19)
-            ORDER BY created DESC
+            ORDER BY created DESC, commentThreadID DESC
             LIMIT $16
             OFFSET $17
                 `, [

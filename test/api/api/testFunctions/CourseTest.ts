@@ -4,7 +4,7 @@ import {assert} from "console";
 import {CoursePartial} from "../../../../models/api/Course";
 import {CourseState} from "../../../../models/enums/CourseStateEnum";
 
-import {instanceOfCoursePartial} from "../../../InstanceOf";
+import {instanceOfCoursePartial, instanceOfCourseUser} from "../../../InstanceOf";
 import {
     getCourse,
     getCourses,
@@ -13,11 +13,17 @@ import {
     adminRegisterCourse,
     adminUnregisterCourse,
     adminSetPermissions,
-    createCourse
+    createCourse,
+    updateCourse,
+    registerUserCourse,
+    unregisterUserCourse,
+    USER_ID,
+    deleteCourse
 } from "../APIRequestHelper";
 
 export function courseTest() {
-    // const createdCourseID: string | undefined = undefined;
+    let createdCourseID: string | undefined = undefined;
+
     /**
      * GET requests:
      * /api/course
@@ -123,95 +129,105 @@ export function courseTest() {
             expect(response).to.have.status(401);
         });
 
-        // TODO [TEST]: Fails
-        // it('Should be possible to create a course with \'addCourse\' permission, ' +
-        //    ' and have user be enrolled.', async () => {
-        //   await adminSetPermissions({'addCourses': true});
+        it("Should be possible to create a course with 'addCourse' permission, " +
+           " and have user be enrolled.", async () => {
+            await adminSetPermissions({"addCourses": true});
 
-        //   // Create course
-        //   let response = await createCourse('Test Course', CourseState.open);
-        //   expect(response).to.have.status(200);
-        //   assert(instanceOfCoursePartial(response.body));
-        //   expect(response.body.state).to.equal(CourseState.open);
-        //   expect(response.body.name).to.equal('Test Course');
-        //   createdCourseID = response.body.ID;
+            // Create course
+            let response = await createCourse("Test Course", CourseState.open);
+            expect(response).to.have.status(200);
+            const body = response.body as CoursePartial;
+            assert(instanceOfCoursePartial(body));
+            expect(body.state).to.equal(CourseState.open);
+            expect(body.name).to.equal("Test Course");
+            createdCourseID = body.ID;
 
-        //   // User is enrolled
-        //   response = await getCourses();
-        //   expect(response).to.have.status(200);
-        //   assert(response.body.every((course: CoursePartial) => instanceOfCoursePartial(course)));
+            // User is enrolled
+            response = await getCourses();
+            expect(response).to.have.status(200);
+            assert((response.body as CoursePartial[])
+                .every((course: CoursePartial) => instanceOfCoursePartial(course)));
 
-        //   const courses: CoursePartial[] = response.body;
-        //   assert(courses.some((course: CoursePartial) => course.ID === createdCourseID));
+            const courses = response.body as CoursePartial[];
+            assert(courses.some((course: CoursePartial) => course.ID === createdCourseID));
 
-        //   await adminSetPermissions({'addCourses': false});
-        // });
+            await adminSetPermissions({"addCourses": false});
+        });
 
-        // TODO [TEST]: Fails
-        // it('Should not be possible to set name / state of a course without permission', async () => {
-        //   assert(createdCourseID !== undefined);
-        //   const response = await updateCourse(createdCourseID!, {name: 'Test Course 2', state: CourseState.hidden});
-        //   expect(response).to.have.status(401);
-        // });
+        it("Should not be possible to set name / state of a course without permission", async () => {
+            assert(createdCourseID !== undefined);
+            if (createdCourseID !== undefined) {
+                const response = await updateCourse(createdCourseID, {name: "Test Course 2", state: CourseState.hidden});
+                expect(response).to.have.status(401);
+            }
+        });
 
-        // TODO [TEST]: Fails
-        // it('Should be possible to set name / state of a course with \'manageCourses\' permission.', async () => {
-        //   await adminSetPermissions({'manageCourses': true});
+        it("Should be possible to set name / state of a course with 'manageCourses' permission.", async () => {
+            await adminSetPermissions({"manageCourses": true});
 
-        //   // Update course name / state
-        //   const response = await updateCourse(createdCourseID!, {name: 'Test Course 3', state: CourseState.hidden});
-        //   expect(response).to.have.status(200);
-        //   assert(instanceOfCoursePartial(response.body));
-        //   expect(response.body.name).to.equal('Test Course 3');
-        //   expect(response.body.state).to.equal(CourseState.hidden);
+            assert(createdCourseID !== undefined);
+            if (createdCourseID !== undefined) {
+                // Update course name / state
+                const response = await updateCourse(createdCourseID, {name: "Test Course 3", state: CourseState.hidden});
+                expect(response).to.have.status(200);
+                const body = response.body as CoursePartial;
+                assert(instanceOfCoursePartial(body));
+                expect(body.name).to.equal("Test Course 3");
+                expect(body.state).to.equal(CourseState.hidden);
+            }
 
-        //   await adminSetPermissions({'manageCourses': false});
-        // });
+            await adminSetPermissions({"manageCourses": false});
+        });
 
-        // TODO [TEST]: Fails
-        // it('Should not be possible to remove a user from a course without permission.', async () => {
-        //   assert(createdCourseID !== undefined);
-        //   const response = await registerUserCourse(createdCourseID!, USER_ID);
-        //   expect(response).to.have.status(401);
-        // });
+        it("Should not be possible to remove a user from a course without permission.", async () => {
+            assert(createdCourseID !== undefined);
+            if (createdCourseID !== undefined) {
+                const response = await registerUserCourse(createdCourseID, USER_ID);
+                expect(response).to.have.status(401);
+            }
+        });
 
-        // TODO [TEST]: Fails
-        // it('Should be possible to enroll a user in a course with \'manageUserRegistration\'' +
-        //    ' permission, and unregister.', async () => {
-        //   await adminSetPermissions({'manageUserRegistration': true});
+        it("Should be possible to enroll a user in a course with 'manageUserRegistration'" +
+           " permission, and unregister.", async () => {
+            await adminSetPermissions({"manageUserRegistration": true});
 
-        //   // Enroll user ins course
-        //   assert(createdCourseID !== undefined);
-        //   let response = await registerUserCourse(createdCourseID!, USER_ID);
-        //   expect(response).to.have.status(200);
-        //   assert(instanceOfCourseUser(response.body));
+            // Enroll user ins course
+            assert(createdCourseID !== undefined);
+            if (createdCourseID !== undefined) {
+                let response = await registerUserCourse(createdCourseID, USER_ID);
+                expect(response).to.have.status(200);
+                assert(instanceOfCourseUser(response.body));
 
-        //   // Unregister user from course
-        //   response = await unregisterUserCourse(createdCourseID!, USER_ID);
-        //   expect(response).to.have.status(200);
-        //   assert(instanceOfCourseUser(response.body));
+                // Unregister user from course
+                response = await unregisterUserCourse(createdCourseID, USER_ID);
+                expect(response).to.have.status(200);
+                assert(instanceOfCourseUser(response.body));
 
-        //   await unregisterUserCourse(createdCourseID!, USER_ID);
-        //   await adminSetPermissions({'manageUserRegistration': false});
-        // });
+                await unregisterUserCourse(createdCourseID, USER_ID);
+            }
 
-        // TODO [TEST]: Fails
-        // it('Should not be possible to delete a course without permission', async () => {
-        //   assert(createdCourseID !== undefined);
-        //   const response = await deleteCourse(createdCourseID!);
-        //   expect(response).to.have.status(401);
-        // });
+            await adminSetPermissions({"manageUserRegistration": false});
+        });
 
-        // TODO [TEST]: Fails
-        // it('Should be possible to delete a course with \'manageCourses\' permission.', async () => {
-        //   await adminSetPermissions({'manageCourses': true});
+        it("Should not be possible to delete a course without permission", async () => {
+            assert(createdCourseID !== undefined);
+            if (createdCourseID !== undefined) {
+                const response = await deleteCourse(createdCourseID);
+                expect(response).to.have.status(401);
+            }
+        });
 
-        //   assert(createdCourseID !== undefined);
-        //   const response = await deleteCourse(createdCourseID!);
-        //   expect(response).to.have.status(200);
-        //   assert(instanceOfCoursePartial(response.body));
+        it("Should be possible to delete a course with 'manageCourses' permission.", async () => {
+            await adminSetPermissions({"manageCourses": true});
 
-        //   await adminSetPermissions({'manageCourses': false});
-        // });
+            assert(createdCourseID !== undefined);
+            if (createdCourseID !== undefined) {
+                const response = await deleteCourse(createdCourseID);
+                expect(response).to.have.status(200);
+                assert(instanceOfCoursePartial(response.body));
+            }
+
+            await adminSetPermissions({"manageCourses": false});
+        });
     });
 }
