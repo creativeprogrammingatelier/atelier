@@ -302,7 +302,7 @@ CREATE OR REPLACE FUNCTION delSnippet()
 CREATE TRIGGER DEL_SNIPPET
     AFTER DELETE ON "CommentThread"
     FOR EACH ROW
-    EXECUTE FUNCTION delSnippet();
+    EXECUTE PROCEDURE delSnippet();
 
 CREATE OR REPLACE FUNCTION defaultFile()
     returns TRIGGER AS
@@ -322,7 +322,7 @@ CREATE OR REPLACE FUNCTION defaultFile()
 CREATE TRIGGER DEFAULT_FILE
     AFTER INSERT ON "Submissions"
     FOR EACH ROW
-    EXECUTE FUNCTION defaultFile();
+    EXECUTE PROCEDURE defaultFile();
 `;
 
 export const createViewQueries = `

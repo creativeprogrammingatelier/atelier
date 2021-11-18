@@ -14,10 +14,11 @@ This is similar to bug reports: please search the issue list and contribute to t
 
 Cool! I you have some ideas for Atelier that you would like to add yourself, please submit an issue discussing the feature before starting to write code. If we agree that it would be a good addition, or if you want to work on an existing issue, please follow these guidelines:
 
-- The master branch of this repository should always be ready to deploy. To start working on a new feature, create a new branch and start writing your code in that branch.
-- Open a pull request as early as possible, marking it as a draft if you are still working on it. This allows us to easily keep track of what is going on.
+- There are two important branches: master and rc. The master branch should always be ready to deploy to production, whereas the rc branch (for release candidate) will run on our staging server for testing. All pull requests for new features or bug fixes should target the rc branch, only rc will ever be merged into master.
+- To start working on a new feature, create a new branch and start writing your code in that branch.
+- Open a pull request to the rc branch as early as possible, marking it as a draft if you are still working on it. This allows us to easily keep track of what is going on.
 - Once your code is finished, remove the 'draft' flag from your pull request and make sure all the boxes of the checklist in the pull request template can be checked.
-- At least one other person should review your code, before it can be merged into the master branch.
+- At least one other person should review your code, before it can be merged into the rc branch.
 
 If your changes are 'trivial' (e.g. a very minor refactoring, fixing spelling mistakes in documents like these, a very obvious and rather urgent bug), a review of the code is not necessarily required (as there are a limited number of people-hours working on the project).
 
