@@ -1,10 +1,10 @@
 import {Permission} from "./Permission";
 
 export interface User {
-	ID: string,
-	name: string,
-	email: string,
+    ID: string,
+    name: string,
+    email: string,
     permission: Permission,
-	researchAllowed?: boolean,
-	canvasrefresh: string
+    researchAllowed?: boolean,
+    canvasrefresh: string
 }

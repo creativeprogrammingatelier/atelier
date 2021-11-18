@@ -6,11 +6,12 @@ Atelier is an online environment to assist with programming tutorials. It facili
 
 ## Developing Atelier
 
-To run and debug Atelier in your local development environment, you'll need the following tools installed:
+Please also have a look at the [Contributing Guidelines](CONTRIBUTING.md) if you plan to contribute to the project. This section will explain how to set up your development environment and run Atelier on your own machine. You'll need the following tools installed:
 
 - [Node.js](https://nodejs.org/): to run the backend server and development tools (the LTS version is recommended, but other versions might work too)
 - [PostgreSQL](https://www.postgresql.org/): to run a local database (but you can also use a remote database, if you prefer)
-- Some editor that supports TypeScript (e.g. [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm/))
+- Some editor that supports TypeScript and preferably ESLint and editorconfig (e.g. [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm/))
+  - If you choose to use VS Code, these extensions will be automatically suggested when opening the repo.
 
 Once you've got the tooling set up, we can start with getting Atelier running:
 
@@ -37,7 +38,7 @@ Once you've got the tooling set up, we can start with getting Atelier running:
 
    - `admin` - a global admin user, who is allowed to do anything in the system
    - `user` - a global 'user' user, who is enrolled in a course as a student
-   - `teacher` - a global staff user, who is enrolled in a course as a teacher 
+   - `teacher` - a global staff user, who is enrolled in a course as a teacher
    - `TA` - a global 'user' user, who is enrolled in a course as a teaching assistant
 
    Leave all other fields as they are and click the *Log in* button to log in.
@@ -59,6 +60,13 @@ In *package.json*, a couple scripts are defined to do common operations while de
 - `start` - Start the server
 - `watch-backend` - Compile the backend using the TypeScript compiler in watch mode
 - `watch-frontend` - Compile the frontend React application using webpack in development mode
+
+**Linting and code style**
+
+- `lint` - Run ESLint on the code, reporting errors and warnings
+- `lint-fix` - Run ESLint and try to fix all errors and warnings that can be automatically fixed
+- `lint-nowarn` - Run ESLint on the code, reporting errors only
+- `lint-nowarn-fix` - Run ESLint and try to fix all errors that can be automatically fixed
 
 **Testing**
 
@@ -88,7 +96,7 @@ These are some useful tools you might want to use when working on Atelier:
 
 ## Running Atelier in Production
 
-The best way to run Atelier in your own production environment, is by using the Docker image. You can build the image from this repo using the `docker build . -t atelier` command, to create an image called `atelier`. 
+The best way to run Atelier in your own production environment, is by using the Docker image, which is available [here via GitHub](https://github.com/creativeprogrammingatelier/atelier/pkgs/container/atelier). Alternatively, you can build the image from this repo using the `docker build . -t atelier` command, to create an image called `atelier`.
 
 The image exposes three volumes:
 
@@ -129,7 +137,7 @@ Since Atelier needs access to a PostgreSQL database, it is preferred to set up a
 version: '3.7'
 services:
   atelier:
-    image: atelier
+    image: ghcr.io/creativeprogrammingatelier/atelier
     restart: always
     ports:
       - 80:5000
@@ -165,7 +173,7 @@ In practice, we recommend running Atelier behind a proxy server that allows for 
 
 ### First run setup
 
-After both containers are started, the database needs to be set up with the correct structure. To do this, run 
+After both containers are started, the database needs to be set up with the correct structure. To do this, run
 
 ```
 docker exec atelier_atelier_1 node api/src/database/structure/DatabaseStructure.js
@@ -173,7 +181,7 @@ docker exec atelier_atelier_1 node api/src/database/structure/DatabaseStructure.
 
 where you replace `atelier_atelier_1` with the name of your Atelier container.
 
-## Documentation 
+## Documentation
 
 The above should help you get started with running and developing Atelier. More specific documentation is available in the [*/docs*](/docs) folder: this is mainly conceptual documentation about the whole structure of the project. Most files (and they really all should) include inline JSDoc documentation describing specific functionalities. If you prefer, you can also run the `npm run generate-docs` command to create a TypeDoc website based on this inline documentation. The website files can then be found in the [*/docs/typedoc*](/docs/typedoc) folder.
 
@@ -181,7 +189,7 @@ The above should help you get started with running and developing Atelier. More 
 
 The Atelier design is based on Bootstrap, with additional custom styling for the distinctive Atelier look.
 
-### Icons 
+### Icons
 
 The project is using [React Icon package](https://react-icons.netlify.com/#/), which contains a number of icon packs. Preference should be given to the [Feather](https://react-icons.netlify.com/#/icons/fi) Icon pack.
 

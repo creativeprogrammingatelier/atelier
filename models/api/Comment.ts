@@ -1,11 +1,11 @@
 import {User} from "./User";
-import { ThreadState } from "../enums/ThreadStateEnum";
+import {ThreadState} from "../enums/ThreadStateEnum";
 
 export interface Comment {
-	ID: string,
-	user: User,
-	text: string,
-	created: string,
+    ID: string,
+    user: User,
+    text: string,
+    created: string,
     edited: string,
     thread: {
         visibility: ThreadState,
@@ -13,16 +13,16 @@ export interface Comment {
     },
     submission: {
         name: string,
-        user: { 
+        user: {
             ID: string,
-            userName: string 
+            userName: string
         }
     },
-	references: {
-		courseID: string,
-		submissionID: string,
-		commentThreadID: string,
-		fileID?: string,
-		snippetID?: string,
-	}
+    references: {
+        courseID: string,
+        submissionID: string,
+        commentThreadID: string,
+        fileID?: string,
+        snippetID?: string,
+    }
 }

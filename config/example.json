@@ -38,8 +38,8 @@
         }
     },
     "canvas": {
-        "client_id": "182170000000000110",
-        "client_secret": "XWQdS65BrQyur2LCugFlmigNpNEfjLSLCnPx9SINAnX9pojYI8lrefoeFdSLJQXD",
-        "canvas_url_root": "https://utwente-dev.instructure.com"
+        "clientId": "182170000000000110",
+        "clientSecret": "XWQdS65BrQyur2LCugFlmigNpNEfjLSLCnPx9SINAnX9pojYI8lrefoeFdSLJQXD",
+        "baseUrl": "https://utwente-dev.instructure.com"
     }
 }
