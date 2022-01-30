@@ -177,8 +177,8 @@ export async function databaseSamples(client: pgDB = pool): Promise<void> {
           (${uuid5}, ${uuid1}, ${uuid6}, ${uuid5}, DEFAULT);
 
      INSERT INTO "Comments" VALUES
-          (${uuid0}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
-          (${uuid6}, ${uuid0}, ${uuid0}, DEFAULT, DEFAULT, 'This is a multi
+          (${uuid0}, ${uuid0}, ${uuid6}, DEFAULT, DEFAULT, 'This is comment 0. It has a mention to @Caaas, a TA.'),
+          (${uuid6}, ${uuid1}, ${uuid0}, DEFAULT, DEFAULT, 'This is a multi
 line comment, mentioning
 all @teachers in one go!'),
         (${uuid1}, ${uuid1}, (SELECT userID from "Users" WHERE samlID='samling_TA'), DEFAULT, DEFAULT, 'Hint, you know comments are there to do absolutely nothing...'),
