@@ -1,6 +1,6 @@
 import {SearchResultFile} from "../../../models/api/SearchResult";
 import {File, DBFile, fileToAPI, APIFile, filterNullFiles, isNotNullFile} from "../../../models/database/File";
-import {submissionToAPI} from "../../../models/database/Submission";
+import {DBAPISubmission, submissionToAPI} from "../../../models/database/Submission";
 import {Sorting} from "../../../models/enums/SortingEnum";
 
 import {UUIDHelper} from "./helpers/UUIDHelper";
@@ -116,8 +116,8 @@ export class FileDB {
             OFFSET $7
             `, [fileid, submissionid, courseid, searchFile, type, limit, offset, currentuserid])
             .then(extract).then(map(entry => ({
-                file: fileToAPI(entry),
-                submission: submissionToAPI(entry)
+                file: fileToAPI(entry as DBFile),
+                submission: submissionToAPI(entry as DBAPISubmission)
             }))).then(doIf(!includeNulls, entries =>
                 entries.filter(entry => isNotNullFile(entry.file))
             ));

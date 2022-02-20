@@ -93,7 +93,9 @@ export class ConfigurationError extends Error {
 }
 
 /** Helper method that reads out a leaf property in the configuration */
-function prop<T extends string | number | boolean>(name: string, value: T | undefined, defaultValue?: T): T {
+// This function reads its value from the JSON, so we allow any and check the type in the function
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function prop<T extends string | number | boolean>(name: string, value: any, defaultValue?: T): T {
     if (value === undefined) {
         if (defaultValue === undefined) {
             throw new ConfigurationError(`Required property ${name} was not specified.`);
@@ -104,8 +106,10 @@ function prop<T extends string | number | boolean>(name: string, value: T | unde
         return prop(name, process.env[value.substring(ENV.length)] as T, defaultValue);
     } else if (typeof value === "string" && value.startsWith(FILE)) {
         return prop(name, fs.readFileSync(value.substring(FILE.length), "utf8") as T, defaultValue);
+    } else if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        return value as T;
     } else {
-        return value;
+        throw new ConfigurationError(`Property ${name} is not a string, number or boolean.`);
     }
 }
 
@@ -127,7 +131,7 @@ export const config: Configuration = {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (json.loginProviders as unknown[]).map((provider: any, i: number) => {
                     const base = {
-                        type: prop(`loginProvider[${i}].type`, provider.type),
+                        type: prop<string>(`loginProvider[${i}].type`, provider.type),
                         id: prop<string>(`loginProvider[${i}].id`, provider.id),
                         name: prop<string>(`loginProvider[${i}].name`, provider.name),
                         hidden: prop<boolean>(`loginProviders[${i}].hidden`, provider.hidden, false)
@@ -139,7 +143,8 @@ export const config: Configuration = {
                         }
                         return {
                             ...base,
-                            altBaseUrl: prop(`loginProvider[${i}].altBaseUrl`, provider.altBaseUrl, null),
+                            type: "saml", // Repeated, because it needs to be a constant to please TypeScript
+                            altBaseUrl: prop<string>(`loginProvider[${i}].altBaseUrl`, provider.altBaseUrl, undefined),
                             metadata:
                                     "url" in provider.metadata
                                         ? {url: prop<string>(`loginProvider[${i}].metadata.url`, provider.metadata.url)}
@@ -150,10 +155,11 @@ export const config: Configuration = {
                     case "builtin":
                         return {
                             ...base,
+                            type: "builtin",
                             register: prop<boolean>(`loginProvider[${i}].register`, provider.register, true)
                         };
                     default:
-                        throw new ConfigurationError(`Invalid login provider type "${base.type as string}"`);
+                        throw new ConfigurationError(`Invalid login provider type "${base.type}"`);
                     }
                 })
                 :

@@ -54,7 +54,7 @@ export default class CanvasCourseList extends React.Component<IPropsCanvasCourse
     }
     handleSelect = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({selectedCourseId: event.target.value});
-    }
+    };
 
     getOptions() {
         if (this.state.data != null) {

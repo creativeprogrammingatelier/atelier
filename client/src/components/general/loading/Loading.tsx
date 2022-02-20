@@ -43,7 +43,7 @@ export function Loading<R, F extends LoadingFunc<R> = LoadingFunc<R>>({loader: p
         (parameters ? promise(...parameters, cache) : promise(cache)).then(res => {
             updateResult(res);
             updateState(LoadingState.Loaded);
-        }).catch(err => {
+        }).catch((err: {error: string, message: string}) => {
             updateError(err);
             updateState(LoadingState.Error);
         });

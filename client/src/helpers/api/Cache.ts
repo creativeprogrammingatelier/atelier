@@ -278,7 +278,7 @@ export class Cache {
                     createdAt: item.createdAt || date,
                     updatedAt: date,
                     state,
-                    value: update(item.value)
+                    value: update(item.value as T)
                 });
                 this.exported.next(this.export());
             },
@@ -314,7 +314,7 @@ export class Cache {
                     this.collections[key].subscribers.push({options, subscriber});
                     console.log("Add subscription to", key, "with subKey", options.subKey, "; length:", this.collections[key].subscribers.length);
                     // The subscriber immediately receives the current cached value
-                    subscriber.next(returnCollection(this.collections[key], options));
+                    subscriber.next(returnCollection(this.collections[key] as SubscribableCollection<T>, options));
                 });
                 return () => {
                     // When they unsubscribe, we manually remove the subscriber from our list
@@ -325,7 +325,7 @@ export class Cache {
                     }
                 };
             }),
-            getCurrentValue: () => returnCollection(this.collections[key], options),
+            getCurrentValue: () => returnCollection(this.collections[key] as SubscribableCollection<T>, options),
             transaction: (update, state = CacheState.Loaded, date = Date.now()) => {
                 if (!this.collections[key]) {
                     throw new CacheError("cleared", key);

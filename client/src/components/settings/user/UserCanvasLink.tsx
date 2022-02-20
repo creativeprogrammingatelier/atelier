@@ -31,14 +31,14 @@ export default class UserCanvasLink extends React.Component<Record<string, never
             // I've replaced it with this line for now, as I think it's equivalent to the old behavior:
             this.setState({linked: false});
         });
-    }
+    };
 
     /**
      * Remove Link to canvas
      */
     private unlinkCanvas = () => {
         CanvasHelper.removeLink().then(_ => this.setState({linked: false}));
-    }
+    };
 
     /**
      * Check if account has already been linked

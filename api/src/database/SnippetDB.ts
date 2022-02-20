@@ -1,7 +1,7 @@
 import {SearchResultSnippet} from "../../../models/api/SearchResult";
-import {fileToAPI} from "../../../models/database/File";
-import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet} from "../../../models/database/Snippet";
-import {submissionToAPI} from "../../../models/database/Submission";
+import {DBFile, fileToAPI} from "../../../models/database/File";
+import {Snippet, snippetToAPI, convertSnippet, filterNullSnippet, DBAPISnippet} from "../../../models/database/Snippet";
+import {DBAPISubmission, submissionToAPI} from "../../../models/database/Submission";
 import {Sorting} from "../../../models/enums/SortingEnum";
 
 import {UUIDHelper} from "./helpers/UUIDHelper";
@@ -138,9 +138,9 @@ export class SnippetDB {
             currentuserid, limit, offset])
             .then(extract).then(map(entry => ({
                 //no checks for null snippets/files, since we are literally searching inside a snippet body
-                snippet: snippetToAPI(entry),
-                file: fileToAPI(entry),
-                submission: submissionToAPI(entry)
+                snippet: snippetToAPI(entry as DBAPISnippet),
+                file: fileToAPI(entry as DBFile),
+                submission: submissionToAPI(entry as DBAPISubmission)
             })));
     }
 
