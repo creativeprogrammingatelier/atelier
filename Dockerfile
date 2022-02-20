@@ -28,6 +28,8 @@ FROM base AS release
 # Install dependencies
 COPY package.json ./
 RUN npm install --production --ignore-scripts
+# Then we need to compile bcrypt, which probably doesn't happen because we ignore scripts
+RUN npm rebuild bcrypt
 
 # Copy the build artifacts from the build stage
 COPY --from=build /atelier/build .
