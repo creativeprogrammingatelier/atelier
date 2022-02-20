@@ -173,13 +173,14 @@ In practice, we recommend running Atelier behind a proxy server that allows for 
 
 ### First run setup
 
-After both containers are started, the database needs to be set up with the correct structure. To do this, run
+You will need to set up the database before starting the Atelier container, but after starting the database container. Following the compose structure of the previous section, the commands would look like this:
 
 ```
-docker exec atelier_atelier_1 node api/src/database/structure/DatabaseStructure.js
+docker-compose up -d database
+docker-compose run --entrypoint node atelier api/src/database/structure/DatabaseStructure.js
 ```
 
-where you replace `atelier_atelier_1` with the name of your Atelier container.
+After this, all containers can be started.
 
 ## Documentation
 
