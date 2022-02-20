@@ -113,6 +113,16 @@ function prop<T extends string | number | boolean>(name: string, value: any, def
     }
 }
 
+/** Helper method for optional properties */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function propOptional<T extends string | number | boolean>(name: string, value: any): T | undefined {
+    if (value === undefined) {
+        return undefined;
+    } else {
+        return prop<T>(name, value);
+    }
+}
+
 /**
  * Configuration as read from config.env.json
  * This is a bit convoluted, as it turns untyped JSON with all kinds of optional
@@ -144,7 +154,7 @@ export const config: Configuration = {
                         return {
                             ...base,
                             type: "saml", // Repeated, because it needs to be a constant to please TypeScript
-                            altBaseUrl: prop<string>(`loginProvider[${i}].altBaseUrl`, provider.altBaseUrl, undefined),
+                            altBaseUrl: propOptional<string>(`loginProvider[${i}].altBaseUrl`, provider.altBaseUrl),
                             metadata:
                                     "url" in provider.metadata
                                         ? {url: prop<string>(`loginProvider[${i}].metadata.url`, provider.metadata.url)}
