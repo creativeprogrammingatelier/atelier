@@ -6,11 +6,6 @@
 export {};
 
 declare global {
-    // Filepath when using folder upload
-    interface File {
-        webkitRelativePath: string
-    }
-
     // Attribute to enable folder upload
     interface HTMLInputElement {
         webkitdirectory: boolean

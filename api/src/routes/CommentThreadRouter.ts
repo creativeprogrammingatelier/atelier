@@ -245,7 +245,7 @@ commentThreadRouter.post("/submission/:submissionID", capture(async (request, re
 
         // Thread creation
         const fileID: string = await FileDB.getNullFileID(submissionID, {client}) as unknown as string;
-        return createCommentThread(request, client, snippetID, fileID, submissionID);
+        return createCommentThread(request as RequestB<CreateRequestBody>, client, snippetID, fileID, submissionID);
     });
 
     response.send(commentThread);
@@ -287,7 +287,7 @@ commentThreadRouter.post("/file/:fileID", capture(async (request, response) => {
 
         // Thread creation
         const submissionID: string = data.submissionID;
-        return createCommentThread(request, client, snippetID, fileID, submissionID);
+        return createCommentThread(request as RequestB<CreateRequestBody>, client, snippetID, fileID, submissionID);
     });
 
     response.status(200).send(commentThread);

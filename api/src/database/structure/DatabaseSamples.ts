@@ -197,7 +197,7 @@ all @teachers in one go!'),
      `;
     return client.query(query).then(() => {
         console.log("inserted values into db");
-    }).catch(e => {
+    }).catch((e: Error) => {
         if (isPostgresError(e) && e.position !== undefined) {
             console.log(query.substring(Number(e.position) - 20, Number(e.position) + 20));
         }

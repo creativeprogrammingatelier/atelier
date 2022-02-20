@@ -62,7 +62,7 @@ function Feed({feed, type, global, buttons}: FeedProperties) {
 
     useEffect(() => {
         const storedFilter = localStorage.getItem(`feedFilter#${type}`);
-        if (storedFilter) setFiltered(JSON.parse(storedFilter));
+        if (storedFilter) setFiltered(JSON.parse(storedFilter) as string[]);
     }, []);
     useEffect(() => {
         localStorage.setItem(`feedFilter#${type}`, JSON.stringify(filtered));
