@@ -4,31 +4,16 @@ import {CourseRole} from "../../../models/enums/CourseRoleEnum";
 import {containsPermission, PermissionEnum} from "../../../models/enums/PermissionEnum";
 
 import {CourseRegistrationDB} from "../database/CourseRegistrationDB";
-import {NotFoundDatabaseError} from "../database/DatabaseErrors";
 import {pgDB} from "../database/HelperDB";
 import {MentionsDB} from "../database/MentionsDB";
-import {UserDB} from "../database/UserDB";
+import {MentionsUserCache} from "./MentionsUserCache";
 
 /** Get the parts of the a comment following the @-sign, which starts a mention */
 export function getPossibleMentions(commentBody: string) {
     return commentBody.split("@").slice(1).map(mention => mention.trim());
 }
 
-/**
- * Make a database call to find a user that matches the first part of a possible mention,
- * returning the possbileMention if none is found
- */
-async function getUserForPossibleMention(possibleMention: string, courseID: string, client?: pgDB) {
-    try {
-        return await UserDB.getUserByPossibleMentionInCourse(possibleMention, courseID, {client});
-    } catch (err) {
-        if (err instanceof NotFoundDatabaseError) {
-            return possibleMention;
-        } else {
-            throw err;
-        }
-    }
-}
+const usersCache = new MentionsUserCache();
 
 /** Find a course role that matches the first part of a possible mention */
 function getRoleForPossibleMention(possibleMention: string) {
@@ -44,7 +29,7 @@ function getRoleForPossibleMention(possibleMention: string) {
 export async function getMentions(commentBody: string, courseID: string, client?: pgDB) {
     const users = await Promise.all(
         getPossibleMentions(commentBody)
-            .map(async pm => getUserForPossibleMention(pm, courseID, client))
+            .map(async pm => usersCache.getUserForPossibleMention(pm, courseID, client))
     );
     return users
         .map(userOrComment =>
