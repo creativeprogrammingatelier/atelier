@@ -86,7 +86,6 @@ async function DBusersTest() {
     await promise(UH.getAllStudents(), "getAllStudents");
     await promise(UH.getUserByID(uuid0), "getUserById");
     await promise(UH.searchUser("CAS"), "searchUser");
-    await promise(UH.getUserByPossibleMentionInCourse("Caas rest of comment", uuid0), "UserMention");
     await promise(UH.filterUserInCourse({courseID: uuid1}), "searchuserInCourse");
     const u1 = await promise(UH.getUserBySamlID("samling_admin"), "samlgetter");
     const samlid = await promise(UH.getSamlIDForUserID(u1.ID), "saml by user");
