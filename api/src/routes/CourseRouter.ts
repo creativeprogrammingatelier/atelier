@@ -18,6 +18,7 @@ import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {getAccessToken, getCourseUsersStudents, getCourseUsersTAs, getRefreshToken} from "../helpers/CanvasHelper";
 import {addUsersFromCanvas} from "../helpers/CourseHelper";
 import {RequestB} from "../helpers/RequestHelper";
+import {TagsDB} from "../database/TagsDB";
 
 /**
  * Api routes relating to a course
@@ -78,6 +79,26 @@ courseRouter.get("/:courseID", capture(async (request: Request, response: Respon
     await requireRegistered(currentUserID, courseID);
 
     response.status(200).send(removePermissionsCoursePartial(course));
+}));
+
+/** Get all signoffs for a course in csv format. Allows for optional tag query parameter
+ * to specify the start of tags used for signing off.
+ */
+courseRouter.get("/:courseID/signoff.csv", capture(async (request: Request, response: Response) => {
+    const courseID: string = request.params.courseID;
+    const tagStart: string = (request.query.tag as string | undefined) || "topic";
+
+    const currentUserID = await getCurrentUserID(request);
+    await requirePermission(currentUserID, PermissionEnum.manageUserRegistration);
+
+    const signoffs = await TagsDB.getSignOffs(courseID, tagStart);
+
+    let csv = "tag,student,submission,submittedby,ta,date\n";
+    for (const signoff of signoffs) {
+        csv += `${signoff.tag},${signoff.student},${signoff.submission},${signoff.submittedby},${signoff.ta},${signoff.date.toISOString()}\n`;
+    }
+
+    response.status(200).type("text/csv").send(csv);
 }));
 
 // ---------- POST REQUESTS ----------
