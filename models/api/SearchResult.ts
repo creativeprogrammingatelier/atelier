@@ -6,23 +6,23 @@ import {Submission} from "./Submission";
 import {User} from "./User";
 
 export interface SearchResultComment {
-	comment: Comment,
-	submission: Submission
+    comment: Comment,
+    submission: Submission
 }
 export interface SearchResultFile {
-	file: File,
-	submission: Submission
+    file: File,
+    submission: Submission
 }
 export interface SearchResultSnippet {
-	snippet: Snippet,
-	file: File,
-	submission: Submission
+    snippet: Snippet,
+    file: File,
+    submission: Submission
 }
 export interface SearchResult {
-	users: User[],
-	courses: Course[],
-	submissions: Submission[],
-	comments: SearchResultComment[],
-	files: SearchResultFile[],
-	snippets: SearchResultSnippet[]
+    users: User[],
+    courses: Course[],
+    submissions: Submission[],
+    comments: SearchResultComment[],
+    files: SearchResultFile[],
+    snippets: SearchResultSnippet[]
 }

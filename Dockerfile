@@ -11,11 +11,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 # Install dependencies separately, so they can be cached
 COPY package.json ./
 COPY package-lock.json ./
-# npm-force-resolutions needs to be installed separately because the preinstall 
-# doesn't seem to work in Docker
-RUN npm install -g npm-force-resolutions
-RUN npm-force-resolutions
-RUN npm install
+RUN npm install --ignore-scripts
 RUN rm package.json
 RUN rm package-lock.json
 
@@ -31,7 +27,9 @@ FROM base AS release
 
 # Install dependencies
 COPY package.json ./
-RUN npm install --production
+RUN npm install --production --ignore-scripts
+# Then we need to compile bcrypt, which probably doesn't happen because we ignore scripts
+RUN npm rebuild bcrypt
 
 # Copy the build artifacts from the build stage
 COPY --from=build /atelier/build .

@@ -1,0 +1,7 @@
+{
+    "rules": {
+        // Frontend code can have long lines of JSX/HTML, which are not always practical to squish
+        // into shorter lines, so we'll disable the maximum line length here
+        "max-len" : "off"
+    }
+}

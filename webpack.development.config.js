@@ -1,6 +1,6 @@
-const webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports */
+
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     mode: "development",
@@ -19,46 +19,46 @@ module.exports = {
         }
     },
     output: {
-		path: __dirname + "/build/client",
+        path: __dirname + "/build/client",
     },
     plugins: [
         // new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: "Atelier",
-            template: 'client/index.html',
+            template: "client/index.html",
             files: {
-                main:{
+                main: {
                     entry: "main.js"
                 }
             }
-            
+
         })
     ],
     module: {
         rules: [{
-                test: /\.ts(x?)$/,
-                exclude: /node_modules/,
-                use: [{
-                    loader: "ts-loader"
-                }]
-            },
-            {
-                enforce: "pre",
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: "source-map-loader"
-            },
-            {
-                test: /\.(js|jsx) $/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader"
-                }
-            },
-            {
-                test: /\.(s*)css$/i,
-                use: ['style-loader', 'css-loader', 'sass-loader'],
-            },
+            test: /\.ts(x?)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: "ts-loader"
+            }]
+        },
+        {
+            enforce: "pre",
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: "source-map-loader"
+        },
+        {
+            test: /\.(js|jsx) $/,
+            exclude: /node_modules/,
+            use: {
+                loader: "babel-loader"
+            }
+        },
+        {
+            test: /\.(s*)css$/i,
+            use: ["style-loader", "css-loader", "sass-loader"],
+        },
         ],
 
     },
